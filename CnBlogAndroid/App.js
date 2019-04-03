@@ -25,6 +25,7 @@ import {
     WebView,
     AsyncStorage,
     Alert,
+    BackHandler,
 } from 'react-native';
 import {
     StackNavigator,
@@ -37,6 +38,7 @@ import HomeworkLists from './Source/screens/HomeworkLists'
 import PersonalBlog from './Source/screens/PersonalBlog'
 import ClassLists from './Source/screens/ClassLists'
 import UserInformation from './Source/screens/UserInformation'
+// import MyTest from './Source/screens/MyTest'
 import ClassHome from './Source/screens/ClassHome'
 import HomeworkPost from './Source/screens/HomeworkPost'
 import BlogDetail from './Source/screens/BlogDetail'
@@ -167,6 +169,28 @@ class Loginer extends Component{
             </View>
         );
     }
+    componentWillMount() {
+      if (Platform.OS === 'android') {
+        BackHandler.addEventListener('hardwareBackPress', this.onBackAndroid);
+      }
+    }
+    componentWillUnmount() {
+      if (Platform.OS === 'android') {
+        BackHandler.removeEventListener('hardwareBackPress', this.onBackAndroid);
+      }
+    }
+    
+    
+    onBackAndroid = () => {
+      if (this.lastBackPressed && this.lastBackPressed + 2000 >= Date.now()) {
+        BackHandler.exitApp();
+        return false;
+      }
+      this.lastBackPressed = Date.now();
+      ToastAndroid.show('再按一次退出应用',1000);
+      
+      return true;
+    };
 }
 
 class UrlLogin extends Component{
@@ -328,6 +352,19 @@ const HomeTab = TabNavigator({
             )
         }
     },
+    // MyTest: {
+    //     screen: MyTest,
+    //     navigationOptions: {
+    //         tabBarLabel: '测试',
+    //         // tabBarIcon: ({ tintColor, focused }) => (
+    //         //     <Image
+    //         //         resizeMode='contain'
+    //         //         source={require('./Source/images/nav_i.png')}
+    //         //         style={{height: 20}}
+    //         //     ></Image>
+    //         // )
+    //     }
+    // },
 },{
     tabBarPosition: 'bottom',
     initialRouteName: 'PersonalBlog',
@@ -430,6 +467,12 @@ const SimpleNavigation = StackNavigator({
             header: null,
         }
     },
+    // MyTest: {
+    //     screen: MyTest,
+    //     navigationOptions: {
+    //         header: null,
+    //     }
+    // },
     AfterloginTab: {
         screen: HomeTab,
         navigationOptions: {

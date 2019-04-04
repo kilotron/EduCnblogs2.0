@@ -38,7 +38,7 @@ import HomeworkLists from './Source/screens/HomeworkLists'
 import PersonalBlog from './Source/screens/PersonalBlog'
 import ClassLists from './Source/screens/ClassLists'
 import UserInformation from './Source/screens/UserInformation'
-// import MyTest from './Source/screens/MyTest'
+import ClassListsNew from './Source/screens/ClassListsNew'
 import ClassHome from './Source/screens/ClassHome'
 import HomeworkPost from './Source/screens/HomeworkPost'
 import BlogDetail from './Source/screens/BlogDetail'
@@ -340,6 +340,19 @@ const HomeTab = TabNavigator({
             )
         }
     },
+    ClassListsNew: {
+        screen: ClassListsNew,
+        navigationOptions: {
+            tabBarLabel: '班级博客',
+            tabBarIcon: ({ tintColor, focused }) => (
+                <Image
+                    resizeMode='contain'
+                    source={require('./Source/images/nav_class.png')}
+                    style={{height: 20}}
+                ></Image>
+            )
+        }
+    },
     UserInformation: {
         screen: UserInformation,
         navigationOptions: {
@@ -353,19 +366,7 @@ const HomeTab = TabNavigator({
             )
         }
     },
-    // MyTest: {
-    //     screen: MyTest,
-    //     navigationOptions: {
-    //         tabBarLabel: '测试',
-    //         // tabBarIcon: ({ tintColor, focused }) => (
-    //         //     <Image
-    //         //         resizeMode='contain'
-    //         //         source={require('./Source/images/nav_i.png')}
-    //         //         style={{height: 20}}
-    //         //     ></Image>
-    //         // )
-    //     }
-    // },
+
 },{
     tabBarPosition: 'bottom',
     initialRouteName: 'PersonalBlog',
@@ -468,12 +469,12 @@ const SimpleNavigation = StackNavigator({
             header: null,
         }
     },
-    // MyTest: {
-    //     screen: MyTest,
-    //     navigationOptions: {
-    //         header: null,
-    //     }
-    // },
+    ClassListsNew: {
+        screen: ClassListsNew,
+        navigationOptions: {
+            header: null,
+        }
+    },
     AfterloginTab: {
         screen: HomeTab,
         navigationOptions: {

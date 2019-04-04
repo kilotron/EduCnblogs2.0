@@ -53,6 +53,7 @@ import ContactPage from './Source/screens/ContactPage'
 import Submitted from './Source/screens/Submitted'
 import HomeworkSubmit from './Source/screens/HomeworkSubmit'
 import UnfinishedHomeworkList from './Source/screens/UnfinishedHomeworkList'
+import BlogEdition from './Source/screens/BlogEdition'
 const { height, width } = Dimensions.get('window');
 
 const CODE_URL = [
@@ -179,8 +180,8 @@ class Loginer extends Component{
         BackHandler.removeEventListener('hardwareBackPress', this.onBackAndroid);
       }
     }
-    
-    
+
+
     onBackAndroid = () => {
       if (this.lastBackPressed && this.lastBackPressed + 2000 >= Date.now()) {
         BackHandler.exitApp();
@@ -188,7 +189,7 @@ class Loginer extends Component{
       }
       this.lastBackPressed = Date.now();
       ToastAndroid.show('再按一次退出应用',1000);
-      
+
       return true;
     };
 }
@@ -526,6 +527,20 @@ const SimpleNavigation = StackNavigator({
         navigationOptions: {
             headerTintColor:'white',
             headerTitle: '博文详情',
+            headerStyle: {
+                height: 40,
+                backgroundColor: UI.TOP_COLOR,
+            },
+            headerTitleStyle: {
+                fontSize: 18,
+            },
+        }
+    },
+    BlogEdition: {
+        screen: BlogEdition,
+        navigationOptions: {
+            headerTintColor:'white',
+            headerTitle: '编辑博文',
             headerStyle: {
                 height: 40,
                 backgroundColor: UI.TOP_COLOR,

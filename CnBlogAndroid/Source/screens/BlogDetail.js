@@ -77,6 +77,21 @@ export default class BlogDetail extends Component{
             Id: this.props.navigation.state.params.Id,
         });
     }
+    _onPressEdit = ()=>{
+        console.log("cnblog edit");
+        const {navigator} = this.props;
+        //if (navigator) {
+          console.log("jump");
+
+
+          this.props.navigation.navigate('BlogEdition',{
+            Id:this.props.navigation.state.params.Id,
+            blogApp: global.user_information.BlogApp,
+            CommentCount: this.props.navigation.state.params.CommentCount,
+            Url: this.props.navigation.state.params.Url});
+          console.log("jump over");
+        //}
+    }
     render(){
         let content = ContentHandler(this.state);
         return(
@@ -102,9 +117,14 @@ export default class BlogDetail extends Component{
                 <View style = {{height: 1, backgroundColor: 'rgb(204,204,204)', alignSelf:'stretch'}}/>
                 <View style = {styles.bottom}>
                     <TouchableOpacity style = {styles.touchbutton} onPress = {this._onPress}>
-                        <Image source = {require('../images/comment.png')} style = {styles.imagestyle} 
+                        <Image source = {require('../images/comment.png')} style = {styles.imagestyle}
                         accessibilityLabel = 'BlogDetail_commentImage'/>
-                        
+
+                    </TouchableOpacity>
+                    <TouchableOpacity style = {styles.touchbutton} onPress = {this._onPressEdit}>
+                        <Image source = {require('../images/editBlog.png')} style = {styles.imagestyle}
+                        accessibilityLabel = 'BlogDetail_editImage'/>
+
                     </TouchableOpacity>
                 </View>
             </View>

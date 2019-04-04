@@ -78,20 +78,14 @@ export default class BlogDetail extends Component{
         });
     }
     _onPressEdit = ()=>{
-        console.log("cnblog edit");
-        const {navigator} = this.props;
-        //if (navigator) {
-          console.log("jump");
-
-
+      if (global.user_information.BlogApp ===
+        this.props.navigation.state.params.blogApp)
+        {
           this.props.navigation.navigate('BlogEdition',{
-            Id:this.props.navigation.state.params.Id,
-            blogApp: global.user_information.BlogApp,
-            CommentCount: this.props.navigation.state.params.CommentCount,
-            Url: this.props.navigation.state.params.Url});
-          console.log("jump over");
-        //}
+            Id:this.props.navigation.state.params.Id,});
+        }
     }
+
     render(){
         let content = ContentHandler(this.state);
         return(
@@ -121,11 +115,23 @@ export default class BlogDetail extends Component{
                         accessibilityLabel = 'BlogDetail_commentImage'/>
 
                     </TouchableOpacity>
-                    <TouchableOpacity style = {styles.touchbutton} onPress = {this._onPressEdit}>
-                        <Image source = {require('../images/editBlog.png')} style = {styles.imagestyle}
-                        accessibilityLabel = 'BlogDetail_editImage'/>
+                    {
+                      (global.user_information.BlogApp !==
+                        this.props.navigation.state.params.blogApp)
+                        ?(null):
+                          (
+                            <View>
+                              <TouchableOpacity style = {styles.touchbutton}
+                                onPress = {this._onPressEdit}>
+                                  <Image source =
+                                  {require('../images/editBlog.png')}
+                                  style = {styles.imagestyle}
+                                  accessibilityLabel = 'BlogDetail_editImage'/>
 
-                    </TouchableOpacity>
+                              </TouchableOpacity>
+                            </View>
+                          )
+                    }
                 </View>
             </View>
         )

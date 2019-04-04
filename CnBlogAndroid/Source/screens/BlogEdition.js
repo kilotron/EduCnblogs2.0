@@ -43,6 +43,7 @@ export default class BlogEdition extends Component{
     _isMounted;
 
     componentDidMount = ()=>{
+      console.log(this.state.editPosts_URL);
       fetch(this.state.editPosts_URL).then((response)=>{
         this.setState({htmlText: response._bodyText});
         console.log(this.state.htmlText);
@@ -62,6 +63,18 @@ export default class BlogEdition extends Component{
         console.log('上载图片');
     }
 
+    _titleChanged = (text)=>
+      {
+        this.setState({postTitle: text});
+        //console.log('主题改为 ' + text); // 在console中记录输入的内容
+      }
+
+    _bodyChanged =(text)=>
+      {
+        this.setState({postBody: text});
+        //console.log('正文改为 ' + text); // 在console中记录输入的内容
+      }
+
     render(){
         //console.log(this.state.editPosts_URL);
         //console.log(storage.getItem(StorageKey.USER_TOKEN));
@@ -71,7 +84,8 @@ export default class BlogEdition extends Component{
                 <View style={styles.titleView}>
                     <Text style={styles.promptText}>博客主题</Text>
                     <TextInput style={styles.blogTitle}
-                				placeholder={this.state.postTitle}>
+                				defaultValue={this.state.postTitle}
+                        onChangeText= {this._titleChanged} >
                     </TextInput>
                 </View>
                 <View style={styles.detailView}>
@@ -81,12 +95,17 @@ export default class BlogEdition extends Component{
                         accessibilityLabel = 'BlogDetail_uploadImgImage'/>
                     </TouchableOpacity>
                     <TextInput style={styles.blogDetail} multiline={true}
-                				placeholder={this.state.postBody}>
+                    onChangeText= {this._bodyChanged}
+                				defaultValue={this.state.postBody}>
                     </TextInput>
                 </View>
                 <Button style={styles.commitBtn}
           				title='提交修改'
-          				onPress={() => Alert.alert('提交修改', null, null)} >
+          				onPress={() => {
+                      Alert.alert('提交修改', null, null);
+                      console.log('主题改为 ' + this.state.postTitle);
+                      console.log('正文改为 ' + this.state.postBody);}
+                    }>
           			</Button>
             </View>
         )
@@ -126,6 +145,7 @@ const styles = StyleSheet.create({
     blogDetail: {
         flex: 1,
         borderColor: 'gray',
+        textAlignVertical: 'top',
         borderRadius: 10
     },
 })

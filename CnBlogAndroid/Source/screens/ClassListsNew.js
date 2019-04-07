@@ -37,11 +37,20 @@ export default class ClassListsNew extends Component{
   constructor(props){
     super(props);
     this.state={
-      className:'班级名称',
+      className:'选择班级',
 			schoolClassId:0,  //班级id
 			blogCondition:'所有博客',
+			classSelected:false,
     }
-  }
+	}
+
+	_classSelectGoBack = (chosedClassName, chosedSchoolClassId) => {
+		this.setState({
+			className: chosedClassName, 
+			schoolClassId: chosedSchoolClassId,
+			classSelected: true,
+		});
+	}
 
 	render(){
 		return(
@@ -51,7 +60,9 @@ export default class ClassListsNew extends Component{
 				{/* 班级名称，点击可以切换班级 */}
 				<View style= {styles.topBarViewStyle}>
 					{/* TODO:弹出选择班级列表 */}
-					<TouchableOpacity onPress={()=>{alert('弹出班级列表')}}>
+					<TouchableOpacity onPress={() => {
+						this.props.navigation.navigate('ClassSelect', {callback: this._classSelectGoBack});
+					}}>
 						<Text style = {styles.classNameStyle}>
 							{this.state.className}
 						</Text>
@@ -65,7 +76,14 @@ export default class ClassListsNew extends Component{
         <View style={styles.tabViewStyle}>
           {/* 这一部分是公告，作业和投票 */}
           <View style={styles.tabTouchStyle} onPress={()=>{alert('弹出班级操作')}}>
-						<TouchableOpacity style={styles.tabImgViewStyle}>
+						<TouchableOpacity style={styles.tabImgViewStyle} 
+							onPress={() => {
+								if (this.classSelected) {
+									this.props.navigation.navigate('Bulletin');
+								} else {
+									alert("请选择班级");
+								}
+							}}>
 							<Image style={styles.tabImgstyle} source={require('../images/notice.png')}/>
 							<Text>公告</Text>
 						</TouchableOpacity>

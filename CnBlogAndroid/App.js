@@ -54,6 +54,8 @@ import Submitted from './Source/screens/Submitted'
 import HomeworkSubmit from './Source/screens/HomeworkSubmit'
 import UnfinishedHomeworkList from './Source/screens/UnfinishedHomeworkList'
 import BlogEdition from './Source/screens/BlogEdition'
+import Bulletin from './Source/screens/Bulletin'
+import ClassSelect from './Source/screens/ClassSelect'
 const { height, width } = Dimensions.get('window');
 
 const CODE_URL = [
@@ -667,8 +669,36 @@ const SimpleNavigation = StackNavigator({
     HomeworkSubmit: {
         screen: HomeworkSubmit,
         navigationOptions:{
-            headerTintColor:'white',
+            headerTintColor : 'white',
             headerTitle: '请选择你要提交的博文',
+            headerStyle: {
+                height:40,
+                backgroundColor:UI.TOP_COLOR,
+            },
+            headerTitleStyle: {
+                fontSize: 18,
+            }
+        }
+    },
+    Bulletin: {
+        screen: Bulletin,
+        navigationOptions:{
+            headerTintColor : 'white',
+            headerTitle: '公告',
+            headerStyle: {
+                height:40,
+                backgroundColor:UI.TOP_COLOR,
+            },
+            headerTitleStyle: {
+                fontSize: 18,
+            }
+        }
+    },
+    ClassSelect: {
+        screen: ClassSelect,
+        navigationOptions:{
+            headerTintColor : 'white',
+            headerTitle: '选择班级',
             headerStyle: {
                 height:40,
                 backgroundColor:UI.TOP_COLOR,

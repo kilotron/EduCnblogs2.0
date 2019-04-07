@@ -52,7 +52,7 @@ export default class Bulletin extends Component {
     render() {
         return (
             <View>
-                <Text>{user_url}</Text>
+                <Text>什么也没有...(未实现)</Text>
             </View>
         );
     }

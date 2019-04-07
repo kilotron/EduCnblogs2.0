@@ -179,8 +179,8 @@ export default class PersonalBlog extends Component{
             <View>
                 <TouchableOpacity
                     style = {styles.listcontainer} 
-                    onPress = {Url!==''?()=>this.props.navigation.navigate('BlogDetail',
-                    {Id:Id, blogApp: global.user_information.BlogApp, CommentCount: CommentCount, Url: Url}):()=>{}}
+                    onPress = {Url!=='' ? ()=>this.props.navigation.navigate('BlogDetail',
+                    {Id:Id, blogApp: global.user_information.BlogApp, CommentCount: CommentCount, Url: Url}) : ()=>{}}
                 >  
                     <Text style = {{
                         fontSize: 18,

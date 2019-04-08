@@ -148,4 +148,4 @@ const styles = StyleSheet.create({
         textAlignVertical: 'top',
         borderRadius: 10
     },
-})
+});

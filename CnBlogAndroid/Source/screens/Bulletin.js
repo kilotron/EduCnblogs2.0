@@ -19,14 +19,21 @@ import {
     TextInput,
     Dimensions,
     FlatList,
+    TouchableHighlight
 } from 'react-native';
 
 import {
     StackNavigator,
     TabNavigator,
     NavigationActions,
-} from 'react-navigation';
 
+} from 'react-navigation';
+const screenWidth= MyAdapter.screenWidth;
+const screenHeight= MyAdapter.screenHeight;
+const titleFontSize= MyAdapter.titleFontSize;
+const abstractFontSize= MyAdapter.abstractFontSize;
+const informationFontSize= MyAdapter.informationFontSize;
+const btnFontSize= MyAdapter.btnFontSize;
 export default class Bulletin extends Component {
     constructor(props){
         super(props);
@@ -40,7 +47,7 @@ export default class Bulletin extends Component {
 
     componentWillMount() {
         this._isMounted=true;
-        let url = Config.BulleinList + this.state.schoolClassId;
+        let url = Config.BulletinList + this.state.schoolClassId;
         //let url = 'https://api.cnblogs.com/api/edu/schoolclass/' + this.state.schoolClassId;
         console.log(url);
         Service.Get(url).then((jsonData)=>{
@@ -93,11 +100,92 @@ export default class Bulletin extends Component {
         this._isMounted = false;
     }
 
+    _onPress = ()=>{
+      this.props.navigation.navigate('BulletinAdd',{
+        schoolClassId: this.state.schoolClassId,});
+    }
+
     render() {
         return (
-            <View>
-                <Text>什么也没有...(未实现)</Text>
+            <View style = {styles.container}>
+
+                <View style={{ height: 1, backgroundColor: 'rgb(225,225,225)',  marginTop: 0.005*screenHeight, alignSelf:'stretch'}}/>
+                <View
+                    style= {{
+                        flexDirection: 'row',
+                        justifyContent:'flex-start',
+                        alignItems: 'flex-start',
+                        alignSelf: 'stretch',
+                        flex:1,
+                    }}
+                >
+                    <FlatList
+                        refreshing= {false}
+                    />
+					<TouchableHighlight
+						underlayColor="#3b50ce"
+						activeOpacity={0.5}
+						style={{
+							position:'absolute',
+							bottom:20,
+							right:10,
+							backgroundColor: "#3b50ce",
+							width: 52,
+							height: 52,
+							borderRadius: 26,
+							justifyContent: 'center',
+							alignItems: 'center',
+							margin: 20}}
+							onPress={this._onPress} >
+
+						<Text
+                            style= {{
+                                fontSize: 30,
+                                color: '#ffffff',
+                                textAlign: 'center',
+                                fontWeight: '100',
+                            }}
+                        >
+                            +
+                        </Text>
+
+					</TouchableHighlight>
+                </View>
             </View>
-        );
+        )
     }
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'white',
+    },
+    listcontainer: {
+        flexDirection: 'row',
+        justifyContent:'flex-start',
+        alignItems: 'flex-start',
+        flex:1,
+        backgroundColor: 'white',
+        marginLeft: 8,
+        marginRight: 12,
+        //alignSelf: 'stretch',
+    },
+    avatarstyle: {
+        width: 0.15*screenWidth,
+        height: 0.15*screenWidth,
+        marginBottom: 5,
+        marginTop: 5,
+        borderRadius : 40,
+        left : 2,
+    },
+    textcontainer: {
+        justifyContent:'flex-start',
+        alignItems: 'flex-start',
+        flex: 4,
+        backgroundColor: 'white',
+        //alignSelf: 'stretch',
+    }
+});

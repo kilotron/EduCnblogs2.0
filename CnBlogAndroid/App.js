@@ -55,6 +55,7 @@ import HomeworkSubmit from './Source/screens/HomeworkSubmit'
 import UnfinishedHomeworkList from './Source/screens/UnfinishedHomeworkList'
 import BlogEdition from './Source/screens/BlogEdition'
 import Bulletin from './Source/screens/Bulletin'
+import BulletinAdd from './Source/screens/BulletinAdd'
 import ClassSelect from './Source/screens/ClassSelect'
 const { height, width } = Dimensions.get('window');
 
@@ -685,6 +686,20 @@ const SimpleNavigation = StackNavigator({
         navigationOptions:{
             headerTintColor : 'white',
             headerTitle: '公告',
+            headerStyle: {
+                height:40,
+                backgroundColor:UI.TOP_COLOR,
+            },
+            headerTitleStyle: {
+                fontSize: 18,
+            }
+        }
+    },
+    BulletinAdd: {
+        screen: BulletinAdd,
+        navigationOptions:{
+            headerTintColor : 'white',
+            headerTitle: '添加公告',
             headerStyle: {
                 height:40,
                 backgroundColor:UI.TOP_COLOR,

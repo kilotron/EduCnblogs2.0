@@ -17,7 +17,8 @@ export default{
 	HomeWorkAnswer : 'https://api.cnblogs.com/api/edu/homework/answers/',
 	BlogInClassId: 'https://api.cnblogs.com/api/edu/member/',
 	SubmitJudge: 'https://api.cnblogs.com/api/edu/answer/iscommitted/',
-	BulleinList: 'https://api.cnblogs.com/api/edu/bulletin/current/',
+	BulletinList: 'https://api.cnblogs.com/api/edu/bulletin/current/',
+	BulletinPublish: 'https://api.cnblogs.com/api/edu/bulletin/publish',
 }
 
 export const authData = {

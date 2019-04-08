@@ -367,7 +367,7 @@ const styles = StyleSheet.create({
 	arrowStyle:{
 		height:(screenHeight)/30,
 		width:(screenHeight)/30,
-	},
+	}, 
 	postTitleStyle: {
 		fontSize: 18,
 		fontWeight: 'bold',

@@ -3,7 +3,7 @@ import api from '../api/api.js';
 import {authData,err_info,StorageKey} from '../config';
 import * as Service from '../request/request.js';
 import React, { Component } from 'react';
-import {
+import { 
     Platform,
     StyleSheet,
     Text,

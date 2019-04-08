@@ -55,7 +55,7 @@ export default class ClassListsNew extends Component{
 	// 从选择班级页面返回时调用这个函数，刷新页面
 	_classSelectGoBack = (chosedClassName, chosedSchoolClassId) => {
 		this.setState({
-			className: chosedClassName, 
+			className: chosedClassName,
 			schoolClassId: chosedSchoolClassId,
 			classSelected: true,
 		});
@@ -66,8 +66,8 @@ export default class ClassListsNew extends Component{
 
 	UpdateData = () => {
 		this.setState({
-			blogs: [], 
-			postCount: 0, 
+			blogs: [],
+			postCount: 0,
 			loadStatus: 'not loading',
 			currentPageIndex: 1,
 		}, this.componentWillMount());
@@ -85,7 +85,7 @@ export default class ClassListsNew extends Component{
 			if (this._isMounted) {
 				let pageCount = Math.ceil(jsonData.totalCount / pageSize);
 				this.setState({
-					postCount: jsonData.totalCount, 
+					postCount: jsonData.totalCount,
 					blogs: this.state.blogs.concat(jsonData.blogPosts),
 					loadStatus: this.state.currentPageIndex>=pageCount ? 'all loaded' : 'not loading',
 				});
@@ -127,12 +127,12 @@ export default class ClassListsNew extends Component{
 		return(
 				<View>
 						<TouchableOpacity
-							style = {styles.listcontainer} 
+							style = {styles.listcontainer}
 							onPress = {Url!==''?()=>{this.props.navigation.navigate('BlogDetail',
 							{Id:Id, blogApp: global.user_information.BlogApp, CommentCount: CommentCount, Url: Url})
 							{/*alert(Id);*/} // bug: ID不对
 						}:()=>{}}
-						>  
+						>
 							<Text style = {styles.postTitleStyle} accessibilityLabel = {Url}>
 									{Title}
 							</Text>
@@ -242,13 +242,15 @@ export default class ClassListsNew extends Component{
         <View style={styles.tabViewStyle}>
           {/* 这一部分是公告，作业和投票 */}
           <View style={styles.tabTouchStyle} onPress={()=>{alert('弹出班级操作')}}>
-						<TouchableOpacity style={styles.tabImgViewStyle} 
+						<TouchableOpacity style={styles.tabImgViewStyle}
 							onPress={() => {
 								if (!this.state.classSelected) {
 									ToastAndroid.show("请选择班级", ToastAndroid.SHORT);
 									this.props.navigation.navigate('ClassSelect', {callback: this._classSelectGoBack});
 								} else {
-									this.props.navigation.navigate('Bulletin');
+									console.log(this.state.schoolClassId);
+									this.props.navigation.navigate('Bulletin',{
+				            schoolClassId: this.state.schoolClassId,});
 								}
 							}}>
 							<Image style={styles.tabImgstyle} source={require('../images/notice.png')}/>
@@ -301,7 +303,7 @@ const styles = StyleSheet.create({
 	},
 	classNameStyle:{
 		fontSize: 18,
-		fontWeight: 'bold', 
+		fontWeight: 'bold',
 		color:'white'
 	},
 	pageViewStyle:{
@@ -309,8 +311,8 @@ const styles = StyleSheet.create({
 		flex: 1,
 		backgroundColor: 'white'
 	},
-	topBarViewStyle:{        
-		flexDirection: 'row',  
+	topBarViewStyle:{
+		flexDirection: 'row',
 		justifyContent:'space-between',
 		alignItems: 'center',
 		backgroundColor: UI.TOP_COLOR,
@@ -323,10 +325,10 @@ const styles = StyleSheet.create({
 		margin:screenHeight/12*0.2,
   },
   tabViewStyle:{
-		
+
   },
   tabTouchStyle:{
-		flexDirection: 'row', 
+		flexDirection: 'row',
 		// backgroundColor:'#dcdcdc',
 		// backgroundColor:'red',
 		height:screenWidth/3,
@@ -339,9 +341,9 @@ const styles = StyleSheet.create({
     borderWidth:1,
 		borderColor:'#dcdcdc',
 		width:(screenWidth)/3,
-		height:(screenWidth)/3, 
+		height:(screenWidth)/3,
 		justifyContent:'center',
-		alignItems:'center',  
+		alignItems:'center',
 	},
 	tabImgstyle:{
 		width:screenWidth/9,
@@ -358,8 +360,8 @@ const styles = StyleSheet.create({
 		// borderTopWidth:5,
 	},
 	titleFontStyle:{
-		fontSize: 18, 
-		fontWeight: 'bold', 
+		fontSize: 18,
+		fontWeight: 'bold',
 		color:'rgb(51,51,51)'
 	},
 	arrowStyle:{

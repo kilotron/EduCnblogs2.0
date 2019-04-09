@@ -8,7 +8,7 @@ import * as storage from '../Storage/storage.js'
 import {StorageKey} from '../config'
 import {UI} from '../config'
 import {err_info} from '../config'
-
+import {flatStyles} from '../styles/styles'
 import {
     StyleSheet,
     Text,
@@ -38,20 +38,26 @@ export default class Bulletin extends Component {
     constructor(props){
         super(props);
         this.state = {
-            schoolClassId: 0,
+            schoolClassId: this.props.schoolClassId,
             bulletins: [],
             bulletinCount: 0,
             loadStatus: 'not loading',
             currentPageIndex: 1,
         }
+        this.fetchPage(this.state.currentPageIndex);
+        this._isMounted=true;
     }
     _isMounted;
 
-    componentWillMount =  () => {
-        this._isMounted=true;
-        this.fetchPage(this.state.currentPageIndex);
-    }
+    // componentWillMount =  () => {
+    //     this._isMounted=true;
+    //     this.fetchPage(this.state.currentPageIndex);
+    // }
 
+    // componentWillUpdate(){
+    //     this._isMounted=true;
+    //     this.fetchPage(this.state.currentPageIndex);
+    // }
     _renderItem = (item) => {
         let item1 = item;
         var Id = item1.item.key;
@@ -62,7 +68,7 @@ export default class Bulletin extends Component {
         return(
             <TouchableOpacity onPress={()=>{
                 this.props.navigation.navigate('BulletinEdition',{
-                    schoolClassId: this.state.schoolClassId,
+                    schoolClassId: this.props.schoolClassId,
                     bulletinText: Content,
                     bulletinId: Id,});
             } }>
@@ -87,9 +93,8 @@ export default class Bulletin extends Component {
 
     _separator = () => {
         return (
-            <View style={{ height: 9.75, justifyContent: 'center'}}>
-            <View style={{ height: 0.75, backgroundColor: 'rgb(100,100,100)'}}/>
-            <View style={{ height: 9, backgroundColor: 'rgb(235,235,235)'}}/>
+            <View style={flatStyles.separatorStyle}>
+           
             </View>
         );
     }
@@ -118,6 +123,7 @@ export default class Bulletin extends Component {
         }
         return(
             <FlatList
+            
                 ItemSeparatorComponent={this._separator}
                 renderItem={this._renderItem}
                 data= {data}
@@ -171,7 +177,7 @@ export default class Bulletin extends Component {
     }
 
     fetchPage(pageIndex) {
-        let url = Config.BulletinList + this.state.schoolClassId + '/'+ pageIndex + '-'+ pageSize;
+        let url = Config.BulletinList + this.props.schoolClassId + '/'+ pageIndex + '-'+ pageSize;
         //console.log(url);
         Service.Get(url).then((jsonData)=>{
             //console.log(jsonData);
@@ -200,7 +206,7 @@ export default class Bulletin extends Component {
 
     _onPress = ()=>{
       this.props.navigation.navigate('BulletinAdd',{
-        schoolClassId: this.state.schoolClassId,});
+        schoolClassId: this.props.schoolClassId,});
     }
 
     render() {
@@ -221,7 +227,7 @@ export default class Bulletin extends Component {
                     }}
                 >
                     <FlatList
-                        refreshing= {false}
+                        refreshing= {true}
                     />
                     <TouchableHighlight
                         underlayColor="#3b50ce"

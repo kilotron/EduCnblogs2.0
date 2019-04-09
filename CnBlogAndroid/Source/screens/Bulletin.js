@@ -38,7 +38,6 @@ export default class Bulletin extends Component {
     constructor(props){
         super(props);
         this.state = {
-            schoolClassId: this.props.schoolClassId,
             bulletins: [],
             bulletinCount: 0,
             loadStatus: 'not loading',
@@ -94,7 +93,7 @@ export default class Bulletin extends Component {
     _separator = () => {
         return (
             <View style={flatStyles.separatorStyle}>
-           
+
             </View>
         );
     }
@@ -123,7 +122,6 @@ export default class Bulletin extends Component {
         }
         return(
             <FlatList
-            
                 ItemSeparatorComponent={this._separator}
                 renderItem={this._renderItem}
                 data= {data}

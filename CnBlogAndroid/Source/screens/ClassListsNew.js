@@ -54,7 +54,7 @@ export default class ClassListsNew extends Component{
 	// 从选择班级页面返回时调用这个函数，刷新页面
 	_classSelectGoBack = (chosedClassName, chosedSchoolClassId) => {
 		this.setState({
-			className: chosedClassName, 
+			className: chosedClassName,
 			schoolClassId: chosedSchoolClassId,
 			classSelected: true,
 		});
@@ -100,7 +100,7 @@ export default class ClassListsNew extends Component{
                 <View style={styles.tabViewStyle}>
                     {/* 这一部分是公告，作业和投票 */}
                     {/* <View style={styles.tabTouchStyle} onPress={()=>{alert('弹出班级操作')}}>
-                        <TouchableOpacity style={styles.tabImgViewStyle} 
+                        <TouchableOpacity style={styles.tabImgViewStyle}
                             onPress={() => {
                                 if (!this.state.classSelected) {
                                     ToastAndroid.show("请选择班级", ToastAndroid.SHORT);
@@ -142,7 +142,9 @@ export default class ClassListsNew extends Component{
 							initialPage={0}
 							renderTabBar={() => <ScrollableTabBar />}
 						>
-							<Bulletin tabLabel='公告' schoolClassId={this.state.schoolClassId}/>
+                            <View tabLabel='公告' style={{flex: 1, alignItems: 'stretch'}} >
+                                <Bulletin schoolClassId={this.state.schoolClassId}/>
+                            </View>
 							<Text tabLabel='作业'>作业内容</Text>
 							{/* <ClassBlogPostsList tabLabel='博文' schoolClassId={this.state.schoolClassId}/> */}
 							<Text tabLabel='投票'>投票</Text>
@@ -151,9 +153,9 @@ export default class ClassListsNew extends Component{
                             <Text style = {styles.titleFontStyle}>zuoye</Text>
                             <Image source={require('../images/arrowDown.png')} style = {styles.arrowStyle}/>
                         </TouchableOpacity> */}
-                        
+
                     {/* </View> */}
-                    
+
                 </View>
 				{/* 下面是博客项，用FlatList实现 */}
 				{/* <View style={styles.listView}>
@@ -174,7 +176,7 @@ const styles = StyleSheet.create({
 	},
 	classNameStyle:{
 		fontSize: 18,
-		fontWeight: 'bold', 
+		fontWeight: 'bold',
 		color:'white'
 	},
 	pageViewStyle:{
@@ -182,8 +184,8 @@ const styles = StyleSheet.create({
 		flex: 1,
 		backgroundColor: 'white'
 	},
-	topBarViewStyle:{        
-		flexDirection: 'row',  
+	topBarViewStyle:{
+		flexDirection: 'row',
 		justifyContent:'space-between',
 		alignItems: 'center',
 		backgroundColor: UI.TOP_COLOR,
@@ -199,7 +201,7 @@ const styles = StyleSheet.create({
 		flex:1,
   },
   tabTouchStyle:{
-		flexDirection: 'row', 
+		flexDirection: 'row',
 		// backgroundColor:'#dcdcdc',
 		// backgroundColor:'red',
 		height:screenWidth/3,
@@ -212,9 +214,9 @@ const styles = StyleSheet.create({
     borderWidth:1,
 		borderColor:'#dcdcdc',
 		width:(screenWidth)/3,
-		height:(screenWidth)/3, 
+		height:(screenWidth)/3,
 		justifyContent:'center',
-		alignItems:'center',  
+		alignItems:'center',
 	},
 	tabImgstyle:{
 		width:screenWidth/9,
@@ -231,14 +233,14 @@ const styles = StyleSheet.create({
 		// borderTopWidth:5,
 	},
 	titleFontStyle:{
-		fontSize: 18, 
-		fontWeight: 'bold', 
+		fontSize: 18,
+		fontWeight: 'bold',
 		color:'rgb(51,51,51)'
 	},
 	arrowStyle:{
 		height:(screenHeight)/30,
 		width:(screenHeight)/30,
-	}, 
+	},
 	postTitleStyle: {
 		fontSize: 18,
 		fontWeight: 'bold',

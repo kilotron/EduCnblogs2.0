@@ -10,9 +10,9 @@ import {
     View,
     TextInput,
     ToastAndroid,
-    Button
+    Button,
 } from 'react-native';
-
+const screenWidth= MyAdapter.screenWidth;
 // 该页面使用navigate参数为classId
 export default class BulletinAdd extends Component {
     constructor(props){
@@ -23,6 +23,11 @@ export default class BulletinAdd extends Component {
         };
       }
     _onPress() {
+        if (this.state.bulletinText === '')
+        {
+            ToastAndroid.show('公告内容不可为空',ToastAndroid.SHORT);
+            return ;
+        }
         let postBody = {
             schoolClassId: this.state.schoolClassId,
             content: this.state.bulletinText,
@@ -62,26 +67,30 @@ export default class BulletinAdd extends Component {
     }
     render() {
     return (
-      <View style = {styles.container}>
-          <View style={styles.detailView}>
-              <Text style={styles.promptText}>公告内容</Text>
-              <TextInput style={styles.bulletinDetail} multiline={true}
-              onChangeText= {(text)=>
-                {
-                  this.setState({bulletinText: text});
-                }}
-                  defaultValue={this.state.bulletinText}>
-              </TextInput>
-          </View>
-          <Button style={styles.commitBtn}
-            title='添加公告'
-            onPress={() => {
-                //console.log('公告内容改为 ' + this.state.bulletinText);
-                this._onPress();
-              }
-              }>
-          </Button>
-      </View>
+        <View style = {styles.container}>
+            <View style={styles.detailView}>
+                <Text style={styles.promptText}>公告内容</Text>
+                <TextInput style={styles.bulletinDetail} multiline={true}
+                    onChangeText= {(text)=>
+                        this.setState({bulletinText: text})
+                        }
+                    defaultValue={this.state.bulletinText}>
+                </TextInput>
+            </View>
+            <View  style= {{
+                  width:0.35*screenWidth,
+                  alignSelf: 'center', }}
+            >
+                <Button style={styles.commitBtn}
+                    title='添加公告'
+                    onPress={() => {
+                        //console.log('公告内容改为 ' + this.state.bulletinText);
+                        this._onPress();
+                        }
+                    }>
+                </Button>
+            </View>
+        </View>
     );
   }
 }
@@ -90,7 +99,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         flex:1,
         justifyContent: 'center',
-	      alignItems: 'stretch',
+        alignItems: 'stretch',
         alignSelf: 'stretch',
     },
     detailView:{
@@ -107,6 +116,6 @@ const styles = StyleSheet.create({
         flex: 1,
         borderColor: 'gray',
         textAlignVertical: 'top',
-        borderRadius: 10
+        borderRadius: 10,
     },
 });

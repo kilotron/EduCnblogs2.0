@@ -13,13 +13,9 @@ import {
     StyleSheet,
     Text,
     View,
-    ToastAndroid,
-    TouchableOpacity,
-    Image,
-    TextInput,
-    Dimensions,
     FlatList,
-    TouchableHighlight
+    TouchableHighlight,
+    ActivityIndicator,
 } from 'react-native';
 
 import {
@@ -34,67 +30,160 @@ const titleFontSize= MyAdapter.titleFontSize;
 const abstractFontSize= MyAdapter.abstractFontSize;
 const informationFontSize= MyAdapter.informationFontSize;
 const btnFontSize= MyAdapter.btnFontSize;
+const pageSize = 10;
+
 export default class Bulletin extends Component {
     constructor(props){
         super(props);
         this.state = {
             schoolClassId: this.props.navigation.state.params.schoolClassId,
+            bulletins: [],
+            bulletinCount: 0,
+            loadStatus: 'not loading',
+            currentPageIndex: 1,
         }
+
     }
     _isMounted;
 
-    user_url;
-
-    componentWillMount() {
+    componentWillMount =  () => {
         this._isMounted=true;
-        let url = Config.BulletinList + this.state.schoolClassId;
-        //let url = 'https://api.cnblogs.com/api/edu/schoolclass/' + this.state.schoolClassId;
-        console.log(url);
+        this.fetchPage(this.state.currentPageIndex);
+    }
+    _renderItem = (item) => {
+        let item1 = item;
+        var Id = item1.item.key;
+        var Content = item1.item.Content;
+        var Publisher = item1.item.Publisher;
+        var BlogUrl = item1.item.BlogUrl;
+        var DateAdded = item1.item.DateAdded;
+        return(
+            <View style={styles.textcontainer}>
+                <Text numberOfLines={3} style={styles.bulletinContent}>
+                    {Content}
+                </Text>
+                <View style={{alignSelf: 'flex-end'}}>
+                    <Text style={styles.bulletinPublisher}>
+                        {Publisher}
+                    </Text>
+                </View>
+                <View style={{alignSelf: 'flex-end'}}>
+                    <Text style={styles.bulletinDateAdded}>
+                        {DateAdded}
+                    </Text>
+                </View>
+            </View>
+        )
+    };
+
+    _separator = () => {
+        return (
+            <View style={{ height: 9.75, justifyContent: 'center'}}>
+            <View style={{ height: 0.75, backgroundColor: 'rgb(100,100,100)'}}/>
+            <View style={{ height: 9, backgroundColor: 'rgb(235,235,235)'}}/>
+            </View>
+        );
+    }
+
+    _FlatListRefresh = ()=>{
+        this.setState({
+            bulletins: [],
+            bulletinCount: 0,
+            loadStatus: 'not loading',
+            currentPageIndex: 1,
+        });
+        this.fetchPage(1);
+    };
+
+    _renderBulletinList() {
+        var data = [];
+        for(var i in this.state.bulletins)
+        {
+        data.push({
+            key: this.state.bulletins[i].bulletinId,
+            Content: this.state.bulletins[i].content,
+            Publisher: this.state.bulletins[i].publisher,
+            BlogUrl: this.state.bulletins[i].blogUrl,
+            DateAdded: this.state.bulletins[i].dateAdded,
+        })
+        }
+        return(
+            <FlatList
+                ItemSeparatorComponent={this._separator}
+                renderItem={this._renderItem}
+                data= {data}
+                refreshing= {false}
+                onRefresh = {this._FlatListRefresh}
+                ListFooterComponent={this._renderFooter.bind(this)}
+                onEndReached={this._onEndReached.bind(this)}
+                onEndReachedThreshold={0.1}
+            />
+        )
+    }
+
+    _renderFooter(){
+        if (this.state.loadStatus === 'all loaded') {
+            return (
+                <View style={{height:30,alignItems:'center',justifyContent:'flex-start',}}>
+                    <Text style={{color:'#999999',fontSize:14,marginTop:5,marginBottom:5,}}>
+                    没有更多数据了
+                    </Text>
+                </View>
+            );
+        } else if(this.state.loadStatus === 'loading') {
+            return (
+                <View style={styles.footer}>
+                    <ActivityIndicator />
+                    <Text>正在加载更多数据...</Text>
+                </View>
+            );
+        } //else 'not loading'
+        return (
+            <View style={styles.footer}>
+                <Text></Text>
+            </View>
+        );
+    }
+
+    _onEndReached() {
+        if (this.state.loadStatus != 'not loading') {
+			return;
+		}
+		let pageCount = Math.ceil(this.state.bulletinCount / pageSize);
+		if (this.state.currentPageIndex >= pageCount) {
+			return;
+		}
+        /*
+        console.log('pagecount: ' + pageCount);
+        console.log('currentPageIndex: '+ this.state.currentPageIndex );
+        */
+        this.state.currentPageIndex++;
+		this.fetchPage(this.state.currentPageIndex);
+    }
+
+    fetchPage(pageIndex) {
+        let url = Config.BulletinList + this.state.schoolClassId + '/'+ pageIndex + '-'+ pageSize;
+        //console.log(url);
         Service.Get(url).then((jsonData)=>{
+            //console.log(jsonData);
+            let pageCount = Math.ceil(jsonData.totalCount / pageSize);
             if(jsonData!=='rejected')
             {
-              console.log(jsonData);
+                this.setState({
+                    bulletinCount: jsonData.totalCount,
+                    bulletins: this.state.bulletins.concat(jsonData.bulletins),
+                    loadStatus: this.state.currentPageIndex>=pageCount ? 'all loaded' : 'not loading',
+                });
             }
-        })
-        .then(()=>{;
-        })
-        .catch((error) => {;
+        }).then(()=>{;
+        }).catch((error) => {;
         });
     }
 
-    _renderBulletinList() {
-  		var data = [];
-      /*
-  		for(var i in this.state.blogs)
-  		{
-  				data.push({
-  						key: this.state.blogs[i].blogId,
-  						Title: this.state.blogs[i].title,
-  						Url: this.state.blogs[i].url,
-  						Description: this.state.blogs[i].description,
-  						PostDate: this.state.blogs[i].dateAdded,
-  						ViewCount: this.state.blogs[i].viewCount,
-  						CommentCount: this.state.blogs[i].commentCount,
-  				})
-  		}
-      */
-      /*
-  		return(
-  			<FlatList
-  				ItemSeparatorComponent={this._separator}
-  				renderItem={this._renderItem}
-  				data= {data}
-  				onRefresh = {this.UpdateData}
-  				refreshing= {false}
-  				onEndReached={this._onEndReached.bind(this)}
-  				onEndReachedThreshold={0.1}
-  				ListFooterComponent={this._renderFooter.bind(this)}
-  			/>
-  		)*/
-  	}
-
-    UpdateData = () => { ;
-  	}
+    UpdateData(){
+        this.setState({bulletins: []});
+        this.fetchPage(this.state.currentPageIndex);
+    }
 
     componentWillUnmount() {
         this._isMounted = false;
@@ -110,6 +199,9 @@ export default class Bulletin extends Component {
             <View style = {styles.container}>
 
                 <View style={{ height: 1, backgroundColor: 'rgb(225,225,225)',  marginTop: 0.005*screenHeight, alignSelf:'stretch'}}/>
+                <View style={{width: screenWidth, }}>
+                    {this._renderBulletinList()}
+                </View>
                 <View
                     style= {{
                         flexDirection: 'row',
@@ -122,23 +214,23 @@ export default class Bulletin extends Component {
                     <FlatList
                         refreshing= {false}
                     />
-					<TouchableHighlight
-						underlayColor="#3b50ce"
-						activeOpacity={0.5}
-						style={{
-							position:'absolute',
-							bottom:20,
-							right:10,
-							backgroundColor: "#3b50ce",
-							width: 52,
-							height: 52,
-							borderRadius: 26,
-							justifyContent: 'center',
-							alignItems: 'center',
-							margin: 20}}
-							onPress={this._onPress} >
+                    <TouchableHighlight
+                        underlayColor="#3b50ce"
+                        activeOpacity={0.5}
+                        style={{
+                            position:'absolute',
+                            bottom:20,
+                            right:10,
+                            backgroundColor: "#3b50ce",
+                            width: 52,
+                            height: 52,
+                            borderRadius: 26,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            margin: 20}}
+                            onPress={this._onPress} >
 
-						<Text
+                        <Text
                             style= {{
                                 fontSize: 30,
                                 color: '#ffffff',
@@ -149,7 +241,7 @@ export default class Bulletin extends Component {
                             +
                         </Text>
 
-					</TouchableHighlight>
+                    </TouchableHighlight>
                 </View>
             </View>
         )
@@ -163,23 +255,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: 'white',
     },
-    listcontainer: {
-        flexDirection: 'row',
-        justifyContent:'flex-start',
-        alignItems: 'flex-start',
-        flex:1,
-        backgroundColor: 'white',
-        marginLeft: 8,
-        marginRight: 12,
-        //alignSelf: 'stretch',
-    },
-    avatarstyle: {
-        width: 0.15*screenWidth,
-        height: 0.15*screenWidth,
-        marginBottom: 5,
-        marginTop: 5,
-        borderRadius : 40,
-        left : 2,
+    footer:{
+        flexDirection:'row',
+        height:24,
+        justifyContent:'center',
+        alignItems:'center',
+        marginBottom:10,
     },
     textcontainer: {
         justifyContent:'flex-start',
@@ -187,5 +268,16 @@ const styles = StyleSheet.create({
         flex: 4,
         backgroundColor: 'white',
         //alignSelf: 'stretch',
-    }
+    },
+    bulletinContent: {
+        color: 'black',
+        fontSize: 16,
+        left: 4,
+    },
+    bulletinDateAdded: {
+        fontSize: 14,
+    },
+    bulletinPublisher: {
+        fontSize: 12,
+    },
 });

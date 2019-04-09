@@ -41,6 +41,7 @@ export default class HomeworkLists extends Component {
             membership: 1,
             finishedcount: 0,
             isRequestSuccess: false,
+            classId:this.props.classId,
         }
     }
     // 标志位
@@ -48,11 +49,25 @@ export default class HomeworkLists extends Component {
     componentWillUnmount = ()=>{
         this._isMounted = false;
     }
+
+    componentWillReceiveProps(nextProps) {
+        this.setState({
+            homeworks: [],
+            counts: 0,
+            finishedcount: 0,
+            membership:1,
+            isRequestSuccess:false,
+            classId:nextProps.classId,
+        });
+        this.UpdateDataNext(nextProps.classId);
+        // this.componentWillMount();
+    }
+
     //应该传进来班级ID作为属性
     componentWillMount = ()=>{
         // 先设标志位为true，表示组件未卸载
         this._isMounted = true;
-        let classId = this.props.classId;
+        let classId = this.state.classId;
         let url = Config.apiDomain + api.ClassGet.homeworkList + "/false/"+classId+"/1-12";
         // 先获取作业数量，再按作业数量获取作业信息列表
         Service.Get(url).then((jsonData)=>{
@@ -103,7 +118,7 @@ export default class HomeworkLists extends Component {
             .then(()=>{
                 let url1 = Config.apiDomain + api.user.info;
                 Service.Get(url1).then((jsonData)=>{
-                    let url2= Config.apiDomain+"api/edu/member/"+jsonData.BlogId+"/"+this.props.classId;
+                    let url2= Config.apiDomain+"api/edu/member/"+jsonData.BlogId+"/"+this.state.classId;
                     Service.Get(url2).then((jsonData)=>{
                         if(this._isMounted && jsonData!=='rejected'){
                             this.setState({
@@ -143,13 +158,105 @@ export default class HomeworkLists extends Component {
         })
     };
     UpdateData=()=>{
-
         this.componentWillMount();
+    };
+    UpdateDataNext=(Id)=>{
+        // 先设标志位为true，表示组件未卸载
+        this._isMounted = true;
+        let classId = Id;
+        let url = Config.apiDomain + api.ClassGet.homeworkList + "/false/"+classId+"/1-12";
+        // 先获取作业数量，再按作业数量获取作业信息列表
+        Service.Get(url).then((jsonData)=>{
+            if(jsonData!=='rejected')
+            {
+                this.setState({
+                    isRequestSuccess: true,
+                })
+                if(this._isMounted)
+                {
+                    this.setState({
+                        counts: jsonData.totalCount,
+                    });
+                }
+            }
+        }).then(()=>{
+            global.storage.save({key:StorageKey.HOMEWORK_COUNT,data:this.state.counts});
+        })
+        .then(()=>{
+            let url = Config.apiDomain + api.ClassGet.homeworkList + "/false/"+classId+"/"+1+"-"+this.state.counts;
+            Service.Get(url).then((jsonData)=>{
+                if(this._isMounted&&this.state.isRequestSuccess){
+                    this.setState({
+                        homeworks: jsonData.homeworks,
+                    });
+                }
+            })
+            .then(()=>{
+                var c = 0;
+                for(var i in this.state.homeworks)
+                {
+                    let today = new Date(); // 当前日期
+                    let _startday = this.state.homeworks[i].startTime; // 作业开始日期
+                    let startday = this.StringToDate(_startday);
+                    if(this.state.homeworks[i].isFinished===false && today >= startday)
+                        c++;
+                }
+                if(this._isMounted)
+                {
+                    this.setState({
+                        finishedcount: c,
+                    })
+                }
+            })
+            .then(()=>{
+                global.storage.save({key:StorageKey.CLASS_HOMEWORK,data:this.state.homeworks});
+            })
+            .then(()=>{
+                let url1 = Config.apiDomain + api.user.info;
+                Service.Get(url1).then((jsonData)=>{
+                    let url2= Config.apiDomain+"api/edu/member/"+jsonData.BlogId+"/"+this.state.classId;
+                    Service.Get(url2).then((jsonData)=>{
+                        if(this._isMounted && jsonData!=='rejected'){
+                            this.setState({
+                                membership: jsonData.membership,
+                            })
+                        }
+                    })
+                })
+                .then(()=>{
+                    global.storage.save({key : StorageKey.MEMBER_SHIP,data : this.state.membership});
+                })
+            })
+        })
+        .catch((error)=>{
+            global.storage.load({key : StorageKey.HOMEWORK_COUNT})
+            .then((ret)=>{
+                this.setState({
+                    counts : ret,
+                })
+            })
+            .then(()=>{
+                global.storage.load({key : StorageKey.CLASS_HOMEWORK})
+                .then((ret)=>{
+                    this.setState({
+                        homeworks: ret,
+                    })
+                })
+            })
+            .then(()=>{
+                global.storage.load({key : StorageKey.MEMBER_SHIP})
+                .then((ret)=>{
+                    this.setState({
+                        membership: ret,
+                    })
+                })
+            })
+        })
     };
     _onPress = ()=>{
         let url = Config.apiDomain + api.user.info;
         if (this.state.membership==2||this.state.membership==3)
-            this.props.navigation.navigate('HomeworkPost',{classId: this.props.classId});
+            this.props.navigation.navigate('HomeworkPost',{classId: this.state.classId});
         else
         {
             ToastAndroid.show("您没有权限，只有老师和助教才能发布作业哦！",ToastAndroid.SHORT);
@@ -167,7 +274,7 @@ export default class HomeworkLists extends Component {
             <View>
                 <TouchableOpacity
                     onPress = {()=>this.props.navigation.navigate('HomeworkDetail',{url: url, Id: Id,
-                                            classId: this.props.classId, isFinished: isFinished})}
+                                            classId: this.state.classId, isFinished: isFinished})}
                     style = {HomeworkStyles.container}
                 >
                     <Text style= {HomeworkStyles.titleTextStyle}>
@@ -176,7 +283,7 @@ export default class HomeworkLists extends Component {
                     <Text numberOfLines={3} style= {HomeworkStyles.abstractTextStyle}>
                         {description}
                     </Text>
-                    <Text style= {HomeworkStyles.informationTextStyle}>
+                    <Text style= {isFinished ? HomeworkStyles.outdateInformationTextStyle : HomeworkStyles.informationTextStyle}>
                         截止于:{deadline.split('T')[0]+' '+deadline.split('T')[1].substring(0,8)}
                     </Text>
                 </TouchableOpacity>
@@ -330,6 +437,13 @@ const HomeworkStyles = StyleSheet.create({
         alignSelf: "flex-end",
         fontSize: 10,
         color: '#000000',
+        textAlign: 'center',
+        marginBottom: 8
+    },
+    outdateInformationTextStyle:{
+        alignSelf: "flex-end",
+        fontSize: 10,
+        color: 'red',
         textAlign: 'center',
         marginBottom: 8
     }

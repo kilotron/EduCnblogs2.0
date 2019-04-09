@@ -46,11 +46,12 @@ export default class BulletinAdd extends Component {
         }).then((jsonData)=>{
             if(jsonData===null)
             {
-                ToastAndroid.show('请求失败！',ToastAndroid.SHORT);
+                ToastAndroid.show('请求失败！您可能不是该班级的教师或助教，无此权限！',ToastAndroid.SHORT);
             }
             else if(jsonData.isSuccess)
             {
-                ToastAndroid.show('添加成功，请刷新查看！',ToastAndroid.SHORT);
+                ToastAndroid.show('添加成功！',ToastAndroid.SHORT);
+                this.props.navigation.state.params.callback();
                 this.props.navigation.goBack();
             }
             else if(jsonData.isWarning)

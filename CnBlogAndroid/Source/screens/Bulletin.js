@@ -64,7 +64,8 @@ export default class Bulletin extends Component {
                 this.props.navigation.navigate('BulletinEdition',{
                     schoolClassId: this.props.schoolClassId,
                     bulletinText: Content,
-                    bulletinId: Id,});
+                    bulletinId: Id,
+                    callback: this._callback});
             } }>
                 <View style={styles.textcontainer}>
                     <Text numberOfLines={3} style={styles.bulletinContent}>
@@ -209,9 +210,18 @@ export default class Bulletin extends Component {
         this._isMounted = false;
     }
 
+    _callback = ()=>{
+        this.setState({
+            changedSchoolClassId: true,
+            bulletins: [],
+            bulletinCount: 0,
+            loadStatus: 'not loading',
+            currentPageIndex: 1,});
+    };
+
     _onPress = ()=>{
         this.props.navigation.navigate('BulletinAdd',
-            {schoolClassId: this.props.schoolClassId,});
+            {schoolClassId: this.props.schoolClassId, callback: this._callback});
     }
 
     componentWillReceiveProps(nextProps) {

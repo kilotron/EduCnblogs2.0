@@ -36,7 +36,8 @@ export default class BulletinEdition extends Component {
         let body = JSON.stringify(postBody);
         //let url = 'https://api.cnblogs.com/api/edu/member/register/displayName';
         let url = Config.BulletinEdit + this.state.bulletinId;
-        console.log(url);
+        //console.log(url);
+        //console.log(postBody);
         Service.UserAction(url, body, 'PATCH').then((response)=>{
             if(response.status!==200)
             {
@@ -48,11 +49,12 @@ export default class BulletinEdition extends Component {
         }).then((jsonData)=>{
             if(jsonData===null)
             {
-                ToastAndroid.show('请求失败！',ToastAndroid.SHORT);
+                ToastAndroid.show('请求失败！您可能不是该班级的教师或助教，无此权限！',ToastAndroid.SHORT);
             }
             else if(jsonData.isSuccess)
             {
-                ToastAndroid.show('修改成功，请刷新查看！',ToastAndroid.SHORT);
+                ToastAndroid.show('修改成功',ToastAndroid.SHORT);
+                this.props.navigation.state.params.callback();
                 this.props.navigation.goBack();
             }
             else if(jsonData.isWarning)

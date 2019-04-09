@@ -147,7 +147,8 @@ export default class ClassListsNew extends Component{
 						>
                             <View tabLabel='公告' style={{flex: 1, alignItems: 'stretch'}} >
                                 <Bulletin schoolClassId={this.state.schoolClassId}
-                                    changedSchoolClassId={this.state.changedSchoolClassId}/>
+                                    changedSchoolClassId={this.state.changedSchoolClassId}
+                                    navigation={this.props.navigation}/>
                             </View>
 							<HomeworkLists tabLabel='作业' classId={this.state.schoolClassId}/>
 							{/* <ClassBlogPostsList tabLabel='博文' schoolClassId={this.state.schoolClassId}/> */}

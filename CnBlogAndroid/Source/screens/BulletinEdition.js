@@ -21,7 +21,28 @@ export default class BulletinEdition extends Component {
             schoolClassId: this.props.navigation.state.params.schoolClassId,
             bulletinText: this.props.navigation.state.params.bulletinText,
             bulletinId: this.props.navigation.state.params.bulletinId,
+            membership: 1,
         };
+    }
+
+    componentDidMount = ()=>{
+        var memberShip = 1;
+        let url1 = Config.apiDomain + api.user.info;
+        Service.Get(url1).then((jsonData)=>{
+            let url2= Config.apiDomain+"api/edu/member/"+jsonData.BlogId+"/"+this.props.schoolClassId;
+            Service.Get(url2).then((jsonData)=>{
+                //console.log(jsonData);
+                if(this._isMounted && jsonData!=='rejected'){
+                    memberShip = jsonData.membership;
+                }
+            })
+        })
+        .then(()=>{
+            global.storage.save({key : StorageKey.MEMBER_SHIP,data : this.state.membership});
+        });
+        this.setState({
+            membership: memberShip,
+        });
     }
 
     /* 单击修改后的响应函数 */
@@ -81,21 +102,27 @@ export default class BulletinEdition extends Component {
                         onChangeText= {(text)=>
                             this.setState({bulletinText: text})
                             }
-                        defaultValue={this.state.bulletinText}>
+                        defaultValue={this.state.bulletinText}
+                        editable={(this.state.membership==2||this.state.membership==3)?true: false}
+                        >
                     </TextInput>
                 </View>
                 <View  style= {{
                       width:0.35*screenWidth,
                       alignSelf: 'center', }}
                 >
-                    <Button style={styles.commitBtn}
-                        title='修改公告'
-                        onPress={() => {
-                            //console.log('公告内容改为 ' + this.state.bulletinText);
-                            this._onPress();
-                            }
-                        }>
-                    </Button>
+                    {
+                        (this.state.membership==2||this.state.membership==3)?
+                        (<Button style={styles.commitBtn}
+                            title='修改公告'
+                            onPress={() => { this._onPress();
+                                //console.log('公告内容改为 ' + this.state.bulletinText);
+                                }
+                            }>
+                        </Button>):
+                        (null)
+                    }
+
                 </View>
             </View>
         );
@@ -122,6 +149,8 @@ const styles = StyleSheet.create({
     bulletinDetail: {
         flex: 1,
         borderColor: 'gray',
+        color: 'black',
+        fontSize: 20,
         textAlignVertical: 'top',
         borderRadius: 10,
     },

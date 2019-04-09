@@ -232,7 +232,7 @@ export default class Bulletin extends Component {
                 {schoolClassId: this.props.schoolClassId, callback: this._FlatListRefresh});
         else
         {
-            ToastAndroid.show("您没有权限，只有老师和助教才能发布作业哦！",ToastAndroid.SHORT);
+            ToastAndroid.show("您没有权限，只有老师和助教才能发布公告哦！",ToastAndroid.SHORT);
         }
         /*
         this.props.navigation.navigate('BulletinAdd',

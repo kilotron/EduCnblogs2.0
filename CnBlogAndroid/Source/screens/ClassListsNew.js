@@ -6,6 +6,7 @@ import MyAdapter from './MyAdapter.js';
 import React, { Component} from 'react';
 import {StorageKey} from '../config'
 import {flatStyles,tabViewStyles} from '../styles/styles'
+import ScrollableTabView, { ScrollableTabBar, DefaultTabBar } from 'react-native-scrollable-tab-view';
 import {
 	StyleSheet,
 	Text,
@@ -27,7 +28,6 @@ import {
   TabNavigator,
 } from 'react-navigation';
 import Bulletin from './Bulletin';
-
 var viewKey = 0;
 const screenWidth= MyAdapter.screenWidth;
 const screenHeight= MyAdapter.screenHeight;

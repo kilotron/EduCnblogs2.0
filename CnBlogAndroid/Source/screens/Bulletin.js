@@ -65,7 +65,7 @@ export default class Bulletin extends Component {
                     schoolClassId: this.props.schoolClassId,
                     bulletinText: Content,
                     bulletinId: Id,
-                    callback: this._callback});
+                    callback: this._FlatListRefresh});
             } }>
                 <View style={styles.textcontainer}>
                     <Text numberOfLines={3} style={styles.bulletinContent}>
@@ -96,12 +96,12 @@ export default class Bulletin extends Component {
 
     _FlatListRefresh = ()=>{
         this.setState({
+            changedSchoolClassId: true,
             bulletins: [],
             bulletinCount: 0,
             loadStatus: 'not loading',
             currentPageIndex: 1,
         });
-        this.fetchPage(1);
     };
 
     _renderBulletinList() {
@@ -210,18 +210,9 @@ export default class Bulletin extends Component {
         this._isMounted = false;
     }
 
-    _callback = ()=>{
-        this.setState({
-            changedSchoolClassId: true,
-            bulletins: [],
-            bulletinCount: 0,
-            loadStatus: 'not loading',
-            currentPageIndex: 1,});
-    };
-
     _onPress = ()=>{
         this.props.navigation.navigate('BulletinAdd',
-            {schoolClassId: this.props.schoolClassId, callback: this._callback});
+            {schoolClassId: this.props.schoolClassId, callback: this._FlatListRefresh});
     }
 
     componentWillReceiveProps(nextProps) {

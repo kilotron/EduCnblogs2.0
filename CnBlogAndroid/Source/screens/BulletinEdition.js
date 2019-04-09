@@ -21,28 +21,8 @@ export default class BulletinEdition extends Component {
             schoolClassId: this.props.navigation.state.params.schoolClassId,
             bulletinText: this.props.navigation.state.params.bulletinText,
             bulletinId: this.props.navigation.state.params.bulletinId,
-            membership: 1,
+            membership: this.props.navigation.state.params.membership,
         };
-    }
-
-    componentDidMount = ()=>{
-        var memberShip = 1;
-        let url1 = Config.apiDomain + api.user.info;
-        Service.Get(url1).then((jsonData)=>{
-            let url2= Config.apiDomain+"api/edu/member/"+jsonData.BlogId+"/"+this.props.schoolClassId;
-            Service.Get(url2).then((jsonData)=>{
-                //console.log(jsonData);
-                if(this._isMounted && jsonData!=='rejected'){
-                    memberShip = jsonData.membership;
-                }
-            })
-        })
-        .then(()=>{
-            global.storage.save({key : StorageKey.MEMBER_SHIP,data : this.state.membership});
-        });
-        this.setState({
-            membership: memberShip,
-        });
     }
 
     /* 单击修改后的响应函数 */

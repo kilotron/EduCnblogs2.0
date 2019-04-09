@@ -4,8 +4,6 @@ import {authData} from '../config'
 import * as Service from '../request/request.js'
 import MyAdapter from './MyAdapter.js';
 import React, { Component} from 'react';
-import * as storage from '../Storage/storage.js'
-import {StorageKey} from '../config'
 import {UI} from '../config'
 import {err_info} from '../config'
 import {flatStyles} from '../styles/styles'
@@ -69,7 +67,9 @@ export default class Bulletin extends Component {
                     schoolClassId: this.props.schoolClassId,
                     bulletinText: Content,
                     bulletinId: Id,
-                    callback: this._FlatListRefresh});
+                    membership: this.state.membership,
+                    callback: this._FlatListRefresh
+                });
             } }>
                 <View style={styles.textcontainer}>
                     <Text numberOfLines={3} style={styles.bulletinContent}>
@@ -242,31 +242,22 @@ export default class Bulletin extends Component {
 
     /* 修改prop属性时调用 */
     componentWillReceiveProps(nextProps) {
+        /* 当传入的参数改变时首先获取用户在班级中的身份  */
+        var membership = 1;
         let url1 = Config.apiDomain + api.user.info;
         Service.Get(url1).then((jsonData)=>{
             let url2= Config.apiDomain+"api/edu/member/"+jsonData.BlogId+"/"+this.props.schoolClassId;
             Service.Get(url2).then((jsonData)=>{
                 //console.log(jsonData);
                 if(this._isMounted && jsonData!=='rejected'){
-                    this.setState({
-                        membership: jsonData.membership,
-                        changedSchoolClassId: nextProps.changedSchoolClassId,
-                        //changedSchoolClassId: true,
-                        bulletins: [],
-                        bulletinCount: 0,
-                        loadStatus: 'not loading',
-                        currentPageIndex: 1,
-                    })
+                    membership = jsonData.membership;
                 }
             })
-        })
-        .then(()=>{
-            global.storage.save({key : StorageKey.MEMBER_SHIP,data : this.state.membership});
         });
         this.setState({
             changedSchoolClassId: nextProps.changedSchoolClassId,
             //changedSchoolClassId: true,
-            membership: 1,
+            membership: membership,
             bulletins: [],
             bulletinCount: 0,
             loadStatus: 'not loading',

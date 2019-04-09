@@ -150,7 +150,8 @@ export default class ClassListsNew extends Component{
                                     changedSchoolClassId={this.state.changedSchoolClassId}
                                     navigation={this.props.navigation}/>
                             </View>
-							<HomeworkLists tabLabel='作业' classId={this.state.schoolClassId}/>
+							<HomeworkLists tabLabel='作业' classId={this.state.schoolClassId}
+								navigation={this.props.navigation}/>
 							{/* <ClassBlogPostsList tabLabel='博文' schoolClassId={this.state.schoolClassId}/> */}
 							<Text tabLabel='投票'>投票</Text>
 						</ScrollableTabView> }

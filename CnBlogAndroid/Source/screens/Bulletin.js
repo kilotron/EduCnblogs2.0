@@ -17,6 +17,7 @@ import {
     TouchableHighlight,
     ActivityIndicator,
     TouchableOpacity,
+    screen,
 } from 'react-native';
 
 import {
@@ -37,7 +38,7 @@ export default class Bulletin extends Component {
     constructor(props){
         super(props);
         this.state = {
-            schoolClassId: this.props.navigation.state.params.schoolClassId,
+            schoolClassId: 0,
             bulletins: [],
             bulletinCount: 0,
             loadStatus: 'not loading',

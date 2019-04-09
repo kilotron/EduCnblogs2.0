@@ -25,3 +25,8 @@ export const flatStyles = StyleSheet.create({
         backgroundColor:'#dcdcdc'
     },
 })
+export const tabViewStyles = StyleSheet.create({
+    ScrollableTabViewStyle:{
+
+    }, 
+})

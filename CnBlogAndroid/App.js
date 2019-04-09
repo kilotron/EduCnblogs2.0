@@ -347,7 +347,7 @@ const HomeTab = TabNavigator({
     ClassListsNew: {
         screen: ClassListsNew,
         navigationOptions: {
-            tabBarLabel: '班级博客',
+            tabBarLabel: '我的班级',
             tabBarIcon: ({ tintColor, focused }) => (
                 <Image
                     resizeMode='contain'

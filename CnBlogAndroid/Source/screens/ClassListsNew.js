@@ -27,7 +27,7 @@ import {
   TabNavigator,
 } from 'react-navigation';
 import Bulletin from './Bulletin';
-import ClassBlogPostsList from './ClassBlogPostsList';
+
 var viewKey = 0;
 const screenWidth= MyAdapter.screenWidth;
 const screenHeight= MyAdapter.screenHeight;

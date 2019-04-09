@@ -5,7 +5,7 @@ import * as Service from '../request/request.js'
 import MyAdapter from './MyAdapter.js';
 import React, { Component} from 'react';
 import {StorageKey} from '../config'
-
+import {flatStyles} from '../styles/styles'
 
 import {
 	StyleSheet,
@@ -108,10 +108,12 @@ export default class ClassListsNew extends Component{
 
 	_separator = () => {
 		return (
-				<View style={{ height: 9.75, justifyContent: 'center'}}>
-				<View style={{ height: 0.75, backgroundColor: 'rgb(100,100,100)'}}/>
-				<View style={{ height: 9, backgroundColor: 'rgb(235,235,235)'}}/>
-				</View>
+				// <View style={{ height: 9.75, justifyContent: 'center'}}>
+                //     <View style={{ height: 0.75, backgroundColor: 'rgb(100,100,100)'}}/>
+				//     <View style={{ height: 3, backgroundColor: '#dcdcdc'}}/>
+                // </View>
+                <View style={flatStyles.separatorStyle}>
+                </View>
 		);
 	}
 
@@ -125,49 +127,55 @@ export default class ClassListsNew extends Component{
 		var CommentCount = item1.item.CommentCount;
 		var Id = item1.item.key;
 		return(
-				<View>
-						<TouchableOpacity
-							style = {styles.listcontainer}
-							onPress = {Url!==''?()=>{this.props.navigation.navigate('BlogDetail',
-							{Id:Id, blogApp: global.user_information.BlogApp, CommentCount: CommentCount, Url: Url})
-							{/*alert(Id);*/} // bug: ID不对
-						}:()=>{}}
-						>
-							<Text style = {styles.postTitleStyle} accessibilityLabel = {Url}>
-									{Title}
-							</Text>
-							<Text numberOfLines={3} style = {styles.postDescriptionStyle}>
-									{Description}
-							</Text>
-							<View style = {styles.postMetadataViewStyle}>
-								<Text style = {{fontSize: 10, textAlign: 'left', color: 'black', flex: 1}}>
-										{ViewCount+' 阅读'+'  '+CommentCount+' 评论'}
-								</Text>
-								<Text style = {{fontSize: 10, textAlign: 'right', color: 'black', flex: 1}}>
-										{'发布于: '+PostDate.split('T')[0]+' '+PostDate.split('T')[1]}
-								</Text>
-							</View>
-						</TouchableOpacity>
-				</View>
+            <View>
+                <TouchableOpacity
+                    style = {flatStyles.listContainer}
+                    onPress = {Url!==''?()=>{this.props.navigation.navigate('BlogDetail',
+                    {Id:Id, blogApp: global.user_information.BlogApp, CommentCount: CommentCount, Url: Url})
+                    {/*alert(Id);*/} // bug: ID不对
+                }:()=>{}}
+                >
+                    <Text style = {styles.postTitleStyle} accessibilityLabel = {Url}>
+                            {Title}
+                    </Text>
+                    <Text numberOfLines={3} style = {styles.postDescriptionStyle}>
+                            {Description}
+                    </Text>
+                    <View style = {styles.postMetadataViewStyle}>
+                        <Text style = {{fontSize: 10, textAlign: 'left', color: 'black', flex: 1}}>
+                                {ViewCount+' 阅读'+'  '+CommentCount+' 评论'}
+                        </Text>
+                        <Text style = {{fontSize: 10, textAlign: 'right', color: 'black', flex: 1}}>
+                                {'发布于: '+PostDate.split('T')[0]+' '+PostDate.split('T')[1]}
+                        </Text>
+                    </View>
+                </TouchableOpacity>
+            </View>
 		)
 	};
 
 	_renderPosts() {
 		if (!this.state.classSelected) {
-			return (<View><Text>未选择班级</Text></View>);
+			return (
+                <View style={{height:30,alignItems:'center',justifyContent:'flex-start',}}>
+                    <Text style={{color:'#999999',fontSize:14,marginTop:5,marginBottom:5,}}>
+                        未选择班级
+                    </Text>
+                </View>
+            );
 		}
 		var data = [];
 		for(var i in this.state.blogs)
 		{
-				data.push({
-						key: this.state.blogs[i].blogId,
-						Title: this.state.blogs[i].title,
-						Url: this.state.blogs[i].url,
-						Description: this.state.blogs[i].description,
-						PostDate: this.state.blogs[i].dateAdded,
-						ViewCount: this.state.blogs[i].viewCount,
-						CommentCount: this.state.blogs[i].commentCount,
-				})
+            data.push({
+                key: this.state.blogs[i].blogId,
+                Title: this.state.blogs[i].title,
+                Url: this.state.blogs[i].url,
+                Description: this.state.blogs[i].description,
+                PostDate: this.state.blogs[i].dateAdded,
+                ViewCount: this.state.blogs[i].viewCount,
+                CommentCount: this.state.blogs[i].commentCount,
+            })
 		}
 
 		return(
@@ -198,24 +206,24 @@ export default class ClassListsNew extends Component{
 
 	_renderFooter(){
 		if (this.state.loadStatus === 'all loaded') {
-				return (
-						<View style={{height:30,alignItems:'center',justifyContent:'flex-start',}}>
-								<Text style={{color:'#999999',fontSize:14,marginTop:5,marginBottom:5,}}>
-										没有更多数据了
-								</Text>
-						</View>
-				);
+            return (
+                <View style={{height:30,alignItems:'center',justifyContent:'flex-start',}}>
+                    <Text style={{color:'#999999',fontSize:14,marginTop:5,marginBottom:5,}}>
+                        没有更多数据了
+                    </Text>
+                </View>
+            );
 		} else if(this.state.loadStatus === 'loading') {
-				return (
-					<View style={styles.footer}>
-							<ActivityIndicator />
-							<Text>正在加载更多数据...</Text>
-					</View>
-				);
+            return (
+                <View style={styles.footer}>
+                    <ActivityIndicator />
+                    <Text>正在加载更多数据...</Text>
+                </View>
+            );
 		} //else 'not loading'
 		return (
 			<View style={styles.footer}>
-					<Text></Text>
+                <Text></Text>
 			</View>
 		);
 	}
@@ -238,33 +246,33 @@ export default class ClassListsNew extends Component{
 						<Image style={styles.optionsImgstyle} source={require('../images/options.png')}/>
 					</TouchableOpacity>
 				</View>
-        {/* 从这里开始滚动 */}
-        <View style={styles.tabViewStyle}>
-          {/* 这一部分是公告，作业和投票 */}
-          <View style={styles.tabTouchStyle} onPress={()=>{alert('弹出班级操作')}}>
-						<TouchableOpacity style={styles.tabImgViewStyle}
-							onPress={() => {
-								if (!this.state.classSelected) {
-									ToastAndroid.show("请选择班级", ToastAndroid.SHORT);
-									this.props.navigation.navigate('ClassSelect', {callback: this._classSelectGoBack});
-								} else {
-									console.log(this.state.schoolClassId);
-									this.props.navigation.navigate('Bulletin',{
-				            schoolClassId: this.state.schoolClassId,});
-								}
-							}}>
-							<Image style={styles.tabImgstyle} source={require('../images/notice.png')}/>
-							<Text>公告</Text>
-						</TouchableOpacity>
-						<TouchableOpacity style={styles.tabImgViewStyle}>
-							<Image style={styles.tabImgstyle} source={require('../images/notice.png')}/>
-							<Text>作业</Text>
-						</TouchableOpacity>
-						<TouchableOpacity style={styles.tabImgViewStyle}>
-							<Image style={styles.tabImgstyle} source={require('../images/notice.png')}/>
-							<Text>投票</Text>
-						</TouchableOpacity>
-					</View>
+                {/* 从这里开始滚动 */}
+                <View style={styles.tabViewStyle}>
+                    {/* 这一部分是公告，作业和投票 */}
+                    <View style={styles.tabTouchStyle} onPress={()=>{alert('弹出班级操作')}}>
+                        <TouchableOpacity style={styles.tabImgViewStyle}
+                            onPress={() => {
+                                if (!this.state.classSelected) {
+                                    ToastAndroid.show("请选择班级", ToastAndroid.SHORT);
+                                    this.props.navigation.navigate('ClassSelect', {callback: this._classSelectGoBack});
+                                } else {
+                                    console.log(this.state.schoolClassId);
+                                    this.props.navigation.navigate('Bulletin',{
+                                    schoolClassId: this.state.schoolClassId,});
+                                }
+                            }}>
+                            <Image style={styles.tabImgstyle} source={require('../images/notice.png')}/>
+                            <Text>公告</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.tabImgViewStyle}>
+                            <Image style={styles.tabImgstyle} source={require('../images/notice.png')}/>
+                            <Text>作业</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.tabImgViewStyle}>
+                            <Image style={styles.tabImgstyle} source={require('../images/notice.png')}/>
+                        <Text>投票</Text>
+                        </TouchableOpacity>
+                    </View>
 					{/* 这是筛选导航栏 */}
 					<View style={styles.blogConditionViewStyle}>
 						<Text style = {styles.titleFontStyle}>{this.state.blogCondition}</Text>
@@ -286,9 +294,11 @@ export default class ClassListsNew extends Component{
 							<Picker.Item label="学生" value="student" />
 						</Picker>
 					</View>
-        </View>
+                </View>
 				{/* 下面是博客项，用FlatList实现 */}
-				{this._renderPosts()}
+				<View style={styles.listView}>
+				    {this._renderPosts()}
+				</View>
 			</View>
 		)
 	}
@@ -396,5 +406,8 @@ const styles = StyleSheet.create({
 		justifyContent:'center',
 		alignItems:'center',
 		marginBottom:10,
-	},
+    },
+    listView:{
+        // backgroundColor:'red',
+    },
 });

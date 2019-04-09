@@ -112,7 +112,8 @@ export default class Bulletin extends Component {
             Content: this.state.bulletins[i].content,
             Publisher: this.state.bulletins[i].publisher,
             BlogUrl: this.state.bulletins[i].blogUrl,
-            DateAdded: this.state.bulletins[i].dateAdded,
+            //DateAdded: this.state.bulletins[i].dateAdded,
+            DateAdded: this.String2Date(this.state.bulletins[i].dateAdded),
         })
         }
         return(
@@ -184,6 +185,16 @@ export default class Bulletin extends Component {
                     changedSchoolClassId: false,
                 });
             }
+            else
+            {
+                if(pageIndex==1)
+                {
+                    this.setState({
+                        loadStatus: 'none',
+                    });
+                }
+
+            }
         }).then(()=>{;
         }).catch((error) => {;
         });
@@ -199,8 +210,8 @@ export default class Bulletin extends Component {
     }
 
     _onPress = ()=>{
-      this.props.navigation.navigate('BulletinAdd',{
-        schoolClassId: this.props.schoolClassId,});
+        this.props.navigation.navigate('BulletinAdd',
+            {schoolClassId: this.props.schoolClassId,});
     }
 
     componentWillReceiveProps(nextProps) {
@@ -213,6 +224,16 @@ export default class Bulletin extends Component {
         });
     }
 
+    String2Date = (day)=>{
+        //console.log(day);
+        // YYYY-MM-DDTHH:MM:SS
+        if(day == null)
+            return '  ';
+        let s1 = day.split('T')[0];
+        let s2 = day.split('T')[1];
+        return s1 + '  ' + s2.split('.')[0];
+    }
+
     render() {
         if(this.state.changedSchoolClassId === true){
             this.fetchPage(1);
@@ -221,7 +242,17 @@ export default class Bulletin extends Component {
             <View style = {styles.container}>
                 <View style={{ height: 1, backgroundColor: 'rgb(225,225,225)',  marginTop: 0.005*screenHeight, alignSelf:'stretch'}}/>
                 <View style={{width: screenWidth, }}>
-                    {this._renderBulletinList()}
+                    {
+                        this.state.loadStatus==='none'?
+                            (
+                                <View style={styles.footer}>
+                                    <Text>这还什么都没有</Text>
+                                </View>
+                            ):
+                            (
+                                this._renderBulletinList()
+                            )
+                    }
                 </View>
                 <View
                     style= {{
@@ -232,9 +263,6 @@ export default class Bulletin extends Component {
                         flex:1,
                     }}
                 >
-                    <FlatList
-                        refreshing= {true}
-                    />
                     <TouchableHighlight
                         underlayColor="#3b50ce"
                         activeOpacity={0.5}

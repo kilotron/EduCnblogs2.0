@@ -52,7 +52,7 @@ export default class ClassSelect extends Component {
         return <View style={{ height: 1, backgroundColor: 'rgb(204,204,204)' }}/>;
     }
 
-    UpdateData() {
+    UpdateData =()=> {
         this.setState({
                 classes:[],
                 imgs:[],

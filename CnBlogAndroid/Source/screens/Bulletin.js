@@ -4,11 +4,9 @@ import {authData} from '../config'
 import * as Service from '../request/request.js'
 import MyAdapter from './MyAdapter.js';
 import React, { Component} from 'react';
-import * as storage from '../Storage/storage.js'
-import {StorageKey} from '../config'
 import {UI} from '../config'
 import {err_info} from '../config'
-
+import {flatStyles} from '../styles/styles'
 import {
     StyleSheet,
     Text,
@@ -17,6 +15,8 @@ import {
     TouchableHighlight,
     ActivityIndicator,
     TouchableOpacity,
+    ToastAndroid,
+    screen,
 } from 'react-native';
 
 import {
@@ -37,20 +37,23 @@ export default class Bulletin extends Component {
     constructor(props){
         super(props);
         this.state = {
-            schoolClassId: this.props.navigation.state.params.schoolClassId,
+            changedSchoolClassId: this.props.changedSchoolClassId,
             bulletins: [],
             bulletinCount: 0,
+            membership: 1,
             loadStatus: 'not loading',
             currentPageIndex: 1,
         }
+        this._isMounted=true;
     }
     _isMounted;
 
-    componentWillMount =  () => {
-        this._isMounted=true;
-        this.fetchPage(this.state.currentPageIndex);
-    }
+    // componentWillUpdate(){
+    //     this._isMounted=true;
+    //     this.fetchPage(this.state.currentPageIndex);
+    // }
 
+    /* 渲染一个公告数据 */
     _renderItem = (item) => {
         let item1 = item;
         var Id = item1.item.key;
@@ -61,9 +64,12 @@ export default class Bulletin extends Component {
         return(
             <TouchableOpacity onPress={()=>{
                 this.props.navigation.navigate('BulletinEdition',{
-                    schoolClassId: this.state.schoolClassId,
+                    schoolClassId: this.props.schoolClassId,
                     bulletinText: Content,
-                    bulletinId: Id,});
+                    bulletinId: Id,
+                    membership: this.state.membership,
+                    callback: this._FlatListRefresh
+                });
             } }>
                 <View style={styles.textcontainer}>
                     <Text numberOfLines={3} style={styles.bulletinContent}>
@@ -86,23 +92,23 @@ export default class Bulletin extends Component {
 
     _separator = () => {
         return (
-            <View style={{ height: 9.75, justifyContent: 'center'}}>
-            <View style={{ height: 0.75, backgroundColor: 'rgb(100,100,100)'}}/>
-            <View style={{ height: 9, backgroundColor: 'rgb(235,235,235)'}}/>
+            <View style={flatStyles.separatorStyle}>
             </View>
         );
     }
 
+    /* 刷新公告页面的函数，在改变班级、修改和发布公告后都应调用 */
     _FlatListRefresh = ()=>{
         this.setState({
+            changedSchoolClassId: true,
             bulletins: [],
             bulletinCount: 0,
             loadStatus: 'not loading',
             currentPageIndex: 1,
         });
-        this.fetchPage(1);
     };
 
+    /* 渲染公告列表 */
     _renderBulletinList() {
         var data = [];
         for(var i in this.state.bulletins)
@@ -112,7 +118,8 @@ export default class Bulletin extends Component {
             Content: this.state.bulletins[i].content,
             Publisher: this.state.bulletins[i].publisher,
             BlogUrl: this.state.bulletins[i].blogUrl,
-            DateAdded: this.state.bulletins[i].dateAdded,
+            //DateAdded: this.state.bulletins[i].dateAdded,
+            DateAdded: this.String2Date(this.state.bulletins[i].dateAdded),
         })
         }
         return(
@@ -129,6 +136,7 @@ export default class Bulletin extends Component {
         )
     }
 
+    /* 公告列表到达底部时，渲染底部文本 */
     _renderFooter(){
         if (this.state.loadStatus === 'all loaded') {
             return (
@@ -169,46 +177,123 @@ export default class Bulletin extends Component {
 		this.fetchPage(this.state.currentPageIndex);
     }
 
+    /* 获取某页面的数据，这里简单的考虑第一页时充值公告列表，其他情况追加数据 */
     fetchPage(pageIndex) {
-        let url = Config.BulletinList + this.state.schoolClassId + '/'+ pageIndex + '-'+ pageSize;
+        let url = Config.BulletinList + this.props.schoolClassId + '/'+ pageIndex + '-'+ pageSize;
         //console.log(url);
         Service.Get(url).then((jsonData)=>{
             //console.log(jsonData);
             let pageCount = Math.ceil(jsonData.totalCount / pageSize);
             if(jsonData!=='rejected')
             {
-                this.setState({
-                    bulletinCount: jsonData.totalCount,
-                    bulletins: this.state.bulletins.concat(jsonData.bulletins),
-                    loadStatus: this.state.currentPageIndex>=pageCount ? 'all loaded' : 'not loading',
-                });
+                if(pageIndex===1)
+                {
+                    this.setState({
+                        bulletinCount: jsonData.totalCount,
+                        bulletins: jsonData.bulletins,
+                        loadStatus: this.state.currentPageIndex>=pageCount ? 'all loaded' : 'not loading',
+                        changedSchoolClassId: false,
+                    });
+                }
+                else
+                {
+                    this.setState({
+                        bulletinCount: jsonData.totalCount,
+                        bulletins: this.state.bulletins.concat(jsonData.bulletins),
+                        loadStatus: this.state.currentPageIndex>=pageCount ? 'all loaded' : 'not loading',
+                        changedSchoolClassId: false,
+                    });
+                }
+            }
+            else
+            {
+                if(pageIndex==1)
+                {
+                    this.setState({
+                        loadStatus: 'none',
+                    });
+                }
+
             }
         }).then(()=>{;
         }).catch((error) => {;
         });
     }
 
-    UpdateData(){
-        this.setState({bulletins: []});
-        this.fetchPage(this.state.currentPageIndex);
-    }
-
     componentWillUnmount() {
         this._isMounted = false;
     }
 
+    /* 单击添加公告列表时的响应函数 */
     _onPress = ()=>{
-      this.props.navigation.navigate('BulletinAdd',{
-        schoolClassId: this.state.schoolClassId,});
+        let url = Config.apiDomain + api.user.info;
+        if (this.state.membership==2||this.state.membership==3)
+            this.props.navigation.navigate('BulletinAdd',
+                {schoolClassId: this.props.schoolClassId, callback: this._FlatListRefresh});
+        else
+        {
+            ToastAndroid.show("您没有权限，只有老师和助教才能发布公告哦！",ToastAndroid.SHORT);
+        }
+        /*
+        this.props.navigation.navigate('BulletinAdd',
+            {schoolClassId: this.props.schoolClassId, callback: this._FlatListRefresh});
+        */
+    }
+
+    /* 修改prop属性时调用 */
+    componentWillReceiveProps(nextProps) {
+        /* 当传入的参数改变时首先获取用户在班级中的身份  */
+        var membership = 1;
+        let url1 = Config.apiDomain + api.user.info;
+        Service.Get(url1).then((jsonData)=>{
+            let url2= Config.apiDomain+"api/edu/member/"+jsonData.BlogId+"/"+this.props.schoolClassId;
+            Service.Get(url2).then((jsonData)=>{
+                //console.log(jsonData);
+                if(this._isMounted && jsonData!=='rejected'){
+                    membership = jsonData.membership;
+                }
+            })
+        });
+        this.setState({
+            changedSchoolClassId: nextProps.changedSchoolClassId,
+            //changedSchoolClassId: true,
+            membership: membership,
+            bulletins: [],
+            bulletinCount: 0,
+            loadStatus: 'not loading',
+            currentPageIndex: 1,
+        });
+    }
+
+    /* 将网站返回的时间字符串改成预期 */
+    String2Date = (day)=>{
+        //console.log(day);
+        if(day == null)
+            return '  ';
+        let s1 = day.split('T')[0];
+        let s2 = day.split('T')[1];
+        return s1 + '  ' + s2.split('.')[0];
     }
 
     render() {
+        if(this.state.changedSchoolClassId === true){
+            this.fetchPage(1);
+        }
         return (
             <View style = {styles.container}>
-
                 <View style={{ height: 1, backgroundColor: 'rgb(225,225,225)',  marginTop: 0.005*screenHeight, alignSelf:'stretch'}}/>
                 <View style={{width: screenWidth, }}>
-                    {this._renderBulletinList()}
+                    {
+                        this.state.loadStatus==='none'?
+                            (
+                                <View style={styles.footer}>
+                                    <Text>这还什么都没有</Text>
+                                </View>
+                            ):
+                            (
+                                this._renderBulletinList()
+                            )
+                    }
                 </View>
                 <View
                     style= {{
@@ -219,9 +304,6 @@ export default class Bulletin extends Component {
                         flex:1,
                     }}
                 >
-                    <FlatList
-                        refreshing= {false}
-                    />
                     <TouchableHighlight
                         underlayColor="#3b50ce"
                         activeOpacity={0.5}

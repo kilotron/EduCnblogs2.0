@@ -21,8 +21,11 @@ export default class BulletinEdition extends Component {
             schoolClassId: this.props.navigation.state.params.schoolClassId,
             bulletinText: this.props.navigation.state.params.bulletinText,
             bulletinId: this.props.navigation.state.params.bulletinId,
+            membership: this.props.navigation.state.params.membership,
         };
-      }
+    }
+
+    /* 单击修改后的响应函数 */
     _onPress() {
         if (this.state.bulletinText === '')
         {
@@ -36,7 +39,8 @@ export default class BulletinEdition extends Component {
         let body = JSON.stringify(postBody);
         //let url = 'https://api.cnblogs.com/api/edu/member/register/displayName';
         let url = Config.BulletinEdit + this.state.bulletinId;
-        console.log(url);
+        //console.log(url);
+        //console.log(postBody);
         Service.UserAction(url, body, 'PATCH').then((response)=>{
             if(response.status!==200)
             {
@@ -48,11 +52,13 @@ export default class BulletinEdition extends Component {
         }).then((jsonData)=>{
             if(jsonData===null)
             {
-                ToastAndroid.show('请求失败！',ToastAndroid.SHORT);
+                ToastAndroid.show('请求失败！您可能不是该班级的教师或助教，无此权限！',ToastAndroid.SHORT);
             }
             else if(jsonData.isSuccess)
             {
-                ToastAndroid.show('修改成功，请刷新查看！',ToastAndroid.SHORT);
+                ToastAndroid.show('修改成功',ToastAndroid.SHORT);
+                /* 调用回调函数更新公告列表 */
+                this.props.navigation.state.params.callback();
                 this.props.navigation.goBack();
             }
             else if(jsonData.isWarning)
@@ -76,21 +82,27 @@ export default class BulletinEdition extends Component {
                         onChangeText= {(text)=>
                             this.setState({bulletinText: text})
                             }
-                        defaultValue={this.state.bulletinText}>
+                        defaultValue={this.state.bulletinText}
+                        editable={(this.state.membership==2||this.state.membership==3)?true: false}
+                        >
                     </TextInput>
                 </View>
                 <View  style= {{
                       width:0.35*screenWidth,
                       alignSelf: 'center', }}
                 >
-                    <Button style={styles.commitBtn}
-                        title='修改公告'
-                        onPress={() => {
-                            //console.log('公告内容改为 ' + this.state.bulletinText);
-                            this._onPress();
-                            }
-                        }>
-                    </Button>
+                    {
+                        (this.state.membership==2||this.state.membership==3)?
+                        (<Button style={styles.commitBtn}
+                            title='修改公告'
+                            onPress={() => { this._onPress();
+                                //console.log('公告内容改为 ' + this.state.bulletinText);
+                                }
+                            }>
+                        </Button>):
+                        (null)
+                    }
+
                 </View>
             </View>
         );
@@ -117,6 +129,8 @@ const styles = StyleSheet.create({
     bulletinDetail: {
         flex: 1,
         borderColor: 'gray',
+        color: 'black',
+        fontSize: 20,
         textAlignVertical: 'top',
         borderRadius: 10,
     },

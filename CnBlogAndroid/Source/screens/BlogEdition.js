@@ -60,12 +60,18 @@ export default class BlogEdition extends Component{
         console.log('上载图片');
     }
 
+    /*
+        输入框中博客标题改变时调用
+    */
     _titleChanged = (text)=>
     {
         this.setState({postTitle: text});
-        //console.log('主题改为 ' + text); // 在console中记录输入的内容
+        //console.log('标题改为 ' + text); // 在console中记录输入的内容
     }
 
+    /*
+        输入框中博客正文改变时调用
+    */
     _bodyChanged =(text)=>
     {
         this.setState({postBody: text});
@@ -97,6 +103,7 @@ export default class BlogEdition extends Component{
                         defaultValue={this.state.postBody}>
                     </TextInput>
                 </View>
+                {/* 以下为待实现的提交按钮，暂时未发现API，无法实现 */}
                 <Button style={styles.commitBtn}
                     title='提交修改'
                     onPress={() => {

@@ -17,6 +17,7 @@ import {
     TouchableHighlight,
     ActivityIndicator,
     TouchableOpacity,
+    ToastAndroid,
     screen,
 } from 'react-native';
 
@@ -41,6 +42,7 @@ export default class Bulletin extends Component {
             changedSchoolClassId: this.props.changedSchoolClassId,
             bulletins: [],
             bulletinCount: 0,
+            membership: 1,
             loadStatus: 'not loading',
             currentPageIndex: 1,
         }
@@ -52,6 +54,8 @@ export default class Bulletin extends Component {
     //     this._isMounted=true;
     //     this.fetchPage(this.state.currentPageIndex);
     // }
+
+    /* 渲染一个公告数据 */
     _renderItem = (item) => {
         let item1 = item;
         var Id = item1.item.key;
@@ -89,11 +93,11 @@ export default class Bulletin extends Component {
     _separator = () => {
         return (
             <View style={flatStyles.separatorStyle}>
-
             </View>
         );
     }
 
+    /* 刷新公告页面的函数，在改变班级、修改和发布公告后都应调用 */
     _FlatListRefresh = ()=>{
         this.setState({
             changedSchoolClassId: true,
@@ -104,6 +108,7 @@ export default class Bulletin extends Component {
         });
     };
 
+    /* 渲染公告列表 */
     _renderBulletinList() {
         var data = [];
         for(var i in this.state.bulletins)
@@ -131,6 +136,7 @@ export default class Bulletin extends Component {
         )
     }
 
+    /* 公告列表到达底部时，渲染底部文本 */
     _renderFooter(){
         if (this.state.loadStatus === 'all loaded') {
             return (
@@ -171,6 +177,7 @@ export default class Bulletin extends Component {
 		this.fetchPage(this.state.currentPageIndex);
     }
 
+    /* 获取某页面的数据，这里简单的考虑第一页时充值公告列表，其他情况追加数据 */
     fetchPage(pageIndex) {
         let url = Config.BulletinList + this.props.schoolClassId + '/'+ pageIndex + '-'+ pageSize;
         //console.log(url);
@@ -213,24 +220,53 @@ export default class Bulletin extends Component {
         });
     }
 
-    UpdateData(){
-        this.setState({bulletins: []});
-        this.fetchPage(this.state.currentPageIndex);
-    }
-
     componentWillUnmount() {
         this._isMounted = false;
     }
 
+    /* 单击添加公告列表时的响应函数 */
     _onPress = ()=>{
+        let url = Config.apiDomain + api.user.info;
+        if (this.state.membership==2||this.state.membership==3)
+            this.props.navigation.navigate('BulletinAdd',
+                {schoolClassId: this.props.schoolClassId, callback: this._FlatListRefresh});
+        else
+        {
+            ToastAndroid.show("您没有权限，只有老师和助教才能发布作业哦！",ToastAndroid.SHORT);
+        }
+        /*
         this.props.navigation.navigate('BulletinAdd',
             {schoolClassId: this.props.schoolClassId, callback: this._FlatListRefresh});
+        */
     }
 
+    /* 修改prop属性时调用 */
     componentWillReceiveProps(nextProps) {
+        let url1 = Config.apiDomain + api.user.info;
+        Service.Get(url1).then((jsonData)=>{
+            let url2= Config.apiDomain+"api/edu/member/"+jsonData.BlogId+"/"+this.props.schoolClassId;
+            Service.Get(url2).then((jsonData)=>{
+                //console.log(jsonData);
+                if(this._isMounted && jsonData!=='rejected'){
+                    this.setState({
+                        membership: jsonData.membership,
+                        changedSchoolClassId: nextProps.changedSchoolClassId,
+                        //changedSchoolClassId: true,
+                        bulletins: [],
+                        bulletinCount: 0,
+                        loadStatus: 'not loading',
+                        currentPageIndex: 1,
+                    })
+                }
+            })
+        })
+        .then(()=>{
+            global.storage.save({key : StorageKey.MEMBER_SHIP,data : this.state.membership});
+        });
         this.setState({
             changedSchoolClassId: nextProps.changedSchoolClassId,
             //changedSchoolClassId: true,
+            membership: 1,
             bulletins: [],
             bulletinCount: 0,
             loadStatus: 'not loading',
@@ -238,9 +274,9 @@ export default class Bulletin extends Component {
         });
     }
 
+    /* 将网站返回的时间字符串改成预期 */
     String2Date = (day)=>{
         //console.log(day);
-        // YYYY-MM-DDTHH:MM:SS
         if(day == null)
             return '  ';
         let s1 = day.split('T')[0];

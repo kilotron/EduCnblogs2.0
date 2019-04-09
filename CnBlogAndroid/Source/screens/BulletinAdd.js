@@ -21,7 +21,9 @@ export default class BulletinAdd extends Component {
             schoolClassId: this.props.navigation.state.params.schoolClassId,
             bulletinText: '',
         };
-      }
+    }
+
+    /* 单击发布后的响应函数 */
     _onPress() {
         if (this.state.bulletinText === '')
         {
@@ -51,6 +53,7 @@ export default class BulletinAdd extends Component {
             else if(jsonData.isSuccess)
             {
                 ToastAndroid.show('添加成功！',ToastAndroid.SHORT);
+                /* 调用回调函数更新公告列表 */
                 this.props.navigation.state.params.callback();
                 this.props.navigation.goBack();
             }
@@ -66,6 +69,7 @@ export default class BulletinAdd extends Component {
             ToastAndroid.show(err_info.NO_INTERNET ,ToastAndroid.SHORT);
         });
     }
+
     render() {
         return (
             <View style = {styles.container}>

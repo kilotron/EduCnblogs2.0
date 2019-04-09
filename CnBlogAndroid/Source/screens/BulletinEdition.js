@@ -22,7 +22,9 @@ export default class BulletinEdition extends Component {
             bulletinText: this.props.navigation.state.params.bulletinText,
             bulletinId: this.props.navigation.state.params.bulletinId,
         };
-      }
+    }
+
+    /* 单击修改后的响应函数 */
     _onPress() {
         if (this.state.bulletinText === '')
         {
@@ -54,6 +56,7 @@ export default class BulletinEdition extends Component {
             else if(jsonData.isSuccess)
             {
                 ToastAndroid.show('修改成功',ToastAndroid.SHORT);
+                /* 调用回调函数更新公告列表 */
                 this.props.navigation.state.params.callback();
                 this.props.navigation.goBack();
             }

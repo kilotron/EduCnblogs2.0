@@ -7,7 +7,7 @@ import HeaderNoBackComponent from './HeaderNoBackComponent.js'
 import React, { Component} from 'react';
 import {StorageKey} from '../config'
 import {err_info} from '../config'
-
+import {flatStyles} from '../styles/styles'
 import {
     Platform,
     StyleSheet,
@@ -52,7 +52,7 @@ export default class HomeworkLists extends Component {
     componentWillMount = ()=>{
         // 先设标志位为true，表示组件未卸载
         this._isMounted = true;
-        let classId = this.props.navigation.state.params.classId;
+        let classId = this.props.classId;
         let url = Config.apiDomain + api.ClassGet.homeworkList + "/false/"+classId+"/1-12";
         // 先获取作业数量，再按作业数量获取作业信息列表
         Service.Get(url).then((jsonData)=>{
@@ -103,7 +103,7 @@ export default class HomeworkLists extends Component {
             .then(()=>{
                 let url1 = Config.apiDomain + api.user.info;
                 Service.Get(url1).then((jsonData)=>{
-                    let url2= Config.apiDomain+"api/edu/member/"+jsonData.BlogId+"/"+this.props.navigation.state.params.classId;
+                    let url2= Config.apiDomain+"api/edu/member/"+jsonData.BlogId+"/"+this.props.classId;
                     Service.Get(url2).then((jsonData)=>{
                         if(this._isMounted && jsonData!=='rejected'){
                             this.setState({
@@ -149,7 +149,7 @@ export default class HomeworkLists extends Component {
     _onPress = ()=>{
         let url = Config.apiDomain + api.user.info;
         if (this.state.membership==2||this.state.membership==3)
-            this.props.navigation.navigate('HomeworkPost',{classId: this.props.navigation.state.params.classId});
+            this.props.navigation.navigate('HomeworkPost',{classId: this.props.classId});
         else
         {
             ToastAndroid.show("您没有权限，只有老师和助教才能发布作业哦！",ToastAndroid.SHORT);
@@ -167,7 +167,7 @@ export default class HomeworkLists extends Component {
             <View>
                 <TouchableOpacity
                     onPress = {()=>this.props.navigation.navigate('HomeworkDetail',{url: url, Id: Id,
-                                            classId: this.props.navigation.state.params.classId, isFinished: isFinished})}
+                                            classId: this.props.classId, isFinished: isFinished})}
                     style = {HomeworkStyles.container}
                 >
                     <Text style= {HomeworkStyles.titleTextStyle}>
@@ -185,9 +185,7 @@ export default class HomeworkLists extends Component {
     }
     _separator = () => {
         return (
-            <View style={{ height: 9.75, justifyContent: 'center'}}>
-            <View style={{ height: 0.75, backgroundColor: 'rgb(100,100,100)'}}/>
-            <View style={{ height: 9, backgroundColor: 'rgb(235,235,235)'}}/>
+            <View style={flatStyles.separatorStyle}>
             </View>
         );
     }

@@ -28,6 +28,7 @@ import {
   TabNavigator,
 } from 'react-navigation';
 import Bulletin from './Bulletin';
+import HomeworkLists from './HomeworkLists';
 var viewKey = 0;
 const screenWidth= MyAdapter.screenWidth;
 const screenHeight= MyAdapter.screenHeight;
@@ -148,7 +149,7 @@ export default class ClassListsNew extends Component{
                                 <Bulletin schoolClassId={this.state.schoolClassId}
                                     changedSchoolClassId={this.state.changedSchoolClassId}/>
                             </View>
-							<Text tabLabel='作业'>作业内容</Text>
+							<HomeworkLists tabLabel='作业' classId={this.state.schoolClassId}/>
 							{/* <ClassBlogPostsList tabLabel='博文' schoolClassId={this.state.schoolClassId}/> */}
 							<Text tabLabel='投票'>投票</Text>
 						</ScrollableTabView> }

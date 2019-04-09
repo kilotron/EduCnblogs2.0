@@ -14,12 +14,13 @@ import {
 } from 'react-native';
 const screenWidth= MyAdapter.screenWidth;
 // 该页面使用navigate参数为classId
-export default class BulletinAdd extends Component {
+export default class BulletinEdition extends Component {
     constructor(props){
         super(props);
         this.state={
             schoolClassId: this.props.navigation.state.params.schoolClassId,
-            bulletinText: '',
+            bulletinText: this.props.navigation.state.params.bulletinText,
+            bulletinId: this.props.navigation.state.params.bulletinId,
         };
       }
     _onPress() {
@@ -34,8 +35,9 @@ export default class BulletinAdd extends Component {
         }
         let body = JSON.stringify(postBody);
         //let url = 'https://api.cnblogs.com/api/edu/member/register/displayName';
-        let url = Config.BulletinPublish;
-        Service.UserAction(url, body, 'POST').then((response)=>{
+        let url = Config.BulletinEdit + this.state.bulletinId;
+        console.log(url);
+        Service.UserAction(url, body, 'PATCH').then((response)=>{
             if(response.status!==200)
             {
                 return null;
@@ -50,7 +52,7 @@ export default class BulletinAdd extends Component {
             }
             else if(jsonData.isSuccess)
             {
-                ToastAndroid.show('添加成功，请刷新查看！',ToastAndroid.SHORT);
+                ToastAndroid.show('修改成功，请刷新查看！',ToastAndroid.SHORT);
                 this.props.navigation.goBack();
             }
             else if(jsonData.isWarning)
@@ -82,7 +84,7 @@ export default class BulletinAdd extends Component {
                       alignSelf: 'center', }}
                 >
                     <Button style={styles.commitBtn}
-                        title='添加公告'
+                        title='修改公告'
                         onPress={() => {
                             //console.log('公告内容改为 ' + this.state.bulletinText);
                             this._onPress();

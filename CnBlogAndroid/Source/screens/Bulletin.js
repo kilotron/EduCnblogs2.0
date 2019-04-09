@@ -16,6 +16,7 @@ import {
     FlatList,
     TouchableHighlight,
     ActivityIndicator,
+    TouchableOpacity,
 } from 'react-native';
 
 import {
@@ -42,7 +43,6 @@ export default class Bulletin extends Component {
             loadStatus: 'not loading',
             currentPageIndex: 1,
         }
-
     }
     _isMounted;
 
@@ -50,6 +50,7 @@ export default class Bulletin extends Component {
         this._isMounted=true;
         this.fetchPage(this.state.currentPageIndex);
     }
+
     _renderItem = (item) => {
         let item1 = item;
         var Id = item1.item.key;
@@ -58,21 +59,28 @@ export default class Bulletin extends Component {
         var BlogUrl = item1.item.BlogUrl;
         var DateAdded = item1.item.DateAdded;
         return(
-            <View style={styles.textcontainer}>
-                <Text numberOfLines={3} style={styles.bulletinContent}>
-                    {Content}
-                </Text>
-                <View style={{alignSelf: 'flex-end'}}>
-                    <Text style={styles.bulletinPublisher}>
-                        {Publisher}
+            <TouchableOpacity onPress={()=>{
+                this.props.navigation.navigate('BulletinEdition',{
+                    schoolClassId: this.state.schoolClassId,
+                    bulletinText: Content,
+                    bulletinId: Id,});
+            } }>
+                <View style={styles.textcontainer}>
+                    <Text numberOfLines={3} style={styles.bulletinContent}>
+                        {Content}
                     </Text>
+                    <View style={{alignSelf: 'flex-end'}}>
+                        <Text style={styles.bulletinPublisher}>
+                            {Publisher}
+                        </Text>
+                    </View>
+                    <View style={{alignSelf: 'flex-end'}}>
+                        <Text style={styles.bulletinDateAdded}>
+                            {DateAdded}
+                        </Text>
+                    </View>
                 </View>
-                <View style={{alignSelf: 'flex-end'}}>
-                    <Text style={styles.bulletinDateAdded}>
-                        {DateAdded}
-                    </Text>
-                </View>
-            </View>
+            </TouchableOpacity>
         )
     };
 

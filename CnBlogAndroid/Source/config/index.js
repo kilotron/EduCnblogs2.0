@@ -19,6 +19,7 @@ export default{
 	SubmitJudge: 'https://api.cnblogs.com/api/edu/answer/iscommitted/',
 	BulletinList: 'https://api.cnblogs.com/api/edu/schoolclass/bulletins/',
 	BulletinPublish: 'https://api.cnblogs.com/api/edu/bulletin/publish/',
+    BulletinEdit: 'https://api.cnblogs.com/api/edu/bulletin/modify/',
 }
 
 export const authData = {

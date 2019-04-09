@@ -38,20 +38,15 @@ export default class Bulletin extends Component {
     constructor(props){
         super(props);
         this.state = {
+            changedSchoolClassId: this.props.changedSchoolClassId,
             bulletins: [],
             bulletinCount: 0,
             loadStatus: 'not loading',
             currentPageIndex: 1,
         }
-        this.fetchPage(this.state.currentPageIndex);
         this._isMounted=true;
     }
     _isMounted;
-
-    // componentWillMount =  () => {
-    //     this._isMounted=true;
-    //     this.fetchPage(this.state.currentPageIndex);
-    // }
 
     // componentWillUpdate(){
     //     this._isMounted=true;
@@ -186,6 +181,7 @@ export default class Bulletin extends Component {
                     bulletinCount: jsonData.totalCount,
                     bulletins: this.state.bulletins.concat(jsonData.bulletins),
                     loadStatus: this.state.currentPageIndex>=pageCount ? 'all loaded' : 'not loading',
+                    changedSchoolClassId: false,
                 });
             }
         }).then(()=>{;
@@ -207,10 +203,22 @@ export default class Bulletin extends Component {
         schoolClassId: this.props.schoolClassId,});
     }
 
+    componentWillReceiveProps(nextProps) {
+        this.setState({
+            changedSchoolClassId: nextProps.changedSchoolClassId,
+            bulletins: [],
+            bulletinCount: 0,
+            loadStatus: 'not loading',
+            currentPageIndex: 1,
+        });
+    }
+
     render() {
+        if(this.state.changedSchoolClassId === true){
+            this.fetchPage(1);
+        }
         return (
             <View style = {styles.container}>
-
                 <View style={{ height: 1, backgroundColor: 'rgb(225,225,225)',  marginTop: 0.005*screenHeight, alignSelf:'stretch'}}/>
                 <View style={{width: screenWidth, }}>
                     {this._renderBulletinList()}

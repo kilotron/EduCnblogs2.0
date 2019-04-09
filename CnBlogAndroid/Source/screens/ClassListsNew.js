@@ -47,6 +47,7 @@ export default class ClassListsNew extends Component{
 			schoolClassId:0,  //班级id
 			blogCondition:'所有博客',
 			classSelected:false,
+            changedSchoolClassId: false,
 		}
 		this.props.navigation.navigate('ClassSelect', {callback: this._classSelectGoBack});
 	}
@@ -57,6 +58,7 @@ export default class ClassListsNew extends Component{
 			className: chosedClassName,
 			schoolClassId: chosedSchoolClassId,
 			classSelected: true,
+            changedSchoolClassId: true,
 		});
 	}
 
@@ -143,7 +145,8 @@ export default class ClassListsNew extends Component{
 							renderTabBar={() => <ScrollableTabBar />}
 						>
                             <View tabLabel='公告' style={{flex: 1, alignItems: 'stretch'}} >
-                                <Bulletin schoolClassId={this.state.schoolClassId}/>
+                                <Bulletin schoolClassId={this.state.schoolClassId}
+                                    changedSchoolClassId={this.state.changedSchoolClassId}/>
                             </View>
 							<Text tabLabel='作业'>作业内容</Text>
 							{/* <ClassBlogPostsList tabLabel='博文' schoolClassId={this.state.schoolClassId}/> */}

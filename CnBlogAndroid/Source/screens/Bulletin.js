@@ -179,12 +179,24 @@ export default class Bulletin extends Component {
             let pageCount = Math.ceil(jsonData.totalCount / pageSize);
             if(jsonData!=='rejected')
             {
-                this.setState({
-                    bulletinCount: jsonData.totalCount,
-                    bulletins: this.state.bulletins.concat(jsonData.bulletins),
-                    loadStatus: this.state.currentPageIndex>=pageCount ? 'all loaded' : 'not loading',
-                    changedSchoolClassId: false,
-                });
+                if(pageIndex===1)
+                {
+                    this.setState({
+                        bulletinCount: jsonData.totalCount,
+                        bulletins: jsonData.bulletins,
+                        loadStatus: this.state.currentPageIndex>=pageCount ? 'all loaded' : 'not loading',
+                        changedSchoolClassId: false,
+                    });
+                }
+                else
+                {
+                    this.setState({
+                        bulletinCount: jsonData.totalCount,
+                        bulletins: this.state.bulletins.concat(jsonData.bulletins),
+                        loadStatus: this.state.currentPageIndex>=pageCount ? 'all loaded' : 'not loading',
+                        changedSchoolClassId: false,
+                    });
+                }
             }
             else
             {
@@ -218,6 +230,7 @@ export default class Bulletin extends Component {
     componentWillReceiveProps(nextProps) {
         this.setState({
             changedSchoolClassId: nextProps.changedSchoolClassId,
+            //changedSchoolClassId: true,
             bulletins: [],
             bulletinCount: 0,
             loadStatus: 'not loading',

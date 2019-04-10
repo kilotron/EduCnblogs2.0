@@ -19,9 +19,6 @@ import {
     TextInput,
     FlatList,
     TouchableOpacity,
-    Dimensions,
-    PixelRatio,
-    Alert
 } from 'react-native';
 import Toast from 'teaset/components/Toast/Toast';
 
@@ -211,9 +208,10 @@ export default class HomeworkLists extends Component {
             .then(()=>{
                 global.storage.save({key:StorageKey.CLASS_HOMEWORK,data:this.state.homeworks});
             })
-            .then(()=>{
-                let url1 = Config.apiDomain + api.user.info;
+            .then(()=>{//这个then用来获得membership
+                let url1 = Config.apiDomain + api.user.info;//获取当前登录用户信息，用来获取博客Id
                 Service.Get(url1).then((jsonData)=>{
+                    //根据博客Id获取成员信息，以获取membership
                     let url2= Config.apiDomain+"api/edu/member/"+jsonData.BlogId+"/"+this.state.classId;
                     Service.Get(url2).then((jsonData)=>{
                         if(this._isMounted && jsonData!=='rejected'){
@@ -273,8 +271,15 @@ export default class HomeworkLists extends Component {
         return (
             <View>
                 <TouchableOpacity
-                    onPress = {()=>this.props.navigation.navigate('HomeworkDetail',{url: url, Id: Id,
-                                            classId: this.state.classId, isFinished: isFinished})}
+                    //url:作业url，如示例的'/campus/bjwzxy/test/homework/9'
+                    onPress = {()=>this.props.navigation.navigate('HomeworkDetail',{
+                                url: url, 
+                                Id: Id,
+                                classId: this.state.classId, 
+                                isFinished: isFinished,
+                                membership:this.state.membership,
+                                callback:this.UpdateData,
+                                })}
                     style = {HomeworkStyles.container}
                 >
                     <Text style= {HomeworkStyles.titleTextStyle}>
@@ -305,6 +310,41 @@ export default class HomeworkLists extends Component {
         let YMD = s1.split('-');
         let HMS = s2.split(':');
         return new Date(Number(YMD[0]),Number(YMD[1])-1,Number(YMD[2]),Number(HMS[0]),Number(HMS[1]),Number(HMS[2].substring(0,2)));
+    }
+    generateAddButton(){
+        if(this.state.membership != 1){
+            return(
+                <TouchableHighlight 
+                    underlayColor="#3b50ce"
+                    activeOpacity={0.5}
+                    style={{
+                        position:'absolute',
+                        bottom:20,
+                        right:10, 
+                        backgroundColor: "#3b50ce",
+                        width: 52, 
+                        height: 52, 
+                        borderRadius: 26,
+                        justifyContent: 'center', 
+                        alignItems: 'center', 
+                        margin: 20}} 
+                        onPress={this._onPress} >
+                    
+                    <Text
+                        style= {{
+                            fontSize: 30,
+                            color: '#ffffff',
+                            textAlign: 'center',
+                            fontWeight: '100',
+                        }}
+                    >
+                        +
+                    </Text>
+                    
+                </TouchableHighlight>
+            );
+        }
+        else return;
     }
     render() {
         var data = [];
@@ -374,34 +414,7 @@ export default class HomeworkLists extends Component {
                     refreshing= {false}
                 />
             </View>
-            <TouchableHighlight 
-                underlayColor="#3b50ce"
-                activeOpacity={0.5}
-                style={{
-                    position:'absolute',
-                    bottom:20,
-                    right:10, 
-                    backgroundColor: "#3b50ce",
-                    width: 52, 
-                    height: 52, 
-                    borderRadius: 26,
-                    justifyContent: 'center', 
-                    alignItems: 'center', 
-                    margin: 20}} 
-                    onPress={this._onPress} >
-                
-                <Text
-                    style= {{
-                        fontSize: 30,
-                        color: '#ffffff',
-                        textAlign: 'center',
-                        fontWeight: '100',
-                    }}
-                >
-                    +
-                </Text>
-                
-            </TouchableHighlight>            
+            {this.generateAddButton()}     
       </View>
     );
   }

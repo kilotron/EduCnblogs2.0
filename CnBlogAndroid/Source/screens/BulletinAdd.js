@@ -24,7 +24,7 @@ export default class BulletinAdd extends Component {
     }
 
     /* 单击发布后的响应函数 */
-    _onPress() {
+    _onPress = ()=> {
         if (this.state.bulletinText === '')
         {
             ToastAndroid.show('公告内容不可为空',ToastAndroid.SHORT);
@@ -67,8 +67,10 @@ export default class BulletinAdd extends Component {
             }
         }).catch((error) => {
             ToastAndroid.show(err_info.NO_INTERNET ,ToastAndroid.SHORT);
+            this.props.navigation.state.params.callback();
+            this.props.navigation.goBack();
         });
-    }
+    };
 
     render() {
         return (
@@ -88,11 +90,7 @@ export default class BulletinAdd extends Component {
                 >
                     <Button style={styles.commitBtn}
                         title='添加公告'
-                        onPress={() => {
-                            //console.log('公告内容改为 ' + this.state.bulletinText);
-                            this._onPress();
-                            }
-                        }>
+                        onPress={ this._onPress}>
                     </Button>
                 </View>
             </View>

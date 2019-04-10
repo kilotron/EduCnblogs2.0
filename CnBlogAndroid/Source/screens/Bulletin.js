@@ -180,7 +180,6 @@ export default class Bulletin extends Component {
     /* 获取某页面的数据，这里简单的考虑第一页时充值公告列表，其他情况追加数据 */
     fetchPage(pageIndex) {
         let url = Config.BulletinList + this.props.schoolClassId + '/'+ pageIndex + '-'+ pageSize;
-        //console.log(url);
         Service.Get(url).then((jsonData)=>{
             //console.log(jsonData);
             let pageCount = Math.ceil(jsonData.totalCount / pageSize);
@@ -226,7 +225,6 @@ export default class Bulletin extends Component {
 
     /* 单击添加公告列表时的响应函数 */
     _onPress = ()=>{
-        let url = Config.apiDomain + api.user.info;
         if (this.state.membership==2||this.state.membership==3)
             this.props.navigation.navigate('BulletinAdd',
                 {schoolClassId: this.props.schoolClassId, callback: this._FlatListRefresh});
@@ -249,20 +247,47 @@ export default class Bulletin extends Component {
             let url2= Config.apiDomain+"api/edu/member/"+jsonData.BlogId+"/"+this.props.schoolClassId;
             Service.Get(url2).then((jsonData)=>{
                 //console.log(jsonData);
+                //console.log('jsonData.membership  ' + jsonData.membership);
                 if(this._isMounted && jsonData!=='rejected'){
                     membership = jsonData.membership;
                 }
-            })
+            }).then(()=>{
+                    //console.log('membership  '+ membership);
+                    this.setState({
+                        changedSchoolClassId: nextProps.changedSchoolClassId,
+                        //changedSchoolClassId: true,
+                        membership: membership,
+                        bulletins: [],
+                        bulletinCount: 0,
+                        loadStatus: 'not loading',
+                        currentPageIndex: 1,
+                    });
+                }
+            ).catch((err)=>{
+                ToastAndroid.show(err_info.TIME_OUT,ToastAndroid.SHORT);
+                this.setState({
+                    changedSchoolClassId: nextProps.changedSchoolClassId,
+                    //changedSchoolClassId: true,
+                    membership: membership,
+                    bulletins: [],
+                    bulletinCount: 0,
+                    loadStatus: 'not loading',
+                    currentPageIndex: 1,
+                });
+            });
+        }).catch((err)=>{
+            ToastAndroid.show(err_info.TIME_OUT,ToastAndroid.SHORT);
+            this.setState({
+                changedSchoolClassId: nextProps.changedSchoolClassId,
+                //changedSchoolClassId: true,
+                membership: membership,
+                bulletins: [],
+                bulletinCount: 0,
+                loadStatus: 'not loading',
+                currentPageIndex: 1,
+            });
         });
-        this.setState({
-            changedSchoolClassId: nextProps.changedSchoolClassId,
-            //changedSchoolClassId: true,
-            membership: membership,
-            bulletins: [],
-            bulletinCount: 0,
-            loadStatus: 'not loading',
-            currentPageIndex: 1,
-        });
+
     }
 
     /* 将网站返回的时间字符串改成预期 */
@@ -304,34 +329,42 @@ export default class Bulletin extends Component {
                         flex:1,
                     }}
                 >
-                    <TouchableHighlight
-                        underlayColor="#3b50ce"
-                        activeOpacity={0.5}
-                        style={{
-                            position:'absolute',
-                            bottom:20,
-                            right:10,
-                            backgroundColor: "#3b50ce",
-                            width: 52,
-                            height: 52,
-                            borderRadius: 26,
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            margin: 20}}
-                            onPress={this._onPress} >
+                {
+                    (this.state.membership==2||this.state.membership==3)?
+                    (
+                        <TouchableHighlight
+                            underlayColor="#3b50ce"
+                            activeOpacity={0.5}
+                            style={{
+                                position:'absolute',
+                                bottom:20,
+                                right:10,
+                                backgroundColor: "#3b50ce",
+                                width: 52,
+                                height: 52,
+                                borderRadius: 26,
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                margin: 20}}
+                                onPress={this._onPress} >
+    
+                            <Text
+                                style= {{
+                                    fontSize: 30,
+                                    color: '#ffffff',
+                                    textAlign: 'center',
+                                    fontWeight: '100',
+                                }}
+                            >
+                                +
+                            </Text>
 
-                        <Text
-                            style= {{
-                                fontSize: 30,
-                                color: '#ffffff',
-                                textAlign: 'center',
-                                fontWeight: '100',
-                            }}
-                        >
-                            +
-                        </Text>
-
-                    </TouchableHighlight>
+                        </TouchableHighlight>
+                    ):
+                    (
+                        null
+                    )
+                }
                 </View>
             </View>
         )

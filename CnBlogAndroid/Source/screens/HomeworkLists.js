@@ -211,9 +211,10 @@ export default class HomeworkLists extends Component {
             .then(()=>{
                 global.storage.save({key:StorageKey.CLASS_HOMEWORK,data:this.state.homeworks});
             })
-            .then(()=>{
-                let url1 = Config.apiDomain + api.user.info;
+            .then(()=>{//这个then用来获得membership
+                let url1 = Config.apiDomain + api.user.info;//获取当前登录用户信息，用来获取博客Id
                 Service.Get(url1).then((jsonData)=>{
+                    //根据博客Id获取成员信息，以获取membership
                     let url2= Config.apiDomain+"api/edu/member/"+jsonData.BlogId+"/"+this.state.classId;
                     Service.Get(url2).then((jsonData)=>{
                         if(this._isMounted && jsonData!=='rejected'){
@@ -273,8 +274,9 @@ export default class HomeworkLists extends Component {
         return (
             <View>
                 <TouchableOpacity
+                    //url:作业url，如示例的'/campus/bjwzxy/test/homework/9'
                     onPress = {()=>this.props.navigation.navigate('HomeworkDetail',{url: url, Id: Id,
-                                            classId: this.state.classId, isFinished: isFinished})}
+                                            classId: this.state.classId, isFinished: isFinished,membership:this.state.membership})}
                     style = {HomeworkStyles.container}
                 >
                     <Text style= {HomeworkStyles.titleTextStyle}>

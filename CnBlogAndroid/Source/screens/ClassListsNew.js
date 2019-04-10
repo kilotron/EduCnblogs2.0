@@ -30,7 +30,7 @@ import {
 import Bulletin from './Bulletin';
 import HomeworkLists from './HomeworkLists';
 import ClassBlogPostsList from '../component/ClassBlogPostsList'
-var viewKey = 0;
+
 const screenWidth= MyAdapter.screenWidth;
 const screenHeight= MyAdapter.screenHeight;
 const titleFontSize= MyAdapter.titleFontSize;
@@ -38,10 +38,7 @@ const abstractFontSize= MyAdapter.abstractFontSize;
 const informationFontSize= MyAdapter.informationFontSize;
 const btnFontSize= MyAdapter.btnFontSize;
 
-const pageSize = 10;
-
 export default class ClassListsNew extends Component{
-	filter='all'; // 班级博客筛选条件
   	constructor(props){
 		super(props);
 		this.state={
@@ -102,74 +99,24 @@ export default class ClassListsNew extends Component{
 				</View>
                 {/* 从这里开始滚动 */}
                 <View style={styles.tabViewStyle}>
-                    {/* 这一部分是公告，作业和投票 */}
-                    {/* <View style={styles.tabTouchStyle} onPress={()=>{alert('弹出班级操作')}}>
-                        <TouchableOpacity style={styles.tabImgViewStyle}
-                            onPress={() => {
-                                if (!this.state.classSelected) {
-                                    ToastAndroid.show("请选择班级", ToastAndroid.SHORT);
-                                    this.props.navigation.navigate('ClassSelect', {callback: this._classSelectGoBack});
-                                } else {
-                                    console.log(this.state.schoolClassId);
-                                    this.props.navigation.navigate('Bulletin',{
-                                    schoolClassId: this.state.schoolClassId,});
-                                }
-                            }}>
-                            <Image style={styles.tabImgstyle} source={require('../images/notice.png')}/>
-                            <Text>公告</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.tabImgViewStyle}>
-                            <Image style={styles.tabImgstyle} source={require('../images/notice.png')}/>
-                            <Text>作业</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.tabImgViewStyle}>
-                            <Image style={styles.tabImgstyle} source={require('../images/notice.png')}/>
-                            <Text>投票</Text>
-                        </TouchableOpacity>
-                    </View> */}
-                    {/* 这是筛选导航栏 */}
-                    {/* <View style={styles.blogConditionViewStyle}> */}
-                        {/* <TouchableOpacity style={styles.barStyle}>
-                            <Text style = {styles.titleFontStyle}>博文</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.barStyle}>
-                            <Text style = {styles.titleFontStyle}>作业</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.barStyle}>
-                            <Text style = {styles.titleFontStyle}>公告</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.barStyle}>
-                            <Text style = {styles.titleFontStyle}>投票</Text>
-                        </TouchableOpacity> */}
-						{ <ScrollableTabView
-							style={tabViewStyles.ScrollableTabView}
-							initialPage={0}
-							renderTabBar={() => <ScrollableTabBar />}
+					{ <ScrollableTabView
+						style={tabViewStyles.ScrollableTabView}
+						initialPage={0}
+						renderTabBar={() => <ScrollableTabBar />}
 						>
-                            <View tabLabel='公告' style={{flex: 1, alignItems: 'stretch'}} >
-                                <Bulletin schoolClassId={this.state.schoolClassId}
-                                    changedSchoolClassId={this.state.changedSchoolClassId}
-                                    navigation={this.props.navigation}/>
-                            </View>
-							<HomeworkLists tabLabel='作业' classId={this.state.schoolClassId}
+						<View tabLabel='公告' style={{flex: 1, alignItems: 'stretch'}} >
+							<Bulletin schoolClassId={this.state.schoolClassId}
+								changedSchoolClassId={this.state.changedSchoolClassId}
 								navigation={this.props.navigation}/>
-							<ClassBlogPostsList tabLabel='博文' schoolClassId={this.state.schoolClassId}
-								navigation={this.props.navigation}
-							/>
-							<Text tabLabel='投票'>投票</Text>
-						</ScrollableTabView> }
-                        {/* <TouchableOpacity style={{flexDirection:'row', alignItems:'center'}}>
-                            <Text style = {styles.titleFontStyle}>zuoye</Text>
-                            <Image source={require('../images/arrowDown.png')} style = {styles.arrowStyle}/>
-                        </TouchableOpacity> */}
-
-                    {/* </View> */}
-
+						</View>
+						<HomeworkLists tabLabel='作业' classId={this.state.schoolClassId}
+							navigation={this.props.navigation}/>
+						<ClassBlogPostsList tabLabel='博文' schoolClassId={this.state.schoolClassId}
+							navigation={this.props.navigation}
+						/>
+						<Text tabLabel='投票'>投票</Text>
+					</ScrollableTabView> }
                 </View>
-				{/* 下面是博客项，用FlatList实现 */}
-				{/* <View style={styles.listView}>
-				    {this._renderPosts()}
-				</View> */}
 			</View>
 		)
     }

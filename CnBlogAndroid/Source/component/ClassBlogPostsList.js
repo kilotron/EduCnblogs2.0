@@ -24,6 +24,7 @@ import {
 import {flatStyles} from '../styles/styles';
 import Config from '../config';
 import * as Service from '../request/request.js';
+import MyAdapter from '../screens/MyAdapter';
 
 // 获取博文一页的容量
 const pageSize = 10;
@@ -172,17 +173,16 @@ export default class ClassBlogPostsList extends Component {
                 </Picker>
 
                 {/* 使用keyExtractor为每个item生成独有的key，就不必再data数组的每一个元素中添加key键。
-                    refreshing设置为false在列表更新时不显示转圈*/}
+                    refreshing设置为false在列表更新时不显示转圈*/}{/*ItemSeparatorComponent={this._separator}*/}
                 <FlatList
-                    ItemSeparatorComponent={this._separator}
                     renderItem={this._renderItem}
                     data={this.makeBlogPostsList()}
                     keyExtractor={(item, index) => index.toString()}
                     onRefresh = {this.updateData.bind(this)}
                     refreshing= {false}
                     onEndReached={this._onEndReached.bind(this)}
-                    onEndReachedThreshold={0.1}
-                    //ListFooterComponent={this._renderFooter.bind(this)}
+                    onEndReachedThreshold={0.5}
+                    ListFooterComponent={this._renderFooter.bind(this)}
                 />
             </View>
         );
@@ -198,7 +198,7 @@ export default class ClassBlogPostsList extends Component {
     /**FlatList的renderItem */
     _renderItem = ({item}) => {
 		return(
-            <View>
+            <View style={styles.cellStyle}> 
                 <TouchableOpacity
                     style = {flatStyles.listContainer}
                     onPress = {() => {
@@ -278,10 +278,41 @@ export default class ClassBlogPostsList extends Component {
 
 ClassBlogPostsList.PropTypes = ClassBlogPostsListProps;
 
+const screenWidth= MyAdapter.screenWidth;
+const screenHeight= MyAdapter.screenHeight;
+
 const styles = StyleSheet.create({
+    cellStyle:{
+        flex: 1,
+        backgroundColor: 'white',
+        padding: 10,
+        paddingVertical:10,
+        marginLeft: 5,
+        marginRight: 5,
+        marginVertical: 3,
+        borderColor: '#dddddd',
+        borderStyle: null,
+        borderWidth: 0.5,
+        borderRadius: 2,
+        shadowColor: 'gray',    // 设置阴影
+        shadowOffset: {width:0.5, height: 0.5},  
+        shadowOpacity: 0.4,   // 透明度
+        shadowRadius: 1,
+        elevation:3   //   高度，设置Z轴，可以产生立体效果
+      },
+    container: {
+        flexDirection: 'row',
+        justifyContent:'space-between',
+        alignItems: 'center',
+        marginTop: 0.005*screenHeight,
+        marginLeft: 0.03*screenWidth,
+        marginRight: 0.03*screenWidth,
+        marginBottom: 0.005*screenHeight,
+        alignSelf: 'stretch',
+    },
     picker: {
         height: 50,
-        width: 120,
+        width: screenWidth/3,
     },
     postTitle: {
 		fontSize: 18,

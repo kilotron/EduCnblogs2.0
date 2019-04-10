@@ -29,6 +29,7 @@ import {
 } from 'react-navigation';
 import Bulletin from './Bulletin';
 import HomeworkLists from './HomeworkLists';
+import ClassBlogPostsList from '../component/ClassBlogPostsList'
 var viewKey = 0;
 const screenWidth= MyAdapter.screenWidth;
 const screenHeight= MyAdapter.screenHeight;
@@ -152,7 +153,9 @@ export default class ClassListsNew extends Component{
                             </View>
 							<HomeworkLists tabLabel='作业' classId={this.state.schoolClassId}
 								navigation={this.props.navigation}/>
-							{/* <ClassBlogPostsList tabLabel='博文' schoolClassId={this.state.schoolClassId}/> */}
+							<ClassBlogPostsList tabLabel='博文' schoolClassId={this.state.schoolClassId}
+								navigation={this.props.navigation}
+							/>
 							<Text tabLabel='投票'>投票</Text>
 						</ScrollableTabView> }
                         {/* <TouchableOpacity style={{flexDirection:'row', alignItems:'center'}}>

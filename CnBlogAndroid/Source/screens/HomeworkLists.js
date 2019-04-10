@@ -306,6 +306,41 @@ export default class HomeworkLists extends Component {
         let HMS = s2.split(':');
         return new Date(Number(YMD[0]),Number(YMD[1])-1,Number(YMD[2]),Number(HMS[0]),Number(HMS[1]),Number(HMS[2].substring(0,2)));
     }
+    generateAddButton(){
+        if(this.state.membership != 1){
+            return(
+                <TouchableHighlight 
+                    underlayColor="#3b50ce"
+                    activeOpacity={0.5}
+                    style={{
+                        position:'absolute',
+                        bottom:20,
+                        right:10, 
+                        backgroundColor: "#3b50ce",
+                        width: 52, 
+                        height: 52, 
+                        borderRadius: 26,
+                        justifyContent: 'center', 
+                        alignItems: 'center', 
+                        margin: 20}} 
+                        onPress={this._onPress} >
+                    
+                    <Text
+                        style= {{
+                            fontSize: 30,
+                            color: '#ffffff',
+                            textAlign: 'center',
+                            fontWeight: '100',
+                        }}
+                    >
+                        +
+                    </Text>
+                    
+                </TouchableHighlight>
+            );
+        }
+        else return;
+    }
     render() {
         var data = [];
         for(var i in this.state.homeworks)
@@ -374,34 +409,7 @@ export default class HomeworkLists extends Component {
                     refreshing= {false}
                 />
             </View>
-            <TouchableHighlight 
-                underlayColor="#3b50ce"
-                activeOpacity={0.5}
-                style={{
-                    position:'absolute',
-                    bottom:20,
-                    right:10, 
-                    backgroundColor: "#3b50ce",
-                    width: 52, 
-                    height: 52, 
-                    borderRadius: 26,
-                    justifyContent: 'center', 
-                    alignItems: 'center', 
-                    margin: 20}} 
-                    onPress={this._onPress} >
-                
-                <Text
-                    style= {{
-                        fontSize: 30,
-                        color: '#ffffff',
-                        textAlign: 'center',
-                        fontWeight: '100',
-                    }}
-                >
-                    +
-                </Text>
-                
-            </TouchableHighlight>            
+            {this.generateAddButton()}     
       </View>
     );
   }

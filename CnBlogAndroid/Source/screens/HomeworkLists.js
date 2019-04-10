@@ -17,7 +17,7 @@ import {
     ToastAndroid,
     TouchableHighlight,
     TextInput,
-    FlatList,
+    FlatList,SectionList,
     TouchableOpacity,
 } from 'react-native';
 import Toast from 'teaset/components/Toast/Toast';
@@ -295,6 +295,13 @@ export default class HomeworkLists extends Component {
             </View>
         )
     }
+    _sectionHeader = (info)=>{
+        return (
+            <View style={HomeworkStyles.sectionHeaderViewStyle}>
+                <Text style={HomeworkStyles.sectionHeaderTextStyle}>{info.section.key}</Text>
+            </View>
+        );
+    }
     _separator = () => {
         return (
             <View style={flatStyles.separatorStyle}>
@@ -347,7 +354,10 @@ export default class HomeworkLists extends Component {
         else return;
     }
     render() {
-        var data = [];
+        var data = [];//未结束作业
+        var FinishedData = [];//已结束作业
+        var closedData = [];//已关闭作业
+        var dataSize = 0;
         for(var i in this.state.homeworks)
         {
             let today = new Date(); // 当前日期
@@ -355,14 +365,43 @@ export default class HomeworkLists extends Component {
             let startday = this.StringToDate(_startday);
             if(today >= startday)//只显示已开始的作业
             {
-                data.push({
-                    key: this.state.homeworks[i].homeworkId,//作业ID
-                    title: this.state.homeworks[i].title,//作业标题
-                    url: this.state.homeworks[i].url,//作业网址
-                    description: this.state.homeworks[i].description,//作业描述
-                    deadline: this.state.homeworks[i].deadline,//作业截止日期
-                    isFinished: this.state.homeworks[i].isFinished,// 作业是否结束
-                })
+                if(this.state.homeworks[i].isClosed){
+                    closedData.push(
+                        {
+                            key: this.state.homeworks[i].homeworkId,//作业ID
+                            title: this.state.homeworks[i].title,//作业标题
+                            url: this.state.homeworks[i].url,//作业网址
+                            description: this.state.homeworks[i].description,//作业描述
+                            deadline: this.state.homeworks[i].deadline,//作业截止日期
+                            isFinished: this.state.homeworks[i].isFinished,// 作业是否结束
+                        }
+                    )
+                }
+                else if(this.state.homeworks[i].isFinished){
+                    FinishedData.push(
+                        {
+                            key: this.state.homeworks[i].homeworkId,//作业ID
+                            title: this.state.homeworks[i].title,//作业标题
+                            url: this.state.homeworks[i].url,//作业网址
+                            description: this.state.homeworks[i].description,//作业描述
+                            deadline: this.state.homeworks[i].deadline,//作业截止日期
+                            isFinished: this.state.homeworks[i].isFinished,// 作业是否结束
+                        }
+                    )
+                }
+                else{
+                    data.push(
+                        {
+                            key: this.state.homeworks[i].homeworkId,//作业ID
+                            title: this.state.homeworks[i].title,//作业标题
+                            url: this.state.homeworks[i].url,//作业网址
+                            description: this.state.homeworks[i].description,//作业描述
+                            deadline: this.state.homeworks[i].deadline,//作业截止日期
+                            isFinished: this.state.homeworks[i].isFinished,// 作业是否结束
+                        }
+                    )
+                    dataSize++;
+                }
             }
         }
         return (
@@ -373,7 +412,7 @@ export default class HomeworkLists extends Component {
                 backgroundColor: 'white'
             }}
         >
-            <View
+            {/* <View
             style= {{
                 flexDirection: 'row',
                 justifyContent:'space-between',
@@ -395,7 +434,7 @@ export default class HomeworkLists extends Component {
                 >
                     未结束：{this.state.finishedcount}
                 </Text>
-            </View>
+            </View> */}
             <View style={{ height: 1, backgroundColor: 'rgb(204,204,204)', }}/>
             <View
                 style= {{
@@ -406,8 +445,20 @@ export default class HomeworkLists extends Component {
                     flex:1,
                 }}
             >
-                <FlatList
+                {/* <FlatList
                     data={data}
+                    ItemSeparatorComponent = {this._separator}
+                    renderItem={this._renderItem}
+                    onRefresh = {this.UpdateData}
+                    refreshing= {false}
+                /> */}
+                <SectionList
+                    sections={[
+                        {key:'未结束:'+dataSize, data:data},
+                        {key:'已结束', data:FinishedData},
+                        {key:'已关闭',data:closedData},
+                    ]}
+                    renderSectionHeader = {this._sectionHeader}
                     ItemSeparatorComponent = {this._separator}
                     renderItem={this._renderItem}
                     onRefresh = {this.UpdateData}
@@ -459,5 +510,22 @@ const HomeworkStyles = StyleSheet.create({
         color: 'red',
         textAlign: 'center',
         marginBottom: 8
-    }
+    },
+    sectionHeaderStyle:{
+        height:3,
+        justifyContent:'center',
+        backgroundColor:'#dcdcdc'
+    },
+    sectionHeaderViewStyle:{
+        justifyContent:'center',
+        alignItems:'center',
+        backgroundColor:'#dcdcdc',
+        height:screenHeight/20,
+    },
+    sectionHeaderTextStyle:{
+        textAlign:'center',
+        fontSize:18,
+        color:'#2c2c2c',
+        // fontWeight:10,
+    },
 });

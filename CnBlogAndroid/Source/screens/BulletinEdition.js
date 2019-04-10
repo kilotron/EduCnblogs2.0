@@ -26,7 +26,7 @@ export default class BulletinEdition extends Component {
     }
 
     /* 单击修改后的响应函数 */
-    _onPress() {
+    _onPress = ()=>{
         if (this.state.bulletinText === '')
         {
             ToastAndroid.show('公告内容不可为空',ToastAndroid.SHORT);
@@ -53,6 +53,8 @@ export default class BulletinEdition extends Component {
             if(jsonData===null)
             {
                 ToastAndroid.show('请求失败！您可能不是该班级的教师或助教，无此权限！',ToastAndroid.SHORT);
+                this.props.navigation.state.params.callback();
+                this.props.navigation.goBack();
             }
             else if(jsonData.isSuccess)
             {
@@ -71,8 +73,10 @@ export default class BulletinEdition extends Component {
             }
         }).catch((error) => {
             ToastAndroid.show(err_info.NO_INTERNET ,ToastAndroid.SHORT);
+            this.props.navigation.state.params.callback();
+            this.props.navigation.goBack();
         });
-    }
+    };
     render() {
         return (
             <View style = {styles.container}>
@@ -95,10 +99,7 @@ export default class BulletinEdition extends Component {
                         (this.state.membership==2||this.state.membership==3)?
                         (<Button style={styles.commitBtn}
                             title='修改公告'
-                            onPress={() => { this._onPress();
-                                //console.log('公告内容改为 ' + this.state.bulletinText);
-                                }
-                            }>
+                            onPress={ this._onPress }>
                         </Button>):
                         (null)
                     }

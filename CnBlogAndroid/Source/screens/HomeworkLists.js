@@ -19,9 +19,6 @@ import {
     TextInput,
     FlatList,
     TouchableOpacity,
-    Dimensions,
-    PixelRatio,
-    Alert
 } from 'react-native';
 import Toast from 'teaset/components/Toast/Toast';
 

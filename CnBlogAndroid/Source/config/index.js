@@ -15,6 +15,7 @@ export default{
 	HomeWorkDetail : 'https://api.cnblogs.com/api/edu/homework/',
 	HomeWorkPublish : 'https://api.cnblogs.com/api/edu/homework/publish',
 	HomeWorkClose : 'https://api.cnblogs.com/api/edu/homework/close/',//关闭作业https://api.cnblogs.com/api/edu/homework/close/{schoolClassId}/{homeworkId}
+	HomeWorkRemove : 'https://api.cnblogs.com/api/edu/homework/remove/',
 	HomeWorkAnswer : 'https://api.cnblogs.com/api/edu/homework/answers/',
 	BlogInClassId: 'https://api.cnblogs.com/api/edu/member/',
 	SubmitJudge: 'https://api.cnblogs.com/api/edu/answer/iscommitted/',

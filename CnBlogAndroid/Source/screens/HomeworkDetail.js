@@ -31,6 +31,8 @@ export default class HomeWorkDetail extends Component{
             formatTyle: 1,
             answerCount: 0,
             membership: this.props.navigation.state.params.membership,
+            Id:0,
+            classId:0,
         }
     }
     _isMounted;
@@ -50,6 +52,8 @@ export default class HomeWorkDetail extends Component{
                     title: jsonData.title,
 					formatTyle: jsonData.formatTyle,
                     answerCount: jsonData.answerCount,
+                    Id:Id,
+                    classId:classId,
                 })
             }
         })
@@ -72,14 +76,14 @@ export default class HomeWorkDetail extends Component{
     }
     
     closeHomework =()=>{
-        let {classId, Id} = this.props.navigation.state.params;
-        let url = Config.HomeWorkClose + classId + '/' + Id;
+        let url = Config.HomeWorkClose + this.state.classId + '/' + this.state.Id;
         Alert.alert(
             '关闭作业'+this.state.title,
             '确定要关闭吗？',
             [
                 {text: '取消'},
                 {text: '确认关闭', onPress: ()=>{
+                    console.log(url);
                     Service.UserAction(url, '', 'PATCH')
                     .then((response)=>{
                         if(response.status !== 200){
@@ -95,6 +99,52 @@ export default class HomeWorkDetail extends Component{
                         else if(jsonData.isSuccess)
                         {
                             ToastAndroid.show('成功关闭作业',ToastAndroid.SHORT);
+                            this.props.navigation.state.params.callback();
+                            this.props.navigation.goBack();
+                        }
+                        else if(jsonData.isWarning)
+                            ToastAndroid.show(jsonData.message,ToastAndroid.SHORT);
+                        else
+                            ToastAndroid.show('发生错误，请稍后重试！',ToastAndroid.SHORT);
+                    }).catch((error)=>{
+                        ToastAndroid.show("网络请求失败，请检查连接状态！",ToastAndroid.SHORT);
+                        console.log(error);
+                    })
+                }},
+            ]
+        )
+    }
+
+    removeHomework =()=>{
+        let url = Config.HomeWorkRemove + this.state.classId + '/' + this.state.Id;
+        let body = JSON.stringify(
+            {
+                homeworkId:'' + this.state.Id,
+                schoolClassId:'' + this.state.classId
+            });
+        Alert.alert(
+            '删除作业'+this.state.title,
+            '确定要删除吗？',
+            [
+                {text: '取消'},
+                {text: '确认删除', onPress: ()=>{
+                    console.log(url);
+                    console.log(body);
+                    Service.UserAction(url, body, 'DELETE')
+                    .then((response)=>{
+                        if(response.status !== 200){
+                            console.log(response.status);
+                            return null;
+                        }
+                        else
+                            return response.json();
+                    })
+                    .then((jsonData)=>{
+                        if(jsonData==null)
+                            ToastAndroid.show("请求失败，您的身份可能不对！",ToastAndroid.SHORT);
+                        else if(jsonData.isSuccess)
+                        {
+                            ToastAndroid.show('成功删除作业',ToastAndroid.SHORT);
                             this.props.navigation.state.params.callback();
                             this.props.navigation.goBack();
                         }
@@ -166,8 +216,7 @@ export default class HomeWorkDetail extends Component{
                         </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                        // onPress = {isFinished == true ? ()=>{} : 
-                        //         ()=>this.props.navigation.navigate('HomeworkSubmit',{homeworkId: Id, classId: classId})}
+                        onPress = {()=>{this.removeHomework()}}
                         style = {styles.button2Red}
                         >
                         <Text style = {styles.buttonText}>

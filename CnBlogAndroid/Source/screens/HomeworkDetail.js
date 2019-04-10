@@ -54,6 +54,9 @@ export default class HomeWorkDetail extends Component{
                     answerCount: jsonData.answerCount,
                     Id:Id,
                     classId:classId,
+                    startTime:jsonData.startTime,
+                    deadline:jsonData.deadline,
+                    IsShowInHome:jsonData.IsShowInHome,
                 })
             }
         })
@@ -198,8 +201,24 @@ export default class HomeWorkDetail extends Component{
                         </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                        // onPress = {isFinished == true ? ()=>{} : 
-                        //         ()=>this.props.navigation.navigate('HomeworkSubmit',{homeworkId: Id, classId: classId})}
+                        onPress = {
+                            ()=>{
+                                var editPack = {
+                                    homeworkId: Id, 
+                                    operatorInfo:{
+                                        schoolClassId:classId,
+                                        blogId:this.props.navigation.state.params.blogId,
+                                    },
+                                    title:this.state.title,
+                                    startTime:this.state.startTime,
+                                    deadline:this.state.deadline,
+                                    content:this.state.content,
+                                    formatTyle:this.state.formatTyle,
+                                    IsShowInHome:this.state.IsShowInHome,
+                                }
+                                this.props.navigation.navigate('HomeworkEdition',editPack)
+                            }
+                        }
                         style = {styles.button2Orange}
                         >
                         <Text style = {styles.buttonText}>

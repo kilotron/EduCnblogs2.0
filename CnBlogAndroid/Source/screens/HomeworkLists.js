@@ -39,6 +39,7 @@ export default class HomeworkLists extends Component {
             finishedcount: 0,
             isRequestSuccess: false,
             classId:this.props.classId,
+            blogId:0,
         }
     }
     // 标志位
@@ -216,6 +217,7 @@ export default class HomeworkLists extends Component {
                     Service.Get(url2).then((jsonData)=>{
                         if(this._isMounted && jsonData!=='rejected'){
                             this.setState({
+                                blogId: jsonData.blogId,
                                 membership: jsonData.membership,
                             })
                         }
@@ -268,6 +270,8 @@ export default class HomeworkLists extends Component {
         var url = item1.item.url;//作业地址
         var Id = item1.item.key;//作业Id
         var isFinished = item1.item.isFinished;
+    
+
         return (
             <View>
                 <TouchableOpacity
@@ -279,6 +283,8 @@ export default class HomeworkLists extends Component {
                                 isFinished: isFinished,
                                 membership:this.state.membership,
                                 callback:this.UpdateData,
+                                //编辑作业所需参数
+                                blogId:this.state.blogId,
                                 })}
                     style = {HomeworkStyles.container}
                 >

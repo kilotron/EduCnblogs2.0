@@ -45,12 +45,13 @@ export default class ClassBlogPostsList extends Component {
             blogs: [],	                // 班级博客列表
             postCount: 0,               //班级博客总数
             schoolClassId: this.props.schoolClassId,
-			//loadStatus: 'not loading',
-			//currentPageIndex: 1,
+            filter: 'all',              // 筛选条件：'all' 'no_comment' 'tutor' 'student'
+			loadStatus: 'not loading',  // 用于上拉加载的动画
+			currentPageIndex: 1,        // 已加载的页数/序号，从1开始
         }
     }
 
-    /* 在一个组件卸载后调用setState()，可能导致内存泄漏，会产生警告。
+    /**在一个组件卸载后调用setState()，可能导致内存泄漏，会产生警告。
        在setState前需要使用此变量检查组件是否卸载。
        在componentDidMount中设置_isMounted为true，在componentWillUnmount中设置为false。
        参考：https://reactjs.org/blog/2015/12/16/ismounted-antipattern.html*/
@@ -68,14 +69,14 @@ export default class ClassBlogPostsList extends Component {
         this._isMounted = false;
     }
 
-    /* 父组件更新属性schoolClassId时，使用此函数更新子组件state的schoolClassId,
+    /** 父组件更新属性schoolClassId时，使用此函数更新子组件state的schoolClassId,
        然后重新获取班级博文列表*/
     componentWillReceiveProps(nextProps) {
         if (nextProps.schoolClassId !== this.props.schoolClassId) {
             //alert(nextProps.schoolClassId);
             // setState是异步的，所以将fetch操作放入回调函数中
             this.setState({schoolClassId: nextProps.schoolClassId}, 
-                () => {this.fetchPage(1)});
+                () => {this.updateData()});
         }
     }
 
@@ -84,21 +85,22 @@ export default class ClassBlogPostsList extends Component {
         
     }
 
-    /* 第pageIndex页的班级博文的URL */
+    /** 第pageIndex页的班级博文的URL */
     URLOf(pageIndex) {
         //alert(this.props.schoolClassId);
-        return Config.apiDomain + 'api/edu/schoolclass/posts/' + this.filter +
+        return Config.apiDomain + 'api/edu/schoolclass/posts/' + this.state.filter +
             '/' + this.state.schoolClassId + '/' + pageIndex + '-' + pageSize;
     }
 
-    // 读取第pageIndex页，每页pageSize项.pageIndex从1开始。
+    /** 读取第pageIndex页，并更新state。每页pageSize项.pageIndex从1开始。
+     * */ 
 	fetchPage(pageIndex) {
         //这里是否需要检查？
 		this.setState({loadStatus: 'loading'});
 		//alert(url+this.state.blogs);//bug:第二次筛选时不能加载
 		Service.Get(this.URLOf(pageIndex))
 		.then((jsonData) => {
-            //alert(jsonData);
+            //alert(this.URLOf(pageIndex));
             // 初始时schoolClassId不正确，返回的jsonData是rejected。
             if (jsonData === 'rejected') {  
                 return;
@@ -108,7 +110,7 @@ export default class ClassBlogPostsList extends Component {
 				this.setState({
 					postCount: jsonData.totalCount,
 					blogs: this.state.blogs.concat(jsonData.blogPosts),
-					//loadStatus: this.state.currentPageIndex >= pageCount ? 'all loaded' : 'not loading',
+					loadStatus: this.state.currentPageIndex >= pageCount ? 'all loaded' : 'not loading',
 				});
 			}
 		});
@@ -134,21 +136,33 @@ export default class ClassBlogPostsList extends Component {
         return data;
     }
 
-    /* 使用updateData(){}的形式需要在flatlist中使用this.updateData.bind(this).
-       使用updateData = ()=>{}的形式则不用。 */
+    /** 更新数据，重新加载第一页.此函数适用于切换班级（schoolClassId变化）
+     *  、切换筛选条件（filter变化）或下拉刷新时重新获取博文。
+     * 
+     *  重新获取博文前，先恢复初始状态。把已经获取的博文清空，重置loadStatus为
+     *  'not loading'，重置currentPageIndex为1。schoolClassId不改变，
+     *  filter不改变。状态重置后，再获取页面。
+     * 
+     * 使用updateData(){}的形式需要在flatlist中使用this.updateData.bind(this)
+     * 使用updateData = ()=>{}的形式则不用。
+     */
     updateData() {
-        this.setState({blogs: [], postCount: 0}, () => {this.fetchPage(1)});
+        this.setState({
+            blogs: [], 
+            postCount: 0,
+			loadStatus: 'not loading',  // 用于上拉加载的动画
+			currentPageIndex: 1,        // 已加载的页数/序号，从1开始
+        }, () => {this.fetchPage(this.state.currentPageIndex)});
     }
     
     render() {
         return (
             <View>
                 <Picker
-                    selectedValue={this.filter}
+                    selectedValue={this.state.filter}   // 默认选中的值
                     style={styles.picker}
                     onValueChange={(itemValue, itemIndex) => {
-                        this.filter = itemValue;
-                        //this.UpdateData();
+                        this.setState({filter: itemValue}, this.updateData.bind(this));
                     }}
                 >
                     <Picker.Item label="全部博文" value="all" />
@@ -166,8 +180,8 @@ export default class ClassBlogPostsList extends Component {
                     keyExtractor={(item, index) => index.toString()}
                     onRefresh = {this.updateData.bind(this)}
                     refreshing= {false}
-                    //onEndReached={this._onEndReached.bind(this)}
-                    //onEndReachedThreshold={0.1}
+                    onEndReached={this._onEndReached.bind(this)}
+                    onEndReachedThreshold={0.1}
                     //ListFooterComponent={this._renderFooter.bind(this)}
                 />
             </View>
@@ -205,7 +219,7 @@ export default class ClassBlogPostsList extends Component {
                     <Text numberOfLines={3} style={styles.postDescription}>
                         {item.description}
                     </Text>
-                    
+
                     <View style={styles.postMetadataView}>
                         <Text style={styles.viewCountAndCommentCount}>
                             {item.viewCount + ' 阅读' + '  ' 
@@ -219,7 +233,46 @@ export default class ClassBlogPostsList extends Component {
                 </TouchableOpacity>
             </View>
 		)
-	};
+    };
+    
+    /**FlatList滚动到到底部时调用此函数，获取新的一页。 */
+    _onEndReached() {
+        if (this.state.loadStatus !== 'not loading') {
+            return; // 加载完毕或正在加载则返回
+        }
+        let pageCount = Math.ceil(this.state.postCount / pageSize);  // 总页数
+        if (this.state.currentPageIndex >= pageCount) {
+            return; // currentPageIndex从1开始
+        }
+        this.setState({currentPageIndex: this.state.currentPageIndex + 1},
+            () => {this.fetchPage(this.state.currentPageIndex)}
+        );
+    }
+
+    /**FlatList底部的部件。这里用来显示加载下一页的状态 */
+    _renderFooter() {
+        if (this.state.loadStatus === 'all loaded') {
+            return (
+                <View style={styles.allLoadedView}>
+                    <Text style={styles.allLoadedText}>
+                        没有更多数据了
+                    </Text>
+                </View>
+            );
+        } else if(this.state.loadStatus === 'loading') {
+            return (
+                <View style={styles.footer}>
+                    <ActivityIndicator />
+                    <Text>正在加载更多数据...</Text>
+                </View>
+            );
+        } //else 'not loading'
+        return (
+            <View style={styles.footer}>
+                <Text></Text>
+            </View>
+        );
+    }
 
 }
 
@@ -264,6 +317,24 @@ const styles = StyleSheet.create({
         color: 'black', 
         flex: 1
     },
+    allLoadedView: {
+        height:30,
+        alignItems:'center',
+        justifyContent:'flex-start',
+    },
+    allLoadedText: {
+        color:'#999999',
+        fontSize:14,
+        marginTop:5,
+        marginBottom:5,
+    },
+    footer:{
+		flexDirection:'row',
+		height:24,
+		justifyContent:'center',
+		alignItems:'center',
+		marginBottom:10,
+	},
 });
 
 /*请求方式：GET

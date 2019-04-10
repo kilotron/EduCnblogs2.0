@@ -71,6 +71,46 @@ export default class HomeWorkDetail extends Component{
 		})
     }
     
+    closeHomework =()=>{
+        let {classId, Id} = this.props.navigation.state.params;
+        let url = Config.HomeWorkClose + classId + '/' + Id;
+        Alert.alert(
+            '关闭作业'+this.state.title,
+            '确定要关闭吗？',
+            [
+                {text: '取消'},
+                {text: '确认关闭', onPress: ()=>{
+                    Service.UserAction(url, '', 'PATCH')
+                    .then((response)=>{
+                        if(response.status !== 200){
+                            console.log(response.status);
+                            return null;
+                        }
+                        else
+                            return response.json();
+                    })
+                    .then((jsonData)=>{
+                        if(jsonData==null)
+                            ToastAndroid.show("请求失败，您的身份可能不对！",ToastAndroid.SHORT);
+                        else if(jsonData.isSuccess)
+                        {
+                            ToastAndroid.show('成功关闭作业',ToastAndroid.SHORT);
+                            this.props.navigation.state.params.callback();
+                            this.props.navigation.goBack();
+                        }
+                        else if(jsonData.isWarning)
+                            ToastAndroid.show(jsonData.message,ToastAndroid.SHORT);
+                        else
+                            ToastAndroid.show('发生错误，请稍后重试！',ToastAndroid.SHORT);
+                    }).catch((error)=>{
+                        ToastAndroid.show("网络请求失败，请检查连接状态！",ToastAndroid.SHORT);
+                        console.log(error);
+                    })
+                }},
+            ]
+        )
+    }
+
     renderBottomBar(Id,isFinished,classId,answerCount){
         if(this.state.membership === 1){
             return(
@@ -117,9 +157,9 @@ export default class HomeWorkDetail extends Component{
                         </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                        // onPress = {isFinished == true ? ()=>{} : 
-                        //         ()=>this.props.navigation.navigate('HomeworkSubmit',{homeworkId: Id, classId: classId})}
-                        style = {styles.button2Grey}
+                        onPress = {isFinished == true ? ()=>{} : ()=>{this.closeHomework()}}
+                        style = {isFinished == true ? styles.button2Grey : styles.button2DarkGrey}
+                        activeOpacity = {isFinished == true ? 1 : 0.2}
                         >
                         <Text style = {styles.buttonText}>
                             关闭作业
@@ -216,6 +256,14 @@ const styles = StyleSheet.create({
         borderRadius: 8,
     },
     button2Grey:{
+        width: width/5,
+        height: height/18,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#dcdcdc',
+        borderRadius: 8,
+    },
+    button2DarkGrey:{
         width: width/5,
         height: height/18,
         justifyContent: 'center',

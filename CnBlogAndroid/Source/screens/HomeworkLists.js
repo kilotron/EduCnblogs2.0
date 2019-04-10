@@ -275,8 +275,14 @@ export default class HomeworkLists extends Component {
             <View>
                 <TouchableOpacity
                     //url:作业url，如示例的'/campus/bjwzxy/test/homework/9'
-                    onPress = {()=>this.props.navigation.navigate('HomeworkDetail',{url: url, Id: Id,
-                                            classId: this.state.classId, isFinished: isFinished,membership:this.state.membership})}
+                    onPress = {()=>this.props.navigation.navigate('HomeworkDetail',{
+                                url: url, 
+                                Id: Id,
+                                classId: this.state.classId, 
+                                isFinished: isFinished,
+                                membership:this.state.membership,
+                                callback:this.UpdateData,
+                                })}
                     style = {HomeworkStyles.container}
                 >
                     <Text style= {HomeworkStyles.titleTextStyle}>

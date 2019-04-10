@@ -1,8 +1,10 @@
 /* 班级博文列表显示页面
-这是一个FlatList.
+这是一个Picker和FlatList的组合.
 
 属性：
     schoolClassId: 班级Id
+
+用到的API见本文件末尾。
 */
 
 import React, { Component} from 'react';
@@ -25,6 +27,7 @@ import {flatStyles} from '../styles/styles';
 import Config from '../config';
 import * as Service from '../request/request.js';
 import MyAdapter from '../screens/MyAdapter';
+import { Right } from 'native-base';
 
 // 获取博文一页的容量
 const pageSize = 10;
@@ -98,7 +101,6 @@ export default class ClassBlogPostsList extends Component {
 	fetchPage(pageIndex) {
         //这里是否需要检查？
 		this.setState({loadStatus: 'loading'});
-		//alert(url+this.state.blogs);//bug:第二次筛选时不能加载
 		Service.Get(this.URLOf(pageIndex))
 		.then((jsonData) => {
             //alert(this.URLOf(pageIndex));
@@ -120,9 +122,7 @@ export default class ClassBlogPostsList extends Component {
     /** 解析this.state.blogs的数据，返回一个数组。 */
     makeBlogPostsList() {
         var data = [];
-        //alert(this.state.blogs);
         for (var i in this.state.blogs) {
-            //alert(this.state.blogs.length);
             data.push({
                 //blogId: 1,
                 blogId: this.state.blogs[i].blogId,//注意不是博文的编号，不能通过这个获取博文
@@ -158,7 +158,10 @@ export default class ClassBlogPostsList extends Component {
     
     render() {
         return (
-            <View>
+            <View style={styles.rootView}>
+                {/* Picker中文本的样式在android/app/src/main/res/values/styles.xml
+                    这个文件里修改。样式设置参考链接见本文件末尾。
+                https://stackoverflow.com/questions/45250747/react-native-why-cant-i-align-picker-item-to-right-in-android-platform*/ }
                 <Picker
                     selectedValue={this.state.filter}   // 默认选中的值
                     style={styles.picker}
@@ -173,7 +176,8 @@ export default class ClassBlogPostsList extends Component {
                 </Picker>
 
                 {/* 使用keyExtractor为每个item生成独有的key，就不必再data数组的每一个元素中添加key键。
-                    refreshing设置为false在列表更新时不显示转圈*/}{/*ItemSeparatorComponent={this._separator}*/}
+                    refreshing设置为false在列表更新时不显示转圈*/}
+                {/*item设置了立体的样式，这里去掉ItemSeparatorComponent={this._separator}*/}
                 <FlatList
                     renderItem={this._renderItem}
                     data={this.makeBlogPostsList()}
@@ -263,7 +267,7 @@ export default class ClassBlogPostsList extends Component {
             return (
                 <View style={styles.footer}>
                     <ActivityIndicator />
-                    <Text>正在加载更多数据...</Text>
+                    <Text>正在加载...</Text>
                 </View>
             );
         } //else 'not loading'
@@ -282,6 +286,9 @@ const screenWidth= MyAdapter.screenWidth;
 const screenHeight= MyAdapter.screenHeight;
 
 const styles = StyleSheet.create({
+    rootView: {
+        flex: 1
+    },
     cellStyle:{
         flex: 1,
         backgroundColor: 'white',
@@ -299,20 +306,10 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.4,   // 透明度
         shadowRadius: 1,
         elevation:3   //   高度，设置Z轴，可以产生立体效果
-      },
-    container: {
-        flexDirection: 'row',
-        justifyContent:'space-between',
-        alignItems: 'center',
-        marginTop: 0.005*screenHeight,
-        marginLeft: 0.03*screenWidth,
-        marginRight: 0.03*screenWidth,
-        marginBottom: 0.005*screenHeight,
-        alignSelf: 'stretch',
     },
     picker: {
         height: 50,
-        width: screenWidth/3,
+        width: screenWidth,
     },
     postTitle: {
 		fontSize: 18,
@@ -395,4 +392,7 @@ blogPosts.blogId	博客Id	number
 blogPosts.blogUrl	博客链接	string
 blogPosts.avatarUrl	作者头像	string
 blogPosts.dateAdded	发表日期    datetime
+
+样式设置参考链接：
+https://stackoverflow.com/questions/45250747/react-native-why-cant-i-align-picker-item-to-right-in-android-platform
 */

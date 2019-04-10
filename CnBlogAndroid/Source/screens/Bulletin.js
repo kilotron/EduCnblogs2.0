@@ -329,34 +329,42 @@ export default class Bulletin extends Component {
                         flex:1,
                     }}
                 >
-                    <TouchableHighlight
-                        underlayColor="#3b50ce"
-                        activeOpacity={0.5}
-                        style={{
-                            position:'absolute',
-                            bottom:20,
-                            right:10,
-                            backgroundColor: "#3b50ce",
-                            width: 52,
-                            height: 52,
-                            borderRadius: 26,
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            margin: 20}}
-                            onPress={this._onPress} >
+                {
+                    (this.state.membership==2||this.state.membership==3)?
+                    (
+                        <TouchableHighlight
+                            underlayColor="#3b50ce"
+                            activeOpacity={0.5}
+                            style={{
+                                position:'absolute',
+                                bottom:20,
+                                right:10,
+                                backgroundColor: "#3b50ce",
+                                width: 52,
+                                height: 52,
+                                borderRadius: 26,
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                margin: 20}}
+                                onPress={this._onPress} >
+    
+                            <Text
+                                style= {{
+                                    fontSize: 30,
+                                    color: '#ffffff',
+                                    textAlign: 'center',
+                                    fontWeight: '100',
+                                }}
+                            >
+                                +
+                            </Text>
 
-                        <Text
-                            style= {{
-                                fontSize: 30,
-                                color: '#ffffff',
-                                textAlign: 'center',
-                                fontWeight: '100',
-                            }}
-                        >
-                            +
-                        </Text>
-
-                    </TouchableHighlight>
+                        </TouchableHighlight>
+                    ):
+                    (
+                        null
+                    )
+                }
                 </View>
             </View>
         )

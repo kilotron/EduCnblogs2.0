@@ -37,7 +37,7 @@ export default class ClassFunction extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            classeId: this.props.navigation.state.params.classId,
+            classId: this.props.navigation.state.params.classId,
         }
     }
     render() {

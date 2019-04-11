@@ -44,7 +44,7 @@ export default class ClassHome extends Component{
     }
 
     _isMounted;
-    componentWillMount = ()=>{
+     componentWillMount = ()=>{
         this._isMounted = true;
         let classId = this.props.navigation.state.params.classId;
         //let url = 'https://api.cnblogs.com/api/edu/schoolclass/'+classId;
@@ -66,7 +66,7 @@ export default class ClassHome extends Component{
         this._isMounted = false;
     }
     render() {
-	let classId = this.props.navigation.state.params.classId;
+    let classId = this.props.navigation.state.params.classId;
     return (
         <View
         style= {{

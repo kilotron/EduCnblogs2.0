@@ -33,6 +33,7 @@ import {
     NavigationActions
 } from 'react-navigation';
 
+import ClassFunction from './Source/screens/ClassFunction'
 import HomeworkDetail from './Source/screens/HomeworkDetail'
 import HomeworkLists from './Source/screens/HomeworkLists'
 import PersonalBlog from './Source/screens/PersonalBlog'
@@ -398,6 +399,13 @@ const HomeTab = TabNavigator({
 })
 
 const SimpleNavigation = StackNavigator({
+    ClassFunction: {
+        screen: ClassFunction,
+        navigationOptions: {
+            header: null,
+        },
+    },
+
     Welcome: {
         screen: Welcome,
         navigationOptions: {

@@ -19,15 +19,15 @@ import {
 	TextInput,
 	ScrollView,
 	TouchableHighlight,
-	FlatList,
+    FlatList,
 	Picker,
-	ActivityIndicator,
+    ActivityIndicator,
+    Animated,
 } from 'react-native';
 import {flatStyles} from '../styles/styles';
 import Config from '../config';
 import * as Service from '../request/request.js';
 import MyAdapter from '../screens/MyAdapter';
-import { Right } from 'native-base';
 
 // 获取博文一页的容量
 const pageSize = 10;
@@ -52,7 +52,20 @@ export default class ClassBlogPostsList extends Component {
             filter: 'all',              // 筛选条件：'all' 'no_comment' 'tutor' 'student'
 			loadStatus: 'not loading',  // 用于上拉加载的动画
 			currentPageIndex: 1,        // 已加载的页数/序号，从1开始
+            headerTop: new Animated.Value(0), // 用于向下滚动隐藏筛选条件的动画
         }
+        /* 下面两个变量用于向下滚动隐藏筛选条件的动画。动画设置的参考链接见本文件末尾。 */
+        this.top = this.state.headerTop.interpolate({
+            inputRange: [0, 270, 271, 280],
+            outputRange: [0, -50, -50, -50]
+        });
+        this.animatedEvent = Animated.event(
+            [{
+                nativeEvent: {
+                    contentOffset: {y: this.state.headerTop}
+                }
+            }]
+        );
     }
 
     /**在一个组件卸载后调用setState()，可能导致内存泄漏，会产生警告。
@@ -155,39 +168,47 @@ export default class ClassBlogPostsList extends Component {
 			currentPageIndex: 1,        // 已加载的页数/序号，从1开始
         }, () => {this.fetchPage(this.state.currentPageIndex)});
     }
-    
+
     render() {
         return (
-            <View style={styles.rootView}>
-                {/* Picker中文本的样式在android/app/src/main/res/values/styles.xml
-                    这个文件里修改。样式设置参考链接见本文件末尾。
-                https://stackoverflow.com/questions/45250747/react-native-why-cant-i-align-picker-item-to-right-in-android-platform*/ }
-                <Picker
-                    selectedValue={this.state.filter}   // 默认选中的值
-                    style={styles.picker}
-                    onValueChange={(itemValue, itemIndex) => {
-                        this.setState({filter: itemValue}, this.updateData.bind(this));
-                    }}
-                >
-                    <Picker.Item label="全部博文" value="all" />
-                    <Picker.Item label="零回复博文" value="no_comment" />
-                    <Picker.Item label="老师/助教" value="tutor" />
-                    <Picker.Item label="学生" value="student" />
-                </Picker>
+            <View style={styles.container}>
+                <Animated.View style={{top: this.top}}>
+                    <View style={styles.header}>
+                    {/* Picker中文本的样式在android/app/src/main/res/values/styles.xml
+                    这个文件里修改。样式设置参考链接见本文件末尾。*/}
+                        <Picker
+                            selectedValue={this.state.filter}   // 默认选中的值
+                            style={[styles.container, styles.picker]}
+                            onValueChange={(itemValue, itemIndex) => {
+                                this.setState({filter: itemValue}, this.updateData.bind(this));
+                            }}
+                        >
+                            <Picker.Item label="全部博文" value="all" />
+                            <Picker.Item label="零回复博文" value="no_comment" />
+                            <Picker.Item label="老师/助教" value="tutor" />
+                            <Picker.Item label="学生" value="student" />
+                        </Picker>
+                    </View>
+                </Animated.View>
 
-                {/* 使用keyExtractor为每个item生成独有的key，就不必再data数组的每一个元素中添加key键。
-                    refreshing设置为false在列表更新时不显示转圈*/}
-                {/*item设置了立体的样式，这里去掉ItemSeparatorComponent={this._separator}*/}
-                <FlatList
-                    renderItem={this._renderItem}
-                    data={this.makeBlogPostsList()}
-                    keyExtractor={(item, index) => index.toString()}
-                    onRefresh = {this.updateData.bind(this)}
-                    refreshing= {false}
-                    onEndReached={this._onEndReached.bind(this)}
-                    onEndReachedThreshold={0.5}
-                    ListFooterComponent={this._renderFooter.bind(this)}
-                />
+                <Animated.View style={{top: this.top}}>
+                    <View>{/* 需要使用View，不然FlatList无法显示 */}
+                        {/* 使用keyExtractor为每个item生成独有的key，就不必再data数组的每一个元素中添加key键。
+                            refreshing设置为false在列表更新时不显示转圈*/}
+                        {/*item设置了立体的样式，这里去掉ItemSeparatorComponent={this._separator}*/}
+                        <FlatList
+                            renderItem={this._renderItem}
+                            data={this.makeBlogPostsList()}
+                            keyExtractor={(item, index) => index.toString()}
+                            onRefresh = {this.updateData.bind(this)}
+                            refreshing= {false}
+                            onEndReached={this._onEndReached.bind(this)}
+                            onEndReachedThreshold={0.5}
+                            ListFooterComponent={this._renderFooter.bind(this)}
+                            onScroll={this.animatedEvent}
+                        />
+                    </View>
+                </Animated.View>
             </View>
         );
     }
@@ -286,8 +307,13 @@ const screenWidth= MyAdapter.screenWidth;
 const screenHeight= MyAdapter.screenHeight;
 
 const styles = StyleSheet.create({
-    rootView: {
-        flex: 1
+    container: {
+        flex: 1,
+    },
+    header: {
+        height: 40,
+        alignItems: 'center',
+        justifyContent: 'center'
     },
     cellStyle:{
         flex: 1,
@@ -308,8 +334,9 @@ const styles = StyleSheet.create({
         elevation:3   //   高度，设置Z轴，可以产生立体效果
     },
     picker: {
-        height: 50,
+        height: 40,
         width: screenWidth,
+        backgroundColor: 'white',
     },
     postTitle: {
 		fontSize: 18,
@@ -395,4 +422,7 @@ blogPosts.dateAdded	发表日期    datetime
 
 样式设置参考链接：
 https://stackoverflow.com/questions/45250747/react-native-why-cant-i-align-picker-item-to-right-in-android-platform
+
+滚动隐藏筛选条件Picker的动画：
+https://www.jianshu.com/p/a2dafc590063
 */

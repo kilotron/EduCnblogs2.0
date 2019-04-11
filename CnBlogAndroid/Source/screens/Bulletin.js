@@ -17,7 +17,7 @@ import {
     TouchableOpacity,
     ToastAndroid,
     screen,
-    Button,
+    Alert,
 } from 'react-native';
 
 import {
@@ -45,8 +45,6 @@ export default class Bulletin extends Component {
             membership: 1,
             loadStatus: 'not loading',
             currentPageIndex: 1,
-            chosenDelete: false,
-            chosenBulletinId: 0,
         }
         this._isMounted=true;
     }
@@ -72,10 +70,67 @@ export default class Bulletin extends Component {
             });
         }
         else if (this.state.membership===2 || this.state.membership===3) {
-            this.setState({
-                chosenDelete: true,
-                chosenBulletinId: id,
-            });
+            Alert.alert(
+                '删除公告',
+                '确定要删除吗？',
+                [
+                    {text: '取消'},
+                    {text: '确认删除', onPress: ()=>{
+                        let postBody = {
+                            bulletinId: id,
+                            schoolClassId: this.props.schoolClassId,
+                            blogId: global.user_information.BlogId,
+                        };
+                        let body = JSON.stringify(postBody);
+                        let url = Config.BulletinDel + this.props.schoolClassId + '/' + id;
+                        //console.log(url);
+                        //console.log(body);
+                        Service.UserAction(url, body, 'DELETE').then((response)=>{
+                            if(response.status!==200)
+                            {
+                                return null;
+                            }
+                            else{
+                                return response.json();
+                            }
+                        }).then((jsonData)=>{
+                            if(jsonData===null)
+                            {
+                                ToastAndroid.show('请求失败！您可能不是该班级的教师或助教，无此权限！',ToastAndroid.SHORT);
+                            }
+                            else if(jsonData.isSuccess)
+                            {
+                                ToastAndroid.show('删除成功！',ToastAndroid.SHORT);
+                                /* 调用回调函数更新公告列表 */
+                            }
+                            else if(jsonData.isWarning)
+                            {
+                                ToastAndroid.show(jsonData.message,ToastAndroid.SHORT);
+                            }
+                            else
+                            {
+                                ToastAndroid.show('发生错误，请稍后重试！',ToastAndroid.SHORT);
+                            }
+                            this.setState({
+                                changedSchoolClassId: true,
+                                bulletins: [],
+                                bulletinCount: 0,
+                                loadStatus: 'not loading',
+                                currentPageIndex: 1,
+                            });
+                        }).catch((error) => {
+                            ToastAndroid.show(err_info.NO_INTERNET ,ToastAndroid.SHORT);
+                            this.setState({
+                                changedSchoolClassId: true,
+                                bulletins: [],
+                                bulletinCount: 0,
+                                loadStatus: 'not loading',
+                                currentPageIndex: 1,
+                            });
+                        });
+                    }},
+                ]
+            );
         }
     }
 
@@ -336,164 +391,75 @@ export default class Bulletin extends Component {
         return s1 + '  ' + s2.split('.')[0];
     }
 
-    _toDelBulletin = ()=>{
-        let postBody = {
-            bulletinId: this.state.chosenBulletinId,
-            schoolClassId: this.props.schoolClassId,
-            blogId: global.user_information.BlogId,
-        };
-        let body = JSON.stringify(postBody);
-        console.log(body);
-        let url = Config.BulletinDel + this.props.schoolClassId + '/' + this.state.chosenBulletinId;
-        Service.UserAction(url, body, 'DELETE').then((response)=>{
-            if(response.status!==200)
-            {
-                return null;
-            }
-            else{
-                return response.json();
-            }
-        }).then((jsonData)=>{
-            if(jsonData===null)
-            {
-                ToastAndroid.show('请求失败！您可能不是该班级的教师或助教，无此权限！',ToastAndroid.SHORT);
-            }
-            else if(jsonData.isSuccess)
-            {
-                ToastAndroid.show('删除成功！',ToastAndroid.SHORT);
-                /* 调用回调函数更新公告列表 */
-            }
-            else if(jsonData.isWarning)
-            {
-                ToastAndroid.show(jsonData.message,ToastAndroid.SHORT);
-            }
-            else
-            {
-                ToastAndroid.show('发生错误，请稍后重试！',ToastAndroid.SHORT);
-            }
-            this.setState({
-                chosenDelete: false,
-                changedSchoolClassId: true,
-                bulletins: [],
-                bulletinCount: 0,
-                loadStatus: 'not loading',
-                currentPageIndex: 1,
-            });
-        }).catch((error) => {
-            ToastAndroid.show(err_info.NO_INTERNET ,ToastAndroid.SHORT);
-            this.setState({
-                chosenDelete: false,
-                changedSchoolClassId: true,
-                bulletins: [],
-                bulletinCount: 0,
-                loadStatus: 'not loading',
-                currentPageIndex: 1,
-            });
-        });
-    };
-
     render() {
         if(this.state.changedSchoolClassId === true){
             this.fetchPage(1);
         }
         return (
             <View style = {styles.container}>
-                {
-                    this.state.chosenDelete?
-                    (
-                        <View style={styles.chosenDeleteContainer}>
-                            <Text style={{fontSize: 20, color: 'black'}}>
-                                是否确认删除公告
-                            </Text>
-                            <View style={{flexDirection: 'row'}}>
-                                <Button style={styles.commitBtn}
-                                    title='取 消'
-                                    onPress={()=>{
-                                        this.setState({
-                                            chosenDelete: false,
-                                            changedSchoolClassId: true,
-                                            bulletins: [],
-                                            bulletinCount: 0,
-                                            loadStatus: 'not loading',
-                                            currentPageIndex: 1,
-                                        });
 
-                                    }}>
-                                </Button>
-                                <View style={{width: screenWidth*0.1}}>
-                                </View>
-                                <Button style={styles.commitBtn}
-                                    title='确认删除'
-                                    onPress={this._toDelBulletin}>
-                                </Button>
-                            </View>
-                        </View>
-                    ):
-                    (
-                        <View>
-                            <View style={{ height: 1, backgroundColor: 'rgb(225,225,225)',  marginTop: 0.005*screenHeight, alignSelf:'stretch'}}/>
-                            <View style={{width: screenWidth, }}>
-                                {
-                                    this.state.loadStatus==='none'?
-                                        (
-                                            <View style={styles.footer}>
-                                                <Text>这还什么都没有</Text>
-                                            </View>
-                                        ):
-                                        (
-                                            this._renderBulletinList()
-                                        )
-                                }
-                            </View>
-                            <View
-                                style= {{
-                                    flexDirection: 'row',
-                                    justifyContent:'flex-start',
-                                    alignItems: 'flex-start',
-                                    alignSelf: 'stretch',
-                                    flex:1,
-                                }}
-                            >
-                            {
-                                (this.state.membership==2||this.state.membership==3)?
+                <View>
+                    <View style={{ height: 1, backgroundColor: 'rgb(225,225,225)',  marginTop: 0.005*screenHeight, alignSelf:'stretch'}}/>
+                    <View style={{width: screenWidth, }}>
+                        {
+                            this.state.loadStatus==='none'?
                                 (
-                                    <TouchableHighlight
-                                        underlayColor="#3b50ce"
-                                        activeOpacity={0.5}
-                                        style={{
-                                            position:'absolute',
-                                            bottom:20,
-                                            right:10,
-                                            backgroundColor: "#3b50ce",
-                                            width: 52,
-                                            height: 52,
-                                            borderRadius: 26,
-                                            justifyContent: 'center',
-                                            alignItems: 'center',
-                                            margin: 20}}
-                                            onPress={this._onPress} >
-
-                                        <Text
-                                            style= {{
-                                                fontSize: 30,
-                                                color: '#ffffff',
-                                                textAlign: 'center',
-                                                fontWeight: '100',
-                                            }}
-                                        >
-                                            +
-                                        </Text>
-
-                                    </TouchableHighlight>
+                                    <View style={styles.footer}>
+                                        <Text>这还什么都没有</Text>
+                                    </View>
                                 ):
                                 (
-                                    null
+                                    this._renderBulletinList()
                                 )
-                            }
-                            </View>
-                        </View>
-                    )
-                }
+                        }
+                    </View>
+                    <View
+                        style= {{
+                            flexDirection: 'row',
+                            justifyContent:'flex-start',
+                            alignItems: 'flex-start',
+                            alignSelf: 'stretch',
+                            flex:1,
+                        }}
+                    >
+                    {
+                        (this.state.membership==2||this.state.membership==3)?
+                        (
+                            <TouchableHighlight
+                                underlayColor="#3b50ce"
+                                activeOpacity={0.5}
+                                style={{
+                                    position:'absolute',
+                                    bottom:20,
+                                    right:10,
+                                    backgroundColor: "#3b50ce",
+                                    width: 52,
+                                    height: 52,
+                                    borderRadius: 26,
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    margin: 20}}
+                                    onPress={this._onPress} >
+
+                                <Text
+                                    style= {{
+                                        fontSize: 30,
+                                        color: '#ffffff',
+                                        textAlign: 'center',
+                                        fontWeight: '100',
+                                    }}
+                                >
+                                    +
+                                </Text>
+
+                            </TouchableHighlight>
+                        ):
+                        (
+                            null
+                        )
+                    }
+                    </View>
+                </View>
 
 
             </View>
@@ -532,15 +498,5 @@ const styles = StyleSheet.create({
     },
     bulletinPublisher: {
         fontSize: 12,
-    },
-    chosenDeleteContainer: {
-        position: 'absolute',
-        top: screenHeight*0.3,
-        width: screenWidth*0.9,
-        alignItems: 'center',
-        alignContent: 'stretch',
-    },
-    commitBtn: {
-        flex: 1,
     },
 });

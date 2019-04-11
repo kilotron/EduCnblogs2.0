@@ -80,6 +80,7 @@ export default class ClassListsNew extends Component{
 		}
 	}
 	render(){
+		//let classId = this.props.navigation.state.params.classId;
 		return(
 			<View style= {styles.pageViewStyle}>
 				{/* 班级名称，点击可以切换班级 */}
@@ -93,9 +94,14 @@ export default class ClassListsNew extends Component{
 						</Text>
 					</TouchableOpacity>
 					{/* 暂时未知 */}
-					<TouchableOpacity onPress={()=>{alert('弹出班级操作')}}>
+					<TouchableOpacity onPress={()=>{ //需要跳转到功能界面，如班级成员
+						console.log(this.state.schoolClassId);
+						this.props.navigation.navigate('ClassFunction', {classId: this.state.schoolClassId} );
+
+					}}>
 						<Image style={styles.optionsImgstyle} source={require('../images/options.png')}/>
 					</TouchableOpacity>
+					
 				</View>
                 {/* 从这里开始滚动 */}
                 <View style={styles.tabViewStyle}>
@@ -148,11 +154,12 @@ const styles = StyleSheet.create({
 		height: screenHeight/12,
 		paddingLeft: 0.05*screenWidth,
 	},
-	optionsImgstyle:{
+	optionsImgstyle:{ //下拉菜单
 		height: screenHeight/12*0.4,
 		width: screenHeight/12*0.5,
 		margin:screenHeight/12*0.2,
-  },
+		flexDirection:'row',
+	},
   tabViewStyle:{
 		flex:1,
   },
@@ -233,5 +240,5 @@ const styles = StyleSheet.create({
     barStyle:{
         width:screenWidth/4,
         justifyContent:'center', alignItems:'center',
-    }
+	}
 });

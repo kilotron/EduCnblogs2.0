@@ -21,10 +21,8 @@ import {
     Picker,
     ToastAndroid,
     Modal,
-    ScrollView,
-
+    ScrollView
 } from 'react-native';
-import {RichTextEditor, RichTextToolbar} from 'react-native-zss-rich-text-editor';
 const screenWidth= MyAdapter.screenWidth;
 const screenHeight= MyAdapter.screenHeight;
 const titleFontSize= MyAdapter.titleFontSize;
@@ -62,8 +60,7 @@ export default class App extends Component {
         //return result;
     }
     _onPress=()=>{
-        const content = this.getHTML();
-        if(this.state.title!=''&&content!='')
+        if(this.state.title!=''&&this.state.content!='')
         {
             //let url = 'https://api.cnblogs.com/api/edu/homework/publish';
 			let url = Config.HomeWorkPublish;
@@ -73,7 +70,7 @@ export default class App extends Component {
                 title: this.state.title,
                 startTime: this.state.startDate+" "+this.state.startHour+":"+this.state.startMinute,
                 deadline: this.state.endDate+" "+this.state.endHour+":"+this.state.endMinute,
-                content: content,
+                content: this.state.content,
                 formatType: Number(this.state.formatType),
                 IsShowInHome: this.state.IsShowInHome,
             }
@@ -87,6 +84,8 @@ export default class App extends Component {
             else
             {
                 let body = JSON.stringify(postBody);
+                console.log(url);
+                console.log(body);
                 Service.UserAction(url,body,'POST').then((response)=>{
                     console.log(response);
                     if(response.status !== 200)
@@ -131,7 +130,7 @@ export default class App extends Component {
     }
     render() {
     return (
-        <View
+        <ScrollView
             style= {{
                 flexDirection: 'column',
                 flex: 1,
@@ -267,9 +266,9 @@ export default class App extends Component {
                     </Picker>
                 </View>
             </View>
-            <View style= {styles.tichTextContainer}
+            <View style= {styles.container}
             >
-                {/* <TextInput
+                <TextInput
                     style={{
                         flexDirection:'column',
                         alignItems:'flex-start',
@@ -283,17 +282,7 @@ export default class App extends Component {
                     multiline={true}
                     underlineColorAndroid="transparent"//设置下划线背景色透明 达到去掉下划线的效果
                     onChangeText= {(text)=>{this.setState({content:text});}}
-                /> */}
-                <RichTextEditor
-                    ref={(r)=>this.richtext = r}
-                    style={styles.richText}
-                    contentPlaceholder={'请在此输入博客内容...'}
-                    editorInitializedCallback={() => this.onEditorInitialized()}
                 />
-                <RichTextToolbar
-                    getEditor={() => this.richtext}
-                />
-                {Platform.OS === 'ios' && <KeyboardSpacer/>}
             </View>
             <View style= {{
                 flexDirection: 'row',
@@ -330,28 +319,8 @@ export default class App extends Component {
                     </Text>
                 </TouchableHighlight>
             </View>
-            
-        </View>
+        </ScrollView>
     );
-  }
-
-  onEditorInitialized() {
-    this.setFocusHandlers();
-    this.getHTML();
-  }
-
-  async getHTML() {
-    const contentHtml = await this.richtext.getContentHtml();
-    return contentHtml;
-  }
-
-  setFocusHandlers() {
-    this.richtext.setTitleFocusHandler(() => {
-      //alert('title focus');
-    });
-    this.richtext.setContentFocusHandler(() => {
-      //alert('content focus');
-    });
   }
 }
 
@@ -440,25 +409,13 @@ const styles = StyleSheet.create({
     textInput:{
         flex:1,
         marginLeft:8,
-        height: screenHeight/20,
+        height: 48,
         borderColor: 'gray',
         borderWidth: 1        
     },
     picker:{
         flex:1,
-        height: screenHeight/20,
+        height: 48,
         color:'#000000',
-    },
-    richText: {
-        height:screenHeight/2,
-        alignItems:'center',
-        justifyContent: 'center',
-        backgroundColor: 'transparent',
-    },
-    tichTextContainer: {
-        flex: 1,
-        flexDirection: 'column',
-        backgroundColor: '#ffffff',
-        paddingTop: 40
-      },
+    }
 });

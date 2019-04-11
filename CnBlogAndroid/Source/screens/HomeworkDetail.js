@@ -212,10 +212,11 @@ export default class HomeWorkDetail extends Component{
                                     title:this.state.title,
                                     startTime:this.state.startTime,
                                     deadline:this.state.deadline,
-                                    content:this.state.content,
+                                    content:this.state.convertedContent == null ? this.state.content : this.state.convertedContent,
                                     formatTyle:this.state.formatTyle,
                                     IsShowInHome:this.state.IsShowInHome,
                                 }
+                                editPack = this.cutContent(editPack);
                                 this.props.navigation.navigate('HomeworkEdition',editPack)
                             }
                         }

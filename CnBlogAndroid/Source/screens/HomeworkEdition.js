@@ -30,6 +30,12 @@ const abstractFontSize= MyAdapter.abstractFontSize;
 const informationFontSize= MyAdapter.informationFontSize;
 const btnFontSize= 16;
 const marginHorizontalNum= 16;
+const HtmlDecode = require('../DataHandler/HomeworkDetails/HtmlDecode');
+const head = '<!DOCTYPE html><html><head>'+
+'<meta charset="utf-8"/>'+
+'<meta name="viewport" content="width=device-width, initial-scale=1" />'+
+'<style type="text/css">  * {word-wrap:break-word; word-break:break-all;}</style>'+
+'</head>';
 export default class homeworkEdition extends Component {
     constructor(props){
         super(props);
@@ -52,6 +58,12 @@ export default class homeworkEdition extends Component {
             endHour:endDotTime[0],
             endMinute:endDotTime[1],
         };
+    }
+    cutContent(item){
+        let newContent = item.content.replace(head,'');
+        newContent = newContent.replace(/(.*)<\/html>/,'');
+        item.content = HtmlDecode(newContent);
+        return item;
     }
     // dateString : xxxx-xx-xx a:b
     StringtoDate= (dateString)=>{
@@ -211,7 +223,7 @@ export default class homeworkEdition extends Component {
                 </Text>
                 <TextInput
                     //onFocus= {this._onPress}
-                    placeholder= ""
+                    defaultValue={this.state.title}
                     style={styles.textInput}
                     underlineColorAndroid="transparent"//设置下划线背景色透明 达到去掉下划线的效果
                     onChangeText= {(text)=>{this.setState({title:text});}}
@@ -284,7 +296,7 @@ export default class homeworkEdition extends Component {
                         borderWidth: 1
                     }}
                     textAlignVertical= "top"
-                    placeholder="请输入内容"
+                    defaultValue={this.state.content}
                     multiline={true}
                     underlineColorAndroid="transparent"//设置下划线背景色透明 达到去掉下划线的效果
                     onChangeText= {(text)=>{this.setState({content:text});}}

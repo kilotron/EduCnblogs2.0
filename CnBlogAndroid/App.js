@@ -42,6 +42,7 @@ import UserInformation from './Source/screens/UserInformation'
 import ClassListsNew from './Source/screens/ClassListsNew'
 import ClassHome from './Source/screens/ClassHome'
 import HomeworkPost from './Source/screens/HomeworkPost'
+import HomeworkEdition from './Source/screens/HomeworkEdition'
 import BlogDetail from './Source/screens/BlogDetail'
 import BlogComment from './Source/screens/BlogComment'
 import ClassMember from './Source/screens/ClassMember'
@@ -512,6 +513,20 @@ const SimpleNavigation = StackNavigator({
         navigationOptions: {
             headerTintColor:'white',
             headerTitle: '作业发布',
+            headerStyle: {
+                height: 40,
+                backgroundColor: UI.TOP_COLOR,
+            },
+            headerTitleStyle: {
+                fontSize: 18,
+            }
+        }
+    },
+    HomeworkEdition: {
+        screen: HomeworkEdition,
+        navigationOptions: {
+            headerTintColor:'white',
+            headerTitle: '作业编辑',
             headerStyle: {
                 height: 40,
                 backgroundColor: UI.TOP_COLOR,

@@ -403,7 +403,15 @@ const SimpleNavigation = StackNavigator({
     ClassFunction: {
         screen: ClassFunction,
         navigationOptions: {
-            header: null,
+            headerTintColor:'white',
+            headerTitle: '班级功能',
+            headerStyle: {
+                height: 40,
+                backgroundColor: UI.TOP_COLOR,
+            },
+            headerTitleStyle: {
+                fontSize: 18,
+            }
         },
     },
 

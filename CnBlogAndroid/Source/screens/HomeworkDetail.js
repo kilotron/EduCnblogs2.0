@@ -81,6 +81,12 @@ export default class HomeWorkDetail extends Component{
     
     closeHomework =()=>{
         let url = Config.HomeWorkClose + this.state.classId + '/' + this.state.Id;
+        let body = JSON.stringify(
+            {
+                blogId:this.props.navigation.state.params.blogId,
+                homeworkId:this.state.Id,
+                schoolClassId:this.state.classId
+            });
         Alert.alert(
             '关闭作业'+this.state.title,
             '确定要关闭吗？',
@@ -88,7 +94,7 @@ export default class HomeWorkDetail extends Component{
                 {text: '取消'},
                 {text: '确认关闭', onPress: ()=>{
                     console.log(url);
-                    Service.UserAction(url, '', 'PATCH')
+                    Service.UserAction(url, body, 'PATCH')
                     .then((response)=>{
                         if(response.status !== 200){
                             console.log(response.status);
@@ -123,8 +129,9 @@ export default class HomeWorkDetail extends Component{
         let url = Config.HomeWorkRemove + this.state.classId + '/' + this.state.Id;
         let body = JSON.stringify(
             {
-                homeworkId:'' + this.state.Id,
-                schoolClassId:'' + this.state.classId
+                blogId:this.props.navigation.state.params.blogId,
+                homeworkId:this.state.Id,
+                schoolClassId:this.state.classId
             });
         Alert.alert(
             '删除作业'+this.state.title,
@@ -216,6 +223,7 @@ export default class HomeWorkDetail extends Component{
                                     content:this.state.convertedContent == null ? this.state.content : this.state.convertedContent,
                                     formatType:this.state.formatType,
                                     isShowInHome:this.state.isShowInHome,
+                                    callback:this.componentWillMount(),
                                 }
                                 // editPack = this.cutContent(editPack);
                                 this.props.navigation.navigate('HomeworkEdition',editPack)

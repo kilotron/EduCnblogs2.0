@@ -53,7 +53,6 @@ export default class HomeworkLists extends Component {
             homeworks: [],
             counts: 0,
             finishedcount: 0,
-            membership:1,
             isRequestSuccess:false,
             classId:nextProps.classId,
         });
@@ -157,6 +156,12 @@ export default class HomeworkLists extends Component {
         })
     };
     UpdateData=()=>{
+        this.setState({
+            homeworks: [],
+            counts: 0,
+            finishedcount: 0,
+            isRequestSuccess:false,
+        });
         this.componentWillMount();
     };
     UpdateDataNext=(Id)=>{
@@ -257,7 +262,11 @@ export default class HomeworkLists extends Component {
     _onPress = ()=>{
         let url = Config.apiDomain + api.user.info;
         if (this.state.membership==2||this.state.membership==3)
-            this.props.navigation.navigate('HomeworkPost',{classId: this.state.classId});
+            this.props.navigation.navigate('HomeworkPost',{
+                classId: this.state.classId,
+                blogId:this.state.blogId,
+
+            });
         else
         {
             ToastAndroid.show("您没有权限，只有老师和助教才能发布作业哦！",ToastAndroid.SHORT);
@@ -419,29 +428,6 @@ export default class HomeworkLists extends Component {
                 backgroundColor: 'white'
             }}
         >
-            {/* <View
-            style= {{
-                flexDirection: 'row',
-                justifyContent:'space-between',
-                alignItems: 'center',
-                marginTop: 0.005*screenHeight,
-                marginLeft: 0.03*screenWidth,
-                marginRight: 0.03*screenWidth,
-                marginBottom: 0.005*screenHeight,
-                alignSelf: 'stretch',
-            }}
-            >
-                <Text
-                    style= {{
-                        alignSelf: 'center',
-                        fontSize: btnFontSize,
-                        textAlign: 'center',
-                        color: 'rgb(51,51,51)'
-                    }}
-                >
-                    未结束：{this.state.finishedcount}
-                </Text>
-            </View> */}
             <View style={{ height: 1, backgroundColor: 'rgb(204,204,204)', }}/>
             <View
                 style= {{
@@ -460,6 +446,7 @@ export default class HomeworkLists extends Component {
                     refreshing= {false}
                 /> */}
                 <SectionList
+                    extraData={this.state}
                     sections={[
                         {key:'未结束:'+dataSize, data:data},
                         {key:'已结束', data:FinishedData},
@@ -521,12 +508,10 @@ const HomeworkStyles = StyleSheet.create({
     sectionHeaderStyle:{
         height:3,
         justifyContent:'center',
-        backgroundColor:'#dcdcdc'
     },
     sectionHeaderViewStyle:{
         justifyContent:'center',
         alignItems:'center',
-        backgroundColor:'#dcdcdc',
         height:screenHeight/20,
     },
     sectionHeaderTextStyle:{

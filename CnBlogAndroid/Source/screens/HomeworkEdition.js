@@ -76,7 +76,7 @@ export default class homeworkEdition extends Component {
     }
     _onPress=()=>{
         this.getHTML().then((result)=>{
-            homeworkBody=result;
+            let homeworkBody=result;
             if(homeworkBody.title!=''&&homeworkBody.content!='')
             {
                 //let url = 'https://api.cnblogs.com/api/edu/homework/publish';
@@ -85,7 +85,7 @@ export default class homeworkEdition extends Component {
                 let postBody = {
                     homeworkId:this.props.navigation.state.params.homeworkId,
                     operatorInfo:this.props.navigation.state.params.operatorInfo,
-                    schoolClassId:this.props.navigation.state.params.operatorInfo.schoolClassId,
+                    schoolClassId:this.props.navigation.state.params.operatorInfo   .schoolClassId,
                     blogId:this.props.navigation.state.params.operatorInfo.blogId,
                     title: homeworkBody.title,
                     startTime: this.state.startDate+" "+this.state.startHour+":"+this.state.startMinute,
@@ -122,6 +122,7 @@ export default class homeworkEdition extends Component {
                         {
                             ToastAndroid.show('编辑成功，请刷新查看！',ToastAndroid.SHORT);
                             this.props.navigation.goBack();
+                            // this.props.navigation.state.params.callback();
                         }
                         else if(jsonData.isWarning)
                         {
@@ -138,7 +139,7 @@ export default class homeworkEdition extends Component {
             {
                 ToastAndroid.show("标题或内容不能为空！",ToastAndroid.SHORT);
             }
-        })
+        }).catch((error)=>{ToastAndroid.show('请求失败...',ToastAndroid.SHORT)})
     }
     setStartModalVisible(visible) {
         this.setState({startModalVisible: visible});
@@ -389,9 +390,9 @@ class MyBar extends Component{
                       index={initHour.lengh == 1 ? '0'+initHour : initHour}
                       onChange= {(index)=>{
                           if (this.props.myPrefix==="start"){
-                              this.props.myThis.setState({startHour:""+index});
+                              this.props.myThis.setState({startHour:(index.length == 1 ? '0'+index:""+index)});
                           }else if (this.props.myPrefix==="end"){
-                              this.props.myThis.setState({endHour:""+index});
+                              this.props.myThis.setState({endHour:(index.length == 1 ? '0'+index:""+index)});
                           }
                       }}
                     />
@@ -403,9 +404,9 @@ class MyBar extends Component{
                       index={initMinute.lengh == 1 ? '0'+ initMinute : initMinute}
                       onChange= {(index)=>{
                           if (this.props.myPrefix==="start"){
-                              this.props.myThis.setState({startMinute:""+index});
+                              this.props.myThis.setState({startMinute:(index.length == 1 ? '0'+index:""+index)});
                           }else if (this.props.myPrefix==="end"){
-                              this.props.myThis.setState({endMinute:""+index});
+                              this.props.myThis.setState({endMinute:(index.length == 1 ? '0'+index:""+index)});
                           }
                       }}
                     />

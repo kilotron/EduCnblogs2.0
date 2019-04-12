@@ -432,12 +432,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'transparent',
     },
     tichTextContainer: {
-        // flexDirection: 'row',
-        flex:1,
-        justifyContent:'center',
-        alignSelf: 'stretch',
-        // marginTop:16,
-        // marginHorizontal:16,
+        flex: 1,
         flexDirection: 'column',
         backgroundColor: '#ffffff',
         paddingTop: 40

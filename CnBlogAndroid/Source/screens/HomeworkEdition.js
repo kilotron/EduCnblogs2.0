@@ -46,10 +46,11 @@ export default class homeworkEdition extends Component {
         let startDotTime = startDateAndTime[1].split(':');
         let endDateAndTime = deadline.split('T');
         let endDotTime = endDateAndTime[1].split(':');
+        content = this.cutContent(content);
         this.state={
             formatType: formatType,//1: TintMce 2: Markdown
             title: title,
-            content: this.cutContent(content),
+            content: content,
             isShowInHome: isShowInHome,// true or false
             startModalVisible: false,
             endModalVisible: false,
@@ -63,7 +64,7 @@ export default class homeworkEdition extends Component {
     }
     cutContent(text){
         let newContent = text.replace(head,'');
-        return newContent.replace(/(.*)<\/html>/,'');
+        return newContent.substring(0,newContent.lastIndexOf('</html>'));
     }
     // dateString : xxxx-xx-xx a:b
     StringtoDate= (dateString)=>{

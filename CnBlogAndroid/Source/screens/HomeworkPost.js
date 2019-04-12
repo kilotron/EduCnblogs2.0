@@ -25,6 +25,7 @@ import {
 
 } from 'react-native';
 import {RichTextEditor, RichTextToolbar} from 'react-native-zss-rich-text-editor';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 const screenWidth= MyAdapter.screenWidth;
 const screenHeight= MyAdapter.screenHeight;
 const titleFontSize= MyAdapter.titleFontSize;
@@ -141,175 +142,175 @@ export default class App extends Component {
                 backgroundColor: 'white'
             }}
         >
-            <Modal
-              animationType={"slide"}
-              transparent={false}
-              visible={this.state.startModalVisible}
-              onRequestClose={() => {ToastAndroid.show("请选择一个日期",ToastAndroid.SHORT);}}
-              >
-             <View style={{
-                 flex: 1,
-                 marginTop: 22
-             }}>
-                <View
-                    style= {{
-                        flex: 1,
-                    }}
+            <KeyboardAwareScrollView>
+                <Modal
+                animationType={"slide"}
+                transparent={false}
+                visible={this.state.startModalVisible}
+                onRequestClose={() => {ToastAndroid.show("请选择一个日期",ToastAndroid.SHORT);}}
                 >
-                <Calendar
-                  onDayPress={(day) => {
-                      this.setState({startDate:day.dateString});
-                      this.setStartModalVisible(!this.state.startModalVisible);
-                  }}
-                  theme={{
-                    selectedDayBackgroundColor: '#3b50ce',
-                    selectedDayTextColor: '#ffffff',
-                    todayTextColor: 'red'
-                  }}                                                        
-                />
-                </View>
-             </View>
-            </Modal>
-            <Modal
-              animationType={"slide"}
-              transparent={false}
-              visible={this.state.endModalVisible}
-              onRequestClose={() => {ToastAndroid.show("请选择一个日期",ToastAndroid.SHORT);}}
-              >
-             <View style={{
-                 flex: 1,
-                 marginTop: 22
-             }}>
-                <View
-                    style= {{
-                        flex: 1,
-                    }}
-                >
-                <Calendar
-                  onDayPress={(day) => {
-                      this.setState({endDate:day.dateString});
-                    this.setEndModalVisible(!this.state.endModalVisible);
-                  }}
-                  theme={{
-                    selectedDayBackgroundColor: '#3b50ce',
-                    selectedDayTextColor: '#ffffff',
-                    todayTextColor: 'red'
-                  }}                                                        
-                />
-                </View>
-             </View>
-            </Modal>
-
-            <View style= {styles.container}
-            >
-
-            </View>
-
-            <MyBar
-                title= "起始时间"
-                onPress={()=>{this.setStartModalVisible(true);}}
-                placeholder={this.state.startDate}
-                myThis= {this}
-                myPrefix= "start"
-            />
-            <MyBar
-                title= "截止时间"
-                onPress={()=>{this.setEndModalVisible(true);}}
-                placeholder={this.state.endDate}
-                myThis= {this}
-                myPrefix= "end"
-            />
-            <View style= {styles.container}
-            >
-                <Text
-                    style= {styles.text}
-                >
-                    格式类型
-                </Text>
-                <View
-                    style= {styles.textInput}
-                >
-                    <Picker
-                        style= {styles.picker}
-                        mode= 'dropdown'
-                          selectedValue={this.state.formatType === 1 ? '1' : '2'}
-                          onValueChange={(type) => this.setState({formatType: type === '1' ? 1 : 2})}>
-                          <Picker.Item label="TinyMce" value="1" />
-                          <Picker.Item label="Markdown" value="2" />
-                    </Picker>
-                </View>
-            </View>
-            <View style= {styles.container}
-            >
-                <Text
-                    style= {styles.text}
-                >
-                    首页显示
-                </Text>
-                <View
-                    style= {styles.textInput}
-                >
-                    <Picker
-                        style= {styles.picker}
-                        mode= 'dropdown'
-                        selectedValue={this.state.isShowInHome ? 'true' : 'false'}
-                        onValueChange={(type) => {this.setState({isShowInHome: type === 'true'})}}>
-                          <Picker.Item label="是" value="true" />
-                          <Picker.Item label="否" value="false" />
-                    </Picker>
-                </View>
-            </View>
-            <View style= {styles.tichTextContainer}
-            >
-
-                <RichTextEditor
-                    ref={(r)=>this.richtext = r}
-                    style={styles.richText}
-                    titlePlaceholder={'请在此输入作业标题...'}
-                    contentPlaceholder={'请在此输入作业内容...'}
-                    editorInitializedCallback={() => this.onEditorInitialized()}
-                />
-                <RichTextToolbar
-                    getEditor={() => this.richtext}
-                />
-                {Platform.OS === 'ios' && <KeyboardSpacer/>}
-            </View>
-            <View style= {{
-                flexDirection: 'row',
-                justifyContent:'center',
-                alignItems: 'center',
-                alignSelf: 'stretch',
-                marginVertical:16,
-                marginHorizontal:marginHorizontalNum
-            }}
-            >
-                <TouchableHighlight
-                    underlayColor="#3b50ce"
-                    activeOpacity={0.5}
-                    style= {{
-                        width:0.35*screenWidth,
-                        alignSelf: 'flex-end',
-                        borderRadius: 0.01*screenHeight,
-                        padding: 0.01*screenHeight,
-                        backgroundColor:"#3b50ce"
-                    }}
-                    onPress={()=>{
-                        this._onPress();
-                    }}//关联函数
-                >
-                    <Text
+                <View style={{
+                    flex: 1,
+                    marginTop: 22
+                }}>
+                    <View
                         style= {{
-                            fontSize: btnFontSize,
-                            color: '#ffffff',
-                            textAlign: 'center',
-                            fontWeight: 'bold',
+                            flex: 1,
                         }}
                     >
-                        发布
+                    <Calendar
+                    onDayPress={(day) => {
+                        this.setState({startDate:day.dateString});
+                        this.setStartModalVisible(!this.state.startModalVisible);
+                    }}
+                    theme={{
+                        selectedDayBackgroundColor: '#3b50ce',
+                        selectedDayTextColor: '#ffffff',
+                        todayTextColor: 'red'
+                    }}                                                        
+                    />
+                    </View>
+                </View>
+                </Modal>
+                <Modal
+                animationType={"slide"}
+                transparent={false}
+                visible={this.state.endModalVisible}
+                onRequestClose={() => {ToastAndroid.show("请选择一个日期",ToastAndroid.SHORT);}}
+                >
+                <View style={{
+                    flex: 1,
+                    marginTop: 22
+                }}>
+                    <View
+                        style= {{
+                            flex: 1,
+                        }}
+                    >
+                    <Calendar
+                    onDayPress={(day) => {
+                        this.setState({endDate:day.dateString});
+                        this.setEndModalVisible(!this.state.endModalVisible);
+                    }}
+                    theme={{
+                        selectedDayBackgroundColor: '#3b50ce',
+                        selectedDayTextColor: '#ffffff',
+                        todayTextColor: 'red'
+                    }}                                                        
+                    />
+                    </View>
+                </View>
+                </Modal>
+
+                <View style= {styles.container}
+                >
+
+                </View>
+
+                <MyBar
+                    title= "起始时间"
+                    onPress={()=>{this.setStartModalVisible(true);}}
+                    placeholder={this.state.startDate}
+                    myThis= {this}
+                    myPrefix= "start"
+                />
+                <MyBar
+                    title= "截止时间"
+                    onPress={()=>{this.setEndModalVisible(true);}}
+                    placeholder={this.state.endDate}
+                    myThis= {this}
+                    myPrefix= "end"
+                />
+                <View style= {styles.container}
+                >
+                    <Text
+                        style= {styles.text}
+                    >
+                        格式类型
                     </Text>
-                </TouchableHighlight>
-            </View>
-            
+                    <View
+                        style= {styles.textInput}
+                    >
+                        <Picker
+                            style= {styles.picker}
+                            mode= 'dropdown'
+                            selectedValue={this.state.formatType === 1 ? '1' : '2'}
+                            onValueChange={(type) => this.setState({formatType: type === '1' ? 1 : 2})}>
+                            <Picker.Item label="TinyMce" value="1" />
+                            <Picker.Item label="Markdown" value="2" />
+                        </Picker>
+                    </View>
+                </View>
+                <View style= {styles.container}
+                >
+                    <Text
+                        style= {styles.text}
+                    >
+                        首页显示
+                    </Text>
+                    <View
+                        style= {styles.textInput}
+                    >
+                        <Picker
+                            style= {styles.picker}
+                            mode= 'dropdown'
+                            selectedValue={this.state.isShowInHome ? 'true' : 'false'}
+                            onValueChange={(type) => {this.setState({isShowInHome: type === 'true'})}}>
+                            <Picker.Item label="是" value="true" />
+                            <Picker.Item label="否" value="false" />
+                        </Picker>
+                    </View>
+                </View>
+                <View style= {styles.tichTextContainer}
+                >
+                    <RichTextEditor
+                        ref={(r)=>this.richtext = r}
+                        style={styles.richText}
+                        titlePlaceholder={'请在此输入作业标题...'}
+                        contentPlaceholder={'请在此输入作业内容...'}
+                        editorInitializedCallback={() => this.onEditorInitialized()}
+                    />
+                    <RichTextToolbar
+                        getEditor={() => this.richtext}
+                    />
+                    {Platform.OS === 'ios' && <KeyboardSpacer/>}
+                </View>
+                <View style= {{
+                    flexDirection: 'row',
+                    justifyContent:'center',
+                    alignItems: 'center',
+                    alignSelf: 'stretch',
+                    marginVertical:16,
+                    marginHorizontal:marginHorizontalNum
+                }}
+                >
+                    <TouchableHighlight
+                        underlayColor="#3b50ce"
+                        activeOpacity={0.5}
+                        style= {{
+                            width:0.35*screenWidth,
+                            alignSelf: 'flex-end',
+                            borderRadius: 0.01*screenHeight,
+                            padding: 0.01*screenHeight,
+                            backgroundColor:"#3b50ce"
+                        }}
+                        onPress={()=>{
+                            this._onPress();
+                        }}//关联函数
+                    >
+                        <Text
+                            style= {{
+                                fontSize: btnFontSize,
+                                color: '#ffffff',
+                                textAlign: 'center',
+                                fontWeight: 'bold',
+                            }}
+                        >
+                            发布
+                        </Text>
+                    </TouchableHighlight>
+                </View>
+            </KeyboardAwareScrollView>
         </View>
     );
   }
@@ -430,7 +431,12 @@ const styles = StyleSheet.create({
         backgroundColor: 'transparent',
     },
     tichTextContainer: {
-        flex: 1,
+        // flexDirection: 'row',
+        flex:1,
+        justifyContent:'center',
+        alignSelf: 'stretch',
+        // marginTop:16,
+        // marginHorizontal:16,
         flexDirection: 'column',
         backgroundColor: '#ffffff',
         paddingTop: 40

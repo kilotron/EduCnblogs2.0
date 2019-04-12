@@ -122,7 +122,6 @@ export default class homeworkEdition extends Component {
                         {
                             ToastAndroid.show('编辑成功，请刷新查看！',ToastAndroid.SHORT);
                             this.props.navigation.goBack();
-                            // this.props.navigation.state.params.callback();
                         }
                         else if(jsonData.isWarning)
                         {

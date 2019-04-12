@@ -171,7 +171,6 @@ export default class HomeWorkDetail extends Component{
             ]
         )
     }
-
     renderBottomBar(Id,isFinished,classId,answerCount){
         if(this.state.membership === 1){
             return(
@@ -223,7 +222,7 @@ export default class HomeWorkDetail extends Component{
                                     content:this.state.convertedContent == null ? this.state.content : this.state.convertedContent,
                                     formatType:this.state.formatType,
                                     isShowInHome:this.state.isShowInHome,
-                                    callback:this.componentWillMount(),
+                                    callback:this.componentWillMount,
                                 }
                                 // editPack = this.cutContent(editPack);
                                 this.props.navigation.navigate('HomeworkEdition',editPack)

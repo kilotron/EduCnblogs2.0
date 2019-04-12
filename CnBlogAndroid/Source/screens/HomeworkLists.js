@@ -265,7 +265,7 @@ export default class HomeworkLists extends Component {
             this.props.navigation.navigate('HomeworkPost',{
                 classId: this.state.classId,
                 blogId:this.state.blogId,
-
+                callback:this.UpdateData,
             });
         else
         {

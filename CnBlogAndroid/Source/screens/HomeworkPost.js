@@ -108,6 +108,7 @@ export default class App extends Component {
                         else if(jsonData.isSuccess)
                         {
                             ToastAndroid.show('添加成功，请刷新查看！',ToastAndroid.SHORT);
+                            this.props.navigation.state.params.callback();
                             this.props.navigation.goBack();
                         }
                         else if(jsonData.isWarning)

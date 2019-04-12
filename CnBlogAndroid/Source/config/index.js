@@ -24,6 +24,7 @@ export default{
 	BulletinPublish: 'https://api.cnblogs.com/api/edu/bulletin/publish/',
     BulletinEdit: 'https://api.cnblogs.com/api/edu/bulletin/modify/',
     BulletinDel: 'https://api.cnblogs.com/api/edu/bulletin/remove/',
+    Bookmarks: 'https://api.cnblogs.com/api/Bookmarks',
 }
 
 export const authData = {

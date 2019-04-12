@@ -39,7 +39,7 @@ const ClassBlogPostsListProps = {
 };
 
 export default class ClassBlogPostsList extends Component {
-    
+
     /**属性schoolClassId可能会改变，因此将其放到state中，在父组件改变schoolClassId后，调用
      * componentWillReceiveProps(nextProps)更新此state中的schoolClassId。
      */
@@ -92,14 +92,14 @@ export default class ClassBlogPostsList extends Component {
         if (nextProps.schoolClassId !== this.props.schoolClassId) {
             //alert(nextProps.schoolClassId);
             // setState是异步的，所以将fetch操作放入回调函数中
-            this.setState({schoolClassId: nextProps.schoolClassId}, 
+            this.setState({schoolClassId: nextProps.schoolClassId},
                 () => {this.updateData()});
         }
     }
 
     // 可删，调试用
     componentWillUpdate() {
-        
+
     }
 
     /** 第pageIndex页的班级博文的URL */
@@ -110,7 +110,7 @@ export default class ClassBlogPostsList extends Component {
     }
 
     /** 读取第pageIndex页，并更新state。每页pageSize项.pageIndex从1开始。
-     * */ 
+     * */
 	fetchPage(pageIndex) {
         //这里是否需要检查？
 		this.setState({loadStatus: 'loading'});
@@ -118,7 +118,7 @@ export default class ClassBlogPostsList extends Component {
 		.then((jsonData) => {
             //alert(this.URLOf(pageIndex));
             // 初始时schoolClassId不正确，返回的jsonData是rejected。
-            if (jsonData === 'rejected') {  
+            if (jsonData === 'rejected') {
                 return;
             }
             let pageCount = Math.ceil(jsonData.totalCount / pageSize);
@@ -152,17 +152,17 @@ export default class ClassBlogPostsList extends Component {
 
     /** 更新数据，重新加载第一页.此函数适用于切换班级（schoolClassId变化）
      *  、切换筛选条件（filter变化）或下拉刷新时重新获取博文。
-     * 
+     *
      *  重新获取博文前，先恢复初始状态。把已经获取的博文清空，重置loadStatus为
      *  'not loading'，重置currentPageIndex为1。schoolClassId不改变，
      *  filter不改变。状态重置后，再获取页面。
-     * 
+     *
      * 使用updateData(){}的形式需要在flatlist中使用this.updateData.bind(this)
      * 使用updateData = ()=>{}的形式则不用。
      */
     updateData() {
         this.setState({
-            blogs: [], 
+            blogs: [],
             postCount: 0,
 			loadStatus: 'not loading',  // 用于上拉加载的动画
 			currentPageIndex: 1,        // 已加载的页数/序号，从1开始
@@ -219,11 +219,11 @@ export default class ClassBlogPostsList extends Component {
             <View style={flatStyles.separatorStyle}></View>
 		);
     }
-    
+
     /**FlatList的renderItem */
     _renderItem = ({item}) => {
 		return(
-            <View style={styles.cellStyle}> 
+            <View style={styles.cellStyle}>
                 <TouchableOpacity
                     style = {flatStyles.listContainer}
                     onPress = {() => {
@@ -232,7 +232,8 @@ export default class ClassBlogPostsList extends Component {
                                 Id:item.blogId,
                                 blogApp: global.user_information.BlogApp,
                                 CommentCount: item.commentCount,
-                                Url: item.url
+                                Url: item.url,
+                                Title: item.title,
                             });
                         {/*alert(Id);*/} // bug: ID不对
                     }}
@@ -247,7 +248,7 @@ export default class ClassBlogPostsList extends Component {
 
                     <View style={styles.postMetadataView}>
                         <Text style={styles.viewCountAndCommentCount}>
-                            {item.viewCount + ' 阅读' + '  ' 
+                            {item.viewCount + ' 阅读' + '  '
                              + item.commentCount + ' 评论'}
                         </Text>
                         <Text style={styles.postDate}>
@@ -259,7 +260,7 @@ export default class ClassBlogPostsList extends Component {
             </View>
 		)
     };
-    
+
     /**FlatList滚动到到底部时调用此函数，获取新的一页。 */
     _onEndReached() {
         if (this.state.loadStatus !== 'not loading') {
@@ -328,7 +329,7 @@ const styles = StyleSheet.create({
         borderWidth: 0.5,
         borderRadius: 2,
         shadowColor: 'gray',    // 设置阴影
-        shadowOffset: {width:0.5, height: 0.5},  
+        shadowOffset: {width:0.5, height: 0.5},
         shadowOpacity: 0.4,   // 透明度
         shadowRadius: 1,
         elevation:3   //   高度，设置Z轴，可以产生立体效果
@@ -362,14 +363,14 @@ const styles = StyleSheet.create({
     },
     viewCountAndCommentCount: {
         fontSize: 10,
-        textAlign: 'left', 
-        color: 'black', 
+        textAlign: 'left',
+        color: 'black',
         flex: 1
     },
     postDate: {
-        fontSize: 10, 
-        textAlign: 'right', 
-        color: 'black', 
+        fontSize: 10,
+        textAlign: 'right',
+        color: 'black',
         flex: 1
     },
     allLoadedView: {

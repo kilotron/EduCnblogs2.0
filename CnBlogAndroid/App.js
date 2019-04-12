@@ -45,6 +45,7 @@ import HomeworkPost from './Source/screens/HomeworkPost'
 import HomeworkEdition from './Source/screens/HomeworkEdition'
 import BlogDetail from './Source/screens/BlogDetail'
 import BlogComment from './Source/screens/BlogComment'
+import BlogBookmarks from './Source/screens/BlogBookmarks'
 import ClassMember from './Source/screens/ClassMember'
 import ClassMemberAdd from './Source/screens/ClassMemberAdd'
 import MemberBlog from './Source/screens/MemberBlog'
@@ -577,6 +578,20 @@ const SimpleNavigation = StackNavigator({
         navigationOptions: {
             headerTintColor:'white',
             headerTitle: '编辑博文',
+            headerStyle: {
+                height: 40,
+                backgroundColor: UI.TOP_COLOR,
+            },
+            headerTitleStyle: {
+                fontSize: 18,
+            },
+        }
+    },
+    BlogBookmarks: {
+        screen: BlogBookmarks,
+        navigationOptions: {
+            headerTintColor:'white',
+            headerTitle: '添加收藏',
             headerStyle: {
                 height: 40,
                 backgroundColor: UI.TOP_COLOR,

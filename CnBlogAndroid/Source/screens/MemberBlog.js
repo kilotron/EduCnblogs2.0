@@ -111,12 +111,13 @@ export default class MemberBlog extends Component{
         let blogApp = arr[3];
         return(
             <View>
-                <TouchableOpacity 
+                <TouchableOpacity
                     style = {styles.listcontainer}
                     onPress = {()=>{
-                        this.props.navigation.navigate('BlogDetail',{Url: Url, Id:Id, blogApp: blogApp, CommentCount: CommentCount})}
+                        this.props.navigation.navigate('BlogDetail',{Url: Url, Id:Id,
+                            blogApp: blogApp, CommentCount: CommentCount, Title: Title})}
                     }
-                >  
+                >
                     <Text style = {{
                         fontSize: 18,
                         fontWeight: 'bold',

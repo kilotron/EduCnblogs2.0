@@ -86,6 +86,26 @@ export default class BlogDetail extends Component{
         }
     }
 
+    _onPressBookmarks = ()=>{
+        this.props.navigation.navigate('BlogBookmarks',{Url: this.props.navigation.state.params.Url,
+            Title: this.props.navigation.state.params.Title});
+        /*
+        Alert.alert(
+            '添加收藏',
+            '确定要添加吗？',
+            [
+                //{inputBox: 'tags'}
+                {text: '取消'},
+                {text: '确认添加', onPress: ()=>{
+                    this.props.navigation.navigate('BlogBookmarks',{Url: this.props.navigation.state.params.Url,
+                    Title: this.props.navigation.state.params.Title});
+                }},
+            ]
+        );
+        */
+
+    }
+
     render(){
         let content = ContentHandler(this.state);
         return(
@@ -132,6 +152,14 @@ export default class BlogDetail extends Component{
                             </View>
                           )
                     }
+                    <TouchableOpacity style = {styles.touchbutton}
+                      onPress = {this._onPressBookmarks}>
+                        <Image source =
+                        {require('../images/bookmarks.png')}
+                        style = {styles.imagestyle}
+                        accessibilityLabel = 'BlogDetail_markImage'/>
+
+                    </TouchableOpacity>
                 </View>
             </View>
         )

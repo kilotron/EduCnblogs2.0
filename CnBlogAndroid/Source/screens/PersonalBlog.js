@@ -54,7 +54,7 @@ export default class PersonalBlog extends Component{
         });
 		this.componentWillMount();
     };
-	
+
     componentWillMount = ()=>{
         this._isMounted=true;
         // 获取当前登录用户信息，存放于global
@@ -83,7 +83,7 @@ export default class PersonalBlog extends Component{
 			let url = Config.apiDomain+'api/blogs/'+blogApp;
 			if(this.state.isRequestSuccess){
 				Service.Get(url)
-				.then((jsonData)=>{	
+				.then((jsonData)=>{
 					if(this._isMounted){
 						this.setState({
 							blogTitle: jsonData.title,
@@ -98,7 +98,7 @@ export default class PersonalBlog extends Component{
 						ToastAndroid.show("error",ToastAndroid.SHORT);
 					})
 				})
-				
+
 				// 然后利用获取到的博客文章数量获取文章列表，因为获取方式是分页的
 				.then(()=>{
 					// 计算页数
@@ -124,7 +124,7 @@ export default class PersonalBlog extends Component{
 									blogs: this.state.blogs.concat(posts[i]),
 								})
 							}
-						}	
+						}
 					})
 					//将获取到的博客列表缓存
 					.then(()=>{
@@ -161,11 +161,11 @@ export default class PersonalBlog extends Component{
 			})
 		});
     };
-	
+
     componentWillUnmount = ()=>{
         this._isMounted=false;
     }
-	
+
     _renderItem = (item)=>{
         let item1 = item;
         var Title = item1.item.Title;
@@ -178,10 +178,10 @@ export default class PersonalBlog extends Component{
         return(
             <View>
                 <TouchableOpacity
-                    style = {styles.listcontainer} 
+                    style = {styles.listcontainer}
                     onPress = {Url!=='' ? ()=>this.props.navigation.navigate('BlogDetail',
-                    {Id:Id, blogApp: global.user_information.BlogApp, CommentCount: CommentCount, Url: Url}) : ()=>{}}
-                >  
+                    {Id:Id, blogApp: global.user_information.BlogApp, CommentCount: CommentCount, Url: Url, Title: Title}) : ()=>{}}
+                >
                     <Text style = {{
                         fontSize: 18,
                         fontWeight: 'bold',
@@ -219,7 +219,7 @@ export default class PersonalBlog extends Component{
             </View>
         )
     };
-	
+
     _separator = () => {
         return (
             <View style={{ height: 9.75, justifyContent: 'center'}}>
@@ -269,10 +269,10 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
     },
     header:{
-        flexDirection: 'row',  
+        flexDirection: 'row',
         justifyContent:'flex-start',
-        alignItems: 'center',  
-        backgroundColor: UI.TOP_COLOR,      
+        alignItems: 'center',
+        backgroundColor: UI.TOP_COLOR,
         height: screenHeight/12,
         paddingLeft: 0.03*screenWidth,
         alignSelf: 'stretch',

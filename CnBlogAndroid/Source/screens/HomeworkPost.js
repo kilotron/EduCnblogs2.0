@@ -39,7 +39,7 @@ export default class App extends Component {
             formatType: 1,//1: TintMce 2: Markdown
             title: '',
             content: '',
-            IsShowInHome: true,// true or false
+            isShowInHome: false,// true or false
 
             startModalVisible: false,
             endModalVisible: false,
@@ -62,20 +62,20 @@ export default class App extends Component {
         //return result;
     }
     _onPress=()=>{
-        const content = this.getHTML();
-        if(this.state.title!=''&&content!='')
+        let homeworkBody = this.getHTML();
+        if(homeworkBody.title!=''&&homeworkBody.content!='')
         {
             //let url = 'https://api.cnblogs.com/api/edu/homework/publish';
 			let url = Config.HomeWorkPublish;
             let classId = Number(this.props.navigation.state.params.classId);
             let postBody = {
                 schoolClassId: classId,
-                title: this.state.title,
+                title: homeworkBody.title,
                 startTime: this.state.startDate+" "+this.state.startHour+":"+this.state.startMinute,
                 deadline: this.state.endDate+" "+this.state.endHour+":"+this.state.endMinute,
-                content: content,
+                content: homeworkBody.content,
                 formatType: Number(this.state.formatType),
-                IsShowInHome: this.state.IsShowInHome,
+                isShowInHome: this.state.isShowInHome,
             }
             let st = this.StringtoDate(postBody.startTime);
             let ed = this.StringtoDate(postBody.deadline);
@@ -199,18 +199,7 @@ export default class App extends Component {
 
             <View style= {styles.container}
             >
-                <Text
-                    style= {styles.text}
-                >
-                    标题
-                </Text>
-                <TextInput
-                    //onFocus= {this._onPress}
-                    placeholder= ""
-                    style={styles.textInput}
-                    underlineColorAndroid="transparent"//设置下划线背景色透明 达到去掉下划线的效果
-                    onChangeText= {(text)=>{this.setState({title:text});}}
-                />
+
             </View>
 
             <MyBar
@@ -240,8 +229,8 @@ export default class App extends Component {
                     <Picker
                         style= {styles.picker}
                         mode= 'dropdown'
-                          selectedValue={this.state.formatType}
-                          onValueChange={(type) => this.setState({formatType: type})}>
+                          selectedValue={this.state.formatType === 1 ? '1' : '2'}
+                          onValueChange={(type) => this.setState({formatType: type === '1' ? 1 : 2})}>
                           <Picker.Item label="TinyMce" value="1" />
                           <Picker.Item label="Markdown" value="2" />
                     </Picker>
@@ -260,8 +249,8 @@ export default class App extends Component {
                     <Picker
                         style= {styles.picker}
                         mode= 'dropdown'
-                          selectedValue={this.state.isShowInHome}
-                          onValueChange={(type) => this.setState({isShowInHome: type})}>
+                        selectedValue={this.state.isShowInHome ? 'true' : 'false'}
+                        onValueChange={(type) => {this.setState({isShowInHome: type === 'true'})}}>
                           <Picker.Item label="是" value="true" />
                           <Picker.Item label="否" value="false" />
                     </Picker>
@@ -269,25 +258,12 @@ export default class App extends Component {
             </View>
             <View style= {styles.tichTextContainer}
             >
-                {/* <TextInput
-                    style={{
-                        flexDirection:'column',
-                        alignItems:'flex-start',
-                        flex:1,
-                        height: 0.33*screenHeight,
-                        borderColor: 'gray',
-                        borderWidth: 1
-                    }}
-                    textAlignVertical= "top"
-                    placeholder="请输入内容"
-                    multiline={true}
-                    underlineColorAndroid="transparent"//设置下划线背景色透明 达到去掉下划线的效果
-                    onChangeText= {(text)=>{this.setState({content:text});}}
-                /> */}
+
                 <RichTextEditor
                     ref={(r)=>this.richtext = r}
                     style={styles.richText}
-                    contentPlaceholder={'请在此输入博客内容...'}
+                    titlePlaceholder={'请在此输入作业标题...'}
+                    contentPlaceholder={'请在此输入作业内容...'}
                     editorInitializedCallback={() => this.onEditorInitialized()}
                 />
                 <RichTextToolbar
@@ -336,22 +312,17 @@ export default class App extends Component {
   }
 
   onEditorInitialized() {
-    this.setFocusHandlers();
-    this.getHTML();
+    // this.setFocusHandlers();
+    // this.getHTML();
   }
 
   async getHTML() {
     const contentHtml = await this.richtext.getContentHtml();
-    return contentHtml;
-  }
-
-  setFocusHandlers() {
-    this.richtext.setTitleFocusHandler(() => {
-      //alert('title focus');
-    });
-    this.richtext.setContentFocusHandler(() => {
-      //alert('content focus');
-    });
+    const titleText = await this.richtext.getTitleText();
+    return {
+        content:contentHtml,
+        title:titleText,
+    };
   }
 }
 
@@ -440,13 +411,13 @@ const styles = StyleSheet.create({
     textInput:{
         flex:1,
         marginLeft:8,
-        height: screenHeight/20,
+        height: screenHeight/18,
         borderColor: 'gray',
         borderWidth: 1        
     },
     picker:{
         flex:1,
-        height: screenHeight/20,
+        height: screenHeight/18,
         color:'#000000',
     },
     richText: {

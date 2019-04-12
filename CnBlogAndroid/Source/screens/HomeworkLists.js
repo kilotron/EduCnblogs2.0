@@ -120,6 +120,7 @@ export default class HomeworkLists extends Component {
                     Service.Get(url2).then((jsonData)=>{
                         if(this._isMounted && jsonData!=='rejected'){
                             this.setState({
+                                blogId: jsonData.blogId,
                                 membership: jsonData.membership,
                             })
                         }

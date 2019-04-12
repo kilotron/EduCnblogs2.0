@@ -28,11 +28,12 @@ export default class HomeWorkDetail extends Component{
             content: '',
             convertedContent: '',
             title: '',
-            formatTyle: 1,
+            formatType: 2,
             answerCount: 0,
             membership: this.props.navigation.state.params.membership,
             Id:0,
             classId:0,
+            isShowInHome:false
         }
     }
     _isMounted;
@@ -50,13 +51,13 @@ export default class HomeWorkDetail extends Component{
                     content: jsonData.content,
                     convertedContent: jsonData.convertedContent,
                     title: jsonData.title,
-					formatTyle: jsonData.formatTyle,
+					formatType: jsonData.formatType,
                     answerCount: jsonData.answerCount,
                     Id:Id,
                     classId:classId,
                     startTime:jsonData.startTime,
                     deadline:jsonData.deadline,
-                    IsShowInHome:jsonData.IsShowInHome,
+                    isShowInHome:jsonData.isShowInHome,
                 })
             }
         })
@@ -71,7 +72,7 @@ export default class HomeWorkDetail extends Component{
                     content: ret.content,
                     convertedContent: ret.convertedContent,
                     title: ret.title,
-					formatTyle: ret.formatTyle,
+					formatType: ret.formatType,
                     answerCount: ret.answerCount,
                 })
 			})
@@ -213,10 +214,10 @@ export default class HomeWorkDetail extends Component{
                                     startTime:this.state.startTime,
                                     deadline:this.state.deadline,
                                     content:this.state.convertedContent == null ? this.state.content : this.state.convertedContent,
-                                    formatTyle:this.state.formatTyle,
-                                    IsShowInHome:this.state.IsShowInHome,
+                                    formatType:this.state.formatType,
+                                    isShowInHome:this.state.isShowInHome,
                                 }
-                                editPack = this.cutContent(editPack);
+                                // editPack = this.cutContent(editPack);
                                 this.props.navigation.navigate('HomeworkEdition',editPack)
                             }
                         }
@@ -250,7 +251,7 @@ export default class HomeWorkDetail extends Component{
     
     render(){        
         let {url, Id, classId, isFinished} = InfoHandler(this.props.navigation.state.params);
-        let {content, convertedContent, title, formatTyle, answerCount} = ContentHandler(this.state);
+        let {content, convertedContent, title, formatType,isShowInHome, answerCount} = ContentHandler(this.state);
         return(
             <View style = {styles.container}>
                 <View

@@ -23,6 +23,7 @@ import {
     Modal,
     ScrollView
 } from 'react-native';
+import {RichTextEditor, RichTextToolbar} from 'react-native-zss-rich-text-editor';
 const screenWidth= MyAdapter.screenWidth;
 const screenHeight= MyAdapter.screenHeight;
 const titleFontSize= MyAdapter.titleFontSize;
@@ -39,7 +40,7 @@ const head = '<!DOCTYPE html><html><head>'+
 export default class homeworkEdition extends Component {
     constructor(props){
         super(props);
-        let {title,startTime,deadline,content,formatType,IsShowInHome} = this.props.navigation.state.params; 
+        let {title,startTime,deadline,content,formatType,isShowInHome} = this.props.navigation.state.params; 
         let startDateAndTime = startTime.split('T');
         let startDotTime = startDateAndTime[1].split(':');
         let endDateAndTime = deadline.split('T');
@@ -47,8 +48,8 @@ export default class homeworkEdition extends Component {
         this.state={
             formatType: formatType,//1: TintMce 2: Markdown
             title: title,
-            content: content,
-            IsShowInHome: IsShowInHome,// true or false
+            content: this.cutContent(content),
+            isShowInHome: isShowInHome,// true or false
             startModalVisible: false,
             endModalVisible: false,
             startDate: startDateAndTime[0],
@@ -59,11 +60,9 @@ export default class homeworkEdition extends Component {
             endMinute:endDotTime[1],
         };
     }
-    cutContent(item){
-        let newContent = item.content.replace(head,'');
-        newContent = newContent.replace(/(.*)<\/html>/,'');
-        item.content = HtmlDecode(newContent);
-        return item;
+    cutContent(text){
+        let newContent = text.replace(head,'');
+        return newContent.replace(/(.*)<\/html>/,'');
     }
     // dateString : xxxx-xx-xx a:b
     StringtoDate= (dateString)=>{
@@ -76,69 +75,70 @@ export default class homeworkEdition extends Component {
         //return result;
     }
     _onPress=()=>{
-        if(this.state.title!=''&&this.state.content!='')
-        {
-            //let url = 'https://api.cnblogs.com/api/edu/homework/publish';
-			let url = Config.HomeWorkEdit + this.props.navigation.state.params.homeworkId;
-            let classId = Number(this.props.navigation.state.params.classId);
-            let operatorInfo = {
-                schoolClassId:classId,
-                blogId:this.props.navigation.state.params.blogId
-            }
-            let postBody = {
-                homeworkId:this.props.navigation.state.params.homeworkId,
-                operatorInfo:operatorInfo,
-                title: this.state.title,
-                startTime: this.state.startDate+" "+this.state.startHour+":"+this.state.startMinute,
-                deadline: this.state.endDate+" "+this.state.endHour+":"+this.state.endMinute,
-                content: this.state.content,
-                formatType: Number(this.state.formatType),
-                IsShowInHome: this.state.IsShowInHome,
-            }
-            let st = this.StringtoDate(postBody.startTime);
-            let ed = this.StringtoDate(postBody.deadline);
-            
-            if(st>=ed)
+        this.getHTML().then((result)=>{
+            homeworkBody=result;
+            if(homeworkBody.title!=''&&homeworkBody.content!='')
             {
-                ToastAndroid.show("截止日期必须在开始日期之后！",ToastAndroid.SHORT);
+                //let url = 'https://api.cnblogs.com/api/edu/homework/publish';
+                let url = Config.HomeWorkEdit + this.props.navigation.state.params.homeworkId;
+                let classId = Number(this.props.navigation.state.params.classId);
+                let postBody = {
+                    homeworkId:this.props.navigation.state.params.homeworkId,
+                    operatorInfo:this.props.navigation.state.params.operatorInfo,
+                    schoolClassId:this.props.navigation.state.params.operatorInfo.schoolClassId,
+                    blogId:this.props.navigation.state.params.operatorInfo.blogId,
+                    title: homeworkBody.title,
+                    startTime: this.state.startDate+" "+this.state.startHour+":"+this.state.startMinute,
+                    deadline: this.state.endDate+" "+this.state.endHour+":"+this.state.endMinute,
+                    content: homeworkBody.content,
+                    formatType: Number(this.state.formatType),
+                    isShowInHome: this.state.isShowInHome,
+                }
+                let st = this.StringtoDate(postBody.startTime);
+                let ed = this.StringtoDate(postBody.deadline);
+                
+                if(st>=ed)
+                {
+                    ToastAndroid.show("截止日期必须在开始日期之后！",ToastAndroid.SHORT);
+                }
+                else
+                {
+                    let body = JSON.stringify(postBody);
+                    Service.UserAction(url,body,'PATCH').then((response)=>{
+                        if(response.status !== 200)
+                        {
+                            return null;
+                        }
+                        else
+                        {
+                            return response.json();
+                        }
+                    }).then((jsonData)=>{
+                        if(jsonData===null)
+                        {
+                            ToastAndroid.show('请求失败！',ToastAndroid.SHORT);
+                        }
+                        else if(jsonData.isSuccess)
+                        {
+                            ToastAndroid.show('编辑成功，请刷新查看！',ToastAndroid.SHORT);
+                            this.props.navigation.goBack();
+                        }
+                        else if(jsonData.isWarning)
+                        {
+                            ToastAndroid.show(jsonData.message,ToastAndroid.SHORT);
+                        }
+                        else
+                        {
+                            ToastAndroid.show('发生错误，请稍后重试！',ToastAndroid.SHORT);
+                        }
+                    }).catch((error)=>{ToastAndroid.show(err_info.NO_INTERNET,ToastAndroid.SHORT)})  
+                }
             }
             else
             {
-                let body = JSON.stringify(postBody);
-                Service.UserAction(url,body,'PATCH').then((response)=>{
-                    if(response.status !== 200)
-                    {
-                        return null;
-                    }
-                    else
-                    {
-                        return response.json();
-                    }
-                }).then((jsonData)=>{
-                    if(jsonData===null)
-                    {
-                        ToastAndroid.show('请求失败！',ToastAndroid.SHORT);
-                    }
-                    else if(jsonData.isSuccess)
-                    {
-                        ToastAndroid.show('编辑成功，请刷新查看！',ToastAndroid.SHORT);
-                        this.props.navigation.goBack();
-                    }
-                    else if(jsonData.isWarning)
-                    {
-                        ToastAndroid.show(jsonData.message,ToastAndroid.SHORT);
-                    }
-                    else
-                    {
-                        ToastAndroid.show('发生错误，请稍后重试！',ToastAndroid.SHORT);
-                    }
-                }).catch((error)=>{ToastAndroid.show(err_info.NO_INTERNET,ToastAndroid.SHORT)})  
+                ToastAndroid.show("标题或内容不能为空！",ToastAndroid.SHORT);
             }
-        }
-        else
-        {
-            ToastAndroid.show("标题或内容不能为空！",ToastAndroid.SHORT);
-        }
+        })
     }
     setStartModalVisible(visible) {
         this.setState({startModalVisible: visible});
@@ -148,7 +148,7 @@ export default class homeworkEdition extends Component {
     }
     render() {
     return (
-        <ScrollView
+        <View
             style= {{
                 flexDirection: 'column',
                 flex: 1,
@@ -216,18 +216,7 @@ export default class homeworkEdition extends Component {
 
             <View style= {styles.container}
             >
-                <Text
-                    style= {styles.text}
-                >
-                    标题
-                </Text>
-                <TextInput
-                    //onFocus= {this._onPress}
-                    defaultValue={this.state.title}
-                    style={styles.textInput}
-                    underlineColorAndroid="transparent"//设置下划线背景色透明 达到去掉下划线的效果
-                    onChangeText= {(text)=>{this.setState({title:text});}}
-                />
+
             </View>
 
             <MyBar
@@ -257,8 +246,8 @@ export default class homeworkEdition extends Component {
                     <Picker
                         style= {styles.picker}
                         mode= 'dropdown'
-                          selectedValue={this.state.formatType}
-                          onValueChange={(type) => this.setState({formatType: type})}>
+                          selectedValue={this.state.formatType === 1 ? '1' : '2'}
+                          onValueChange={(type) => this.setState({formatType: type === '1' ? 1 : 2})}>
                           <Picker.Item label="TinyMce" value="1" />
                           <Picker.Item label="Markdown" value="2" />
                     </Picker>
@@ -277,30 +266,26 @@ export default class homeworkEdition extends Component {
                     <Picker
                         style= {styles.picker}
                         mode= 'dropdown'
-                          selectedValue={this.state.isShowInHome}
-                          onValueChange={(type) => this.setState({isShowInHome: type})}>
+                          selectedValue={this.state.isShowInHome ? 'true' : 'false'}
+                          onValueChange={(type) => {this.setState({isShowInHome: type === 'true'})}}>
                           <Picker.Item label="是" value="true" />
                           <Picker.Item label="否" value="false" />
                     </Picker>
                 </View>
             </View>
-            <View style= {styles.container}
+            <View style= {styles.tichTextContainer}
             >
-                <TextInput
-                    style={{
-                        flexDirection:'column',
-                        alignItems:'flex-start',
-                        flex:1,
-                        height: 0.33*screenHeight,
-                        borderColor: 'gray',
-                        borderWidth: 1
-                    }}
-                    textAlignVertical= "top"
-                    defaultValue={this.state.content}
-                    multiline={true}
-                    underlineColorAndroid="transparent"//设置下划线背景色透明 达到去掉下划线的效果
-                    onChangeText= {(text)=>{this.setState({content:text});}}
+                <RichTextEditor
+                    ref={(r)=>this.richtext = r}
+                    style={styles.richText}
+                    initialTitleHTML={this.state.title}
+                    initialContentHTML={this.state.content}
+                    editorInitializedCallback={() => this.onEditorInitialized()}
                 />
+                <RichTextToolbar
+                    getEditor={() => this.richtext}
+                />
+                {Platform.OS === 'ios' && <KeyboardSpacer/>}
             </View>
             <View style= {{
                 flexDirection: 'row',
@@ -337,8 +322,17 @@ export default class homeworkEdition extends Component {
                     </Text>
                 </TouchableHighlight>
             </View>
-        </ScrollView>
+        </View>
     );
+  }
+
+  async getHTML() {
+    const contentHtml = await this.richtext.getContentHtml();
+    const titleText = await this.richtext.getTitleText();
+    return {
+        content:contentHtml,
+        title:titleText,
+    };
   }
 }
 
@@ -357,6 +351,16 @@ class MyBar extends Component{
 
     }
     render(){
+        var initMinute = '00';
+        var initHour = '00';
+        if (this.props.myPrefix==="start"){
+            initHour = this.props.myThis.state.startHour;
+            initMinute = this.props.myThis.state.startMinute;
+        }
+        else if (this.props.myPrefix==="end"){
+            initMinute = this.props.myThis.state.endMinute;
+            initHour = this.props.myThis.state.endHour;
+        }
         return(
             <View style= {styles.container}
             >
@@ -382,6 +386,7 @@ class MyBar extends Component{
                       style={{height: 48, width: 30}}
                       itemStyle={{textAlign: 'center'}}
                       items={this.hours}
+                      index={initHour.lengh == 1 ? '0'+initHour : initHour}
                       onChange= {(index)=>{
                           if (this.props.myPrefix==="start"){
                               this.props.myThis.setState({startHour:""+index});
@@ -395,6 +400,7 @@ class MyBar extends Component{
                       style={{height: 48, width: 30}}
                       itemStyle={{textAlign: 'center'}}
                       items={this.minutes}
+                      index={initMinute.lengh == 1 ? '0'+ initMinute : initMinute}
                       onChange= {(index)=>{
                           if (this.props.myPrefix==="start"){
                               this.props.myThis.setState({startMinute:""+index});
@@ -427,13 +433,25 @@ const styles = StyleSheet.create({
     textInput:{
         flex:1,
         marginLeft:8,
-        height: 48,
+        height: screenHeight/18,
         borderColor: 'gray',
         borderWidth: 1        
     },
     picker:{
         flex:1,
-        height: 48,
+        height: screenHeight/18,
         color:'#000000',
-    }
+    },
+    richText: {
+        height:screenHeight/2,
+        alignItems:'center',
+        justifyContent: 'center',
+        backgroundColor: 'transparent',
+    },
+    tichTextContainer: {
+        flex: 1,
+        flexDirection: 'column',
+        backgroundColor: '#ffffff',
+        paddingTop: 40
+    },
 });

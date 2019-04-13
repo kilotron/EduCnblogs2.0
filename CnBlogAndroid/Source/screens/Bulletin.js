@@ -101,7 +101,6 @@ export default class Bulletin extends Component {
                             else if(jsonData.isSuccess)
                             {
                                 ToastAndroid.show('删除成功！',ToastAndroid.SHORT);
-                                /* 调用回调函数更新公告列表 */
                             }
                             else if(jsonData.isWarning)
                             {
@@ -260,7 +259,7 @@ export default class Bulletin extends Component {
 		this.fetchPage(this.state.currentPageIndex);
     }
 
-    /* 获取某页面的数据，这里简单的考虑第一页时充值公告列表，其他情况追加数据 */
+    /* 获取某页面的数据，这里简单的考虑第一页时重置公告列表，其他情况追加数据 */
     fetchPage(pageIndex) {
         if (!this._isMounted)
         {

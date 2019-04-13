@@ -47,7 +47,7 @@ export default class BlogEdition extends Component{
             //console.log(response);
         })
         .catch((error)=>{
-            console.log(error);
+            ToastAndroid.show(err_info.TIME_OUT,ToastAndroid.SHORT);
         });
     }
 

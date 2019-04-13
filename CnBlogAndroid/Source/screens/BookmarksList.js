@@ -91,9 +91,6 @@ export default class BookmarksList extends Component {
                         });
                     }).catch((error) => {
                         ToastAndroid.show(err_info.NO_INTERNET ,ToastAndroid.SHORT);
-                        this.setState({
-                            shouldRefresh: true,
-                        });
                     });
                 }},
             ]
@@ -286,16 +283,12 @@ export default class BookmarksList extends Component {
 
                 }).catch((error) =>
                 {
-                    this.setState({
-                        shouldRefresh: false,
-                    });
+                    ToastAndroid.show(err_info.TIME_OUT,ToastAndroid.SHORT);
                 });
             }
         }).catch((error)=>
         {
-            this.setState({
-                shouldRefresh: false,
-            });
+            ToastAndroid.show(err_info.TIME_OUT,ToastAndroid.SHORT);
         });
     }
 

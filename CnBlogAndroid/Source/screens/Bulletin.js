@@ -299,7 +299,8 @@ export default class Bulletin extends Component {
 
             }
         }).then(()=>{;
-        }).catch((error) => {;
+        }).catch((error) => {
+            ToastAndroid.show(err_info.TIME_OUT,ToastAndroid.SHORT);
         });
     }
 

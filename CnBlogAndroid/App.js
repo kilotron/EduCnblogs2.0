@@ -62,7 +62,7 @@ import Bulletin from './Source/screens/Bulletin'
 import BulletinAdd from './Source/screens/BulletinAdd'
 import BulletinEdition from './Source/screens/BulletinEdition'
 import ClassSelect from './Source/screens/ClassSelect'
-import VoteHome from './Source/screens/VoteHome'
+import VoteList from './Source/screens/VoteList'
 const { height, width } = Dimensions.get('window');
 
 const CODE_URL = [
@@ -376,8 +376,8 @@ const HomeTab = TabNavigator({
         }
     },
 
-    VoteHome:{
-        screen: VoteHome,
+    VoteList:{
+        screen: VoteList,
         navigationOptions:{
             //未完成
         }

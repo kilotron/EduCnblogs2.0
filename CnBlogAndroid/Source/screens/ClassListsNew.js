@@ -30,7 +30,7 @@ import {
 import Bulletin from './Bulletin';
 import HomeworkLists from './HomeworkLists';
 import ClassBlogPostsList from '../component/ClassBlogPostsList'
-import VoteHome from './VoteHome';
+import VoteHome from './VoteList';
 
 const screenWidth = MyAdapter.screenWidth;
 const screenHeight = MyAdapter.screenHeight;

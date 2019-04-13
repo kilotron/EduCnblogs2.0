@@ -25,6 +25,7 @@ import { Icon, Fab } from 'native-base';
 import ShareButton from './Share';
 const { height, width } = Dimensions.get('window');
 const ContentHandler = require('../DataHandler/BlogDetail/ContentHandler');
+
 // 传入博客Id和blogApp和CommentCount作为参数
 export default class BlogDetail extends Component{
     constructor(props){
@@ -108,8 +109,27 @@ export default class BlogDetail extends Component{
 
     }
 
-    render(){
+    /**选择博文内容来源。因为班级博文列表的API没有返回博文ID，只返回了URL。
+     * 个人随便列表的API既返回了博文ID也返回了URL。而获取博文内容的API
+     * 需要博文ID。使用此函数来选择如何获取博文内容。
+     * 
+     * 使用API获取的博文内容更加美观，因此在有博文ID的情况下优先使用API，
+     * 如果实在不能获得博文ID，可以在跳转到此页面时明确指出使用URL，
+     * 传递参数{useURL: true}。使用博文ID是默认的，因此无需指出不使用URL，
+     * 即传递参数{useURL: false}是可选的。*/
+    _WebViewSourceParams() {
         let content = ContentHandler(this.state);
+        if (this.props.navigation.state.params.useURL) {
+            return {uri: this.props.navigation.state.params.Url};
+        } else {
+            return {
+                html: content,
+                baseUrl: this.props.navigation.state.params.Url
+            };
+        }
+    }
+
+    render(){
         return(
             //this.state.isRequestSuccess===false?null:
             <View style = {styles.container}>
@@ -120,8 +140,7 @@ export default class BlogDetail extends Component{
                     }}
                 >
                 <WebView
-                    source={{html: content, baseUrl: this.props.navigation.state.params.Url}}
-                    //source = {{uri: this.props.navigation.state.params.Url}}
+                    source={this._WebViewSourceParams()}
                     style={{height: height-70}}
                     startInLoadingState={true}
                     domStorageEnabled={true}

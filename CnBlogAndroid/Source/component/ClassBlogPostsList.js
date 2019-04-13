@@ -234,6 +234,7 @@ export default class ClassBlogPostsList extends Component {
                                 CommentCount: item.commentCount,
                                 Url: item.url,
                                 Title: item.title,
+                                useURL: true,
                             });
                         {/*alert(Id);*/} // bug: ID不对
                     }}

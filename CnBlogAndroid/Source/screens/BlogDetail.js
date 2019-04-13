@@ -112,7 +112,7 @@ export default class BlogDetail extends Component{
     /**选择博文内容来源。因为班级博文列表的API没有返回博文ID，只返回了URL。
      * 个人随便列表的API既返回了博文ID也返回了URL。而获取博文内容的API
      * 需要博文ID。使用此函数来选择如何获取博文内容。
-     * 
+     *
      * 使用API获取的博文内容更加美观，因此在有博文ID的情况下优先使用API，
      * 如果实在不能获得博文ID，可以在跳转到此页面时明确指出使用URL，
      * 传递参数{useURL: true}。使用博文ID是默认的，因此无需指出不使用URL，
@@ -157,21 +157,22 @@ export default class BlogDetail extends Component{
 
                     </TouchableOpacity>
                     {
-                      (global.user_information.BlogApp !==
+                        /* 无相关API支持，本功能暂时搁置 */
+                        (global.user_information.BlogApp !==
                         this.props.navigation.state.params.blogApp)
-                        ?(null):
-                          (
-                            <View>
-                              <TouchableOpacity style = {styles.touchbutton}
-                                onPress = {this._onPressEdit}>
-                                  <Image source =
-                                  {require('../images/editBlog.png')}
-                                  style = {styles.imagestyle}
-                                  accessibilityLabel = 'BlogDetail_editImage'/>
+                        ?(null): (null)
+                          /*
+                          <View>
+                            <TouchableOpacity style = {styles.touchbutton}
+                              onPress = {this._onPressEdit}>
+                                <Image source =
+                                {require('../images/editBlog.png')}
+                                style = {styles.imagestyle}
+                                accessibilityLabel = 'BlogDetail_editImage'/>
 
-                              </TouchableOpacity>
-                            </View>
-                          )
+                            </TouchableOpacity>
+                          </View>
+                           */
                     }
                     <TouchableOpacity style = {styles.touchbutton}
                       onPress = {this._onPressBookmarks}>
@@ -181,7 +182,7 @@ export default class BlogDetail extends Component{
                         accessibilityLabel = 'BlogDetail_markImage'/>
 
                     </TouchableOpacity>
-                    <ShareButton 
+                    <ShareButton
                         iconStyle={1}
                         url={this.state.url}
                     />

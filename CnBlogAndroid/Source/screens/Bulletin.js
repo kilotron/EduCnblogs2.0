@@ -164,7 +164,7 @@ export default class Bulletin extends Component {
                     </View>
                     <View style={{alignSelf: 'flex-end'}}>
                         <Text style={styles.bulletinDateAdded}>
-                            {DateAdded}
+                            发布于 {DateAdded}
                         </Text>
                     </View>
                 </View>
@@ -198,15 +198,25 @@ export default class Bulletin extends Component {
         })
         }
         return(
-            <FlatList
-                renderItem={this._renderItem}
-                data= {data}
-                refreshing= {false}
-                onRefresh = {this._FlatListRefresh}
-                ListFooterComponent={this._renderFooter.bind(this)}
-                onEndReached={this._onEndReached.bind(this)}
-                onEndReachedThreshold={0.1}
-            />
+            <View style={{width: screenWidth, }}>
+            {
+                this.state.loadStatus==='none'?
+                    (
+                        <View style={styles.footer}>
+                            <Text>这还什么都没有</Text>
+                        </View>
+                    ): ( null )
+            }
+                <FlatList
+                    renderItem={this._renderItem}
+                    data= {data}
+                    refreshing= {false}
+                    onRefresh = {this._FlatListRefresh}
+                    ListFooterComponent={this._renderFooter.bind(this)}
+                    onEndReached={this._onEndReached.bind(this)}
+                    onEndReachedThreshold={0.1}
+                />
+            </View>
         )
     }
 
@@ -397,19 +407,9 @@ export default class Bulletin extends Component {
 
                 <View>
                     <View style={{ height: 1, backgroundColor: 'rgb(225,225,225)',  marginTop: 0.005*screenHeight, alignSelf:'stretch'}}/>
-                    <View style={{width: screenWidth, }}>
-                        {
-                            this.state.loadStatus==='none'?
-                                (
-                                    <View style={styles.footer}>
-                                        <Text>这还什么都没有</Text>
-                                    </View>
-                                ):
-                                (
-                                    this._renderBulletinList()
-                                )
-                        }
-                    </View>
+                    {
+                        this._renderBulletinList()
+                    }
                     <View
                         style= {{
                             flexDirection: 'row',

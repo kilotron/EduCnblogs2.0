@@ -21,7 +21,8 @@ import {
     StackNavigator,
 } from 'react-navigation';
 import { Icon, Fab } from 'native-base';
-const { height, width } = Dimensions.get('window');
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+const screenHeight= MyAdapter.screenHeight;
 const ContentHandler = require('../DataHandler/BlogDetail/ContentHandler');
 // 传入博客Id和blogApp和CommentCount作为参数
 export default class BlogBookmarks extends Component{
@@ -52,8 +53,6 @@ export default class BlogBookmarks extends Component{
         while(tagsContent.indexOf(',,')>-1){
             tagsContent = tagsContent.replace(/,,/g, ',');
         }
-        //console.log('tagsContent6: '+ tagsContent);
-
         let postBody = {
             WzLinkId: 1,
             Title: this.state.blogTitle,
@@ -63,35 +62,25 @@ export default class BlogBookmarks extends Component{
         };
         let body = JSON.stringify(postBody);
         let url = Config.Bookmarks + '/';
-        //console.log('url: ' + url);
-        //console.log('body: ' + body);
-        Service.UserAction(url, body, 'POST').then((response)=>{
-            if(response.status!==200)
-            {
-                //Alert.alert('失败');
-                return null;
-            }
-            else{
-                //Alert.alert('成功');
-                return response.json();
-            }
-        }).then((jsonData)=>{
+        Service.UserAction(url, body, 'POST').then((jsonData)=>{
             //console.log('jsonData: '+ jsonData);
             if(jsonData===null)
             {
                 ToastAndroid.show('请求失败！',ToastAndroid.SHORT);
             }
-            else if(jsonData.isSuccess)
+            else if(jsonData.ok)
             {
                 ToastAndroid.show('添加成功！',ToastAndroid.SHORT);
                 /* 调用回调函数更新公告列表 */
             }
-            else if(jsonData.isWarning)
+            else if(jsonData._bodyText==='网摘已经收藏')
             {
-                ToastAndroid.show(jsonData.message,ToastAndroid.SHORT);
+                //console.log('jsonData1: ' + jsonData);
+                ToastAndroid.show('网摘已经收藏！',ToastAndroid.SHORT);
             }
             else
             {
+                //console.log('jsonData2: ' + jsonData);
                 ToastAndroid.show('发生错误，请稍后重试！',ToastAndroid.SHORT);
             }
             this.props.navigation.goBack();
@@ -103,45 +92,49 @@ export default class BlogBookmarks extends Component{
 
     render(){
         return(
-            <View style = {styles.container}>
-                <View style={styles.titleView}>
-                    <Text style={styles.promptText}>网址</Text>
-                    <TextInput style={styles.titleInput}
-                        defaultValue={this.props.navigation.state.params.Url}
-                        editable={false}>
-                    </TextInput>
+            <KeyboardAwareScrollView>
+                <View style={styles.container}>
+                    <View style={styles.titleView}>
+                        <Text style={styles.promptText}>网址</Text>
+                        <TextInput style={styles.titleInput}
+                            defaultValue={this.props.navigation.state.params.Url}
+                            editable={false}>
+                        </TextInput>
+                    </View>
+                    <View style={styles.divisionView}></View>
+                    <View style={styles.titleView}>
+                        <Text style={styles.promptText}>标题</Text>
+                        <TextInput style={styles.titleInput}
+                            defaultValue={this.props.navigation.state.params.Title}
+                            onChangeText={(text)=>{this.setState({blogTitle: text});}}>
+                        </TextInput>
+                    </View>
+                    <View style={styles.divisionView}></View>
+                    <View style={styles.tagsView}>
+                        <Text style={styles.promptText}>标签</Text>
+                        <TextInput style={styles.tagsInput}
+                            defaultValue={this.state.tagsContent}
+                            maxLength={40}
+                            onChangeText={(text)=>{this.setState({tagsContent: text});}}>
+                        </TextInput>
+                    </View>
+                    <View style={styles.divisionView}></View>
+                    <View style={styles.summaryView}>
+                        <Text style={styles.promptText}>摘要</Text>
+                        <TextInput style={styles.summaryInput}
+                            defaultValue={this.state.summary}
+                            multiline={true}
+                            maxLength={195}
+                            onChangeText={(text)=>{this.setState({summary: text});}}>
+                        </TextInput>
+                    </View>
+                    <View style={styles.divisionView}></View>
+                    <Button style={styles.commitBtn}
+                        title='添加收藏'
+                        onPress= {this._onPress}>
+                    </Button>
                 </View>
-                <View style={styles.titleView}>
-                    <Text style={styles.promptText}>标题</Text>
-                    <TextInput style={styles.titleInput}
-                        defaultValue={this.props.navigation.state.params.Title}
-                        onChangeText={(text)=>{this.set({blogTitle: text});}}>
-                    </TextInput>
-                </View>
-                <View style={styles.tagsView}>
-                    <Text style={styles.promptText}>标签</Text>
-                    <TextInput style={styles.tagsInput}
-                        defaultValue={this.state.tagsContent}
-                        maxLength={40}
-                        onChangeText={(text)=>{this.setState({tagsContent: text});}}>
-                    </TextInput>
-                </View>
-                <View style={styles.summaryView}>
-                    <Text style={styles.promptText}>摘要</Text>
-                    <TextInput style={styles.summaryInput}
-                        defaultValue={this.state.summary}
-                        multiline={true}
-                        maxLength={199}
-                        onChangeText={(text)=>{this.setState({summary: text});}}>
-                    </TextInput>
-                </View>
-                {/* 以下为待实现的提交按钮，暂时未发现API，无法实现 */}
-                <Button style={styles.commitBtn}
-                    title='添加收藏'
-                    onPress= {this._onPress}>
-                </Button>
-            </View>
-
+            </KeyboardAwareScrollView>
         )
     }
 }
@@ -150,9 +143,10 @@ const styles = StyleSheet.create({
     container: {
         backgroundColor: 'white',
         flex:1,
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         alignItems: 'stretch',
         alignSelf: 'stretch',
+        height: screenHeight*0.6,
     },
     titleView: {
         flex: 1,
@@ -163,12 +157,16 @@ const styles = StyleSheet.create({
     summaryView:{
         flex: 5,
     },
+    divisionView:{
+        height: 10,
+    },
     commitBtn: {
         flex: 1,
     },
     promptText: {
         fontSize: 12,
         color: 'gray',
+        left: 4,
     },
     titleInput: {
         borderColor: 'gray',

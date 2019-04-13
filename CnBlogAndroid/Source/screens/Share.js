@@ -1,6 +1,5 @@
 import MyAdapter from './MyAdapter.js';
 import React, { Component} from 'react';
-import Share from 'react-native-share';
 import {
     Platform,
     StyleSheet,
@@ -44,11 +43,11 @@ export default class ShareButton extends Component{
     _onPress=()=>{
         if(this.props.url == '') return;
         // Alert.alert('url',this.props.url);
-        const shareOptions = {
-            title: '分享链接',
-            url: [this.props.url],
-        };
-        return Share.open(shareOptions);
+        // const shareOptions = {
+        //     title: '分享链接',
+        //     url: [this.props.url],
+        // };
+        // return Share.open(shareOptions);
     }
 }
 const styles = StyleSheet.create({

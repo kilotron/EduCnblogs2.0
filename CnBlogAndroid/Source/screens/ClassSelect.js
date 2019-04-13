@@ -141,7 +141,7 @@ export default class ClassSelect extends Component {
             <TouchableOpacity 
                 style= {styles.listItemTouchableStyle}
                 onPress={()=>{
-                    this.props.navigation.state.params.callback(item.nameCn, item.key);
+                {     this.props.navigation.state.params.callback(item.nameCn, item.key);}
                     this.props.navigation.goBack();
                 }}>
 

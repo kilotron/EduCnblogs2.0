@@ -42,22 +42,23 @@ export default class ClassFunction extends Component {
     }
     render() {
         let classId = this.state.classId;
-        console.log("classId是"+classId);
+        console.log("classId是" + classId);
         return (
-            <View style={styles.button_test}>
+            <View style={styles.container}>
                 <Content>
-                <Button primary 
-                    onPress={()=>this.props.navigation.navigate('Devote',{classId:classId})}
-                    style = {styles.button}
-                >
-	                <Text style = {{fontSize: 20, color: 'white'}}>投票</Text>
-                </Button>
-                <Button primary 
-                    onPress={()=>this.props.navigation.navigate('ClassMember',{classId:classId})}
-                    style = {styles.button}
-                >
-	                <Text style = {{fontSize: 20, color: 'white'}}>班级成员</Text>
-                </Button>
+                    <Button primary
+                        onPress={() => this.props.navigation.navigate('Devote', { classId: classId })}
+                        style={styles.clickButtonStyle}
+                    >
+                        <Text style={{ fontSize: 20, color: 'white' }}>投票</Text>
+                    </Button>
+
+                    <Button primary
+                        onPress={() => this.props.navigation.navigate('ClassMember', { classId: classId })}
+                        style={styles.button}
+                    >
+                        <Text style={{ fontSize: 20, color: 'white' }}>班级成员</Text>
+                    </Button>
                 </Content>
             </View>
         )
@@ -71,6 +72,15 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: 'white',
     },
+    clickButtonStyle: {
+        flexDirection: 'row',
+        alignItems: 'stretch',
+        alignSelf: 'stretch',
+        marginTop: 0.01 * screenHeight,
+        marginBottom: 0.01 * screenHeight,
+        flex: 1,
+        justifyContent: 'center',
+    },
     button_test: {
         flexDirection: 'column',
         justifyContent: 'center',
@@ -81,8 +91,9 @@ const styles = StyleSheet.create({
         height: 0.2 * 0.618 * screenWidth,
         width: 0.618 * screenWidth,
         justifyContent: 'center',
-        alignItems: 'center',
+        alignItems: 'stretch',
         borderRadius: 8,
-        marginBottom: 20,
+        margin: 20,
+        flex: 1,
     }
 });

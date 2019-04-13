@@ -182,8 +182,6 @@ export default class Bulletin extends Component {
         if (this._isMounted){
             this.setState({
                 changedSchoolClassId: true,
-                bulletins: [],
-                bulletinCount: 0,
                 loadStatus: 'not loading',
                 currentPageIndex: 1,
             });

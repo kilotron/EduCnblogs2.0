@@ -153,7 +153,6 @@ export default class BookmarksList extends Component {
     _FlatListRefresh = ()=>{
         if (this._isMounted){
             this.setState({
-                bookmarks: [],
                 loadStatus: 'not loading',
                 currentPageIndex: 1,
                 shouldRefresh: true,

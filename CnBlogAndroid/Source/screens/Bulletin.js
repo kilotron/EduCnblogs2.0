@@ -329,6 +329,11 @@ export default class Bulletin extends Component {
         {
             return ;
         }
+        this.setState({
+            membership: 0,
+            bulletins: [],
+            bulletinCount: 0,
+        });
         /* 当传入的参数改变时首先获取用户在班级中的身份  */
         var membership = 1;
         let url1 = Config.apiDomain + api.user.info;
@@ -343,7 +348,7 @@ export default class Bulletin extends Component {
             }).then(()=>{
                     //console.log('membership  '+ membership);
                     this.setState({
-                        changedSchoolClassId: nextProps.changedSchoolClassId,
+                        changedSchoolClassId: true,
                         //changedSchoolClassId: true,
                         membership: membership,
                         bulletins: [],
@@ -355,7 +360,7 @@ export default class Bulletin extends Component {
             ).catch((err)=>{
                 ToastAndroid.show(err_info.TIME_OUT,ToastAndroid.SHORT);
                 this.setState({
-                    changedSchoolClassId: nextProps.changedSchoolClassId,
+                    changedSchoolClassId: true,
                     //changedSchoolClassId: true,
                     membership: membership,
                     bulletins: [],
@@ -367,7 +372,7 @@ export default class Bulletin extends Component {
         }).catch((err)=>{
             ToastAndroid.show(err_info.TIME_OUT,ToastAndroid.SHORT);
             this.setState({
-                changedSchoolClassId: nextProps.changedSchoolClassId,
+                changedSchoolClassId: true,
                 //changedSchoolClassId: true,
                 membership: membership,
                 bulletins: [],

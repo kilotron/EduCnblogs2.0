@@ -7,6 +7,7 @@ import {
     Image,
     TouchableOpacity,
     Alert,
+    Share,
 } from 'react-native';
 const screenWidth= MyAdapter.screenWidth;
 const screenHeight= MyAdapter.screenHeight;
@@ -42,13 +43,12 @@ export default class ShareButton extends Component{
 
     _onPress=()=>{
         if(this.props.url == '') return;
-        // Alert.alert('url',this.props.url);
-        // const shareOptions = {
-        //     title: '分享链接',
-        //     url: [this.props.url],
-        // };
-        // return Share.open(shareOptions);
+        Share.share({
+            title:'分享链接',
+            message:this.props.url,
+        });
     }
+    
 }
 const styles = StyleSheet.create({
     container:{

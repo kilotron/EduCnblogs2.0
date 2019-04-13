@@ -222,7 +222,7 @@ export default class App extends Component {
                     myThis= {this}
                     myPrefix= "end"
                 />
-                <View style= {styles.container}
+                {/* <View style= {styles.container}
                 >
                     <Text
                         style= {styles.text}
@@ -241,7 +241,7 @@ export default class App extends Component {
                             <Picker.Item label="Markdown" value="2" />
                         </Picker>
                     </View>
-                </View>
+                </View> */}
                 <View style= {styles.container}
                 >
                     <Text

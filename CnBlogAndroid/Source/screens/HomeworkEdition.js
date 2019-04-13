@@ -46,7 +46,7 @@ export default class homeworkEdition extends Component {
         let startDotTime = startDateAndTime[1].split(':');
         let endDateAndTime = deadline.split('T');
         let endDotTime = endDateAndTime[1].split(':');
-        content = this.cutContent(content);
+        // content = this.cutContent(content);
         this.state={
             formatType: formatType,//1: TintMce 2: Markdown
             title: title,
@@ -237,7 +237,7 @@ export default class homeworkEdition extends Component {
                     myThis= {this}
                     myPrefix= "end"
                 />
-                <View style= {styles.container}
+                {/* <View style= {styles.container}
                 >
                     <Text
                         style= {styles.text}
@@ -256,7 +256,7 @@ export default class homeworkEdition extends Component {
                             <Picker.Item label="Markdown" value="2" />
                         </Picker>
                     </View>
-                </View>
+                </View> */}
                 <View style= {styles.container}
                 >
                     <Text

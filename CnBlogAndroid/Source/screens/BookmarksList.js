@@ -110,6 +110,7 @@ export default class BookmarksList extends Component {
         var FromCnBlogs = item1.item.fromCnBlogs;
         var DetailId = item1.item.detailId;
         return(
+            <View style={flatStyles.cell}>
             <TouchableOpacity onPress={()=>{
                 this.props.navigation.navigate('BlogDetail',{Url: LinkUrl, Id: DetailId,
                     blogApp: global.user_information.BlogApp, CommentCount: 0, Title: Title});
@@ -136,15 +137,9 @@ export default class BookmarksList extends Component {
                     </View>
                 </View>
             </TouchableOpacity>
+            </View>
         )
     };
-
-    _separator = () => {
-        return (
-            <View style={flatStyles.separatorStyle}>
-            </View>
-        );
-    }
 
     /* 刷新收藏页面 */
     _FlatListRefresh = ()=>{
@@ -179,7 +174,6 @@ export default class BookmarksList extends Component {
         }
         return(
             <FlatList
-                ItemSeparatorComponent={this._separator}
                 renderItem={this._renderItem}
                 data= {data}
                 refreshing= {false}

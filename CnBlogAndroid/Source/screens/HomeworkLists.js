@@ -283,7 +283,7 @@ export default class HomeworkLists extends Component {
     
 
         return (
-            <View>
+            <View style={flatStyles.cell}>
                 <TouchableOpacity
                     //url:作业url，如示例的'/campus/bjwzxy/test/homework/9'
                     onPress = {()=>this.props.navigation.navigate('HomeworkDetail',{
@@ -318,12 +318,7 @@ export default class HomeworkLists extends Component {
             </View>
         );
     }
-    _separator = () => {
-        return (
-            <View style={flatStyles.separatorStyle}>
-            </View>
-        );
-    }
+
     StringToDate = (day)=>{
         // YYYY-MM-DDTHH:MM:SS
         if(day == null)
@@ -453,7 +448,6 @@ export default class HomeworkLists extends Component {
                         {key:'已关闭',data:closedData},
                     ]}
                     renderSectionHeader = {this._sectionHeader}
-                    ItemSeparatorComponent = {this._separator}
                     renderItem={this._renderItem}
                     onRefresh = {this.UpdateData}
                     refreshing= {false}

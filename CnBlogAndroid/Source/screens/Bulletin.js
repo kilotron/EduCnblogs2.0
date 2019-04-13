@@ -150,7 +150,9 @@ export default class Bulletin extends Component {
                     membership: this.state.membership,
                     callback: this._FlatListRefresh
                 });
-            } } onLongPress={()=>{this._onPressDelBulletin(Content, Id);}}>
+            } } onLongPress={()=>{this._onPressDelBulletin(Content, Id);}}
+                style={flatStyles.cell}
+            >
                 <View style={styles.textcontainer}>
                     <Text numberOfLines={3} style={styles.bulletinContent}>
                         {Content}
@@ -169,13 +171,6 @@ export default class Bulletin extends Component {
             </TouchableOpacity>
         )
     };
-
-    _separator = () => {
-        return (
-            <View style={flatStyles.separatorStyle}>
-            </View>
-        );
-    }
 
     /* 刷新公告页面的函数，在改变班级、修改和发布公告后都应调用 */
     _FlatListRefresh = ()=>{
@@ -204,7 +199,6 @@ export default class Bulletin extends Component {
         }
         return(
             <FlatList
-                ItemSeparatorComponent={this._separator}
                 renderItem={this._renderItem}
                 data= {data}
                 refreshing= {false}

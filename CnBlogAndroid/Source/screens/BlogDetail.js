@@ -22,6 +22,7 @@ import {
     StackNavigator,
 } from 'react-navigation';
 import { Icon, Fab } from 'native-base';
+import ShareButton from './Share';
 const { height, width } = Dimensions.get('window');
 const ContentHandler = require('../DataHandler/BlogDetail/ContentHandler');
 // 传入博客Id和blogApp和CommentCount作为参数
@@ -31,6 +32,7 @@ export default class BlogDetail extends Component{
         this.state = {
             content: '',
             isRequestSuccess: false,
+            url:this.props.navigation.state.params.Url,
         }
     }
     _isMounted;
@@ -160,6 +162,10 @@ export default class BlogDetail extends Component{
                         accessibilityLabel = 'BlogDetail_markImage'/>
 
                     </TouchableOpacity>
+                    <ShareButton 
+                        iconStyle={1}
+                        url={this.state.url}
+                    />
                 </View>
             </View>
         )

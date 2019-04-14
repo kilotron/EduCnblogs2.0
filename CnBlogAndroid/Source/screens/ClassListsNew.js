@@ -21,6 +21,7 @@ import {
 	Picker,
 	ActivityIndicator,
 	Button,
+	Alert,
 } from 'react-native';
 
 import {
@@ -31,6 +32,7 @@ import Bulletin from './Bulletin';
 import HomeworkLists from './HomeworkLists';
 import ClassBlogPostsList from '../component/ClassBlogPostsList'
 import VoteHome from './VoteList';
+import ModalDropdown from 'react-native-modal-dropdown';
 
 const screenWidth = MyAdapter.screenWidth;
 const screenHeight = MyAdapter.screenHeight;
@@ -87,15 +89,25 @@ export default class ClassListsNew extends Component {
 							{this.state.className}
 						</Text>
 					</TouchableOpacity>
-					{/* 暂时未知 */}
-					<TouchableOpacity onPress={() => { //需要跳转到功能界面，如班级成员
+					{/* <TouchableOpacity onPress={() => { //需要跳转到功能界面，如班级成员
 						console.log(this.state.schoolClassId);
 						this.props.navigation.navigate('ClassFunction', { classId: this.state.schoolClassId });
 
 					}}>
 						<Image style={styles.optionsImgstyle} source={require('../images/options.png')} />
-					</TouchableOpacity>
+					</TouchableOpacity> */}
+					<ModalDropdown 
+						options={['班级成员']}
+						style={styles.buttonStyle}
+						dropdownTextStyle={styles.buttonTextStyle}
+						dropdownTextHighlightStyle={styles.buttonTextStyle}
+						dropdownStyle={styles.dropdownStyle}
+						showsVerticalScrollIndicator={false}
+						onSelect={this.optionNavi}
+					>
 
+						<Image style={styles.optionsImgstyle} source={require('../images/options.png')} />
+					</ModalDropdown>
 				</View>
 				{/* 从这里开始滚动 */}
 				<View style={styles.tabViewStyle}>
@@ -122,7 +134,11 @@ export default class ClassListsNew extends Component {
 			</View>
 		)
 	}
-
+	optionNavi=(index,value)=>{
+		if(index == 0){
+			this.props.navigation.navigate('ClassMember', { classId: this.state.schoolClassId });
+		}
+	}
 }
 
 const styles = StyleSheet.create({
@@ -236,5 +252,24 @@ const styles = StyleSheet.create({
 	barStyle: {
 		width: screenWidth / 4,
 		justifyContent: 'center', alignItems: 'center',
+	},
+	dropdownStyle:{
+		alignItems:'stretch',
+		position:'absolute',
+		top: 10,
+		right:10,
+		height: (screenHeight) / 16,
+		width:(screenHeight) / 8,
+	},
+	buttonStyle:{
+		height: (screenHeight) / 16,
+		width:(screenHeight) / 10,
+		justifyContent:'center',
+		alignItems:'center',
+	},
+	buttonTextStyle:{
+		fontSize:16,
+		color:'black',
+		textAlign:'center',
 	}
 });

@@ -280,7 +280,7 @@ export default class HomeworkLists extends Component {
         var url = item1.item.url;//作业地址
         var Id = item1.item.key;//作业Id
         var isFinished = item1.item.isFinished;
-    
+        var isClosed = item1.item.isClosed;
 
         return (
             <View style={flatStyles.cell}>
@@ -298,13 +298,13 @@ export default class HomeworkLists extends Component {
                                 })}
                     style = {HomeworkStyles.container}
                 >
-                    <Text style= {HomeworkStyles.titleTextStyle}>
+                    <Text style= {isClosed ? HomeworkStyles.greyTitleTextStyle : HomeworkStyles.titleTextStyle}>
                         {title}
                     </Text>
                     <Text numberOfLines={3} style= {HomeworkStyles.abstractTextStyle}>
                         {description}
                     </Text>
-                    <Text style= {isFinished ? HomeworkStyles.outdateInformationTextStyle : HomeworkStyles.informationTextStyle}>
+                    <Text style= {isClosed ? HomeworkStyles.closedInformationTextStyle : (isFinished ? HomeworkStyles.outdateInformationTextStyle : HomeworkStyles.informationTextStyle)}>
                         截止于:{deadline.split('T')[0]+' '+deadline.split('T')[1].substring(0,8)}
                     </Text>
                 </TouchableOpacity>
@@ -385,6 +385,7 @@ export default class HomeworkLists extends Component {
                             description: this.state.homeworks[i].description,//作业描述
                             deadline: this.state.homeworks[i].deadline,//作业截止日期
                             isFinished: this.state.homeworks[i].isFinished,// 作业是否结束
+                            isClosed:this.state.homeworks[i].isClosed,
                         }
                     )
                 }
@@ -397,6 +398,7 @@ export default class HomeworkLists extends Component {
                             description: this.state.homeworks[i].description,//作业描述
                             deadline: this.state.homeworks[i].deadline,//作业截止日期
                             isFinished: this.state.homeworks[i].isFinished,// 作业是否结束
+                            isClosed:this.state.homeworks[i].isClosed,
                         }
                     )
                 }
@@ -409,6 +411,7 @@ export default class HomeworkLists extends Component {
                             description: this.state.homeworks[i].description,//作业描述
                             deadline: this.state.homeworks[i].deadline,//作业截止日期
                             isFinished: this.state.homeworks[i].isFinished,// 作业是否结束
+                            isClosed:this.state.homeworks[i].isClosed,
                         }
                     )
                     dataSize++;
@@ -478,6 +481,15 @@ const HomeworkStyles = StyleSheet.create({
         fontWeight: 'bold',
         fontFamily : 'serif',
     },
+    greyTitleTextStyle:{
+        fontSize: 18,
+        color: '#dcdcdc',
+        textAlign: 'center',
+        marginTop: 10,
+        marginBottom: 2,
+        fontWeight: 'bold',
+        fontFamily : 'serif',
+    },
     abstractTextStyle:{
         fontSize: 14,
         color:'rgb(70,70,70)',
@@ -497,7 +509,14 @@ const HomeworkStyles = StyleSheet.create({
         fontSize: 10,
         color: 'red',
         textAlign: 'center',
-        marginBottom: 8
+        marginBottom: 8,
+    },
+    closedInformationTextStyle:{
+        alignSelf: "flex-end",
+        fontSize: 10,
+        color: '#dcdcdc',
+        textAlign: 'center',
+        marginBottom: 8,
     },
     sectionHeaderStyle:{
         height:3,

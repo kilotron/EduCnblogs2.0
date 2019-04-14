@@ -36,6 +36,7 @@ export default class HomeWorkDetail extends Component{
             classId:0,
             isShowInHome:false,
             originContent:'',
+            isClosed:false,
         }
     }
     _isMounted;
@@ -61,6 +62,7 @@ export default class HomeWorkDetail extends Component{
                     startTime:jsonData.startTime,
                     deadline:jsonData.deadline,
                     isShowInHome:jsonData.isShowInHome,
+                    isClosed:jsonData.isClosed,
                 })
             }
         })
@@ -175,6 +177,7 @@ export default class HomeWorkDetail extends Component{
         )
     }
     renderBottomBar(Id,isFinished,classId,answerCount){
+        isClosed = this.state.isClosed;
         if(this.state.membership === 1){
             return(
                 <View style = {styles.bottom}>
@@ -190,13 +193,13 @@ export default class HomeWorkDetail extends Component{
                         </View>
                     </TouchableOpacity>
                     <TouchableOpacity
-                        onPress = {isFinished == true ? ()=>{} : 
+                        onPress = {(isFinished || isClosed) == true ? ()=>{} : 
                                 ()=>this.props.navigation.navigate('HomeworkSubmit',{homeworkId: Id, classId: classId})}
                         style = {styles.touchbutton}
-                        activeOpacity = {isFinished == true ? 1 : 0.2}
+                        activeOpacity = {(isFinished || isClosed) == true ? 1 : 0.2}
                         >
                         <Image source =
-                        {isFinished == true ? require('../images/submitUnable.png') : require('../images/submit.png')}
+                        {(isFinished || isClosed) == true ? require('../images/submitUnable.png') : require('../images/submit.png')}
                         style = {styles.imagestyle}/>
                     </TouchableOpacity>
                 </View>
@@ -248,11 +251,11 @@ export default class HomeWorkDetail extends Component{
                         style = {styles.imagestyle}/>
                     </TouchableOpacity>
                     <TouchableOpacity style = {styles.touchbutton}
-                        activeOpacity = {isFinished == true ? 1 : 0.2}
-                        onPress = {isFinished == true ? ()=>{} : ()=>{this.closeHomework()}}
+                        activeOpacity = {(isFinished || isClosed) == true ? 1 : 0.2}
+                        onPress = {(isFinished || isClosed) == true ? ()=>{} : ()=>{this.closeHomework()}}
                         >
                         <Image source =
-                        {isFinished == true ? require('../images/closeUnable.png') : require('../images/closeAble.png')}
+                        {(isFinished || isClosed) == true ? require('../images/closeUnable.png') : require('../images/closeAble.png')}
                         style = {styles.imagestyle}/>
                     </TouchableOpacity>
                     <TouchableOpacity style = {styles.touchbutton}

@@ -13,6 +13,7 @@ import {
     Dimensions,
     WebView,
     Alert,
+    Image,
 } from 'react-native';
 import {
     StackNavigator,
@@ -178,22 +179,25 @@ export default class HomeWorkDetail extends Component{
             return(
                 <View style = {styles.bottom}>
                     <TouchableOpacity
-                    onPress = {()=>this.props.navigation.navigate('Submitted',{Id: Id})}
-                    style = {styles.button}
-                    >
-                        <Text style = {{fontSize: 15, textAlign: 'center', color: 'white'}}>
-                            已提交列表({answerCount}人)
-                        </Text>
+                        onPress = {()=>this.props.navigation.navigate('Submitted',{Id: Id})}
+                        style = {styles.touchbutton}
+                        >
+                        <View style={styles.subListIconStyle}>
+                            <Image source =
+                            {require('../images/list.png')}
+                            style = {styles.subListImagestyle}/>
+                            <Text style = {styles.subListTextStyle}>({answerCount}人提交)</Text>
+                        </View>
                     </TouchableOpacity>
                     <TouchableOpacity
                         onPress = {isFinished == true ? ()=>{} : 
                                 ()=>this.props.navigation.navigate('HomeworkSubmit',{homeworkId: Id, classId: classId})}
-                        style = {isFinished == true ? styles.buttonGrey : styles.button}
+                        style = {styles.touchbutton}
                         activeOpacity = {isFinished == true ? 1 : 0.2}
                         >
-                        <Text style = {styles.buttonText}>
-                            选择并提交作业
-                        </Text>
+                        <Image source =
+                        {isFinished == true ? require('../images/submitUnable.png') : require('../images/submit.png')}
+                        style = {styles.imagestyle}/>
                     </TouchableOpacity>
                 </View>
             )
@@ -202,12 +206,15 @@ export default class HomeWorkDetail extends Component{
             return(
                 <View style = {styles.bottom}>
                     <TouchableOpacity
-                    onPress = {()=>this.props.navigation.navigate('Submitted',{Id: Id})}
-                    style = {styles.button2}
-                    >
-                        <Text style = {styles.buttonText}>
-                            已提交列表({answerCount}人)
-                        </Text>
+                        onPress = {()=>this.props.navigation.navigate('Submitted',{Id: Id})}
+                        style = {styles.touchbutton}
+                        >
+                        <View style={styles.subListIconStyle}>
+                            <Image source =
+                            {require('../images/list.png')}
+                            style = {styles.subListImagestyle}/>
+                            <Text style = {styles.subListTextStyle}>({answerCount}人提交)</Text>
+                        </View>
                     </TouchableOpacity>
                     <TouchableOpacity
                         onPress = {
@@ -234,28 +241,26 @@ export default class HomeWorkDetail extends Component{
                                 this.props.navigation.navigate('HomeworkEdition',editPack)
                             }
                         }
-                        style = {styles.button2Orange}
+                        style = {styles.touchbutton}
                         >
-                        <Text style = {styles.buttonText}>
-                            编辑作业
-                        </Text>
+                        <Image source =
+                        {require('../images/edit.png')}
+                        style = {styles.imagestyle}/>
                     </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress = {isFinished == true ? ()=>{} : ()=>{this.closeHomework()}}
-                        style = {isFinished == true ? styles.button2Grey : styles.button2DarkGrey}
+                    <TouchableOpacity style = {styles.touchbutton}
                         activeOpacity = {isFinished == true ? 1 : 0.2}
+                        onPress = {isFinished == true ? ()=>{} : ()=>{this.closeHomework()}}
                         >
-                        <Text style = {styles.buttonText}>
-                            关闭作业
-                        </Text>
+                        <Image source =
+                        {isFinished == true ? require('../images/closeUnable.png') : require('../images/closeAble.png')}
+                        style = {styles.imagestyle}/>
                     </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress = {()=>{this.removeHomework()}}
-                        style = {styles.button2Red}
+                    <TouchableOpacity style = {styles.touchbutton}
+                        onPress = {this.removeHomework}
                         >
-                        <Text style = {styles.buttonText}>
-                            删除作业
-                        </Text>
+                        <Image source =
+                        {require('../images/delete.png')}
+                        style = {styles.imagestyle}/>
                     </TouchableOpacity>
                 </View>
             )
@@ -362,5 +367,32 @@ const styles = StyleSheet.create({
         backgroundColor: '#ff0000',
         borderRadius: 8,
     },
-    buttonText:{fontSize: 15, textAlign: 'center', color: 'white'},
+ 
+    touchbutton: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'white',
+        // width: height/14,
+        height: height/14,
+    },
+    imagestyle: {
+        width: height/18,
+        height: height/22,
+        resizeMode: 'stretch',
+    },
+    subListIconStyle:{
+        flexDirection:'row',
+        justifyContent:'center',
+        alignItems:'center',
+    },
+    subListImagestyle:{
+        width: height/18,
+        height: height/24,
+        resizeMode: 'stretch',
+    },
+    subListTextStyle:{
+        fontSize: 12,
+        textAlign: 'center', 
+        color: 'black'
+    },
 })

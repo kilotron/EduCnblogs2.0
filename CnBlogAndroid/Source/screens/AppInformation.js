@@ -18,6 +18,8 @@ import {
     TouchableOpacity,
     FlatList
 } from 'react-native';
+import {flatStyles} from '../styles/styles';
+
 const screenWidth= MyAdapter.screenWidth;
 const screenHeight= MyAdapter.screenHeight;
 const titleFontSize= MyAdapter.titleFontSize;
@@ -37,7 +39,7 @@ export default class AppInformation extends Component {
         var title = item1.item.title;//作业标题
         var description = item1.item.description;//作业描述
         return (
-            <View>
+            <View style={flatStyles.cell}>
                 <TouchableOpacity
 
                     onPress = {()=>{
@@ -58,14 +60,7 @@ export default class AppInformation extends Component {
             </View>
         )
     }    
-    _separator = () => {
-        return (
-            <View style={{ height: 9.75, justifyContent: 'center'}}>
-            <View style={{ height: 0.75, backgroundColor: 'rgb(100,100,100)'}}/>
-            <View style={{ height: 9, backgroundColor: 'rgb(235,235,235)'}}/>
-            </View>
-        );
-    }    
+
     render() {
         var fills=[
             {
@@ -116,7 +111,6 @@ export default class AppInformation extends Component {
                 >
                     <FlatList
                         data={data}
-                        ItemSeparatorComponent = {this._separator}
                         renderItem={this._renderItem}
                     />            
                 </View>        

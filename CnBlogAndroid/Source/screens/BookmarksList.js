@@ -110,6 +110,7 @@ export default class BookmarksList extends Component {
         var FromCnBlogs = item1.item.fromCnBlogs;
         var DetailId = item1.item.detailId;
         return(
+            <View style={flatStyles.cell}>
             <TouchableOpacity onPress={()=>{
                 this.props.navigation.navigate('BlogDetail',{Url: LinkUrl, Id: DetailId,
                     blogApp: global.user_information.BlogApp, CommentCount: 0, Title: Title});
@@ -136,15 +137,9 @@ export default class BookmarksList extends Component {
                     </View>
                 </View>
             </TouchableOpacity>
+            </View>
         )
     };
-
-    _separator = () => {
-        return (
-            <View style={flatStyles.separatorStyle}>
-            </View>
-        );
-    }
 
     /* 刷新收藏页面 */
     _FlatListRefresh = ()=>{
@@ -178,16 +173,26 @@ export default class BookmarksList extends Component {
             }
         }
         return(
-            <FlatList
-                ItemSeparatorComponent={this._separator}
-                renderItem={this._renderItem}
-                data= {data}
-                refreshing= {false}
-                onRefresh = {this._FlatListRefresh}
-                ListFooterComponent={this._renderFooter.bind(this)}
-                onEndReached={this._onEndReached.bind(this)}
-                onEndReachedThreshold={0.1}
-            />
+            <View style={{width: screenWidth, }}>
+                {
+                    this.state.loadStatus==='none'?
+                        (
+                            <View style={styles.footer}>
+                                <Text>这还什么都没有</Text>
+                            </View>
+                        ):(null)
+                }
+                <FlatList
+                    renderItem={this._renderItem}
+                    data= {data}
+                    refreshing= {false}
+                    onRefresh = {this._FlatListRefresh}
+                    ListFooterComponent={this._renderFooter.bind(this)}
+                    onEndReached={this._onEndReached.bind(this)}
+                    onEndReachedThreshold={0.1}
+                />
+            </View>
+
         )
     }
 
@@ -313,20 +318,10 @@ export default class BookmarksList extends Component {
         }
         return (
             <View style = {styles.container}>
-                <View style={{ height: 1, backgroundColor: 'rgb(225,225,225)',  marginTop: 0.005*screenHeight, alignSelf:'stretch'}}/>
-                <View style={{width: screenWidth, }}>
-                    {
-                        this.state.loadStatus==='none'?
-                            (
-                                <View style={styles.footer}>
-                                    <Text>这还什么都没有</Text>
-                                </View>
-                            ):
-                            (
-                                this._renderBookmarksList()
-                            )
-                    }
-                </View>
+                <View style={styles.strangeView}/>
+                {
+                    this._renderBookmarksList()
+                }
             </View>
         )
     }
@@ -368,5 +363,11 @@ const styles = StyleSheet.create({
     },
     bookmarksBlogUrl: {
         fontSize: 12,
+    },
+    strangeView:{
+        height: 1,
+        backgroundColor: 'rgb(225,225,225)',
+        marginTop: 0.005*screenHeight,
+        alignSelf:'stretch'
     },
 });

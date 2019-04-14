@@ -5,7 +5,8 @@ import * as Service from '../request/request.js'
 import MyAdapter from './MyAdapter.js';
 import HeaderNoBackComponent from './HeaderNoBackComponent.js';
 import React, { Component} from 'react';
-import {StorageKey} from '../config'
+import {StorageKey} from '../config';
+import {flatStyles} from '../styles/styles';
 
 
 import {
@@ -40,9 +41,7 @@ export default class ClassLists extends Component{
             isEmpty: true,//初始认为请求未成功，不进行渲染，以防App崩溃
         }
     }
-    _separator = () => {
-        return <View style={{ height: 1, backgroundColor: 'rgb(204,204,204)' }}/>;
-    }
+
     _isMounted;
     componentWillUnmount = ()=>{
         this._isMounted=false;
@@ -180,20 +179,9 @@ export default class ClassLists extends Component{
 						onRefresh = {this.UpdateData}
 						refreshing= {false}
 						data={data}
-						ItemSeparatorComponent={this._separator}
 						renderItem={
 							({item}) =>
-								<TouchableOpacity style= {{        
-									flexDirection: 'row',  
-									justifyContent:'flex-start',
-									alignItems: 'flex-start',  
-									alignSelf: 'stretch',    
-									marginTop: 0.01*screenHeight,
-									marginLeft: 0.02*screenWidth,
-									marginRight: 0.02*screenWidth,
-									marginBottom: 0.01*screenHeight,
-									flex:1,
-								}}
+								<TouchableOpacity style= {flatStyles.cell}
 									onPress={()=>this.props.navigation.navigate('ClassHome',{classId:item.key})}
 								>
 								<Image style= {{

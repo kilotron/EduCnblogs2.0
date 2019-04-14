@@ -213,17 +213,10 @@ export default class ClassBlogPostsList extends Component {
         );
     }
 
-    /**FlatList的分隔符 */
-    _separator() {
-		return (
-            <View style={flatStyles.separatorStyle}></View>
-		);
-    }
-
     /**FlatList的renderItem */
     _renderItem = ({item}) => {
 		return(
-            <View style={styles.cellStyle}>
+            <View style={flatStyles.cell}>
                 <TouchableOpacity
                     style = {flatStyles.listContainer}
                     onPress = {() => {
@@ -234,6 +227,7 @@ export default class ClassBlogPostsList extends Component {
                                 CommentCount: item.commentCount,
                                 Url: item.url,
                                 Title: item.title,
+                                useURL: true,
                             });
                         {/*alert(Id);*/} // bug: ID不对
                     }}
@@ -315,24 +309,6 @@ const styles = StyleSheet.create({
         height: 40,
         alignItems: 'center',
         justifyContent: 'center'
-    },
-    cellStyle:{
-        flex: 1,
-        backgroundColor: 'white',
-        padding: 10,
-        paddingVertical:10,
-        marginLeft: 5,
-        marginRight: 5,
-        marginVertical: 3,
-        borderColor: '#dddddd',
-        borderStyle: null,
-        borderWidth: 0.5,
-        borderRadius: 2,
-        shadowColor: 'gray',    // 设置阴影
-        shadowOffset: {width:0.5, height: 0.5},
-        shadowOpacity: 0.4,   // 透明度
-        shadowRadius: 1,
-        elevation:3   //   高度，设置Z轴，可以产生立体效果
     },
     picker: {
         height: 40,

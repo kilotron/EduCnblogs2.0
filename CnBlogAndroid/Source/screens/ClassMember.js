@@ -7,6 +7,7 @@ import React, { Component} from 'react';
 import {StorageKey} from '../config'
 import {err_info} from '../config'
 import { Container, Header, Fab, Button, Icon } from 'native-base';
+import {flatStyles} from '../styles/styles';
 
 import {
     StyleSheet,
@@ -101,7 +102,7 @@ export default class ClassMember extends Component{
         let item1 = item;
         let {blogUrl,displayName,avatarUrl,membership,realName,blogId} = item1.item;
         return(
-            <View>
+            <View style={flatStyles.cell}>
                 <TouchableOpacity
                     onPress = {()=>this.props.navigation.navigate('MemberBlog',{blogId:blogId,blogUrl: blogUrl})}
                     style = {styles.listcontainer}
@@ -117,9 +118,7 @@ export default class ClassMember extends Component{
             </View>
         )
     }
-    _separator = () => {
-        return <View style={{ height: 1, backgroundColor: 'rgb(225,225,225)' }}/>;
-    }
+
     _onPress = ()=>{
         if(this.state.membership===1)
         {
@@ -161,7 +160,6 @@ export default class ClassMember extends Component{
                     }}
                 >
                     <FlatList
-                        ItemSeparatorComponent={this._separator}
                         renderItem={this._renderItem}
                         data={data}
                         onRefresh = {this.UpdateData}

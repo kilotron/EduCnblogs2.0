@@ -33,7 +33,8 @@ export default class HomeWorkDetail extends Component{
             membership: this.props.navigation.state.params.membership,
             Id:0,
             classId:0,
-            isShowInHome:false
+            isShowInHome:false,
+            originContent:'',
         }
     }
     _isMounted;
@@ -49,6 +50,7 @@ export default class HomeWorkDetail extends Component{
             {
                 this.setState({
                     content: jsonData.content,
+                    originContent:jsonData.content,
                     convertedContent: jsonData.convertedContent,
                     title: jsonData.title,
 					formatType: jsonData.formatType,
@@ -210,6 +212,9 @@ export default class HomeWorkDetail extends Component{
                     <TouchableOpacity
                         onPress = {
                             ()=>{
+                                if(this.state.formatType !== 1){
+                                    ToastAndroid.show('暂不支持markdown格式的编辑!',ToastAndroid.SHORT);
+                                }
                                 var editPack = {
                                     homeworkId: Id, 
                                     operatorInfo:{
@@ -219,7 +224,8 @@ export default class HomeWorkDetail extends Component{
                                     title:this.state.title,
                                     startTime:this.state.startTime,
                                     deadline:this.state.deadline,
-                                    content:this.state.convertedContent == null ? this.state.content : this.state.convertedContent,
+                                    // content:this.state.convertedContent == null ? this.state.originContent : this.state.convertedContent,
+                                    content:this.state.originContent,
                                     formatType:this.state.formatType,
                                     isShowInHome:this.state.isShowInHome,
                                     callback:this.componentWillMount,

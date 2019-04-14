@@ -8,6 +8,7 @@ import * as storage from '../Storage/storage.js'
 import {StorageKey} from '../config'
 import {UI} from '../config'
 import {err_info} from '../config'
+import {flatStyles} from '../styles/styles'
 
 import {
     StyleSheet,
@@ -176,7 +177,7 @@ export default class PersonalBlog extends Component{
         var CommentCount = item1.item.CommentCount;
         var Id = item1.item.key;
         return(
-            <View>
+            <View style={flatStyles.cell}>
                 <TouchableOpacity
                     style = {styles.listcontainer}
                     onPress = {Url!=='' ? ()=>this.props.navigation.navigate('BlogDetail',
@@ -220,14 +221,6 @@ export default class PersonalBlog extends Component{
         )
     };
 
-    _separator = () => {
-        return (
-            <View style={{ height: 9.75, justifyContent: 'center'}}>
-            <View style={{ height: 0.75, backgroundColor: 'rgb(100,100,100)'}}/>
-            <View style={{ height: 9, backgroundColor: 'rgb(235,235,235)'}}/>
-            </View>
-        );
-    }
     render(){
         var data = [];
         for(var i in this.state.blogs)
@@ -249,7 +242,6 @@ export default class PersonalBlog extends Component{
                 </View>
                 <View style = {styles.content}>
                     <FlatList
-                        ItemSeparatorComponent={this._separator}
                         renderItem={this._renderItem}
 						data= {data}
                         onRefresh = {this.UpdateData}

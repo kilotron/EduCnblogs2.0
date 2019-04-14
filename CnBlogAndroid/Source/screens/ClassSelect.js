@@ -24,6 +24,7 @@ import {
   StackNavigator,
   TabNavigator,
 } from 'react-navigation';
+import {flatStyles} from '../styles/styles';
 
 const screenWidth= MyAdapter.screenWidth;
 const screenHeight= MyAdapter.screenHeight;
@@ -138,6 +139,7 @@ export default class ClassSelect extends Component {
 
     _renderItem = ({item}) => {
         return (
+            <View style={flatStyles.cell}>
             <TouchableOpacity 
                 style= {styles.listItemTouchableStyle}
                 onPress={()=>{
@@ -164,6 +166,7 @@ export default class ClassSelect extends Component {
                 </View>
 
             </TouchableOpacity>
+            </View>
         )
     }
 

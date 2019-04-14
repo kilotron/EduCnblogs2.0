@@ -73,7 +73,16 @@ export default class BlogDetail extends Component{
     componentWillUnmount = ()=>{
         this._isMounted=false;
     }
+
+    /** 评论的按钮的onPress */
     _onPress = ()=>{
+        /* useURL为true表明参数Id不是博文Id而是博客Id，因API未返回博文Id，
+           所以点击评论图标时屏蔽显示评论的功能，如果能够解决返回博文Id的问题，
+           可以删掉第一个if语句。*/
+        if (this.props.navigation.state.params.useURL) {
+            Alert.alert('提示', 'API暂不支持，此功能敬请期待！');
+            return;
+        }
         this.props.navigation.navigate('BlogComment',{
             blogApp: this.props.navigation.state.params.blogApp,
             CommentCount: this.props.navigation.state.params.CommentCount+100,
@@ -92,21 +101,6 @@ export default class BlogDetail extends Component{
     _onPressBookmarks = ()=>{
         this.props.navigation.navigate('BlogBookmarks',{Url: this.props.navigation.state.params.Url,
             Title: this.props.navigation.state.params.Title});
-        /*
-        Alert.alert(
-            '添加收藏',
-            '确定要添加吗？',
-            [
-                //{inputBox: 'tags'}
-                {text: '取消'},
-                {text: '确认添加', onPress: ()=>{
-                    this.props.navigation.navigate('BlogBookmarks',{Url: this.props.navigation.state.params.Url,
-                    Title: this.props.navigation.state.params.Title});
-                }},
-            ]
-        );
-        */
-
     }
 
     /**选择博文内容来源。因为班级博文列表的API没有返回博文ID，只返回了URL。
@@ -131,7 +125,6 @@ export default class BlogDetail extends Component{
 
     render(){
         return(
-            //this.state.isRequestSuccess===false?null:
             <View style = {styles.container}>
                 <View
                     style= {{

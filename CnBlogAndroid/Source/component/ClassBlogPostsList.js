@@ -25,7 +25,7 @@ import {
     Animated,
 } from 'react-native';
 import {flatStyles} from '../styles/styles';
-import Config from '../config';
+import Config, { err_info } from '../config';
 import * as Service from '../request/request.js';
 import MyAdapter from '../screens/MyAdapter';
 
@@ -53,6 +53,7 @@ export default class ClassBlogPostsList extends Component {
 			loadStatus: 'not loading',  // 用于上拉加载的动画
 			currentPageIndex: 1,        // 已加载的页数/序号，从1开始
             headerTop: new Animated.Value(0), // 用于向下滚动隐藏筛选条件的动画
+            networkError: false,        // 加载失败时设置为true
         }
         /* 下面两个变量用于向下滚动隐藏筛选条件的动画。动画设置的参考链接见本文件末尾。 */
         this.top = this.state.headerTop.interpolate({
@@ -129,7 +130,10 @@ export default class ClassBlogPostsList extends Component {
 					loadStatus: this.state.currentPageIndex >= pageCount ? 'all loaded' : 'not loading',
 				});
 			}
-		});
+        })
+        .catch((err) => {
+            this.setState({loadStatus: 'not loading', networkError: true});
+        });
     }
 
     /** 解析this.state.blogs的数据，返回一个数组。 */
@@ -165,7 +169,8 @@ export default class ClassBlogPostsList extends Component {
             blogs: [],
             postCount: 0,
 			loadStatus: 'not loading',  // 用于上拉加载的动画
-			currentPageIndex: 1,        // 已加载的页数/序号，从1开始
+            currentPageIndex: 1,        // 已加载的页数/序号，从1开始
+            networkError: false,
         }, () => {this.fetchPage(this.state.currentPageIndex)});
     }
 
@@ -204,6 +209,7 @@ export default class ClassBlogPostsList extends Component {
                             refreshing= {false}
                             onEndReached={this._onEndReached.bind(this)}
                             onEndReachedThreshold={0.5}
+                            ListEmptyComponent={this._renderEmptyList.bind(this)}
                             ListFooterComponent={this._renderFooter.bind(this)}
                             onScroll={this.animatedEvent}
                         />
@@ -294,6 +300,33 @@ export default class ClassBlogPostsList extends Component {
         );
     }
 
+    /**没有班级博文时，或者没有网络时，FlatList显示此组件。 */
+    _renderEmptyList() {
+        if (this.state.networkError) {
+            return (
+                <View>
+                    <TouchableOpacity onPress={()=>{
+                        ToastAndroid.show('This is a dinosaur.', ToastAndroid.SHORT);
+                    }}>
+                        <Image 
+                            style={styles.dinosaurPic} 
+                            source={require('../images/dinosaur.jpg')}
+                        />
+                    </TouchableOpacity>
+                    <Text style={styles.dinosaurText}>未连接到互联网</Text>
+                </View>
+            );
+        } else if (this.state.loadStatus !== 'loading') {
+            return (
+                <View>
+                    <Text style={{textAlign: 'center', marginTop:20}}>还没有班级博文~</Text>
+                </View>
+            );
+        } else { //正在加载时不显示内容
+            return (<View></View>);
+        }
+    }
+
 }
 
 ClassBlogPostsList.PropTypes = ClassBlogPostsListProps;
@@ -366,7 +399,21 @@ const styles = StyleSheet.create({
 		justifyContent:'center',
 		alignItems:'center',
 		marginBottom:10,
-	},
+    },
+    dinosaurPic: {
+        marginLeft:30, 
+        marginTop: 30, 
+        width: 60, 
+        height: 60,
+    },
+    dinosaurText: {
+        textAlign: 'left', 
+        marginLeft:30, 
+        marginTop:30, 
+        fontWeight: 'bold', 
+        fontSize: 24,
+        color: '#505050',
+    },
 });
 
 /*请求方式：GET

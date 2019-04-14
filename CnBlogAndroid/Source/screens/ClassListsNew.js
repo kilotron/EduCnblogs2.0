@@ -62,14 +62,6 @@ export default class ClassListsNew extends Component {
 		});
 	}
 
-	//页面加载前弹出班级选择页面强制选择班级
-	// componentWillMount(){
-	// 	this.props.navigation.navigate('ClassSelect', {callback: this._classSelectGoBack});
-	// }
-	/*bug:
-	1.需要两次选择班级才能看到博客
-	2.更换班级时博客列表没有刷新
-	*/
 
 	getBulletin() {
 		if (!this.state.classSelected) {

@@ -21,6 +21,7 @@ import {
     TouchableHighlight,
     FlatList,
     Animated,
+    ActivityIndicator,
 } from 'react-native';
 
 import {
@@ -48,6 +49,7 @@ export default class VoteList extends Component {
             isEmpy: true, //初始认为请求未成功，不进行渲染，以防App崩溃
             headerTop: new Animated.Value(0), // 用于向下滚动隐藏筛选条件的动画
         }
+        
         /* 下面两个变量用于向下滚动隐藏筛选条件的动画。动画设置的参考链接ClassBlogPostList末尾。 */
         this.top = this.state.headerTop.interpolate({
             inputRange: [0, 270, 271, 280],
@@ -62,12 +64,27 @@ export default class VoteList extends Component {
         );
     }
 
+    _isMounted;
+
+    componentWillMount() {
+        alert("这里是componentWillMount");
+        this.fetchPage(1);
+    }
+
+    componentDidMount() {
+        this._isMounted = true;
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
+
     getUrl(pageIndex) { //根据index获得对应page的信息
         let url = Config.VoteList + '/' + this.state.classId + '/' + pageIndex + '-' + pageSize;
         return url;
     }
 
-    componentWillMount() {
+    /*componentWillMount() {
         let pageIndex = 1;
         Service.Get(this.getUrl(pageIndex))
             // 获取投票列表
@@ -79,7 +96,7 @@ export default class VoteList extends Component {
                     }
                 }
             })
-    }
+    }*/
 
     /** 解析this.state.votes的数据，返回一个数组。 */
     makeVotesList() {
@@ -108,11 +125,10 @@ export default class VoteList extends Component {
 
     fetchPage(pageIndex) {
         //这里是否需要检查？
+        alert("这里是fetchpage");
         this.setState({ loadStatus: 'loading' });
-        Service.Get(this.URLOf(pageIndex))
+        Service.Get(this.getUrl(pageIndex))
             .then((jsonData) => {
-                //alert(this.URLOf(pageIndex));
-                // 初始时schoolClassId不正确，返回的jsonData是rejected。
                 if (jsonData === 'rejected') {
                     return;
                 }
@@ -209,13 +225,14 @@ export default class VoteList extends Component {
     }
 
     render() {
+        alert("这里是render");
         return (
             <View style={styles.container}>
-                <Animated.View style={{ top: this.top }}>
+                {/*<Animated.View style={{ top: this.top }}>
                     <Text>
                         你好
                     </Text>
-                </Animated.View>
+        </Animated.View>*/}
 
                 <Animated.View style={{ top: this.top }}>
                     <View>

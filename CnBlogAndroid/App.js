@@ -376,12 +376,12 @@ const HomeTab = TabNavigator({
         }
     },
 
-    VoteList:{
-        screen: VoteList,
-        navigationOptions:{
-            //未完成
-        }
-    }
+    // VoteList:{
+    //     screen: VoteList,
+    //     navigationOptions:{
+    //         //未完成
+    //     }
+    // }
 
 },{
     tabBarPosition: 'bottom',

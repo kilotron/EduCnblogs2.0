@@ -109,11 +109,15 @@ export default class BookmarksList extends Component {
         var DateAdded = item1.item.dateAdded;
         var FromCnBlogs = item1.item.fromCnBlogs;
         var DetailId = item1.item.detailId;
+
+        let arr = LinkUrl.split('/');
+        let blogApp = arr[3];
+
         return(
             <View style={flatStyles.cell}>
             <TouchableOpacity onPress={()=>{
                 this.props.navigation.navigate('BlogDetail',{Url: LinkUrl, Id: DetailId,
-                    blogApp: global.user_information.BlogApp, CommentCount: 0, Title: Title});
+                    blogApp: blogApp, CommentCount: 0, Title: Title});
                 }}
                 onLongPress={()=>{this._onPressDelBookmarks(WzLinkId);}}>
                 <View style={styles.textcontainer}>
@@ -251,6 +255,7 @@ export default class BookmarksList extends Component {
                 this.setState({
                     shouldRefresh: false,
                     loadStatus: 'none',
+                    bookmarks: [],
                 });
             }
             else

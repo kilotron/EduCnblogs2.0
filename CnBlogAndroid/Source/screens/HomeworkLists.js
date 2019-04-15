@@ -21,7 +21,7 @@ import {
     TouchableOpacity,
 } from 'react-native';
 import Toast from 'teaset/components/Toast/Toast';
-
+import {requireTime} from '../request/requireTime.js';
 const screenWidth= MyAdapter.screenWidth;
 const screenHeight= MyAdapter.screenHeight;
 const titleFontSize= MyAdapter.titleFontSize;
@@ -40,6 +40,7 @@ export default class HomeworkLists extends Component {
             isRequestSuccess: false,
             classId:this.props.classId,
             blogId:0,
+            currentTime:-1,
         }
     }
     // 标志位
@@ -62,98 +63,101 @@ export default class HomeworkLists extends Component {
 
     //应该传进来班级ID作为属性
     componentWillMount = ()=>{
-        // 先设标志位为true，表示组件未卸载
-        this._isMounted = true;
-        let classId = this.state.classId;
-        let url = Config.apiDomain + api.ClassGet.homeworkList + "/false/"+classId+"/1-12";
-        // 先获取作业数量，再按作业数量获取作业信息列表
-        Service.Get(url).then((jsonData)=>{
-            if(jsonData!=='rejected')
-            {
-                this.setState({
-                    isRequestSuccess: true,
-                })
-                if(this._isMounted)
-                {
-                    this.setState({
-                        counts: jsonData.totalCount,
-                    });
-                }
-            }
-        }).then(()=>{
-            global.storage.save({key:StorageKey.HOMEWORK_COUNT,data:this.state.counts});
-        })
-        .then(()=>{
-            let url = Config.apiDomain + api.ClassGet.homeworkList + "/false/"+classId+"/"+1+"-"+this.state.counts;
+        requireTime().then((result)=>{
+            this.setState({currentTime:result});
+            // 先设标志位为true，表示组件未卸载
+            this._isMounted = true;
+            let classId = this.state.classId;
+            let url = Config.apiDomain + api.ClassGet.homeworkList + "/false/"+classId+"/1-12";
+            // 先获取作业数量，再按作业数量获取作业信息列表
             Service.Get(url).then((jsonData)=>{
-                if(this._isMounted&&this.state.isRequestSuccess){
-                    this.setState({
-                        homeworks: jsonData.homeworks,
-                    });
-                }
-            })
-            .then(()=>{
-                var c = 0;
-                for(var i in this.state.homeworks)
-                {
-                    let today = new Date(); // 当前日期
-                    let _startday = this.state.homeworks[i].startTime; // 作业开始日期
-                    let startday = this.StringToDate(_startday);
-                    if(this.state.homeworks[i].isFinished===false && today >= startday)
-                        c++;
-                }
-                if(this._isMounted)
+                if(jsonData!=='rejected')
                 {
                     this.setState({
-                        finishedcount: c,
+                        isRequestSuccess: true,
                     })
+                    if(this._isMounted)
+                    {
+                        this.setState({
+                            counts: jsonData.totalCount,
+                        });
+                    }
                 }
+            }).then(()=>{
+                global.storage.save({key:StorageKey.HOMEWORK_COUNT,data:this.state.counts});
             })
             .then(()=>{
-                global.storage.save({key:StorageKey.CLASS_HOMEWORK,data:this.state.homeworks});
+                let url = Config.apiDomain + api.ClassGet.homeworkList + "/false/"+classId+"/"+1+"-"+this.state.counts;
+                Service.Get(url).then((jsonData)=>{
+                    if(this._isMounted&&this.state.isRequestSuccess){
+                        this.setState({
+                            homeworks: jsonData.homeworks,
+                        });
+                    }
+                })
+                .then(()=>{
+                    var c = 0;
+                    for(var i in this.state.homeworks)
+                    {
+                        let today = this.state.currentTime == -1 ? new Date() : new Date(this.state.currentTime); // 当前日期
+                        let _startday = this.state.homeworks[i].startTime; // 作业开始日期
+                        let startday = this.StringToDate(_startday);
+                        if(this.state.homeworks[i].isFinished===false && today >= startday)
+                            c++;
+                    }
+                    if(this._isMounted)
+                    {
+                        this.setState({
+                            finishedcount: c,
+                        })
+                    }
+                })
+                .then(()=>{
+                    global.storage.save({key:StorageKey.CLASS_HOMEWORK,data:this.state.homeworks});
+                })
+                .then(()=>{
+                    let url1 = Config.apiDomain + api.user.info;
+                    Service.Get(url1).then((jsonData)=>{
+                        let url2= Config.apiDomain+"api/edu/member/"+jsonData.BlogId+"/"+this.state.classId;
+                        Service.Get(url2).then((jsonData)=>{
+                            if(this._isMounted && jsonData!=='rejected'){
+                                this.setState({
+                                    blogId: jsonData.blogId,
+                                    membership: jsonData.membership,
+                                })
+                            }
+                        })
+                    })
+                    .then(()=>{
+                        global.storage.save({key : StorageKey.MEMBER_SHIP,data : this.state.membership});
+                    })
+                })
             })
-            .then(()=>{
-                let url1 = Config.apiDomain + api.user.info;
-                Service.Get(url1).then((jsonData)=>{
-                    let url2= Config.apiDomain+"api/edu/member/"+jsonData.BlogId+"/"+this.state.classId;
-                    Service.Get(url2).then((jsonData)=>{
-                        if(this._isMounted && jsonData!=='rejected'){
-                            this.setState({
-                                blogId: jsonData.blogId,
-                                membership: jsonData.membership,
-                            })
-                        }
+            .catch((error)=>{
+                global.storage.load({key : StorageKey.HOMEWORK_COUNT})
+                .then((ret)=>{
+                    this.setState({
+                        counts : ret,
                     })
                 })
                 .then(()=>{
-                    global.storage.save({key : StorageKey.MEMBER_SHIP,data : this.state.membership});
+                    global.storage.load({key : StorageKey.CLASS_HOMEWORK})
+                    .then((ret)=>{
+                        this.setState({
+                            homeworks: ret,
+                        })
+                    })
                 })
-            })
-        })
-        .catch((error)=>{
-            global.storage.load({key : StorageKey.HOMEWORK_COUNT})
-            .then((ret)=>{
-                this.setState({
-                    counts : ret,
-                })
-            })
-            .then(()=>{
-                global.storage.load({key : StorageKey.CLASS_HOMEWORK})
-                .then((ret)=>{
-                    this.setState({
-                        homeworks: ret,
+                .then(()=>{
+                    global.storage.load({key : StorageKey.MEMBER_SHIP})
+                    .then((ret)=>{
+                        this.setState({
+                            membership: ret,
+                        })
                     })
                 })
             })
-            .then(()=>{
-                global.storage.load({key : StorageKey.MEMBER_SHIP})
-                .then((ret)=>{
-                    this.setState({
-                        membership: ret,
-                    })
-                })
-            })
-        })
+        });
     };
     UpdateData=()=>{
         this.setState({
@@ -371,7 +375,7 @@ export default class HomeworkLists extends Component {
         var dataSize = 0;
         for(var i in this.state.homeworks)
         {
-            let today = new Date(); // 当前日期
+            let today = this.state.currentTime == -1 ? new Date() : new Date(this.state.currentTime); // 当前日期
             let _startday = this.state.homeworks[i].startTime; // 作业开始日期
             let startday = this.StringToDate(_startday);
             if(today >= startday)//只显示已开始的作业

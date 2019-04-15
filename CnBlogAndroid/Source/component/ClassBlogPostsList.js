@@ -142,7 +142,8 @@ export default class ClassBlogPostsList extends Component {
         for (var i in this.state.blogs) {
             data.push({
                 //blogId: 1,
-                blogId: this.state.blogs[i].blogId,//注意不是博文的编号，不能通过这个获取博文
+                blogId: this.state.blogs[i].url.match( /p\/([^%]+).html/)[1],
+                //blogId: this.state.blogs[i].blogId,//注意不是博文的编号，不能通过这个获取博文
                 title: this.state.blogs[i].title,
                 url: this.state.blogs[i].url,
                 description: this.state.blogs[i].description,
@@ -229,11 +230,11 @@ export default class ClassBlogPostsList extends Component {
                         this.props.navigation.navigate('BlogDetail',
                             {
                                 Id:item.blogId,
-                                blogApp: global.user_information.BlogApp,
+                                blogApp: item.url.split('/')[3],
                                 CommentCount: item.commentCount,
                                 Url: item.url,
                                 Title: item.title,
-                                useURL: true,
+                                //useURL: true,
                             });
                         {/*alert(Id);*/} // bug: ID不对
                     }}
@@ -308,8 +309,8 @@ export default class ClassBlogPostsList extends Component {
                     <TouchableOpacity onPress={()=>{
                         ToastAndroid.show('This is a dinosaur.', ToastAndroid.SHORT);
                     }}>
-                        <Image 
-                            style={styles.dinosaurPic} 
+                        <Image
+                            style={styles.dinosaurPic}
                             source={require('../images/dinosaur.jpg')}
                         />
                     </TouchableOpacity>
@@ -401,16 +402,16 @@ const styles = StyleSheet.create({
 		marginBottom:10,
     },
     dinosaurPic: {
-        marginLeft:30, 
-        marginTop: 30, 
-        width: 60, 
+        marginLeft:30,
+        marginTop: 30,
+        width: 60,
         height: 60,
     },
     dinosaurText: {
-        textAlign: 'left', 
-        marginLeft:30, 
-        marginTop:30, 
-        fontWeight: 'bold', 
+        textAlign: 'left',
+        marginLeft:30,
+        marginTop:30,
+        fontWeight: 'bold',
         fontSize: 24,
         color: '#505050',
     },

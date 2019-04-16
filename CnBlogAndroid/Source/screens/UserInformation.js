@@ -124,6 +124,11 @@ export default class UserInformation extends Component{
 		})
     }
 
+    /**从版本号中启动设置功能，需要调用此函数重新render */
+    rerender = () => {
+        this.forceUpdate();
+    }
+
     render() {
     return (
         <ScrollView>
@@ -216,10 +221,34 @@ export default class UserInformation extends Component{
             }}>
                 <Text style = {{fontSize: 18, fontWeight: 'bold', color:'rgb(51,51,51)'}}>收藏列表</Text>
             </TouchableHighlight>
+
+            {
+                global.settings.showSettings ? (
+                    <TouchableHighlight
+                        underlayColor="white"
+                        activeOpacity={0.5}
+                        onPress={()=>{this.props.navigation.navigate('Settings');}}//关联函数
+                        style = {{
+                            justifyContent:'center',
+                            alignItems: 'flex-start',
+                            height: 0.07*screenHeight,
+                            marginBottom: 0.02*screenHeight,
+                            backgroundColor: 'white',
+                            paddingLeft: 0.05*screenWidth,
+                    }}>
+                        <Text style = {{fontSize: 18, fontWeight: 'bold', color:'rgb(51,51,51)'}}>设置</Text>
+                    </TouchableHighlight>
+                ) : (null)
+            }
+            
             <TouchableHighlight
                 underlayColor="white"
                 activeOpacity={0.5}
-                onPress={()=>{this.props.navigation.navigate('AppInformation');}}//关联函数
+                onPress={()=>{
+                    this.props.navigation.navigate('AppInformation', {
+                        callback: this.rerender,
+                    }
+                )}}//关联函数
                 style = {{
                     justifyContent:'center',
                     alignItems: 'flex-start',

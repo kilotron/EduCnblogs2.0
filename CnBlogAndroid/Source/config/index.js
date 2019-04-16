@@ -94,5 +94,6 @@ global.timeTouch = null;
 
 /**全局的设置选项，可用于个性化定制 */
 global.settings = {
+	showSettings: false,
 	displayDetailTime: true,
 };

@@ -63,6 +63,7 @@ import BulletinAdd from './Source/screens/BulletinAdd'
 import BulletinEdition from './Source/screens/BulletinEdition'
 import ClassSelect from './Source/screens/ClassSelect'
 import VoteList from './Source/screens/VoteList'
+import Settings from './Source/screens/Settings'
 const { height, width } = Dimensions.get('window');
 
 const CODE_URL = [
@@ -806,7 +807,21 @@ const SimpleNavigation = StackNavigator({
                 fontSize: 18,
             }
         }
-    }
+    },
+    Settings: {
+        screen: Settings,
+        navigationOptions:{
+            headerTintColor : 'white',
+            headerTitle: '设置',
+            headerStyle: {
+                height:40,
+                backgroundColor: '#555',
+            },
+            headerTitleStyle: {
+                fontSize: 18,
+            }
+        }
+    },
 },{
     initialRouteName: 'Welcome',
 });

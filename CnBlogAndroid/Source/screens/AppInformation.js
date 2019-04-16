@@ -28,12 +28,42 @@ const informationFontSize= MyAdapter.informationFontSize;
 const btnFontSize= MyAdapter.btnFontSize;   
 // 该页面使用navigate参数为classId
 
+const maxNumberOfVersionPressed = 8;
+const showToastThreshold = 3;
+
 export default class AppInformation extends Component {
+
     constructor(props){
         super(props);
-      }
+        this.numberOfVersionPressed = 0;        // 记录点击版本的次数
+        this.lastTimeVersionPressed = Date.now();
+    }
+
     _onPress=()=>{
     };
+
+    _versionOnPress = () => {
+        // 在2秒内连续点击则计数
+        if (Date.now() - this.lastTimeVersionPressed <= 2000) {
+            if (global.settings.showSettings) {
+                this.lastTimeVersionPressed = Date.now();
+                ToastAndroid.show('已显示设置，不用再进行此操作', ToastAndroid.SHORT);
+                return;
+            }
+            this.numberOfVersionPressed++;
+            diff = maxNumberOfVersionPressed - this.numberOfVersionPressed;
+            if (diff == 0) {
+                ToastAndroid.show('已显示设置', ToastAndroid.SHORT);
+                global.settings.showSettings = true;
+                this.numberOfVersionPressed = 0;
+                this.props.navigation.state.params.callback();
+            }
+        } else {
+            this.numberOfVersionPressed = 0;
+        }
+        this.lastTimeVersionPressed = Date.now();
+    }
+
     _renderItem = (item)=>{
         let item1 = item;
         var title = item1.item.title;//作业标题
@@ -46,7 +76,10 @@ export default class AppInformation extends Component {
                         if(item1.item.key == 2 /*|| item1.item.key == 1*/){
                             this.props.navigation.navigate('ContactPage',{url: description})
                         }
-                        }}
+                        if (item1.item.key == 0) {
+                            this._versionOnPress();
+                        }
+                    }}
 
                     style = {styles.container}
                 >

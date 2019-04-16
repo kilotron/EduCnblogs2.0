@@ -43,7 +43,7 @@ export default class UserInformation extends Component{
             Seniority: ''
         }
     }
-	
+
     _logout=()=>{
         storage.removeItem(StorageKey.USER_TOKEN).then((res)=>{
             CookieManager.clearAll()
@@ -63,7 +63,7 @@ export default class UserInformation extends Component{
     componentWillUnmount=()=>{
         this._isMounted=false;
     }
-	
+
     componentWillMount=()=>{
         this._isMounted=true;
         let user_url = Config.apiDomain + api.user.info;
@@ -123,7 +123,7 @@ export default class UserInformation extends Component{
 			})
 		})
     }
-	
+
     render() {
     return (
         <ScrollView>
@@ -201,7 +201,21 @@ export default class UserInformation extends Component{
                     paddingLeft: 0.05*screenWidth,
             }}>
                 <Text style = {{fontSize: 18, fontWeight: 'bold', color:'rgb(51,51,51)'}}>日程提醒</Text>
-            </TouchableHighlight>            
+            </TouchableHighlight>
+            <TouchableHighlight
+                underlayColor="white"
+                activeOpacity={0.5}
+                onPress={()=>{this.props.navigation.navigate('BookmarksList');}}//关联函数
+                style = {{
+                    justifyContent:'center',
+                    alignItems: 'flex-start',
+                    height: 0.07*screenHeight,
+                    marginBottom: 0.02*screenHeight,
+                    backgroundColor: 'white',
+                    paddingLeft: 0.05*screenWidth,
+            }}>
+                <Text style = {{fontSize: 18, fontWeight: 'bold', color:'rgb(51,51,51)'}}>收藏列表</Text>
+            </TouchableHighlight>
             <TouchableHighlight
                 underlayColor="white"
                 activeOpacity={0.5}

@@ -3,7 +3,7 @@ import api from '../api/api.js';
 import {authData,err_info,StorageKey} from '../config';
 import * as Service from '../request/request.js';
 import React, { Component } from 'react';
-import {
+import { 
     Platform,
     StyleSheet,
     Text,
@@ -13,6 +13,7 @@ import {
     Dimensions,
     WebView,
     Alert,
+    Image,
 } from 'react-native';
 import {
     StackNavigator,
@@ -28,8 +29,14 @@ export default class HomeWorkDetail extends Component{
             content: '',
             convertedContent: '',
             title: '',
-            formatTyle: 1,
+            formatType: 2,
             answerCount: 0,
+            membership: this.props.navigation.state.params.membership,
+            Id:0,
+            classId:0,
+            isShowInHome:false,
+            originContent:'',
+            isClosed:false,
         }
     }
     _isMounted;
@@ -45,10 +52,17 @@ export default class HomeWorkDetail extends Component{
             {
                 this.setState({
                     content: jsonData.content,
+                    originContent:jsonData.content,
                     convertedContent: jsonData.convertedContent,
                     title: jsonData.title,
-					formatTyle: jsonData.formatTyle,
+					formatType: jsonData.formatType,
                     answerCount: jsonData.answerCount,
+                    Id:Id,
+                    classId:classId,
+                    startTime:jsonData.startTime,
+                    deadline:jsonData.deadline,
+                    isShowInHome:jsonData.isShowInHome,
+                    isClosed:jsonData.isClosed,
                 })
             }
         })
@@ -63,16 +77,202 @@ export default class HomeWorkDetail extends Component{
                     content: ret.content,
                     convertedContent: ret.convertedContent,
                     title: ret.title,
-					formatTyle: ret.formatTyle,
+					formatType: ret.formatType,
                     answerCount: ret.answerCount,
                 })
 			})
 		})
     }
-	
+    
+    closeHomework =()=>{
+        let url = Config.HomeWorkClose + this.state.classId + '/' + this.state.Id;
+        let body = JSON.stringify(
+            {
+                blogId:this.props.navigation.state.params.blogId,
+                homeworkId:this.state.Id,
+                schoolClassId:this.state.classId
+            });
+        Alert.alert(
+            '关闭作业'+this.state.title,
+            '确定要关闭吗？',
+            [
+                {text: '取消'},
+                {text: '确认关闭', onPress: ()=>{
+                    console.log(url);
+                    Service.UserAction(url, body, 'PATCH')
+                    .then((response)=>{
+                        if(response.status !== 200){
+                            console.log(response.status);
+                            return null;
+                        }
+                        else
+                            return response.json();
+                    })
+                    .then((jsonData)=>{
+                        if(jsonData==null)
+                            ToastAndroid.show("请求失败，您的身份可能不对！",ToastAndroid.SHORT);
+                        else if(jsonData.isSuccess)
+                        {
+                            ToastAndroid.show('成功关闭作业',ToastAndroid.SHORT);
+                            this.props.navigation.state.params.callback();
+                            this.props.navigation.goBack();
+                        }
+                        else if(jsonData.isWarning)
+                            ToastAndroid.show(jsonData.message,ToastAndroid.SHORT);
+                        else
+                            ToastAndroid.show('发生错误，请稍后重试！',ToastAndroid.SHORT);
+                    }).catch((error)=>{
+                        ToastAndroid.show("网络请求失败，请检查连接状态！",ToastAndroid.SHORT);
+                        console.log(error);
+                    })
+                }},
+            ]
+        )
+    }
+
+    removeHomework =()=>{
+        let url = Config.HomeWorkRemove + this.state.classId + '/' + this.state.Id;
+        let body = JSON.stringify(
+            {
+                blogId:this.props.navigation.state.params.blogId,
+                homeworkId:this.state.Id,
+                schoolClassId:this.state.classId
+            });
+        Alert.alert(
+            '删除作业'+this.state.title,
+            '确定要删除吗？',
+            [
+                {text: '取消'},
+                {text: '确认删除', onPress: ()=>{
+                    console.log(url);
+                    console.log(body);
+                    Service.UserAction(url, body, 'DELETE')
+                    .then((response)=>{
+                        if(response.status !== 200){
+                            console.log(response.status);
+                            return null;
+                        }
+                        else
+                            return response.json();
+                    })
+                    .then((jsonData)=>{
+                        if(jsonData==null)
+                            ToastAndroid.show("请求失败，您的身份可能不对！",ToastAndroid.SHORT);
+                        else if(jsonData.isSuccess)
+                        {
+                            ToastAndroid.show('成功删除作业',ToastAndroid.SHORT);
+                            this.props.navigation.state.params.callback();
+                            this.props.navigation.goBack();
+                        }
+                        else if(jsonData.isWarning)
+                            ToastAndroid.show(jsonData.message,ToastAndroid.SHORT);
+                        else
+                            ToastAndroid.show('发生错误，请稍后重试！',ToastAndroid.SHORT);
+                    }).catch((error)=>{
+                        ToastAndroid.show("网络请求失败，请检查连接状态！",ToastAndroid.SHORT);
+                        console.log(error);
+                    })
+                }},
+            ]
+        )
+    }
+    renderBottomBar(Id,isFinished,classId,answerCount){
+        isClosed = this.state.isClosed;
+        if(this.state.membership === 1){
+            return(
+                <View style = {styles.bottom}>
+                    <TouchableOpacity
+                        onPress = {()=>this.props.navigation.navigate('Submitted',{Id: Id})}
+                        style = {styles.touchbutton}
+                        >
+                        <View style={styles.subListIconStyle}>
+                            <Image source =
+                            {require('../images/list.png')}
+                            style = {styles.subListImagestyle}/>
+                            <Text style = {styles.subListTextStyle}>({answerCount}人提交)</Text>
+                        </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress = {(isFinished || isClosed) == true ? ()=>{} : 
+                                ()=>this.props.navigation.navigate('HomeworkSubmit',{homeworkId: Id, classId: classId})}
+                        style = {styles.touchbutton}
+                        activeOpacity = {(isFinished || isClosed) == true ? 1 : 0.2}
+                        >
+                        <Image source =
+                        {(isFinished || isClosed) == true ? require('../images/submitUnable.png') : require('../images/submit.png')}
+                        style = {styles.imagestyle}/>
+                    </TouchableOpacity>
+                </View>
+            )
+        }
+        else {
+            return(
+                <View style = {styles.bottom}>
+                    <TouchableOpacity
+                        onPress = {()=>this.props.navigation.navigate('Submitted',{Id: Id})}
+                        style = {styles.touchbutton}
+                        >
+                        <View style={styles.subListIconStyle}>
+                            <Image source =
+                            {require('../images/list.png')}
+                            style = {styles.subListImagestyle}/>
+                            <Text style = {styles.subListTextStyle}>({answerCount}人提交)</Text>
+                        </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress = {
+                            ()=>{
+                                if(this.state.formatType !== 1){
+                                    ToastAndroid.show('暂不支持markdown格式的编辑!',ToastAndroid.SHORT);
+                                }
+                                var editPack = {
+                                    homeworkId: Id, 
+                                    operatorInfo:{
+                                        schoolClassId:classId,
+                                        blogId:this.props.navigation.state.params.blogId,
+                                    },
+                                    title:this.state.title,
+                                    startTime:this.state.startTime,
+                                    deadline:this.state.deadline,
+                                    // content:this.state.convertedContent == null ? this.state.originContent : this.state.convertedContent,
+                                    content:this.state.originContent,
+                                    formatType:this.state.formatType,
+                                    isShowInHome:this.state.isShowInHome,
+                                    callback:this.componentWillMount,
+                                }
+                                // editPack = this.cutContent(editPack);
+                                this.props.navigation.navigate('HomeworkEdition',editPack)
+                            }
+                        }
+                        style = {styles.touchbutton}
+                        >
+                        <Image source =
+                        {require('../images/edit.png')}
+                        style = {styles.imagestyle}/>
+                    </TouchableOpacity>
+                    <TouchableOpacity style = {styles.touchbutton}
+                        activeOpacity = {(isFinished || isClosed) == true ? 1 : 0.2}
+                        onPress = {(isFinished || isClosed) == true ? ()=>{} : ()=>{this.closeHomework()}}
+                        >
+                        <Image source =
+                        {(isFinished || isClosed) == true ? require('../images/closeUnable.png') : require('../images/closeAble.png')}
+                        style = {styles.imagestyle}/>
+                    </TouchableOpacity>
+                    <TouchableOpacity style = {styles.touchbutton}
+                        onPress = {this.removeHomework}
+                        >
+                        <Image source =
+                        {require('../images/delete.png')}
+                        style = {styles.imagestyle}/>
+                    </TouchableOpacity>
+                </View>
+            )
+        }
+    }
+    
     render(){        
         let {url, Id, classId, isFinished} = InfoHandler(this.props.navigation.state.params);
-        let {content, convertedContent, title, formatTyle, answerCount} = ContentHandler(this.state);
+        let {content, convertedContent, title, formatType,isShowInHome, answerCount} = ContentHandler(this.state);
         return(
             <View style = {styles.container}>
                 <View
@@ -81,37 +281,18 @@ export default class HomeWorkDetail extends Component{
                         flex:1,
                     }}
                 >
-                <WebView
-                    source={{html: content, baseUrl: ''}}
-                    style={{height: height-40}}
-                    startInLoadingState={true}
-                    domStorageEnabled={true}
-                    javaScriptEnabled={true}
-                    scalesPageToFit={true}
-                    onError = {()=>Alert.alert('网络异常，请稍后再试！')}
-                />
+                    <WebView
+                        source={{html: content, baseUrl: ''}}
+                        style={{height: height-40}}
+                        startInLoadingState={true}
+                        domStorageEnabled={true}
+                        javaScriptEnabled={true}
+                        scalesPageToFit={true}
+                        onError = {()=>Alert.alert('网络异常，请稍后再试！')}
+                    />
                 </View>
                 <View style = {{height: 1, backgroundColor: 'rgb(204,204,204)', alignSelf:'stretch'}}/>
-                <View style = {styles.bottom}>
-                    <TouchableOpacity
-                    onPress = {()=>this.props.navigation.navigate('Submitted',{Id: Id})}
-                    style = {styles.button}
-                    >
-                        <Text style = {{fontSize: 15, textAlign: 'center', color: 'white'}}>
-                            已提交列表({answerCount}人)
-                        </Text>
-                    </TouchableOpacity>
-                    <View style = {{backgroundColor: 'white', width: width/6}}/>
-                    <TouchableOpacity
-                    onPress = {isFinished == true ? ()=>ToastAndroid.show("此作业已经结束！", ToastAndroid.SHORT) : 
-                            ()=>this.props.navigation.navigate('HomeworkSubmit',{homeworkId: Id, classId: classId})}
-                    style = {styles.button}
-                    >
-                        <Text style = {{fontSize: 15, textAlign: 'center', color: 'white'}}>
-                            选择并提交作业
-                        </Text>
-                    </TouchableOpacity>
-                </View>
+                {this.renderBottomBar(Id,isFinished,classId,answerCount)}  
             </View>
         )
     }
@@ -127,18 +308,94 @@ const styles = StyleSheet.create({
     },
     bottom: {
         flexDirection: 'row',
-        justifyContent: 'center',
+        justifyContent: 'space-around',
         alignItems: 'center',
         height: height/16,
         alignSelf: 'stretch',
         backgroundColor: 'white'
     },
     button:{
+        width: width/2.2,
+        height: height/18,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#007acc',
+        borderRadius: 8,
+    },
+    buttonGrey:{
         width: width/2.8,
         height: height/18,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#0588fe',
+        backgroundColor: '#dcdcdc',
         borderRadius: 8,
-    }
+    },
+    button2:{
+        width: width/5,
+        height: height/18,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#007acc',
+        borderRadius: 8,
+    },
+    button2Orange:{
+        width: width/5,
+        height: height/18,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#f96b36',
+        borderRadius: 8,
+    },
+    button2Grey:{
+        width: width/5,
+        height: height/18,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#dcdcdc',
+        borderRadius: 8,
+    },
+    button2DarkGrey:{
+        width: width/5,
+        height: height/18,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#424242',
+        borderRadius: 8,
+    },
+    button2Red:{
+        width: width/5,
+        height: height/18,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#ff0000',
+        borderRadius: 8,
+    },
+ 
+    touchbutton: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'white',
+        // width: height/14,
+        height: height/14,
+    },
+    imagestyle: {
+        width: height/18,
+        height: height/22,
+        resizeMode: 'stretch',
+    },
+    subListIconStyle:{
+        flexDirection:'row',
+        justifyContent:'center',
+        alignItems:'center',
+    },
+    subListImagestyle:{
+        width: height/18,
+        height: height/24,
+        resizeMode: 'stretch',
+    },
+    subListTextStyle:{
+        fontSize: 12,
+        textAlign: 'center', 
+        color: 'black'
+    },
 })

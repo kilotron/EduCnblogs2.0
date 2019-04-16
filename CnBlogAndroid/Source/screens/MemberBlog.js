@@ -19,6 +19,8 @@ import {
 import {
     StackNavigator,
 } from 'react-navigation';
+import {flatStyles} from '../styles/styles';
+
 const screenWidth= MyAdapter.screenWidth;
 const screenHeight= MyAdapter.screenHeight;
 // 接受博客Id作为参数
@@ -90,14 +92,7 @@ export default class MemberBlog extends Component{
     componentWillUnmount=()=>{
         this._isMounted=false;
     }
-    _separator = () => {
-        return (
-            <View style={{ height: 9.75, justifyContent: 'center'}}>
-            <View style={{ height: 0.75, backgroundColor: 'rgb(100,100,100)'}}/>
-            <View style={{ height: 9, backgroundColor: 'rgb(235,235,235)'}}/>
-            </View>
-        );
-    }
+
     _renderItem = (item)=>{
         let item1 = item;
         var Title = item1.item.Title;
@@ -110,13 +105,14 @@ export default class MemberBlog extends Component{
         let arr = Url.split('/');
         let blogApp = arr[3];
         return(
-            <View>
-                <TouchableOpacity 
+            <View style={flatStyles.cell}>
+                <TouchableOpacity
                     style = {styles.listcontainer}
                     onPress = {()=>{
-                        this.props.navigation.navigate('BlogDetail',{Url: Url, Id:Id, blogApp: blogApp, CommentCount: CommentCount})}
+                        this.props.navigation.navigate('BlogDetail',{Url: Url, Id:Id,
+                            blogApp: blogApp, CommentCount: CommentCount, Title: Title})}
                     }
-                >  
+                >
                     <Text style = {{
                         fontSize: 18,
                         fontWeight: 'bold',
@@ -166,7 +162,6 @@ export default class MemberBlog extends Component{
             <View style = {styles.container}>
                 <View style = {styles.content}>
                     <FlatList
-                        ItemSeparatorComponent={this._separator}
                         renderItem={this._renderItem}
                         data={data}
                         onRefresh = {this.UpdateData}

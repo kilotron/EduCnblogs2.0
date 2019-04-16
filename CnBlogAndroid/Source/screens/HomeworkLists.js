@@ -7,7 +7,7 @@ import HeaderNoBackComponent from './HeaderNoBackComponent.js'
 import React, { Component} from 'react';
 import {StorageKey} from '../config'
 import {err_info} from '../config'
-
+import {flatStyles} from '../styles/styles'
 import {
     Platform,
     StyleSheet,
@@ -17,14 +17,11 @@ import {
     ToastAndroid,
     TouchableHighlight,
     TextInput,
-    FlatList,
+    FlatList,SectionList,
     TouchableOpacity,
-    Dimensions,
-    PixelRatio,
-    Alert
 } from 'react-native';
 import Toast from 'teaset/components/Toast/Toast';
-
+import {requireTime} from '../request/requireTime.js';
 const screenWidth= MyAdapter.screenWidth;
 const screenHeight= MyAdapter.screenHeight;
 const titleFontSize= MyAdapter.titleFontSize;
@@ -41,6 +38,9 @@ export default class HomeworkLists extends Component {
             membership: 1,
             finishedcount: 0,
             isRequestSuccess: false,
+            classId:this.props.classId,
+            blogId:0,
+            currentTime:-1,
         }
     }
     // 标志位
@@ -48,11 +48,130 @@ export default class HomeworkLists extends Component {
     componentWillUnmount = ()=>{
         this._isMounted = false;
     }
+
+    componentWillReceiveProps(nextProps) {
+        this.setState({
+            homeworks: [],
+            counts: 0,
+            finishedcount: 0,
+            isRequestSuccess:false,
+            classId:nextProps.classId,
+        });
+        this.UpdateDataNext(nextProps.classId);
+        // this.componentWillMount();
+    }
+
     //应该传进来班级ID作为属性
     componentWillMount = ()=>{
+        requireTime().then((result)=>{
+            this.setState({currentTime:result});
+            // 先设标志位为true，表示组件未卸载
+            this._isMounted = true;
+            let classId = this.state.classId;
+            let url = Config.apiDomain + api.ClassGet.homeworkList + "/false/"+classId+"/1-12";
+            // 先获取作业数量，再按作业数量获取作业信息列表
+            Service.Get(url).then((jsonData)=>{
+                if(jsonData!=='rejected')
+                {
+                    this.setState({
+                        isRequestSuccess: true,
+                    })
+                    if(this._isMounted)
+                    {
+                        this.setState({
+                            counts: jsonData.totalCount,
+                        });
+                    }
+                }
+            }).then(()=>{
+                global.storage.save({key:StorageKey.HOMEWORK_COUNT,data:this.state.counts});
+            })
+            .then(()=>{
+                let url = Config.apiDomain + api.ClassGet.homeworkList + "/false/"+classId+"/"+1+"-"+this.state.counts;
+                Service.Get(url).then((jsonData)=>{
+                    if(this._isMounted&&this.state.isRequestSuccess){
+                        this.setState({
+                            homeworks: jsonData.homeworks,
+                        });
+                    }
+                })
+                .then(()=>{
+                    var c = 0;
+                    for(var i in this.state.homeworks)
+                    {
+                        let today = this.state.currentTime == -1 ? new Date() : new Date(this.state.currentTime); // 当前日期
+                        let _startday = this.state.homeworks[i].startTime; // 作业开始日期
+                        let startday = this.StringToDate(_startday);
+                        if(this.state.homeworks[i].isFinished===false && today >= startday)
+                            c++;
+                    }
+                    if(this._isMounted)
+                    {
+                        this.setState({
+                            finishedcount: c,
+                        })
+                    }
+                })
+                .then(()=>{
+                    global.storage.save({key:StorageKey.CLASS_HOMEWORK,data:this.state.homeworks});
+                })
+                .then(()=>{
+                    let url1 = Config.apiDomain + api.user.info;
+                    Service.Get(url1).then((jsonData)=>{
+                        let url2= Config.apiDomain+"api/edu/member/"+jsonData.BlogId+"/"+this.state.classId;
+                        Service.Get(url2).then((jsonData)=>{
+                            if(this._isMounted && jsonData!=='rejected'){
+                                this.setState({
+                                    blogId: jsonData.blogId,
+                                    membership: jsonData.membership,
+                                })
+                            }
+                        })
+                    })
+                    .then(()=>{
+                        global.storage.save({key : StorageKey.MEMBER_SHIP,data : this.state.membership});
+                    })
+                })
+            })
+            .catch((error)=>{
+                global.storage.load({key : StorageKey.HOMEWORK_COUNT})
+                .then((ret)=>{
+                    this.setState({
+                        counts : ret,
+                    })
+                })
+                .then(()=>{
+                    global.storage.load({key : StorageKey.CLASS_HOMEWORK})
+                    .then((ret)=>{
+                        this.setState({
+                            homeworks: ret,
+                        })
+                    })
+                })
+                .then(()=>{
+                    global.storage.load({key : StorageKey.MEMBER_SHIP})
+                    .then((ret)=>{
+                        this.setState({
+                            membership: ret,
+                        })
+                    })
+                })
+            })
+        });
+    };
+    UpdateData=()=>{
+        this.setState({
+            homeworks: [],
+            counts: 0,
+            finishedcount: 0,
+            isRequestSuccess:false,
+        });
+        this.componentWillMount();
+    };
+    UpdateDataNext=(Id)=>{
         // 先设标志位为true，表示组件未卸载
         this._isMounted = true;
-        let classId = this.props.navigation.state.params.classId;
+        let classId = Id;
         let url = Config.apiDomain + api.ClassGet.homeworkList + "/false/"+classId+"/1-12";
         // 先获取作业数量，再按作业数量获取作业信息列表
         Service.Get(url).then((jsonData)=>{
@@ -100,13 +219,15 @@ export default class HomeworkLists extends Component {
             .then(()=>{
                 global.storage.save({key:StorageKey.CLASS_HOMEWORK,data:this.state.homeworks});
             })
-            .then(()=>{
-                let url1 = Config.apiDomain + api.user.info;
+            .then(()=>{//这个then用来获得membership
+                let url1 = Config.apiDomain + api.user.info;//获取当前登录用户信息，用来获取博客Id
                 Service.Get(url1).then((jsonData)=>{
-                    let url2= Config.apiDomain+"api/edu/member/"+jsonData.BlogId+"/"+this.props.navigation.state.params.classId;
+                    //根据博客Id获取成员信息，以获取membership
+                    let url2= Config.apiDomain+"api/edu/member/"+jsonData.BlogId+"/"+this.state.classId;
                     Service.Get(url2).then((jsonData)=>{
                         if(this._isMounted && jsonData!=='rejected'){
                             this.setState({
+                                blogId: jsonData.blogId,
                                 membership: jsonData.membership,
                             })
                         }
@@ -142,14 +263,14 @@ export default class HomeworkLists extends Component {
             })
         })
     };
-    UpdateData=()=>{
-
-        this.componentWillMount();
-    };
     _onPress = ()=>{
         let url = Config.apiDomain + api.user.info;
         if (this.state.membership==2||this.state.membership==3)
-            this.props.navigation.navigate('HomeworkPost',{classId: this.props.navigation.state.params.classId});
+            this.props.navigation.navigate('HomeworkPost',{
+                classId: this.state.classId,
+                blogId:this.state.blogId,
+                callback:this.UpdateData,
+            });
         else
         {
             ToastAndroid.show("您没有权限，只有老师和助教才能发布作业哦！",ToastAndroid.SHORT);
@@ -163,34 +284,45 @@ export default class HomeworkLists extends Component {
         var url = item1.item.url;//作业地址
         var Id = item1.item.key;//作业Id
         var isFinished = item1.item.isFinished;
+        var isClosed = item1.item.isClosed;
+
         return (
-            <View>
+            <View style={flatStyles.cell}>
                 <TouchableOpacity
-                    onPress = {()=>this.props.navigation.navigate('HomeworkDetail',{url: url, Id: Id,
-                                            classId: this.props.navigation.state.params.classId, isFinished: isFinished})}
+                    //url:作业url，如示例的'/campus/bjwzxy/test/homework/9'
+                    onPress = {()=>this.props.navigation.navigate('HomeworkDetail',{
+                                url: url, 
+                                Id: Id,
+                                classId: this.state.classId, 
+                                isFinished: isFinished,
+                                membership:this.state.membership,
+                                callback:this.UpdateData,
+                                //编辑作业所需参数
+                                blogId:this.state.blogId,
+                                })}
                     style = {HomeworkStyles.container}
                 >
-                    <Text style= {HomeworkStyles.titleTextStyle}>
+                    <Text style= {isClosed ? HomeworkStyles.greyTitleTextStyle : HomeworkStyles.titleTextStyle}>
                         {title}
                     </Text>
                     <Text numberOfLines={3} style= {HomeworkStyles.abstractTextStyle}>
                         {description}
                     </Text>
-                    <Text style= {HomeworkStyles.informationTextStyle}>
+                    <Text style= {isClosed ? HomeworkStyles.closedInformationTextStyle : (isFinished ? HomeworkStyles.outdateInformationTextStyle : HomeworkStyles.informationTextStyle)}>
                         截止于:{deadline.split('T')[0]+' '+deadline.split('T')[1].substring(0,8)}
                     </Text>
                 </TouchableOpacity>
             </View>
         )
     }
-    _separator = () => {
+    _sectionHeader = (info)=>{
         return (
-            <View style={{ height: 9.75, justifyContent: 'center'}}>
-            <View style={{ height: 0.75, backgroundColor: 'rgb(100,100,100)'}}/>
-            <View style={{ height: 9, backgroundColor: 'rgb(235,235,235)'}}/>
+            <View style={HomeworkStyles.sectionHeaderViewStyle}>
+                <Text style={HomeworkStyles.sectionHeaderTextStyle}>{info.section.key}</Text>
             </View>
         );
     }
+
     StringToDate = (day)=>{
         // YYYY-MM-DDTHH:MM:SS
         if(day == null)
@@ -201,23 +333,93 @@ export default class HomeworkLists extends Component {
         let HMS = s2.split(':');
         return new Date(Number(YMD[0]),Number(YMD[1])-1,Number(YMD[2]),Number(HMS[0]),Number(HMS[1]),Number(HMS[2].substring(0,2)));
     }
+    generateAddButton(){
+        if(this.state.membership != 1){
+            return(
+                <TouchableHighlight 
+                    underlayColor="#3b50ce"
+                    activeOpacity={0.5}
+                    style={{
+                        position:'absolute',
+                        bottom:20,
+                        right:10, 
+                        backgroundColor: "#3b50ce",
+                        width: 52, 
+                        height: 52, 
+                        borderRadius: 26,
+                        justifyContent: 'center', 
+                        alignItems: 'center', 
+                        margin: 20}} 
+                        onPress={this._onPress} >
+                    
+                    <Text
+                        style= {{
+                            fontSize: 30,
+                            color: '#ffffff',
+                            textAlign: 'center',
+                            fontWeight: '100',
+                        }}
+                    >
+                        +
+                    </Text>
+                    
+                </TouchableHighlight>
+            );
+        }
+        else return;
+    }
     render() {
-        var data = [];
+        var data = [];//未结束作业
+        var FinishedData = [];//已结束作业
+        var closedData = [];//已关闭作业
+        var dataSize = 0;
         for(var i in this.state.homeworks)
         {
-            let today = new Date(); // 当前日期
+            let today = this.state.currentTime == -1 ? new Date() : new Date(this.state.currentTime); // 当前日期
             let _startday = this.state.homeworks[i].startTime; // 作业开始日期
             let startday = this.StringToDate(_startday);
             if(today >= startday)//只显示已开始的作业
             {
-                data.push({
-                    key: this.state.homeworks[i].homeworkId,//作业ID
-                    title: this.state.homeworks[i].title,//作业标题
-                    url: this.state.homeworks[i].url,//作业网址
-                    description: this.state.homeworks[i].description,//作业描述
-                    deadline: this.state.homeworks[i].deadline,//作业截止日期
-                    isFinished: this.state.homeworks[i].isFinished,// 作业是否结束
-                })
+                if(this.state.homeworks[i].isClosed){
+                    closedData.push(
+                        {
+                            key: this.state.homeworks[i].homeworkId,//作业ID
+                            title: this.state.homeworks[i].title,//作业标题
+                            url: this.state.homeworks[i].url,//作业网址
+                            description: this.state.homeworks[i].description,//作业描述
+                            deadline: this.state.homeworks[i].deadline,//作业截止日期
+                            isFinished: this.state.homeworks[i].isFinished,// 作业是否结束
+                            isClosed:this.state.homeworks[i].isClosed,
+                        }
+                    )
+                }
+                else if(this.state.homeworks[i].isFinished){
+                    FinishedData.push(
+                        {
+                            key: this.state.homeworks[i].homeworkId,//作业ID
+                            title: this.state.homeworks[i].title,//作业标题
+                            url: this.state.homeworks[i].url,//作业网址
+                            description: this.state.homeworks[i].description,//作业描述
+                            deadline: this.state.homeworks[i].deadline,//作业截止日期
+                            isFinished: this.state.homeworks[i].isFinished,// 作业是否结束
+                            isClosed:this.state.homeworks[i].isClosed,
+                        }
+                    )
+                }
+                else{
+                    data.push(
+                        {
+                            key: this.state.homeworks[i].homeworkId,//作业ID
+                            title: this.state.homeworks[i].title,//作业标题
+                            url: this.state.homeworks[i].url,//作业网址
+                            description: this.state.homeworks[i].description,//作业描述
+                            deadline: this.state.homeworks[i].deadline,//作业截止日期
+                            isFinished: this.state.homeworks[i].isFinished,// 作业是否结束
+                            isClosed:this.state.homeworks[i].isClosed,
+                        }
+                    )
+                    dataSize++;
+                }
             }
         }
         return (
@@ -228,29 +430,6 @@ export default class HomeworkLists extends Component {
                 backgroundColor: 'white'
             }}
         >
-            <View
-            style= {{
-                flexDirection: 'row',
-                justifyContent:'space-between',
-                alignItems: 'center',
-                marginTop: 0.005*screenHeight,
-                marginLeft: 0.03*screenWidth,
-                marginRight: 0.03*screenWidth,
-                marginBottom: 0.005*screenHeight,
-                alignSelf: 'stretch',
-            }}
-            >
-                <Text
-                    style= {{
-                        alignSelf: 'center',
-                        fontSize: btnFontSize,
-                        textAlign: 'center',
-                        color: 'rgb(51,51,51)'
-                    }}
-                >
-                    未结束：{this.state.finishedcount}
-                </Text>
-            </View>
             <View style={{ height: 1, backgroundColor: 'rgb(204,204,204)', }}/>
             <View
                 style= {{
@@ -261,42 +440,27 @@ export default class HomeworkLists extends Component {
                     flex:1,
                 }}
             >
-                <FlatList
+                {/* <FlatList
                     data={data}
                     ItemSeparatorComponent = {this._separator}
                     renderItem={this._renderItem}
                     onRefresh = {this.UpdateData}
                     refreshing= {false}
+                /> */}
+                <SectionList
+                    extraData={this.state}
+                    sections={[
+                        {key:'未结束:'+dataSize, data:data},
+                        {key:'已结束', data:FinishedData},
+                        {key:'已关闭',data:closedData},
+                    ]}
+                    renderSectionHeader = {this._sectionHeader}
+                    renderItem={this._renderItem}
+                    onRefresh = {this.UpdateData}
+                    refreshing= {false}
                 />
             </View>
-            <TouchableHighlight 
-                underlayColor="#3b50ce"
-                activeOpacity={0.5}
-                style={{
-                    position:'absolute',
-                    bottom:20,
-                    right:10, 
-                    backgroundColor: "#3b50ce",
-                    width: 52, 
-                    height: 52, 
-                    borderRadius: 26,
-                    justifyContent: 'center', 
-                    alignItems: 'center', 
-                    margin: 20}} 
-                    onPress={this._onPress} >
-                
-                <Text
-                    style= {{
-                        fontSize: 30,
-                        color: '#ffffff',
-                        textAlign: 'center',
-                        fontWeight: '100',
-                    }}
-                >
-                    +
-                </Text>
-                
-            </TouchableHighlight>            
+            {this.generateAddButton()}     
       </View>
     );
   }
@@ -321,6 +485,15 @@ const HomeworkStyles = StyleSheet.create({
         fontWeight: 'bold',
         fontFamily : 'serif',
     },
+    greyTitleTextStyle:{
+        fontSize: 18,
+        color: '#dcdcdc',
+        textAlign: 'center',
+        marginTop: 10,
+        marginBottom: 2,
+        fontWeight: 'bold',
+        fontFamily : 'serif',
+    },
     abstractTextStyle:{
         fontSize: 14,
         color:'rgb(70,70,70)',
@@ -334,5 +507,34 @@ const HomeworkStyles = StyleSheet.create({
         color: '#000000',
         textAlign: 'center',
         marginBottom: 8
-    }
+    },
+    outdateInformationTextStyle:{
+        alignSelf: "flex-end",
+        fontSize: 10,
+        color: 'red',
+        textAlign: 'center',
+        marginBottom: 8,
+    },
+    closedInformationTextStyle:{
+        alignSelf: "flex-end",
+        fontSize: 10,
+        color: '#dcdcdc',
+        textAlign: 'center',
+        marginBottom: 8,
+    },
+    sectionHeaderStyle:{
+        height:3,
+        justifyContent:'center',
+    },
+    sectionHeaderViewStyle:{
+        justifyContent:'center',
+        alignItems:'center',
+        height:screenHeight/20,
+    },
+    sectionHeaderTextStyle:{
+        textAlign:'center',
+        fontSize:18,
+        color:'#2c2c2c',
+        // fontWeight:10,
+    },
 });

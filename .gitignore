@@ -1,0 +1,10 @@
+﻿################################################################################
+# 此 .gitignore 文件已由 Microsoft(R) Visual Studio 自动创建。
+################################################################################
+
+/CnBlogAndroid/.vs/CnBlogAndroid/v15/Browse.VC.db
+/CnBlogAndroid/.vs/CnBlogAndroid/v15/Browse.VC.opendb
+/CnBlogAndroid/run.bat
+/CnBlogAndroid/.vs/
+/CnBlogAndroid/.vscode/
+

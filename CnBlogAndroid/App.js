@@ -25,6 +25,7 @@ import {
     WebView,
     AsyncStorage,
     Alert,
+    BackHandler,
 } from 'react-native';
 import {
     StackNavigator,
@@ -32,15 +33,20 @@ import {
     NavigationActions
 } from 'react-navigation';
 
+import ClassFunction from './Source/screens/ClassFunction'
 import HomeworkDetail from './Source/screens/HomeworkDetail'
 import HomeworkLists from './Source/screens/HomeworkLists'
 import PersonalBlog from './Source/screens/PersonalBlog'
 import ClassLists from './Source/screens/ClassLists'
 import UserInformation from './Source/screens/UserInformation'
+import ClassListsNew from './Source/screens/ClassListsNew'
 import ClassHome from './Source/screens/ClassHome'
 import HomeworkPost from './Source/screens/HomeworkPost'
+import HomeworkEdition from './Source/screens/HomeworkEdition'
 import BlogDetail from './Source/screens/BlogDetail'
 import BlogComment from './Source/screens/BlogComment'
+import BlogBookmarks from './Source/screens/BlogBookmarks'
+import BookmarksList from './Source/screens/BookmarksList'
 import ClassMember from './Source/screens/ClassMember'
 import ClassMemberAdd from './Source/screens/ClassMemberAdd'
 import MemberBlog from './Source/screens/MemberBlog'
@@ -51,6 +57,12 @@ import ContactPage from './Source/screens/ContactPage'
 import Submitted from './Source/screens/Submitted'
 import HomeworkSubmit from './Source/screens/HomeworkSubmit'
 import UnfinishedHomeworkList from './Source/screens/UnfinishedHomeworkList'
+import BlogEdition from './Source/screens/BlogEdition'
+import Bulletin from './Source/screens/Bulletin'
+import BulletinAdd from './Source/screens/BulletinAdd'
+import BulletinEdition from './Source/screens/BulletinEdition'
+import ClassSelect from './Source/screens/ClassSelect'
+import VoteList from './Source/screens/VoteList'
 const { height, width } = Dimensions.get('window');
 
 const CODE_URL = [
@@ -167,6 +179,28 @@ class Loginer extends Component{
             </View>
         );
     }
+    componentWillMount() {
+      if (Platform.OS === 'android') {
+        BackHandler.addEventListener('hardwareBackPress', this.onBackAndroid);
+      }
+    }
+    componentWillUnmount() {
+      if (Platform.OS === 'android') {
+        BackHandler.removeEventListener('hardwareBackPress', this.onBackAndroid);
+      }
+    }
+
+
+    onBackAndroid = () => {
+      if (this.lastBackPressed && this.lastBackPressed + 2000 >= Date.now()) {
+        BackHandler.exitApp();
+        return false;
+      }
+      this.lastBackPressed = Date.now();
+      ToastAndroid.show('再按一次退出应用',1000);
+
+      return true;
+    };
 }
 
 class UrlLogin extends Component{
@@ -315,6 +349,19 @@ const HomeTab = TabNavigator({
             )
         }
     },
+    ClassListsNew: {
+        screen: ClassListsNew,
+        navigationOptions: {
+            tabBarLabel: '我的班级',
+            tabBarIcon: ({ tintColor, focused }) => (
+                <Image
+                    resizeMode='contain'
+                    source={require('./Source/images/nav_class.png')}
+                    style={{height: 20}}
+                ></Image>
+            )
+        }
+    },
     UserInformation: {
         screen: UserInformation,
         navigationOptions: {
@@ -328,6 +375,14 @@ const HomeTab = TabNavigator({
             )
         }
     },
+
+    // VoteList:{
+    //     screen: VoteList,
+    //     navigationOptions:{
+    //         //未完成
+    //     }
+    // }
+
 },{
     tabBarPosition: 'bottom',
     initialRouteName: 'PersonalBlog',
@@ -355,6 +410,21 @@ const HomeTab = TabNavigator({
 })
 
 const SimpleNavigation = StackNavigator({
+    ClassFunction: {
+        screen: ClassFunction,
+        navigationOptions: {
+            headerTintColor:'white',
+            headerTitle: '班级功能',
+            headerStyle: {
+                height: 40,
+                backgroundColor: UI.TOP_COLOR,
+            },
+            headerTitleStyle: {
+                fontSize: 18,
+            }
+        },
+    },
+
     Welcome: {
         screen: Welcome,
         navigationOptions: {
@@ -430,6 +500,12 @@ const SimpleNavigation = StackNavigator({
             header: null,
         }
     },
+    ClassListsNew: {
+        screen: ClassListsNew,
+        navigationOptions: {
+            header: null,
+        }
+    },
     AfterloginTab: {
         screen: HomeTab,
         navigationOptions: {
@@ -464,6 +540,20 @@ const SimpleNavigation = StackNavigator({
             }
         }
     },
+    HomeworkEdition: {
+        screen: HomeworkEdition,
+        navigationOptions: {
+            headerTintColor:'white',
+            headerTitle: '作业编辑',
+            headerStyle: {
+                height: 40,
+                backgroundColor: UI.TOP_COLOR,
+            },
+            headerTitleStyle: {
+                fontSize: 18,
+            }
+        }
+    },
     ScheduleReminding: {
         screen: ScheduleReminding,
         navigationOptions: {
@@ -483,6 +573,48 @@ const SimpleNavigation = StackNavigator({
         navigationOptions: {
             headerTintColor:'white',
             headerTitle: '博文详情',
+            headerStyle: {
+                height: 40,
+                backgroundColor: UI.TOP_COLOR,
+            },
+            headerTitleStyle: {
+                fontSize: 18,
+            },
+        }
+    },
+    BookmarksList:{
+        screen: BookmarksList,
+        navigationOptions: {
+            headerTintColor:'white',
+            headerTitle: '收藏列表',
+            headerStyle: {
+                height: 40,
+                backgroundColor: UI.TOP_COLOR,
+            },
+            headerTitleStyle: {
+                fontSize: 18,
+            },
+        }
+    },
+    BlogEdition: {
+        screen: BlogEdition,
+        navigationOptions: {
+            headerTintColor:'white',
+            headerTitle: '编辑博文',
+            headerStyle: {
+                height: 40,
+                backgroundColor: UI.TOP_COLOR,
+            },
+            headerTitleStyle: {
+                fontSize: 18,
+            },
+        }
+    },
+    BlogBookmarks: {
+        screen: BlogBookmarks,
+        navigationOptions: {
+            headerTintColor:'white',
+            headerTitle: '添加收藏',
             headerStyle: {
                 height: 40,
                 backgroundColor: UI.TOP_COLOR,
@@ -608,8 +740,64 @@ const SimpleNavigation = StackNavigator({
     HomeworkSubmit: {
         screen: HomeworkSubmit,
         navigationOptions:{
-            headerTintColor:'white',
+            headerTintColor : 'white',
             headerTitle: '请选择你要提交的博文',
+            headerStyle: {
+                height:40,
+                backgroundColor:UI.TOP_COLOR,
+            },
+            headerTitleStyle: {
+                fontSize: 18,
+            }
+        }
+    },
+    Bulletin: {
+        screen: Bulletin,
+        navigationOptions:{
+            headerTintColor : 'white',
+            headerTitle: '公告',
+            headerStyle: {
+                height:40,
+                backgroundColor:UI.TOP_COLOR,
+            },
+            headerTitleStyle: {
+                fontSize: 18,
+            }
+        }
+    },
+    BulletinAdd: {
+        screen: BulletinAdd,
+        navigationOptions:{
+            headerTintColor : 'white',
+            headerTitle: '添加公告',
+            headerStyle: {
+                height:40,
+                backgroundColor:UI.TOP_COLOR,
+            },
+            headerTitleStyle: {
+                fontSize: 18,
+            }
+        }
+    },
+    BulletinEdition: {
+        screen: BulletinEdition,
+        navigationOptions:{
+            headerTintColor : 'white',
+            headerTitle: '编辑公告',
+            headerStyle: {
+                height:40,
+                backgroundColor:UI.TOP_COLOR,
+            },
+            headerTitleStyle: {
+                fontSize: 18,
+            }
+        }
+    },
+    ClassSelect: {
+        screen: ClassSelect,
+        navigationOptions:{
+            headerTintColor : 'white',
+            headerTitle: '选择班级',
             headerStyle: {
                 height:40,
                 backgroundColor:UI.TOP_COLOR,

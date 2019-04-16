@@ -58,7 +58,7 @@ export default class Submitted extends Component {
                 })
             }
             else{
-                ToastAndroid.show(err_info.NO_INTERNET,ToastAndroid.SHORT);
+                // ToastAndroid.show(err_info.NO_INTERNET,ToastAndroid.SHORT);
             }
         })
     }

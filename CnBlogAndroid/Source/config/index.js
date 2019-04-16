@@ -14,9 +14,18 @@ export default{
 	AddMember : 'https://api.cnblogs.com/api/edu/member/register/displayName',
 	HomeWorkDetail : 'https://api.cnblogs.com/api/edu/homework/',
 	HomeWorkPublish : 'https://api.cnblogs.com/api/edu/homework/publish',
+	HomeWorkEdit : 'https://api.cnblogs.com/api/edu/homework/edit/',//https://api.cnblogs.com/api/edu/homework/edit/{homeworkId}
+	HomeWorkClose : 'https://api.cnblogs.com/api/edu/homework/close/',//关闭作业https://api.cnblogs.com/api/edu/homework/close/{schoolClassId}/{homeworkId}
+	HomeWorkRemove : 'https://api.cnblogs.com/api/edu/homework/remove/',
 	HomeWorkAnswer : 'https://api.cnblogs.com/api/edu/homework/answers/',
 	BlogInClassId: 'https://api.cnblogs.com/api/edu/member/',
 	SubmitJudge: 'https://api.cnblogs.com/api/edu/answer/iscommitted/',
+	BulletinList: 'https://api.cnblogs.com/api/edu/schoolclass/bulletins/',
+	BulletinPublish: 'https://api.cnblogs.com/api/edu/bulletin/publish/',
+    BulletinEdit: 'https://api.cnblogs.com/api/edu/bulletin/modify/',
+    BulletinDel: 'https://api.cnblogs.com/api/edu/bulletin/remove/',
+	Bookmarks: 'https://api.cnblogs.com/api/Bookmarks',
+	VoteList : 'https://api.cnblogs.com/api/edu/schoolclass/votes', //分页获取投票信息
 }
 
 export const authData = {

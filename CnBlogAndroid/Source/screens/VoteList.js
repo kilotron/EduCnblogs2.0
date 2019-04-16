@@ -67,7 +67,11 @@ export default class VoteList extends Component {
     _isMounted;
 
     componentWillMount() {
+<<<<<<< HEAD
+        //alert("这里是componentWillMount");
+=======
         // alert("这里是componentWillMount");
+>>>>>>> ffe67cdf8743de7b8c7014c13eccde04e7873d97
         this.fetchPage(1);
     }
 
@@ -104,7 +108,7 @@ export default class VoteList extends Component {
         for (var i in this.state.votes) {
             data.push({
                 voteId: this.state.votes[i].blogId,
-                name: this.state.votes[i].title,
+                name: this.state.votes[i].name,
                 url: this.state.votes[i].url,
                 description: this.state.votes[i].description,
                 dateAdded: this.state.votes[i].dateAdded,
@@ -125,7 +129,11 @@ export default class VoteList extends Component {
 
     fetchPage(pageIndex) {
         //这里是否需要检查？
+<<<<<<< HEAD
+        //alert("这里是fetchpage");
+=======
         // alert("这里是fetchpage");
+>>>>>>> ffe67cdf8743de7b8c7014c13eccde04e7873d97
         this.setState({ loadStatus: 'loading' });
         Service.Get(this.getUrl(pageIndex))
             .then((jsonData) => {
@@ -161,7 +169,8 @@ export default class VoteList extends Component {
                             });
                     }}
                 >
-                    <Text style={styles.postTitle} accessibilityLabel={item.url}>
+                    <Text style={styles.postTitle} 
+                    accessibilityLabel={item.url}>
                         {item.name}
                     </Text>
 
@@ -225,7 +234,11 @@ export default class VoteList extends Component {
     }
 
     render() {
+<<<<<<< HEAD
+        //alert("这里是render");
+=======
         // alert("这里是render");
+>>>>>>> ffe67cdf8743de7b8c7014c13eccde04e7873d97
         return (
             <View style={styles.container}>
                 {/*<Animated.View style={{ top: this.top }}>

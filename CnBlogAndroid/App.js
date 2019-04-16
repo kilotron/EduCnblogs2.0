@@ -415,10 +415,18 @@ const SimpleNavigation = StackNavigator({
 
     VoteDetail: {
         screen: VoteDetail,
-
+        navigationOptions: {
+            headerTintColor:'white',
+            headerTitle: '投票列表',
+            headerStyle: {
+                height: 40,
+                backgroundColor: UI.TOP_COLOR,
+            },
+            headerTitleStyle: {
+                fontSize: 18,
+            },
+        }
     },
-
-
 
     ClassFunction: {
         screen: ClassFunction,

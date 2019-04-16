@@ -148,13 +148,6 @@ export default class VoteList extends Component {
                     onPress={() => {
                         this.props.navigation.navigate('VoteDetail', //获取详细信息
                             {
-                                //需要的参数，未完成
-                                /*Id:item.blogId,
-                                blogApp: global.user_information.BlogApp,
-                                CommentCount: item.commentCount,
-                                Url: item.url,
-                                Title: item.title,
-                                */
                                 voteId : item.voteId,
                             });
                     }}

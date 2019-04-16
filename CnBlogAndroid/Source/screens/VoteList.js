@@ -103,7 +103,7 @@ export default class VoteList extends Component {
         for (var i in this.state.votes) {
             data.push({
                 voteId: this.state.votes[i].blogId,
-                name: this.state.votes[i].title,
+                name: this.state.votes[i].name,
                 url: this.state.votes[i].url,
                 description: this.state.votes[i].description,
                 dateAdded: this.state.votes[i].dateAdded,
@@ -158,7 +158,8 @@ export default class VoteList extends Component {
                             });
                     }}
                 >
-                    <Text style={styles.postTitle} accessibilityLabel={item.url}>
+                    <Text style={styles.postTitle} 
+                    accessibilityLabel={item.url}>
                         {item.name}
                     </Text>
 
@@ -224,11 +225,6 @@ export default class VoteList extends Component {
     render() {
         return (
             <View style={styles.container}>
-                {/*<Animated.View style={{ top: this.top }}>
-                    <Text>
-                        你好
-                    </Text>
-        </Animated.View>*/}
 
                 <Animated.View style={{ top: this.top }}>
                     <View>

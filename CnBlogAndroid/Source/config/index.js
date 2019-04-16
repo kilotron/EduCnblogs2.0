@@ -26,7 +26,7 @@ export default{
     BulletinDel: 'https://api.cnblogs.com/api/edu/bulletin/remove/',
 	Bookmarks: 'https://api.cnblogs.com/api/Bookmarks',
 	VoteList : 'https://api.cnblogs.com/api/edu/schoolclass/votes', //分页获取投票信息
-	VoteDetail :'https://api.cnblogs.com/api/edu/vote/{voteId}'
+	VoteDetail :'https://api.cnblogs.com/api/edu/vote/'
 }
 
 export const authData = {

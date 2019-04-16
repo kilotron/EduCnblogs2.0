@@ -102,7 +102,7 @@ export default class VoteList extends Component {
         var data = [];
         for (var i in this.state.votes) {
             data.push({
-                voteId: this.state.votes[i].blogId,
+                voteId: this.state.votes[i].voteId,
                 name: this.state.votes[i].name,
                 url: this.state.votes[i].url,
                 description: this.state.votes[i].description,

@@ -67,7 +67,7 @@ export default class VoteList extends Component {
     _isMounted;
 
     componentWillMount() {
-        alert("这里是componentWillMount");
+        // alert("这里是componentWillMount");
         this.fetchPage(1);
     }
 
@@ -125,7 +125,7 @@ export default class VoteList extends Component {
 
     fetchPage(pageIndex) {
         //这里是否需要检查？
-        alert("这里是fetchpage");
+        // alert("这里是fetchpage");
         this.setState({ loadStatus: 'loading' });
         Service.Get(this.getUrl(pageIndex))
             .then((jsonData) => {
@@ -225,7 +225,7 @@ export default class VoteList extends Component {
     }
 
     render() {
-        alert("这里是render");
+        // alert("这里是render");
         return (
             <View style={styles.container}>
                 {/*<Animated.View style={{ top: this.top }}>

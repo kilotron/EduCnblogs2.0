@@ -76,7 +76,7 @@ global.user_information = {
 	DisplayName : '',
 	face : '',
 	Seniority : '',  //园龄
-	BlogApp : ''
+	BlogApp : ''	 // 博客名
 }
 
 var storage = new Storage({
@@ -91,3 +91,8 @@ global.internet = true;
 
 global.unsummitted = [];
 global.timeTouch = null;
+
+/**全局的设置选项，可用于个性化定制 */
+global.settings = {
+	displayDetailTime: true,
+};

@@ -63,6 +63,7 @@ import BulletinAdd from './Source/screens/BulletinAdd'
 import BulletinEdition from './Source/screens/BulletinEdition'
 import ClassSelect from './Source/screens/ClassSelect'
 import VoteList from './Source/screens/VoteList'
+import VoteDetail from './Source/screens/VoteDetail'
 const { height, width } = Dimensions.get('window');
 
 const CODE_URL = [
@@ -410,6 +411,14 @@ const HomeTab = TabNavigator({
 })
 
 const SimpleNavigation = StackNavigator({
+
+    VoteDetail: {
+        screen: VoteDetail,
+
+    },
+
+
+
     ClassFunction: {
         screen: ClassFunction,
         navigationOptions: {

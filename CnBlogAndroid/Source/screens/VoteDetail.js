@@ -25,6 +25,9 @@ import { Icon, Fab } from 'native-base';
 import ShareButton from './Share';
 const { height, width } = Dimensions.get('window');
 
+import {RadioGroup, RadioButton} from 'react-native-flexi-radio-button';
+import CheckBox from 'react-native-check-box';
+
 // 传入voteID作为参数
 export default class VoteDetail extends Component {
     constructor(props) {
@@ -44,6 +47,8 @@ export default class VoteDetail extends Component {
             deadline: "",
             dateAdded: "",
             isFinished: "",
+
+            voteContent: [],
         }
     }
 
@@ -72,40 +77,115 @@ export default class VoteDetail extends Component {
                 }
             }
         });
+
+        let voteContentURL = Config.VoteContent + this.state.voteId;
+        Service.Get(voteContentURL)
+        .then((jsonData) => {
+            if (jsonData !== 'rejected') {
+                if (this._isMounted) {
+                    this.setState({voteContent: jsonData});
+                }
+            }
+            //alert(jsonData);
+        })
+        .catch((err) => {
+            alert('error');
+        })
+    }
+
+    componentDidMount() {
+        this._isMounted = true;
     }
 
     componentWillUnmount = () => {
         this._isMounted = false;
     }
 
+    /**一道题的序号、标题和图片 */
+    _renderItemHeader({item, index}) {
+        return (
+            <View>
+                <Text>{(index+1) + '. ' + item.title}</Text>
+                {
+                    item.picture == null ? (null) : (
+                        <Image
+                            style={{width: 200, height: 100}}
+                            source={{uri:item.picture}}
+                            resizeMode='contain'
+                        />
+                    )
+                }
+            </View>
+        );
+    }
+
+    /**一个单选题 
+     * 参数index从0开始。
+    */
+    _renderVoteItem = ({item, index}) => {
+        if (item.voteMode == 1) { //单选
+            return (
+                <View>
+                    {this._renderItemHeader({item, index})}
+                    <RadioGroup>
+                        {this._renderRadioButtonItem(item.voteOptions)}
+                    </RadioGroup>
+                </View>
+            );
+        } else if (item.voteMode == 2) {    // 多选
+            return (
+                <View>
+                    {this._renderItemHeader({item, index})}
+                    {this._renderCheckboxItem(item.voteOptions)}
+                </View>
+            )
+        } else {
+            alert('暂未实现的投票模式:'+item.title);
+        }
+    }
+
+    /**一个单选框 */
+    _renderRadioButtonItem = (voteOptions) => {
+        result = [];
+        for (var i in voteOptions) {
+            result.push(
+                <RadioButton value={voteOptions[i].voteOptionId}>
+                    <Text>{voteOptions[i].option}</Text>
+                </RadioButton>
+            );
+        }
+        return result;
+    }
+
+    _renderCheckboxItem = (voteOptions) => {
+        result = [];
+        for (var i in voteOptions) {
+            result.push(
+                <CheckBox rightText={voteOptions[i].option} onClick={()=>{ }}/>
+            );
+        }
+        return result;
+    }
+
+    _renderVoteContent() {
+        return (
+            <View>
+                <FlatList
+                    renderItem={this._renderVoteItem}
+                    data={this.state.voteContent}
+                    keyExtractor={(item, index) => index.toString()}
+                />
+            </View>
+        );
+    }
+
     render() {
         return (
-            <View style={styles.container}>
-                <View
-                    style={{
-                        alignSelf: 'stretch',
-                        flex: 1,
-                    }}
-                >
-                    <WebView
-                        style={{ height: height - 70 }}
-                        startInLoadingState={true}
-                        domStorageEnabled={true}
-                        javaScriptEnabled={true}
-                        scalesPageToFit={true}
-                        onError={() => Alert.alert('网络异常，请稍后再试！')}
-                    />
-                </View>
-                <View style={{ height: 1, backgroundColor: 'rgb(204,204,204)', alignSelf: 'stretch' }} />
-                <View>
-                    <Text>
-                        {this.state.name}
-                        {this.state.content}
-                        {this.state.isFinished.toString}
-                    </Text>
-                </View>
+            <View >
+                {this._renderVoteContent()}
+                <Text>1213</Text>
             </View>
-        )
+        );
     }
 }
 

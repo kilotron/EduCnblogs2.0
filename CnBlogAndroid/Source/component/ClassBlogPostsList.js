@@ -114,10 +114,9 @@ export default class ClassBlogPostsList extends Component {
      * */
 	fetchPage(pageIndex) {
         //这里是否需要检查？
-		this.setState({loadStatus: 'loading'});
+        this.setState({loadStatus: 'loading'});
 		Service.Get(this.URLOf(pageIndex))
 		.then((jsonData) => {
-            //alert(this.URLOf(pageIndex));
             // 初始时schoolClassId不正确，返回的jsonData是rejected。
             if (jsonData === 'rejected') {
                 return;
@@ -134,6 +133,7 @@ export default class ClassBlogPostsList extends Component {
         .catch((err) => {
             this.setState({loadStatus: 'not loading', networkError: true});
         });
+        this.setState({loadStatus: 'not loading'});
     }
 
     /** 解析this.state.blogs的数据，返回一个数组。 */
@@ -141,9 +141,7 @@ export default class ClassBlogPostsList extends Component {
         var data = [];
         for (var i in this.state.blogs) {
             data.push({
-                //blogId: 1,
-                blogId: this.state.blogs[i].url.match( /p\/([^%]+).html/)[1],
-                //blogId: this.state.blogs[i].blogId,//注意不是博文的编号，不能通过这个获取博文
+                blogId: this.state.blogs[i].url.match( /p\/([^%]+).html/)[1],//博文的编号
                 title: this.state.blogs[i].title,
                 url: this.state.blogs[i].url,
                 description: this.state.blogs[i].description,
@@ -236,7 +234,6 @@ export default class ClassBlogPostsList extends Component {
                                 Title: item.title,
                                 //useURL: true,
                             });
-                        {/*alert(Id);*/} // bug: ID不对
                     }}
                 >
                     <Text style={styles.postTitle} accessibilityLabel={item.url}>

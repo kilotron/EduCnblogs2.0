@@ -51,7 +51,6 @@ export default class ClassListsNew extends Component {
 			classSelected: false,
 			changedSchoolClassId: false,
 		}
-		this.props.navigation.navigate('ClassSelect', { callback: this._classSelectGoBack });
 	}
 
 	// 从选择班级页面返回时调用这个函数，刷新页面
@@ -63,6 +62,31 @@ export default class ClassListsNew extends Component {
 			changedSchoolClassId: true,
 		});
 	}
+
+	componentWillMount() {
+        let url = Config.ClassList;
+        Service.Get(url)
+        // 获取用户班级列表
+        .then((jsonData) => {
+			if (jsonData !== 'rejected') {
+				if (jsonData.length == 0) { // 班级列表为空
+					ToastAndroid.show('还未加入任何班级~', ToastAndroid.SHORT);
+				}
+				// 默认选择第一个班级
+				for (var i in jsonData) {
+					this.setState({
+						className: jsonData[i].nameCn,
+						schoolClassId: jsonData[i].schoolClassId,
+						classSelected: true,
+					});
+					break;
+				}
+			}
+        })
+        .catch((error) => {
+            // Nothing to do here.
+        });
+    }
 
 
 	getBulletin() {
@@ -83,19 +107,15 @@ export default class ClassListsNew extends Component {
 				<View style={styles.topBarViewStyle}>
 					{/* 弹出选择班级列表 */}
 					<TouchableOpacity onPress={() => {
-						this.props.navigation.navigate('ClassSelect', { callback: this._classSelectGoBack });
+						this.props.navigation.navigate('ClassSelect', {
+							 callback: this._classSelectGoBack,
+							 classSelected: this.setState.classSelected 
+						});
 					}}>
 						<Text style={styles.classNameStyle}>
 							{this.state.className}
 						</Text>
 					</TouchableOpacity>
-					{/* <TouchableOpacity onPress={() => { //需要跳转到功能界面，如班级成员
-						console.log(this.state.schoolClassId);
-						this.props.navigation.navigate('ClassFunction', { classId: this.state.schoolClassId });
-
-					}}>
-						<Image style={styles.optionsImgstyle} source={require('../images/options.png')} />
-					</TouchableOpacity> */}
 					<ModalDropdown 
 						options={['班级成员']}
 						style={styles.buttonStyle}

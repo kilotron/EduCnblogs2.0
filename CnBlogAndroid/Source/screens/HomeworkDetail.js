@@ -110,7 +110,7 @@ export default class HomeWorkDetail extends Component{
                     })
                     .then((jsonData)=>{
                         if(jsonData==null)
-                            ToastAndroid.show("请求失败，您的身份可能不对！",ToastAndroid.SHORT);
+                            ToastAndroid.show("请求失败，未知错误",ToastAndroid.SHORT);
                         else if(jsonData.isSuccess)
                         {
                             ToastAndroid.show('成功关闭作业',ToastAndroid.SHORT);
@@ -157,7 +157,7 @@ export default class HomeWorkDetail extends Component{
                     })
                     .then((jsonData)=>{
                         if(jsonData==null)
-                            ToastAndroid.show("请求失败，您的身份可能不对！",ToastAndroid.SHORT);
+                            ToastAndroid.show("请求失败，未知错误",ToastAndroid.SHORT);
                         else if(jsonData.isSuccess)
                         {
                             ToastAndroid.show('成功删除作业',ToastAndroid.SHORT);

@@ -159,6 +159,10 @@ export default class homeworkEdition extends Component {
             }}
         >
             <KeyboardAwareScrollView>
+                <View style= {styles.attentionContainer}>
+                    <Text style={styles.attentionText}>注意:</Text>
+                    <Text style={styles.atext}>由于兼容问题，网页端发布的作业在编辑时会出现乱码，此时请勿继续发布编辑！</Text>
+                </View>
                 <Modal
                 animationType={"slide"}
                 transparent={false}
@@ -421,6 +425,10 @@ class MyBar extends Component{
 }
 
 const styles = StyleSheet.create({
+    attentionContainer:{
+        alignItems: 'stretch',
+        width:screenWidth,
+    },
     container:{
         flexDirection: 'row',
         justifyContent:'center',
@@ -433,6 +441,15 @@ const styles = StyleSheet.create({
         width:0.2*screenWidth,
         fontSize: 16,
         color: 'black',
+        textAlign: 'left',
+    },
+    attentionText:{
+        fontSize: 16,
+        color: 'red',
+        textAlign: 'left',
+    },
+    atext:{
+        fontSize: 16,
         textAlign: 'left',
     },
     textInput:{
@@ -459,4 +476,5 @@ const styles = StyleSheet.create({
         backgroundColor: '#ffffff',
         paddingTop: 40
     },
+
 });

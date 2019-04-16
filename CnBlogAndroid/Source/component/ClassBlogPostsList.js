@@ -148,6 +148,7 @@ export default class ClassBlogPostsList extends Component {
                 postDate: this.state.blogs[i].dateAdded,
                 viewCount: this.state.blogs[i].viewCount,
                 commentCount: this.state.blogs[i].commentCount,
+                author: this.state.blogs[i].author,
             })
         }
         return data;
@@ -232,7 +233,6 @@ export default class ClassBlogPostsList extends Component {
                                 CommentCount: item.commentCount,
                                 Url: item.url,
                                 Title: item.title,
-                                //useURL: true,
                             });
                     }}
                 >
@@ -250,14 +250,31 @@ export default class ClassBlogPostsList extends Component {
                              + item.commentCount + ' 评论'}
                         </Text>
                         <Text style={styles.postDate}>
-                            {'发布于: ' + item.postDate.split('T')[0] + ' '
-                             + item.postDate.split('T')[1]}
+                            {item.author + ' 发布于: ' + this.parsePostDate(item.postDate)}
                         </Text>
                     </View>
                 </TouchableOpacity>
             </View>
 		)
     };
+
+    /**根据设置返回要显示的时间 */
+    parsePostDate(postDate) {
+        if (global.settings.displayDetailTime) {
+            return this.YMDInPostDate(postDate) + ' ' + this.timeInPostDate(postDate);
+        } else {
+            return this.YMDInPostDate(postDate);
+        }
+    }
+
+    /**参数为‘2019-04-09T17:05:00+08:00’，返回字符串年月日 */
+    YMDInPostDate(postDate) {
+        return postDate.match(/\d{4}-\d{2}-\d{2}/)[0];
+    }
+
+    timeInPostDate(postDate) {
+        return postDate.match(/(\d{2}:\d{2}):\d{2}/)[1];
+    }
 
     /**FlatList滚动到到底部时调用此函数，获取新的一页。 */
     _onEndReached() {
@@ -371,13 +388,12 @@ const styles = StyleSheet.create({
     viewCountAndCommentCount: {
         fontSize: 10,
         textAlign: 'left',
-        color: 'black',
-        flex: 1
+        color: 'gray',
     },
     postDate: {
         fontSize: 10,
         textAlign: 'right',
-        color: 'black',
+        color: 'gray',
         flex: 1
     },
     allLoadedView: {

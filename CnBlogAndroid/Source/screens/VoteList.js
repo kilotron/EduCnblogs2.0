@@ -155,6 +155,7 @@ export default class VoteList extends Component {
                                 Url: item.url,
                                 Title: item.title,
                                 */
+                                voteId : item.voteId,
                             });
                     }}
                 >

@@ -153,7 +153,7 @@ export default class UserInformation extends Component{
                 flexDirection: 'row',
                 justifyContent:'flex-start',
                 alignItems: 'center',
-                marginBottom: 0.02*screenHeight,
+                marginBottom: 0.01*screenHeight,
                 backgroundColor: 'white',
                 height: 0.15*screenHeight,
                 paddingLeft: 0.05*screenWidth,
@@ -175,7 +175,7 @@ export default class UserInformation extends Component{
                 justifyContent:'center',
                 alignItems: 'flex-start',
                 height: 0.1*screenHeight,
-                marginBottom: 0.02*screenHeight,
+                marginBottom: 0.01*screenHeight,
                 backgroundColor: 'white',
                 paddingLeft: 0.05*screenWidth,
             }}>
@@ -186,7 +186,7 @@ export default class UserInformation extends Component{
                 justifyContent:'center',
                 alignItems: 'flex-start',
                 height: 0.1*screenHeight,
-                marginBottom: 0.02*screenHeight,
+                marginBottom: 0.01*screenHeight,
                 backgroundColor: 'white',
                 paddingLeft: 0.05*screenWidth,
             }}>
@@ -201,7 +201,7 @@ export default class UserInformation extends Component{
                     justifyContent:'center',
                     alignItems: 'flex-start',
                     height: 0.07*screenHeight,
-                    marginBottom: 0.02*screenHeight,
+                    marginBottom: 0.01*screenHeight,
                     backgroundColor: 'white',
                     paddingLeft: 0.05*screenWidth,
             }}>
@@ -215,7 +215,7 @@ export default class UserInformation extends Component{
                     justifyContent:'center',
                     alignItems: 'flex-start',
                     height: 0.07*screenHeight,
-                    marginBottom: 0.02*screenHeight,
+                    marginBottom: 0.01*screenHeight,
                     backgroundColor: 'white',
                     paddingLeft: 0.05*screenWidth,
             }}>
@@ -253,7 +253,7 @@ export default class UserInformation extends Component{
                     justifyContent:'center',
                     alignItems: 'flex-start',
                     height: 0.07*screenHeight,
-                    marginBottom: 0.05*screenHeight,
+                    marginBottom: 0.03*screenHeight,
                     backgroundColor: 'white',
                     paddingLeft: 0.05*screenWidth,
             }}>

@@ -43,7 +43,7 @@ export default class AppInformation extends Component {
                 <TouchableOpacity
 
                     onPress = {()=>{
-                        if(item1.item.key == 2 || item1.item.key == 1){
+                        if(item1.item.key == 2 /*|| item1.item.key == 1*/){
                             this.props.navigation.navigate('ContactPage',{url: description})
                         }
                         }}
@@ -73,7 +73,7 @@ export default class AppInformation extends Component {
             },
             {
                 title: "项目地址",
-                description: "https://github.com/NewTeam5/EduCnblogs"
+                description: "https://github.com/swearitagain/EduCnblogs2.0"
             },
             {
                 title: "关于博客园",

@@ -11,7 +11,7 @@ import {
     View,
     Image,
     ToastAndroid,
-    TouchableHighlight,    
+    TouchableHighlight,
     TextInput,
     FlatList,
     TouchableOpacity,
@@ -72,7 +72,7 @@ export default class Submitted extends Component {
                     style = {styles.listcontainer}
                     onPress = {()=>{
                         this.props.navigation.navigate('BlogDetail',
-                        {Id:key, blogApp: blogApp, CommentCount: 100, Url: blogUrl})
+                        {Id:key, blogApp: blogApp, CommentCount: 0, Url: url, Title: title})
                     }}
                 >
                     <Text style = {{

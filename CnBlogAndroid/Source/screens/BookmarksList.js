@@ -163,17 +163,19 @@ export default class BookmarksList extends Component {
         {
             if(this.state.bookmarks[i].FromCNBlogs)
             {
-                data.push({
-                    key: this.state.bookmarks[i].LinkUrl,
-                    wzLinkId: this.state.bookmarks[i].WzLinkId,
-                    title: this.state.bookmarks[i].Title,
-                    linkUrl: this.state.bookmarks[i].LinkUrl,
-                    summary: this.state.bookmarks[i].Summary,
-                    tags: this.state.bookmarks[i].Tags,/* list数据 */
-                    dateAdded: this.String2Date(this.state.bookmarks[i].DateAdded),
-                    fromCnBlogs: this.state.bookmarks[i].FromCNBlogs,
-                    detailId: this.state.bookmarks[i].LinkUrl.match( /p\/([^%]+).html/)[1],
-                });
+                if(this.state.bookmarks[i].LinkUrl.match( /p\/([^%]+).html/) !== null){
+                    data.push({
+                        key: this.state.bookmarks[i].LinkUrl,
+                        wzLinkId: this.state.bookmarks[i].WzLinkId,
+                        title: this.state.bookmarks[i].Title,
+                        linkUrl: this.state.bookmarks[i].LinkUrl,
+                        summary: this.state.bookmarks[i].Summary,
+                        tags: this.state.bookmarks[i].Tags,/* list数据 */
+                        dateAdded: this.String2Date(this.state.bookmarks[i].DateAdded),
+                        fromCnBlogs: this.state.bookmarks[i].FromCNBlogs,
+                        detailId: this.state.bookmarks[i].LinkUrl.match( /p\/([^%]+).html/)[1],
+                    });
+                }
             }
         }
         return(

@@ -172,7 +172,7 @@ export default class VoteDetail extends Component {
 
     _renderVoteContent() {
         return (
-            <View style={{flex:2}}>
+            <View style={{flex:1}}>
                 <FlatList
                     renderItem={this._renderVoteItem}
                     data={this.state.voteContent}

@@ -1,4 +1,4 @@
-package com.umeng.soexample.invokenative;
+package com.UMTJ;
 
 import java.util.ArrayList;
 import java.util.HashMap;

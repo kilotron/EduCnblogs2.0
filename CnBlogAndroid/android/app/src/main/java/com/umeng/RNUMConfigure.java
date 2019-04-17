@@ -1,4 +1,4 @@
-package com.UMTJ;
+package com.umeng;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

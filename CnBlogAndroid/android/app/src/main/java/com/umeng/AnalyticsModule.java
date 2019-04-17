@@ -1,4 +1,4 @@
-package com.UMTJ;
+package com.umeng;
 
 import java.util.ArrayList;
 import java.util.HashMap;

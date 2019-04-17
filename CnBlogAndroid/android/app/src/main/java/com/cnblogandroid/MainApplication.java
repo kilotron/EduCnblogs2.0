@@ -9,6 +9,9 @@ import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
+import com.umeng.DplusReactPackage;
+import com.umeng.RNUMConfigure;
+import com.umeng.commonsdk.UMConfigure;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,9 +29,11 @@ public class MainApplication extends Application implements ReactApplication {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
             new WebViewBridgePackage(),
-            new CookieManagerPackage()
+            new CookieManagerPackage(),
+            new DplusReactPackage()
       );
     }
+
 
     @Override
     protected String getJSMainModuleName() {
@@ -45,5 +50,8 @@ public class MainApplication extends Application implements ReactApplication {
   public void onCreate() {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
+    UMConfigure.setLogEnabled(true);
+    RNUMConfigure.init(this, "5cb692ac570df31b8d000cd7", "Umeng", UMConfigure.DEVICE_TYPE_PHONE,
+            "");
   }
 }

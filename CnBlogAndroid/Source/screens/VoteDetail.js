@@ -150,8 +150,9 @@ export default class VoteDetail extends Component {
     _renderRadioButtonItem = (voteOptions) => {
         result = [];
         for (var i in voteOptions) {
+            let voteOptionId = voteOptions[i].voteOptionId;
             result.push(
-                <RadioButton value={voteOptions[i].voteOptionId}>
+                <RadioButton value={voteOptionId} key={voteOptionId}>
                     <Text>{voteOptions[i].option}</Text>
                 </RadioButton>
             );
@@ -164,7 +165,11 @@ export default class VoteDetail extends Component {
         result = [];
         for (var i in voteOptions) {
             result.push(
-                <CheckBox rightText={voteOptions[i].option} onClick={()=>{ }}/>
+                <CheckBox 
+                    key={voteOptions[i].voteOptionId}
+                    rightText={voteOptions[i].option} 
+                    onClick={()=>{ }}
+                />
             );
         }
         return result;
@@ -247,9 +252,9 @@ const styles = StyleSheet.create({
         borderStyle: null,
         borderWidth: 0.5,
         marginTop: 20,
-        color: 'black',
-        fontSize: 20,
-        textAlignVertical: 'top',
+        //color: 'black',
+        //fontSize: 20,
+        //textAlignVertical: 'top',
     },
     detail: {
         margin: 20,

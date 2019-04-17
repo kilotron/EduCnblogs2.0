@@ -194,10 +194,10 @@ export default class VoteDetail extends Component {
         return (
             <View style={{ flex: 1 }}>
                 <View
-                    style={{
+                    /* style={{
                         alignSelf: 'stretch',
                         flex: 1,
-                    }}
+                    }} */
                 >
                     {/** header组件 */}
                     <View style={styles.header}>
@@ -243,13 +243,12 @@ const styles = StyleSheet.create({
     },
     content: {
         justifyContent: 'flex-start',
-        borderColor: '#dddddd',
+        borderColor: 'blue',
         borderStyle: null,
         borderWidth: 0.5,
         marginTop: 20,
         color: 'black',
         fontSize: 20,
-        textAlignVertical: 'top',
     },
     detail: {
         margin: 20,

@@ -196,13 +196,8 @@ export default class VoteDetail extends Component {
 
     render() {
         return (
-            <View style={{ flex: 1 }}>
-                <View
-                    /* style={{
-                        alignSelf: 'stretch',
-                        flex: 1,
-                    }} */
-                >
+            <View style={{flex:1, backgroundColor: 'white'}}>
+                <View>
                     {/** header组件 */}
                     <View style={styles.header}>
                         <Text style={styles.headerText}>

@@ -16,7 +16,6 @@ import {
     Dimensions,
     WebView,
     Image,
-    Animated,
     Alert
 } from 'react-native';
 import {
@@ -24,7 +23,7 @@ import {
 } from 'react-navigation';
 import { Icon, Fab } from 'native-base';
 import ShareButton from './Share';
-import { UI } from '../../Source/config'
+import {UI} from '../../Source/config'
 import App from './HomeworkPost';
 import { RadioGroup, RadioButton } from 'react-native-flexi-radio-button';
 import CheckBox from 'react-native-check-box';
@@ -54,22 +53,7 @@ export default class VoteDetail extends Component {
             isFinished: "",
 
             voteContent: [],
-
-            headerTop: new Animated.Value(0), // 用于向下滚动隐藏筛选条件的动画
         }
-
-        this.top = this.state.headerTop.interpolate({
-            inputRange: [0, 270, 271, 280],
-            outputRange: [0, -50, -50, -50]
-        });
-        this.animatedEvent = Animated.event(
-            [{
-                nativeEvent: {
-                    contentOffset: {y: this.state.headerTop}
-                }
-            }]
-        );
-
     }
 
     _isMounted;
@@ -192,7 +176,6 @@ export default class VoteDetail extends Component {
 
     _renderVoteContent() {
         return (
-            
             <View style={{ flex: 1 }}>
                 <FlatList
                     renderItem={this._renderVoteItem}
@@ -213,40 +196,38 @@ export default class VoteDetail extends Component {
 
     render() {
         return (
-            <View style={{ flex: 1, backgroundColor: 'white' }}>
-                <Animated.View style={{ top: this.top }}>
-                    <View>
-                        {/** header组件 */}
-                        <View style={styles.header}>
-                            <Text style={styles.headerText}>
-                                {this.state.name}
-                            </Text>
-                        </View>
-
-                        {/** detail组件 */}
-                        {/** 用于存放如publisher和privacy等信息 */}
-                        <View style={styles.detail}>
-                            <Text style={styles.publisherText} >
-                                {this.state.publisher + '\n'}
-                            </Text>
-                            <Text style={styles.detailText} >
-                                {'发布于:' + this.DateFormat(this.state.dateAdded) + '\n'}
-                                {'结束于:' + this.DateFormat(this.state.deadline) + '\n'}
-                                {this.state.privacy == 1 ? '公开投票' : '匿名投票'}
-                            </Text>
-                        </View>
-
-                        {/** content组件 */}
-                        <View style={styles.content}>
-                            <Text style={styles.contentText}>
-                                {this.state.content}
-                            </Text>
-                        </View>
+            <View style={{flex:1, backgroundColor: 'white'}}>
+                <View>
+                    {/** header组件 */}
+                    <View style={styles.header}>
+                        <Text style={styles.headerText}>
+                            {this.state.name}
+                        </Text>
                     </View>
-                    </Animated.View>
+
+                    {/** detail组件 */}
+                    {/** 用于存放如publisher和privacy等信息 */}
+                    <View style={styles.detail}>
+                        <Text style={styles.publisherText} >
+                            {this.state.publisher + '\n'}
+                        </Text>
+                        <Text style={styles.detailText} >
+                            {'发布于:' + this.DateFormat(this.state.dateAdded) + '\n'}
+                            {'结束于:' + this.DateFormat(this.state.deadline) + '\n'}
+                            {this.state.privacy == 1 ? '公开投票' : '匿名投票'}
+                        </Text>
+                    </View>
+
+                    {/** content组件 */}
+                    <View style={styles.content}>
+                        <Text style={styles.contentText}>
+                            {this.state.content}
+                        </Text>
+                    </View>
+                </View>
+
                 {this._renderVoteContent()}
             </View>
-
         )
     }
 }
@@ -261,7 +242,7 @@ const styles = StyleSheet.create({
     },
     content: {
         justifyContent: 'flex-start',
-        borderColor: UI.TOP_COLOR,
+        borderColor: UI.TOP_COLOR ,
         borderStyle: null,
         borderWidth: 0.5,
         marginTop: 20,

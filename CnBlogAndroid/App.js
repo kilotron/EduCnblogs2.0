@@ -10,7 +10,7 @@ import fetch from 'react-native-fetch-polyfill'
 import React, { Component,} from 'react';
 import CookieManager from 'react-native-cookies'
 import { Icon } from 'native-base';
-
+import * as umengAnalysis from './Source/umeng/umengAnalysis'
 import {
     Platform,
     StyleSheet,
@@ -240,6 +240,7 @@ class UrlLogin extends Component{
             storage.setItem(StorageKey.USER_TOKEN,responseJson);
         }).then(()=>{
             this.toPerson();
+            umengAnalysis.onEvent(umengAnalysis.umengEventId.logInEvent);
         })
         .catch((error)=>{
             ToastAndroid.show(err_info.NO_INTERNET,ToastAndroid.SHORT);

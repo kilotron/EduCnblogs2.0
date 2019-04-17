@@ -29,4 +29,15 @@
       <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
     </application>
 
+    <uses-sdk android:minSdkVersion="8"></uses-sdk>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+<!--友盟 统计-->
+    <meta-data
+        android:name="UMENG_APPKEY"
+        android:value="5cb692ac570df31b8d000cd7" >
+    </meta-data>
+    <meta-data android:value="Channel ID" android:name="UMENG_CHANNEL"/>
 </manifest>

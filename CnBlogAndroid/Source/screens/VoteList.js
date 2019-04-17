@@ -48,8 +48,9 @@ export default class VoteList extends Component {
             classId: this.props.classId,
             isEmpy: true, //初始认为请求未成功，不进行渲染，以防App崩溃
             headerTop: new Animated.Value(0), // 用于向下滚动隐藏筛选条件的动画
+            networkError: false,
         }
-        
+
         /* 下面两个变量用于向下滚动隐藏筛选条件的动画。动画设置的参考链接ClassBlogPostList末尾。 */
         this.top = this.state.headerTop.interpolate({
             inputRange: [0, 270, 271, 280],
@@ -113,6 +114,13 @@ export default class VoteList extends Component {
         return data;
     }
 
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.classId !== this.props.classId) {
+            this.setState({ classId: nextProps.classId },
+                () => { this.updateData() });
+        }
+    }
+
     updateData() {
         this.setState({
             votes: [],
@@ -140,6 +148,35 @@ export default class VoteList extends Component {
             });
     }
 
+    /**没有班级投票时，或者没有网络时，FlatList显示此组件。 */
+    _renderEmptyList() {
+        if (this.state.networkError) {
+            return (
+                <View>
+                    {/** 网络未连接，暂时没有实现 */}
+               {/*      <TouchableOpacity onPress={() => {
+                        ToastAndroid.show('This is a dinosaur.', ToastAndroid.SHORT);
+                    }}>
+                        <Image
+                            style={styles.dinosaurPic}
+                            source={require('../images/dinosaur.jpg')}
+                        />
+                    </TouchableOpacity>
+                    <Text style={styles.dinosaurText}>未连接到互联网</Text>
+                */} </View>
+            );
+        } else if (this.state.loadStatus !== 'loading') {
+            return (
+                <View>
+                    <Text style={{ textAlign: 'center', marginTop: 20 }}>还没有班级投票~</Text>
+                </View>
+            );
+        } else { //正在加载时不显示内容
+            return (<View></View>);
+        }
+    }
+
+
     _renderItem = ({ item }) => {
         return (
             <View style={styles.cellStyle}>
@@ -148,12 +185,12 @@ export default class VoteList extends Component {
                     onPress={() => {
                         this.props.navigation.navigate('VoteDetail', //获取详细信息
                             {
-                                voteId : item.voteId,
+                                voteId: item.voteId,
                             });
                     }}
                 >
-                    <Text style={styles.postTitle} 
-                    accessibilityLabel={item.url}>
+                    <Text style={styles.postTitle}
+                        accessibilityLabel={item.url}>
                         {item.name}
                     </Text>
 
@@ -234,6 +271,7 @@ export default class VoteList extends Component {
                             refreshing={false}
                             onEndReached={this._onEndReached.bind(this)}
                             onEndReachedThreshold={0.5}
+                            ListEmptyComponent={this._renderEmptyList.bind(this)}
                             ListFooterComponent={this._renderFooter.bind(this)}
                             onScroll={this.animatedEvent}
 

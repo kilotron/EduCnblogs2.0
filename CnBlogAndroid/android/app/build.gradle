@@ -137,6 +137,10 @@ android {
 }
 
 dependencies {
+    // compile  'com.umeng.umsdk:analytics:8.0.0'
+    // compile  'com.umeng.umsdk:common:2.0.0'
+    compile files('libs/umeng-analytics-8.0.0.jar')
+    compile files('libs/umeng-common-2.0.1.jar')
     compile project(':react-native-webview-bridge')
     compile project(':react-native-cookies')
     compile fileTree(dir: "libs", include: ["*.jar"])

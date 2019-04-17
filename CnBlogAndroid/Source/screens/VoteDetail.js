@@ -25,7 +25,7 @@ import { Icon, Fab } from 'native-base';
 import ShareButton from './Share';
 const { height, width } = Dimensions.get('window');
 
-import {RadioGroup, RadioButton} from 'react-native-flexi-radio-button';
+import { RadioGroup, RadioButton } from 'react-native-flexi-radio-button';
 import CheckBox from 'react-native-check-box';
 
 // 传入voteID作为参数
@@ -80,17 +80,17 @@ export default class VoteDetail extends Component {
 
         let voteContentURL = Config.VoteContent + this.state.voteId;
         Service.Get(voteContentURL)
-        .then((jsonData) => {
-            if (jsonData !== 'rejected') {
-                if (this._isMounted) {
-                    this.setState({voteContent: jsonData});
+            .then((jsonData) => {
+                if (jsonData !== 'rejected') {
+                    if (this._isMounted) {
+                        this.setState({ voteContent: jsonData });
+                    }
                 }
-            }
-            //alert(jsonData);
-        })
-        .catch((err) => {
-            alert('error');
-        })
+                //alert(jsonData);
+            })
+            .catch((err) => {
+                alert('error');
+            })
     }
 
     componentDidMount() {
@@ -102,15 +102,15 @@ export default class VoteDetail extends Component {
     }
 
     /**一道题的序号、标题和图片 */
-    _renderItemHeader({item, index}) {
+    _renderItemHeader({ item, index }) {
         return (
             <View>
-                <Text>{(index+1) + '. ' + item.title}</Text>
+                <Text>{(index + 1) + '. ' + item.title}</Text>
                 {
                     item.picture == null ? (null) : (
                         <Image
-                            style={{width: 200, height: 100}}
-                            source={{uri:item.picture}}
+                            style={{ width: 200, height: 100 }}
+                            source={{ uri: item.picture }}
                             resizeMode='contain'
                         />
                     )
@@ -122,11 +122,11 @@ export default class VoteDetail extends Component {
     /**一个单选题 
      * 参数index从0开始。
     */
-    _renderVoteItem = ({item, index}) => {
+    _renderVoteItem = ({ item, index }) => {
         if (item.voteMode == 1) { //单选
             return (
                 <View>
-                    {this._renderItemHeader({item, index})}
+                    {this._renderItemHeader({ item, index })}
                     <RadioGroup>
                         {this._renderRadioButtonItem(item.voteOptions)}
                     </RadioGroup>
@@ -135,14 +135,14 @@ export default class VoteDetail extends Component {
         } else if (item.voteMode == 2) {    // 多选
             return (
                 <View>
-                    {this._renderItemHeader({item, index})}
+                    {this._renderItemHeader({ item, index })}
                     {this._renderCheckboxItem(item.voteOptions)}
-    
+
 
                 </View>
             )
         } else {
-            alert('暂未实现的投票模式:'+item.title);
+            alert('暂未实现的投票模式:' + item.title);
         }
     }
 
@@ -164,7 +164,7 @@ export default class VoteDetail extends Component {
         result = [];
         for (var i in voteOptions) {
             result.push(
-                <CheckBox rightText={voteOptions[i].option} onClick={()=>{ }}/>
+                <CheckBox rightText={voteOptions[i].option} onClick={() => { }} />
             );
         }
         return result;
@@ -172,7 +172,7 @@ export default class VoteDetail extends Component {
 
     _renderVoteContent() {
         return (
-            <View style={{flex:1}}>
+            <View style={{ flex: 1 }}>
                 <FlatList
                     renderItem={this._renderVoteItem}
                     data={this.state.voteContent}
@@ -192,7 +192,7 @@ export default class VoteDetail extends Component {
 
     render() {
         return (
-            <View style={{flex:1}}>
+            <View style={{ flex: 1 }}>
                 <View
                     style={{
                         alignSelf: 'stretch',
@@ -242,7 +242,7 @@ const styles = StyleSheet.create({
         color: '#2c2c2c',
     },
     content: {
-        justifyContent:'flex-start',
+        justifyContent: 'flex-start',
         borderColor: '#dddddd',
         borderStyle: null,
         borderWidth: 0.5,

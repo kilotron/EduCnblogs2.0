@@ -23,14 +23,10 @@ import {
 } from 'react-navigation';
 import { Icon, Fab } from 'native-base';
 import ShareButton from './Share';
-import {UI} from '../../Source/config'
-import App from './HomeworkPost';
+const { height, width } = Dimensions.get('window');
+
 import { RadioGroup, RadioButton } from 'react-native-flexi-radio-button';
 import CheckBox from 'react-native-check-box';
-
-
-
-const { height, width } = Dimensions.get('window');
 
 // 传入voteID作为参数
 export default class VoteDetail extends Component {
@@ -242,7 +238,7 @@ const styles = StyleSheet.create({
     },
     content: {
         justifyContent: 'flex-start',
-        borderColor: UI.TOP_COLOR ,
+        borderColor: 'blue',
         borderStyle: null,
         borderWidth: 0.5,
         marginTop: 20,

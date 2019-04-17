@@ -193,6 +193,9 @@ export default class ClassBlogPostsList extends Component {
                             <Picker.Item label="老师/助教" value="tutor" />
                             <Picker.Item label="学生" value="student" />
                         </Picker>
+                        <View onPress={this.refs.picker} style={styles.imgView}>
+                            <Image source={require('../images/arrowDown.png')} style={styles.img}/>
+                        </View>
                     </View>
                 </Animated.View>
 
@@ -354,14 +357,27 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     header: {
+        flexDirection:'row',
         height: 40,
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        width: screenWidth,
     },
     picker: {
         height: 40,
-        width: screenWidth,
+        width: screenWidth *0.9,
         backgroundColor: 'white',
+    },
+    imgView:{
+        width:screenWidth*0.1,
+        height:screenWidth*0.1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    img:{
+        width:screenWidth *0.05,
+        height:screenWidth *0.05, 
+        resizeMode:'stretch', 
     },
     postTitle: {
 		fontSize: 18,

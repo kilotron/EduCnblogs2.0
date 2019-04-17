@@ -4,6 +4,7 @@ import { authData, err_info, StorageKey } from '../config'
 import * as Service from '../request/request.js'
 import MyAdapter from './MyAdapter.js';
 import React, { Component } from 'react';
+import {UI} from '../../Source/config';
 import {
     Platform,
     StyleSheet,
@@ -308,7 +309,7 @@ const styles = StyleSheet.create({
     },
     content: {
         justifyContent:'flex-start',
-        borderColor: '#dddddd',
+        borderColor: UI.TOP_COLOR,
         borderStyle: null,
         borderWidth: 0.5,
         marginTop: 20,

@@ -9,8 +9,8 @@
   "dependencies": {
     "native-base": "^2.3.5",
     "react": "16.0.0",
-    "react-native": "^0.51.0",
-    "react-native-calendars": "^1.15.0",
+    "react-native": "^0.59.6",
+    "react-native-calendars": "^1.32.0",
     "react-native-check-box": "^2.1.7",
     "react-native-cookies": "^3.2.0",
     "react-native-fetch-polyfill": "^1.1.2",
@@ -26,9 +26,9 @@
     "url": "^0.11.0"
   },
   "devDependencies": {
-    "babel-jest": "21.2.0",
+    "babel-jest": "^24.7.1",
     "babel-preset-react-native": "4.0.0",
-    "jest": "21.2.1",
+    "jest": "^23.0.0-charlie.1",
     "react-test-renderer": "16.0.0"
   },
   "jest": {

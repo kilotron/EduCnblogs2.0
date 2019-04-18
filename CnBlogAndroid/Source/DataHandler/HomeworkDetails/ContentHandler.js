@@ -7,6 +7,7 @@ const tail = '</html>';
 const HtmlDecode = require('./HtmlDecode');
 
 function ContentHandler(item){
+    if(item == null) return null;
     item.content = head + (item.convertedContent==null?HtmlDecode(item.content):HtmlDecode(item.convertedContent)) + tail;
     return item;
 }

@@ -5,6 +5,7 @@ function ItemHandler(item){
     if(item!=null){
         item = item1.item;
     }
+    else return null;
     item.Author = item.Author?item.Author:'';
     item.Body = item.Body?CommentHandler(Body):'';
     item.DateAdded = item.DateAdded?item.DateAdded:'';

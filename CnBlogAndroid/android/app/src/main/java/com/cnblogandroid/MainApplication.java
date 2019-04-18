@@ -1,4 +1,4 @@
-package com.pureman;
+package com.cnblogandroid;
 
 import android.app.Application;
 

@@ -1,4 +1,4 @@
-package com.cnblogandroid;
+package com.pureman;
 
 import android.os.Bundle;
 
@@ -27,7 +27,7 @@ public class MainActivity extends ReactActivity {
         super.onResume();
         MobclickAgent.onResume(this);
     }
-    
+
     @Override
     protected void onPause() {
         super.onPause();

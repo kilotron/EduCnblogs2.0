@@ -135,6 +135,8 @@ export default class VoteList extends Component {
         Service.Get(this.getUrl(pageIndex))
             .then((jsonData) => {
                 if (jsonData === 'rejected') {
+                    if (pageIndex == 1)
+                        this.setState({ loadStatus: 'none' });
                     return;
                 }
                 let pageCount = Math.ceil(jsonData.totalCount / pageSize);
@@ -154,7 +156,7 @@ export default class VoteList extends Component {
             return (
                 <View>
                     {/** 网络未连接，暂时没有实现 */}
-               {/*      <TouchableOpacity onPress={() => {
+                    {/*      <TouchableOpacity onPress={() => {
                         ToastAndroid.show('This is a dinosaur.', ToastAndroid.SHORT);
                     }}>
                         <Image
@@ -263,6 +265,14 @@ export default class VoteList extends Component {
                         {/* 使用keyExtractor为每个item生成独有的key，就不必再data数组的每一个元素中添加key键。
                             refreshing设置为false在列表更新时不显示转圈*/}
                         {/*item设置了立体的样式，这里去掉ItemSeparatorComponent={this._separator}*/}
+                        {
+                            this.state.loadStatus === 'none' ?
+                                (
+                                    <View style={styles.footer}>
+                                        <Text>暂时没有投票</Text>
+                                    </View>
+                                ) : (null)
+                        }
                         {<FlatList
                             renderItem={this._renderItem}
                             data={this.makeVotesList()}
@@ -271,7 +281,7 @@ export default class VoteList extends Component {
                             refreshing={false}
                             onEndReached={this._onEndReached.bind(this)}
                             onEndReachedThreshold={0.5}
-                            ListEmptyComponent={this._renderEmptyList.bind(this)}
+                            //ListEmptyComponent={this._renderEmptyList.bind(this)}
                             ListFooterComponent={this._renderFooter.bind(this)}
                             onScroll={this.animatedEvent}
 

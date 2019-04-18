@@ -91,7 +91,7 @@ def enableSeparateBuildPerCPUArchitecture = false
 /**
  * Run Proguard to shrink the Java bytecode in release builds.
  */
-def enableProguardInReleaseBuilds = false
+def enableProguardInReleaseBuilds = true
 
 android {
     compileSdkVersion 23
@@ -101,12 +101,19 @@ android {
         applicationId "com.cnblogandroid"
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 1
-        versionName "1.0"
+        versionCode 5
+        versionName "2.1"
         ndk {
             abiFilters "armeabi-v7a", "x86"
         }
     }
+    signingConfigs {
+     release {
+     storeFile file(MYAPP_RELEASE_STORE_FILE)
+     storePassword MYAPP_RELEASE_STORE_PASSWORD
+     keyAlias MYAPP_RELEASE_KEY_ALIAS
+     keyPassword MYAPP_RELEASE_KEY_PASSWORD
+     }}
     splits {
         abi {
             reset()
@@ -117,6 +124,7 @@ android {
     }
     buildTypes {
         release {
+            signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
@@ -158,4 +166,4 @@ task copyDownloadableDepsToLibs(type: Copy) {
 project.afterEvaluate {
     apply from: '../../node_modules/react-native-zss-rich-text-editor/htmlCopy.gradle';
     copyEditorHtmlToAppAssets(file('../../node_modules/react-native-zss-rich-text-editor'))
-} 
+}

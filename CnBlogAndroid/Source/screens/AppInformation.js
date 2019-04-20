@@ -11,7 +11,7 @@ import {
     Text,
     View,
     Image,
-    TouchableHighlight,    
+    TouchableHighlight,
     TextInput,
     Picker,
     ToastAndroid,
@@ -25,7 +25,7 @@ const screenHeight= MyAdapter.screenHeight;
 const titleFontSize= MyAdapter.titleFontSize;
 const abstractFontSize= MyAdapter.abstractFontSize;
 const informationFontSize= MyAdapter.informationFontSize;
-const btnFontSize= MyAdapter.btnFontSize;   
+const btnFontSize= MyAdapter.btnFontSize;
 // 该页面使用navigate参数为classId
 
 const maxNumberOfVersionPressed = 8;
@@ -73,7 +73,7 @@ export default class AppInformation extends Component {
                 <TouchableOpacity
 
                     onPress = {()=>{
-                        if(item1.item.key == 2 /*|| item1.item.key == 1*/){
+                        if(item1.item.key == 2 || item1.item.key == 1 ){
                             this.props.navigation.navigate('ContactPage',{url: description})
                         }
                         if (item1.item.key == 0) {
@@ -88,11 +88,11 @@ export default class AppInformation extends Component {
                     </Text>
                     <Text style= {styles.abstractTextStyle}>
                         {description}
-                    </Text>             
+                    </Text>
                 </TouchableOpacity>
             </View>
         )
-    }    
+    }
 
     render() {
         var fills=[
@@ -102,7 +102,7 @@ export default class AppInformation extends Component {
             },
             {
                 title: "意见反馈",
-                description: "https://www.wjx.cn/jq/18034457.aspx"
+                description: "https://www.wjx.cn/jq/37858110.aspx"
             },
             {
                 title: "项目地址",
@@ -119,7 +119,7 @@ export default class AppInformation extends Component {
                     key: i,//ID
                     title: fills[i].title,//标题
                     description: fills[i].description,//描述
-            });            
+            });
         }
         return (
             <View
@@ -131,29 +131,29 @@ export default class AppInformation extends Component {
                     paddingTop: 0.02*screenHeight,
                     paddingBottom: 0.02*screenHeight
                 }}
-            >         
-                <View 
-                    style= {{        
-                        flexDirection: 'row',  
+            >
+                <View
+                    style= {{
+                        flexDirection: 'row',
                         justifyContent:'flex-start',
-                        alignItems: 'flex-start',  
+                        alignItems: 'flex-start',
                         alignSelf: 'stretch',
                         flex:1,
-                    }}          
+                    }}
 
                 >
                     <FlatList
                         data={data}
                         renderItem={this._renderItem}
-                    />            
-                </View>        
+                    />
+                </View>
             </View>
         );
     }
 }
-const styles = StyleSheet.create({  
-    container: {  
-        flexDirection: 'column',  
+const styles = StyleSheet.create({
+    container: {
+        flexDirection: 'column',
         justifyContent:'flex-start',
         alignItems: 'flex-start',
         flex:1,
@@ -184,4 +184,4 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginBottom: 8
     }
-});  
+});

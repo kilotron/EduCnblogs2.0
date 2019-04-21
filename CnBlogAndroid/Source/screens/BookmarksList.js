@@ -12,7 +12,6 @@ import {
     Text,
     View,
     FlatList,
-    TouchableHighlight,
     ActivityIndicator,
     TouchableOpacity,
     ToastAndroid,
@@ -24,7 +23,6 @@ import {
     StackNavigator,
     TabNavigator,
     NavigationActions,
-
 } from 'react-navigation';
 
 const screenWidth= MyAdapter.screenWidth;
@@ -34,6 +32,8 @@ const abstractFontSize= MyAdapter.abstractFontSize;
 const informationFontSize= MyAdapter.informationFontSize;
 const btnFontSize= MyAdapter.btnFontSize;
 const pageSize = 10;
+const GetDetailId = require('../DataHandler/BlogDetail/GetDetailId');
+const GetBlogApp = require('../DataHandler/BlogDetail/GetBlogApp');
 
 export default class BookmarksList extends Component {
     constructor(props){
@@ -109,9 +109,7 @@ export default class BookmarksList extends Component {
         var DateAdded = item1.item.dateAdded;
         var FromCnBlogs = item1.item.fromCnBlogs;
         var DetailId = item1.item.detailId;
-
-        let arr = LinkUrl.split('/');
-        let blogApp = arr[3];
+        let blogApp = GetBlogApp(LinkUrl);
 
         return(
             <View style={flatStyles.cell}>
@@ -173,7 +171,8 @@ export default class BookmarksList extends Component {
                         tags: this.state.bookmarks[i].Tags,/* list数据 */
                         dateAdded: this.String2Date(this.state.bookmarks[i].DateAdded),
                         fromCnBlogs: this.state.bookmarks[i].FromCNBlogs,
-                        detailId: this.state.bookmarks[i].LinkUrl.match( /p\/([^%]+).html/)[1],
+                        detailId: GetDetailId(this.state.bookmarks[i].LinkUrl),
+                        //this.state.bookmarks[i].LinkUrl.match( /p\/([^%]+).html/)[1],
                     });
                 }
             }

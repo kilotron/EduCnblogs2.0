@@ -35,7 +35,6 @@ export default class BulletinAdd extends Component {
             content: this.state.bulletinText,
         }
         let body = JSON.stringify(postBody);
-        //let url = 'https://api.cnblogs.com/api/edu/member/register/displayName';
         let url = Config.BulletinPublish;
         Service.UserAction(url, body, 'POST').then((response)=>{
             if(response.status!==200)

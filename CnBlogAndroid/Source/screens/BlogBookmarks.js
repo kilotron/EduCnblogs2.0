@@ -9,10 +9,7 @@ import {
     StyleSheet,
     Text,
     View,
-    TouchableOpacity,
-    Dimensions,
     Image,
-    Alert,
     TextInput,
     Button,
     ToastAndroid,
@@ -24,7 +21,7 @@ import { Icon, Fab } from 'native-base';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 const screenHeight= MyAdapter.screenHeight;
 const ContentHandler = require('../DataHandler/BlogDetail/ContentHandler');
-// 传入博客Id和blogApp和CommentCount作为参数
+
 export default class BlogBookmarks extends Component{
     constructor(props){
         super(props);
@@ -63,7 +60,6 @@ export default class BlogBookmarks extends Component{
         let body = JSON.stringify(postBody);
         let url = Config.Bookmarks + '/';
         Service.UserAction(url, body, 'POST').then((jsonData)=>{
-            //console.log('jsonData: '+ jsonData);
             if(jsonData===null)
             {
                 ToastAndroid.show('请求失败！',ToastAndroid.SHORT);
@@ -71,16 +67,13 @@ export default class BlogBookmarks extends Component{
             else if(jsonData.ok)
             {
                 ToastAndroid.show('添加成功！',ToastAndroid.SHORT);
-                /* 调用回调函数更新公告列表 */
             }
             else if(jsonData._bodyText==='网摘已经收藏')
             {
-                //console.log('jsonData1: ' + jsonData);
                 ToastAndroid.show('网摘已经收藏！',ToastAndroid.SHORT);
             }
             else
             {
-                //console.log('jsonData2: ' + jsonData);
                 ToastAndroid.show('发生错误，请稍后重试！',ToastAndroid.SHORT);
             }
             this.props.navigation.goBack();

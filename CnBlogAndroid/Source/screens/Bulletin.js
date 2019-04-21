@@ -35,6 +35,8 @@ const informationFontSize= MyAdapter.informationFontSize;
 const btnFontSize= MyAdapter.btnFontSize;
 const pageSize = 10;
 
+const HtmlDecode = require('../DataHandler/HomeworkDetails/HtmlDecode');
+
 export default class Bulletin extends Component {
     constructor(props){
         super(props);
@@ -190,7 +192,7 @@ export default class Bulletin extends Component {
         {
         data.push({
             key: this.state.bulletins[i].bulletinId,
-            Content: this.state.bulletins[i].content,
+            Content: HtmlDecode(this.state.bulletins[i].content),
             Publisher: this.state.bulletins[i].publisher,
             BlogUrl: this.state.bulletins[i].blogUrl,
             //DateAdded: this.state.bulletins[i].dateAdded,

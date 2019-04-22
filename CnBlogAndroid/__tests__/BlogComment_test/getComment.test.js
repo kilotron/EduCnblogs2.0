@@ -1,8 +1,8 @@
 const getComments = require('../../Source/DataHandler/BlogComment/getComments');
 
-/*test('null test', ()=>{
-	expect(getComments(null)).toBe("");
-});*/
+// test('null test', ()=>{
+// 	expect(getComments(null)).toBe("");
+// });
 
 test('normal test', ()=>{
 	var item = {
@@ -21,7 +21,7 @@ test('normal test', ()=>{
 			AuthorUrl: "authorurl",
 			FaceUrl: "faceurl",
 		},
-	{
+		{
 			Id: 0,
 			Body: "body",
 			Author: "author1",
@@ -29,7 +29,7 @@ test('normal test', ()=>{
 			AuthorUrl: "authorurl",
 			FaceUrl: "faceurl",
 		}],
-        isRequestSuccess: false,
+        isRequestSuccess: true,
     };
 	var tempVar = {
 		Authors: [{Author:"author",FaceUrl:"faceurl"},{Author:"author1",FaceUrl:"faceurl"}],

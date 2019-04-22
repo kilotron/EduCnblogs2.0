@@ -7,7 +7,7 @@ function ItemHandler(item){
     }
     else return null;
     item.Author = item.Author?item.Author:'';
-    item.Body = item.Body?CommentHandler(Body):'';
+    item.Body = item.Body?CommentHandler(item.Body):'';
     item.DateAdded = item.DateAdded?item.DateAdded:'';
     return item;
 }

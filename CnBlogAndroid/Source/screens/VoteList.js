@@ -382,4 +382,4 @@ const styles = StyleSheet.create({
     },
 });
 
-module.exports = VoteHandler;
+// module.exports = VoteHandler;

@@ -378,7 +378,7 @@ export default class HomeworkLists extends Component {
             let today = this.state.currentTime == -1 ? new Date() : new Date(this.state.currentTime); // 当前日期
             let _startday = this.state.homeworks[i].startTime; // 作业开始日期
             let startday = this.StringToDate(_startday);
-            if(today >= startday)//只显示已开始的作业
+            if(_startday == null || today >= startday)//只显示已开始的作业
             {
                 if(this.state.homeworks[i].isClosed){
                     closedData.push(

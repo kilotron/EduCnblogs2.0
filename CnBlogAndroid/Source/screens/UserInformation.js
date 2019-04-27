@@ -7,6 +7,7 @@ import React, { Component} from 'react';
 //关于cookie包的配置方法，请看https://github.com/joeferraro/react-native-cookies
 import CookieManager from 'react-native-cookies'
 import * as storage from '../Storage/storage.js'
+import PushUtil from '../umeng/PushUtil'
 import {
     StyleSheet,
     Text,
@@ -258,6 +259,22 @@ export default class UserInformation extends Component{
                     paddingLeft: 0.05*screenWidth,
             }}>
                 <Text style = {{fontSize: 18, fontWeight: 'bold', color:'rgb(51,51,51)'}}>关于App</Text>
+            </TouchableHighlight>
+            <TouchableHighlight
+                underlayColor="white"
+                activeOpacity={0.5}
+                onPress={()=>{
+                    
+                }}//关联函数
+                style = {{
+                    justifyContent:'center',
+                    alignItems: 'flex-start',
+                    height: 0.07*screenHeight,
+                    marginBottom: 0.03*screenHeight,
+                    backgroundColor: 'white',
+                    paddingLeft: 0.05*screenWidth,
+            }}>
+            <Text style = {{fontSize: 18, fontWeight: 'bold', color:'rgb(51,51,51)'}}>测试推送</Text>
             </TouchableHighlight>
             <TouchableOpacity style = {{
                 justifyContent:'center',

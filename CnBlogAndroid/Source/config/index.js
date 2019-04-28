@@ -28,6 +28,7 @@ export default{
 	VoteList : 'https://api.cnblogs.com/api/edu/schoolclass/votes', //分页获取投票信息
 	VoteDetail :'https://api.cnblogs.com/api/edu/vote/',
 	VoteContent : 'https://api.cnblogs.com/api/edu/vote/contents/',//后接投票ID
+	VoteCommit : 'https://api.cnblogs.com/api/edu/vote/commit/', // 后接投票ID
 }
 
 export const authData = {

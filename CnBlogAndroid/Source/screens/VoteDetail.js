@@ -21,6 +21,9 @@ import {
 import {RadioGroup, RadioButton} from 'react-native-flexi-radio-button';
 import CheckBox from 'react-native-check-box';
 
+const screenWidth= MyAdapter.screenWidth;
+const screenHeight= MyAdapter.screenHeight;
+
 // 传入voteID作为参数
 export default class VoteDetail extends Component {
     constructor(props) {
@@ -44,13 +47,21 @@ export default class VoteDetail extends Component {
             /* 每一个投票的题目和选项、图片等信息。*/
             voteContent: [],
 
-            /* 复选框是否选中的标记。查看参与投票的API发现，每个班级的voteOptionId是唯一的，
+            /* 复选框是否选中的标记。根据参与投票的API，每个班级的voteOptionId是唯一的，
                那么，对某一个的投票来说，voteOptionId也是唯一的，因此，用voteOptionId作为
                复选框(也可作为单选框)的标识。一个isChecked的示例：
-               [123: {isChecked: true, option: '选项1'}, 
-                124: {isChecked: true, option: '选项2'}] */
+               [123: {isChecked: false, option: '单选选项1', exclusiveOptionIds: [124]}, 
+                124: {isChecked: true, option: '单选选项2', exclusiveOptionIds: [123]},
+                125: {isChecked: true, option: '复选选项1'},
+                126: {isChecked: true, option: '复选选项2'},]，
+               其中，123、124都是voteOptionId。
+               isChecked：该选项是否选中，
+               option：选项内容
+               exclusiveOptionIds：一个单选题里的相互排斥的选项们，多选不需要该属性。 */
             isChecked: new Map(), 
         }
+        /*每道题的所有选项ID为一组，用于检查是否完成所有问题。 例如[[123, 124], [125,126]]*/
+        this.buttonGroups = [];
     }
 
     /**此函数只在获取投票内容后调用一次，来初始化state isChecked。
@@ -60,12 +71,25 @@ export default class VoteDetail extends Component {
     _isCheckedInit() {
         for (var i in this.state.voteContent) {
             voteOptions = this.state.voteContent[i].voteOptions;
+            isRadioButton = this.state.voteContent[i].voteMode == 1;// 是否为单选
+            var aButtonGroup = [];
+            this.buttonGroups.push(aButtonGroup);
             for (var j in voteOptions) {
+                aButtonGroup.push(voteOptions[j].voteOptionId);
                 var data = {};
                 data.isChecked = false;
                 data.option = voteOptions[j].option;
                 data.voteOptionId = voteOptions[j].voteOptionId;
                 this.state.isChecked.set(data.voteOptionId, data);
+                if (isRadioButton) {
+                    // 将同一组的其他选项加入data.exclusiveOptionIds中
+                    data.exclusiveOptionIds = [];
+                    for (var k in voteOptions) {
+                        if (voteOptions[k].voteOptionId != voteOptions[j].voteOptionId) {
+                            data.exclusiveOptionIds.push(voteOptions[k].voteOptionId);
+                        }
+                    }
+                }
             }
         }
     }
@@ -140,11 +164,25 @@ export default class VoteDetail extends Component {
         );
     }
 
+    /**voteOptionId是某个单选框的ID，同一组的其他选项isChecked被设置为false.
+     */
+    _uncheckOtherRadioButtonsInSameGroup(voteOptionId) {
+        let option = this.state.isChecked.get(voteOptionId);
+        // 单选框需要设置同一组的其他选项为未选中状态。
+        if (option.isChecked && option.exclusiveOptionIds) {
+            for (var i in option.exclusiveOptionIds) {
+                id = option.exclusiveOptionIds[i];
+                let exclusiveOption = this.state.isChecked.get(id);
+                exclusiveOption.isChecked = false;
+            }
+        }
+    }
+
     /**一个单选题 
      * 参数index从0开始。
     */
     _renderVoteItem = ({item, index}) => {
-        if (item.voteMode == 1) { //单选
+        if (item.voteMode == 1) { // 单选，item是API返回的数据
             return (
                 <View >
                     {this._renderItemHeader({item, index})}
@@ -162,6 +200,7 @@ export default class VoteDetail extends Component {
                                 还不能通过this.state.isChecked获得radiobutton是否被选中。
                                 因为切换选项时，没有把原来的被选的选项的isChecked设为false。*/
                             data.isChecked = true;
+                            this._uncheckOtherRadioButtonsInSameGroup(value);
                         }}
                     >
                         {this._renderRadioButtonItem(item.voteOptions)}
@@ -200,7 +239,11 @@ export default class VoteDetail extends Component {
         return result;
     }
 
-    /**一组复选框项 */
+    /**一组复选框项
+     * voteOptions是一个数组，每个元素是一个选项
+     * voteOptions[i].voteOptionId：选项ID
+     * voteOptions[i].option:选项内容
+     */
     _renderCheckboxItems = (voteOptions) => {
         result = [];
         for (var i in voteOptions) {
@@ -219,6 +262,12 @@ export default class VoteDetail extends Component {
         return result;
     }
 
+    /**一个复选选框项。
+     * data需要是this.state.isChecked的一个元素。
+     * data.voteOptionId: 选项ID
+     * data.option: 选项内容
+     * data.isChecked: 是否选中。
+     */
     _renderACheckBox(data) {
         return (
             <CheckBox 
@@ -238,6 +287,7 @@ export default class VoteDetail extends Component {
         )
     }
 
+    /**所有的投票内容 */
     _renderVoteContent() {
         return (
             <View style={{flex:1}}>
@@ -249,9 +299,93 @@ export default class VoteDetail extends Component {
                        extraData属性，FlatList不会更新。 */
                     extraData={this.state}  
                     keyExtractor={(item, index) => index.toString()}
+                    ListFooterComponent={this._renderSubmitButton.bind(this)}
                 />
             </View>
         );
+    }
+
+    _renderSubmitButton() {
+        return (
+            <TouchableOpacity
+                style={styles.submitButton}
+                onPress={this._submit.bind(this)}
+            >
+                <Text style={styles.submitText}>提交</Text>
+            </TouchableOpacity>
+        )
+    }
+
+    /**调试用 */
+    _debugOptions() {
+        var s = '';
+        this.state.isChecked.forEach(function (value, key, map){
+            s = s + 'key: ' + key + ', ' + value.option + ', ' + value.isChecked + '\n' ;
+            if (value.exclusiveOptionIds) {
+                s = s + 'exclude: ';
+                for (var i in value.exclusiveOptionIds) {
+                    s = s+value.exclusiveOptionIds[i]+' ';
+                }
+                s+='\n';
+            }
+        });
+        alert(s+this._validateVoteOptions());
+    }
+
+    /**点击提交按钮调用此函数提交问卷。 */
+    _submit() {
+        if (!this._validateVoteOptions()) {
+            Alert.alert('提示', '请完成所有投票内容');
+            return;
+        }
+        var commitURL = Config.VoteCommit + this.state.voteId;
+        var ids = [];
+        this.state.isChecked.forEach(function(value, key, map){
+            if (value.isChecked) {
+                ids.push(key);
+            }
+        });
+        var postBody = {
+            schoolClassId: this.state.schoolClassId,
+            voteOptionIds: ids,
+        }
+        postBody = JSON.stringify(postBody);
+        alert(commitURL + '\n' + postBody);
+        Service.UserAction(commitURL, postBody, 'POST')
+        .then((response) => {
+            if(response.status!==200)
+            {
+                alert(response.status);
+                return;
+            }
+            var jsonData = response.json();
+            if (jsonData.isSuccess) {
+                Alert.alert('提示', '投票成功');
+            } else if (jsonData.isWarning) {
+                Alert.alert('警告', jsonData.message);
+            } else  { //if (jsonData.isError)
+                Alert.alert('错误', '投票失败');
+            }
+        })
+        .catch((error) => {
+            ToastAndroid.show(err_info.NO_INTERNET ,ToastAndroid.SHORT);
+        });
+    }
+
+    /**完成了问卷所有内容则返回true。 */
+    _validateVoteOptions() {
+        var complete = true;
+
+        for (var i in this.buttonGroups) {
+            buttons = this.buttonGroups[i];
+            var thisButtonGrouphasOneChecked = false;
+            for (var j in buttons) {
+                data = this.state.isChecked.get(buttons[j]);
+                thisButtonGrouphasOneChecked = thisButtonGrouphasOneChecked || data.isChecked;
+            }
+            complete = complete && thisButtonGrouphasOneChecked;
+        }
+        return complete;
     }
 
     DateFormat = (date) => {
@@ -298,6 +432,9 @@ export default class VoteDetail extends Component {
         )
     }
 }
+
+const buttonWidthRatio = 0.2;
+const buttonHeightRatio = 0.1;
 
 const styles = StyleSheet.create({
     contentText: {
@@ -382,4 +519,66 @@ const styles = StyleSheet.create({
         marginHorizontal: 10, 
         marginVertical: 2
     },
+    submitButton: {
+        flex: 1,
+        height: buttonHeightRatio*screenWidth,
+        width: buttonWidthRatio*screenWidth,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 10,
+        marginBottom: 20,
+        marginLeft: (1-buttonWidthRatio)/2*screenWidth, //居中
+        backgroundColor: 'white',
+        borderColor: '#0077FF',
+        borderWidth: 0.5,
+        borderRadius: 4,
+    },
+    submitText: {
+        fontSize: 16,
+        color: '#0077FF',
+    }
 })
+
+/*
+获取投票内容：
+请求方式：GET
+请求地址：https://api.cnblogs.com/api/edu/vote/contents/{voteId}
+Body参数名	类型	必需	描述	示例 e.g.
+voteId	number	是	投票Id	1
+
+返回
+Body参数名	描述	类型
+voteContentId	投票内容Id	number
+title	内容标题	string
+voteMode	模式（1.单选、2.多选、3.排名）	number
+picture	图片链接	string
+voteId	投票Id	number
+voteOptions	投票选项列表	array
+voteOptions.voteOptionId	投票选项Id	number
+voteOptions.option	投票选项	string
+
+参与投票；
+请求方式：POST
+请求地址：https://api.cnblogs.com/api/edu/vote/commit/{voteId}
+
+Body示例：
+{
+    "schoolClassId": 1,
+    "voteOptionIds": [ 3,5 ]
+}
+
+Body参数名	类型	必需	描述	示例 e.g.
+voteId	number	是	投票Id	
+schoolClassId	number	是	操作人班级Id	
+voteOptionIds	array	是	投票选项Id列表
+
+详细说明：
+返回值“isWarning”为true时，则对应“message”字段中的内容
+返回示例：
+{
+    "isSuccess": true,
+    "isWarning": false,
+    "isError": false,
+    "message": null
+}
+*/

@@ -22,8 +22,8 @@ public class MainActivity extends ReactActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         PushModule.initPushSDK(this);
-        PushAgent.getInstance(this).onAppStart();
         MobclickAgent.setSessionContinueMillis(1000*40);
+        PushAgent.getInstance(this).onAppStart();
     }
 
     @Override

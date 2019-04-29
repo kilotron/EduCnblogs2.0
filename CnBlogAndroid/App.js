@@ -65,6 +65,7 @@ import ClassSelect from './Source/screens/ClassSelect'
 import VoteList from './Source/screens/VoteList'
 import Settings from './Source/screens/Settings'
 import VoteDetail from './Source/screens/VoteDetail'
+import VoteAdd from './Source/screens/VoteAdd'
 const { height, width } = Dimensions.get('window');
 
 const CODE_URL = [
@@ -379,12 +380,7 @@ const HomeTab = TabNavigator({
         }
     },
 
-    // VoteList:{
-    //     screen: VoteList,
-    //     navigationOptions:{
-    //         //未完成
-    //     }
-    // }
+     
 
 },{
     tabBarPosition: 'bottom',
@@ -416,6 +412,36 @@ const SimpleNavigation = StackNavigator({
 
     VoteDetail: {
         screen: VoteDetail,
+        navigationOptions: {
+            headerTintColor:'white',
+            headerTitle: '投票列表',
+            headerStyle: {
+                height: 40,
+                backgroundColor: UI.TOP_COLOR,
+            },
+            headerTitleStyle: {
+                fontSize: 18,
+            },
+        }
+    },
+
+    VoteList:{
+        screen: VoteList,
+        navigationOptions:{
+            headerTintColor : 'white',
+            headerTitle: '投票',
+            headerStyle: {
+                height:40,
+                backgroundColor:UI.TOP_COLOR,
+            },
+            headerTitleStyle: {
+                fontSize: 18,
+            }
+        }
+    },
+
+    VoteAdd: {
+        screen: VoteAdd,
         navigationOptions: {
             headerTintColor:'white',
             headerTitle: '投票列表',

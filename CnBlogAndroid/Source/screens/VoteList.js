@@ -255,6 +255,31 @@ export default class VoteList extends Component {
         );
     }
 
+    onPress2AddVote() {
+        /* this.props.navigation.navigate('VoteDetail', {
+            classId: this.state.classId,
+            //callback: this.UpdateData, 暂时不知道干嘛的
+        }); */
+        this.props.navigation.navigate('VoteDetail', //获取详细信息
+        {
+            voteId: 1,
+        });
+    }
+
+    GetAddButton() {
+        return (
+            <TouchableHighlight
+                underlayColor="#3b50ce"
+                activeOpacity={0.5}
+                style={styles.addButton}
+                onPress={this.onPress2AddVote} >
+                <Text style={styles.buttonContent}>
+                    +
+                </Text>
+            </TouchableHighlight>
+        );
+    }
+
     render() {
         return (
             <View style={styles.container}>
@@ -286,9 +311,15 @@ export default class VoteList extends Component {
                             onScroll={this.animatedEvent}
 
                         />}
+
+
                     </View>
                 </Animated.View>
+
+                {this.GetAddButton()}
+
             </View>
+
         );
 
 
@@ -297,6 +328,25 @@ export default class VoteList extends Component {
 }
 
 const styles = StyleSheet.create({
+    buttonContent: { //button 内的字体
+        fontSize: 30,
+        color: '#ffffff',
+        textAlign: 'center',
+        fontWeight: '100',
+    },
+
+    addButton: {
+        position: 'absolute',
+        bottom: 20,
+        right: 10,
+        backgroundColor: "#3b50ce",
+        width: 52,
+        height: 52,
+        borderRadius: 26,
+        justifyContent: 'center',
+        alignItems: 'center',
+        margin: 20
+    },
     container: {
         flex: 1,
     },

@@ -274,7 +274,7 @@ export default class UserInformation extends Component{
                     backgroundColor: 'white',
                     paddingLeft: 0.05*screenWidth,
             }}>
-            <Text style = {{fontSize: 18, fontWeight: 'bold', color:'rgb(51,51,51)'}}>测试推送</Text>
+            <Text style = {{fontSize: 18, fontWeight: 'bold', color:'rgb(51,51,51)'}}>测试按钮</Text>
             </TouchableHighlight>
             <TouchableOpacity style = {{
                 justifyContent:'center',

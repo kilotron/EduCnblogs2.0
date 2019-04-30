@@ -340,19 +340,6 @@ const HomeTab = TabNavigator({
             )
         }
     },
-    // ClassLists: {
-    //     screen: ClassLists,
-    //     navigationOptions: {
-    //         tabBarLabel: '我的班级',
-    //         tabBarIcon: ({ tintColor, focused }) => (
-    //            <Image
-    //                 resizeMode='contain'
-    //                 source={require('./Source/images/nav_class.png')}
-    //                 style={{height: 20}}
-    //             ></Image>
-    //         )
-    //     }
-    // },
     ClassListsNew: {
         screen: ClassListsNew,
         navigationOptions: {

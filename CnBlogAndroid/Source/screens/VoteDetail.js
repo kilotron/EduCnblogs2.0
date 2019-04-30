@@ -137,10 +137,6 @@ export default class VoteDetail extends Component {
         })
     }
 
-    componentDidMount() {
-        //this._isMounted = true;
-    }
-
     componentWillUnmount = () => {
         this._isMounted = false;
     }
@@ -195,10 +191,6 @@ export default class VoteDetail extends Component {
                         onSelect={(index, value) => {
                             // value是voteOptionId
                             var data = this.state.isChecked.get(value);
-                            /* !!! 这是一个待解决的问题。
-                                此处，radiobutton被选中的状态是不一致的，
-                                还不能通过this.state.isChecked获得radiobutton是否被选中。
-                                因为切换选项时，没有把原来的被选的选项的isChecked设为false。*/
                             data.isChecked = true;
                             this._uncheckOtherRadioButtonsInSameGroup(value);
                         }}
@@ -350,20 +342,22 @@ export default class VoteDetail extends Component {
             voteOptionIds: ids,
         }
         postBody = JSON.stringify(postBody);
-        alert(commitURL + '\n' + postBody);
         Service.UserAction(commitURL, postBody, 'POST')
         .then((response) => {
-            if(response.status!==200)
-            {
-                alert(response.status);
-                return;
+            if (response === 'rejected') {
+                return null; // 提示信息由UserAction输出
             }
-            var jsonData = response.json();
+            if(response.status!==200){
+                return null;
+            }
+            return response.json(); // 返回的是Promise对象
+        })
+        .then((jsonData) => {
             if (jsonData.isSuccess) {
                 Alert.alert('提示', '投票成功');
             } else if (jsonData.isWarning) {
-                Alert.alert('警告', jsonData.message);
-            } else  { //if (jsonData.isError)
+                Alert.alert('提示', jsonData.message);
+            } else  { // if (jsonData.isError)
                 Alert.alert('错误', '投票失败');
             }
         })

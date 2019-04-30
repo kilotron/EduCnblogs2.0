@@ -16,6 +16,7 @@
     "react-native-fetch-polyfill": "^1.1.2",
     "react-native-flexi-radio-button": "^0.2.2",
     "react-native-keyboard-aware-scroll-view": "^0.8.0",
+    "react-native-md5": "^1.0.0",
     "react-native-modal-dropdown": "^0.6.2",
     "react-native-scrollable-tab-view": "^0.10.0",
     "react-native-storage": "^0.2.2",

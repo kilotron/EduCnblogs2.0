@@ -256,14 +256,14 @@ export default class VoteList extends Component {
     }
 
     onPress2AddVote() {
-        /* this.props.navigation.navigate('VoteDetail', {
+        this.props.navigation.navigate('VoteAdd', {
             classId: this.state.classId,
             //callback: this.UpdateData, 暂时不知道干嘛的
-        }); */
-        this.props.navigation.navigate('VoteDetail', //获取详细信息
+        });
+        /* this.props.navigation.navigate('VoteDetail', //获取详细信息
         {
             voteId: 1,
-        });
+        }); */
     }
 
     GetAddButton() {
@@ -272,7 +272,7 @@ export default class VoteList extends Component {
                 underlayColor="#3b50ce"
                 activeOpacity={0.5}
                 style={styles.addButton}
-                onPress={this.onPress2AddVote} >
+                onPress={this.onPress2AddVote.bind(this)} >
                 <Text style={styles.buttonContent}>
                     +
                 </Text>

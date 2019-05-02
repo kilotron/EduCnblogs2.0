@@ -28,6 +28,8 @@ const screenHeight= MyAdapter.screenHeight;
 export default class VoteDetail extends Component {
     constructor(props) {
         super(props);
+        /* 用户在这个班级的成员ID */
+        this.memberId = -1;
         this.state = {
             voteId: this.props.navigation.state.params.voteId,
 
@@ -43,6 +45,9 @@ export default class VoteDetail extends Component {
             deadline: null,
             dateAdded: null,
             isFinished: "",
+
+            /**是否已经投票 */
+            hasVoted: undefined,
             
             /* 每一个投票的题目和选项、图片等信息。*/
             voteContent: [],
@@ -119,6 +124,9 @@ export default class VoteDetail extends Component {
                 }
             }
         })
+        .then(() => {
+            this._getVoteState(); // 获取用户是否已经投票。
+        })
         .catch((err)=>{});
 
         let voteContentURL = Config.VoteContent + this.state.voteId;
@@ -135,6 +143,10 @@ export default class VoteDetail extends Component {
         .catch((err) => {
             alert('error');
         })
+    }
+
+    componentDidMount = () => {
+        //this._isMounted = true;
     }
 
     componentWillUnmount = () => {
@@ -268,9 +280,11 @@ export default class VoteDetail extends Component {
                 rightTextStyle={styles.voteCheckBoxText}
                 onClick={() => {
                     data.isChecked = !data.isChecked;
-                    this.setState({
-                        isChecked: this.state.isChecked,
-                    })
+                    if (this._isMounted) {
+                        this.setState({
+                            isChecked: this.state.isChecked,
+                        })
+                    }
                 }}
                 style={styles.voteCheckBox}
                 checkBoxColor='#666'
@@ -292,20 +306,38 @@ export default class VoteDetail extends Component {
                     extraData={this.state}  
                     keyExtractor={(item, index) => index.toString()}
                     ListFooterComponent={this._renderSubmitButton.bind(this)}
+                    ListHeaderComponent={this._renderHasVotedBanner.bind(this)}
                 />
             </View>
         );
     }
 
     _renderSubmitButton() {
-        return (
-            <TouchableOpacity
-                style={styles.submitButton}
-                onPress={this._submit.bind(this)}
-            >
-                <Text style={styles.submitText}>提交</Text>
-            </TouchableOpacity>
-        )
+        if (this.state.hasVoted == false) {
+            return (
+                <TouchableOpacity
+                    style={styles.submitButton}
+                    onPress={this._submit.bind(this)}
+                >
+                    <Text style={styles.submitText}>
+                        提交
+                    </Text>
+                </TouchableOpacity>
+            )
+        } else {
+            return null;
+        }
+    }
+
+    _renderHasVotedBanner() {
+        if (this.state.hasVoted) {
+            return (
+                <View style={styles.hasVotedView}>
+                    <Text style={styles.hasVotedText}>已经投过票了</Text>
+                </View>
+            )
+        }
+        return null;
     }
 
     /**调试用 */
@@ -380,6 +412,36 @@ export default class VoteDetail extends Component {
             complete = complete && thisButtonGrouphasOneChecked;
         }
         return complete;
+    }
+
+    /**判断用户是否已经投票过了。是则设置this.state.hasVoted=true */
+    _getVoteState() {
+        let user_url = Config.apiDomain + api.user.info;
+        Service.Get(user_url)
+        .then((jsonData) => {
+            var memberIdURL = Config.apiDomain + api.ClassGet.blogID2Mem + 
+            jsonData.BlogId + '/' + this.state.schoolClassId;
+            Service.Get(memberIdURL)
+            .then((jsonData) => {
+                this.memberId = jsonData.memberId;
+                return this.memberId;
+            })
+            .then((memberId) => {
+                var voteIsCommitedURL = Config.VoteIsCommited + memberId +
+                    '/' + this.state.voteId;
+                Service.Get(voteIsCommitedURL)
+                .then((data) => {
+                    if (this._isMounted) {
+                        this.setState({
+                            hasVoted: data,
+                        })
+                    }
+                })
+                .catch(error => {});
+            })
+            .catch(error => {});
+        })
+        .catch(error => {});      
     }
 
     DateFormat = (date) => {
@@ -530,11 +592,21 @@ const styles = StyleSheet.create({
     submitText: {
         fontSize: 16,
         color: '#0077FF',
-    }
+    },
+    hasVotedView: {
+        flex: 1,
+        marginTop: 10,
+        marginHorizontal:50,
+        alignItems: 'center',
+    },
+    hasVotedText: {
+        fontSize: 16,
+        color: '#0077FF',
+    },
 })
 
 /*
-获取投票内容：
+1.获取投票内容：
 请求方式：GET
 请求地址：https://api.cnblogs.com/api/edu/vote/contents/{voteId}
 Body参数名	类型	必需	描述	示例 e.g.
@@ -551,7 +623,7 @@ voteOptions	投票选项列表	array
 voteOptions.voteOptionId	投票选项Id	number
 voteOptions.option	投票选项	string
 
-参与投票；
+2.参与投票；
 请求方式：POST
 请求地址：https://api.cnblogs.com/api/edu/vote/commit/{voteId}
 
@@ -575,4 +647,80 @@ voteOptionIds	array	是	投票选项Id列表
     "isError": false,
     "message": null
 }
+
+3.根据博客Id获取成员信息
+
+请求方式：GET
+
+请求地址：https://api.cnblogs.com/api/edu/member/{blogId}/{schoolClassId}
+
+Body参数名	类型	必需	描述	示例 e.g.
+blogId	string	是	博客Id	10000
+schoolClassId	string	是	班级Id	1
+返回示例：
+          
+{
+    "memberId": 60,
+    "studentNo": "1513933002",
+    "realName": "胡玲碧",
+    "schoolClassId": 8,
+    "membership": 1,
+    "dateAdded": "2017-08-31T17:35:11.9467634"
+}
+                   
+Body参数名	描述	类型
+memberId	成员Id	number
+studentNo	学号	string
+realName	真实姓名	string
+schoolClassId	班级Id	number
+membership	身份（1.学生、2.老师、3.助教）	number
+dateAdded	创建时间	datetime
+
+4.获取当前登录用户信息
+
+请求方式：GET
+
+请求地址：https://api.cnblogs.com/api/users
+
+Header参数名	类型	必需	描述	示例 e.g.
+Authorization	string	是		Bearer your access_token
+详细说明：
+
+获取当前登录用户信息
+返回示例：
+                            
+{
+  "UserId": "4566ea6b-f2b3",
+  "SpaceUserId": 2,
+  "BlogId": 3,
+  "DisplayName": "sample string 4",
+  "Face": "sample string 5",
+  "Avatar": "sample string 6",
+  "Seniority": "sample string 7",
+  "BlogApp": "sample string 8"
+}
+                            
+Body参数名	描述	类型
+UserId	用户id	string
+SpaceUserId	用户显示名称id	number
+BlogId	博客id	number
+DisplayName	显示名称	string
+Face	头像url	string
+Avatar	头像url	string
+Seniority	园龄	string
+BlogApp	博客名	string
+
+5.判断是否参与投票
+
+请求方式：GET
+
+请求地址：https://api.cnblogs.com/api/edu/vote/iscommitted/{memberId}/{voteId}
+
+Body参数名	类型	必需	描述	示例 e.g.
+memberId	number	是	成员Id	1
+voteId	number	是	投票Id	1
+返回示例：
+                    
+false
+                      
 */

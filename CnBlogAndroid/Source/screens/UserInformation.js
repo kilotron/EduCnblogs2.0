@@ -7,7 +7,7 @@ import React, { Component} from 'react';
 //关于cookie包的配置方法，请看https://github.com/joeferraro/react-native-cookies
 import CookieManager from 'react-native-cookies'
 import * as storage from '../Storage/storage.js'
-import PushUtil from '../umeng/PushUtil'
+import * as umengPush from '../umeng/umengPush'
 import {
     StyleSheet,
     Text,
@@ -264,7 +264,7 @@ export default class UserInformation extends Component{
                 underlayColor="white"
                 activeOpacity={0.5}
                 onPress={()=>{
-                    
+                    umengPush.testPush();
                 }}//关联函数
                 style = {{
                     justifyContent:'center',
@@ -274,7 +274,7 @@ export default class UserInformation extends Component{
                     backgroundColor: 'white',
                     paddingLeft: 0.05*screenWidth,
             }}>
-            <Text style = {{fontSize: 18, fontWeight: 'bold', color:'rgb(51,51,51)'}}>测试推送</Text>
+            <Text style = {{fontSize: 18, fontWeight: 'bold', color:'rgb(51,51,51)'}}>测试按钮</Text>
             </TouchableHighlight>
             <TouchableOpacity style = {{
                 justifyContent:'center',

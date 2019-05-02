@@ -22,12 +22,13 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 const screenHeight= MyAdapter.screenHeight;
 const ContentHandler = require('../DataHandler/BlogDetail/ContentHandler');
 
-export default class BlogBookmarks extends Component{
+export default class BookmarksEdit extends Component{
     constructor(props){
         super(props);
         this.state = {
             blogUrl: this.props.navigation.state.params.Url,
             blogTitle: this.props.navigation.state.params.Title,
+            bookmarksId: this.props.navigation.state.params.Id,
             tagsContent: '',
             summary: '',
         }
@@ -58,24 +59,22 @@ export default class BlogBookmarks extends Component{
             Tags: tagsContent.split(','),
         };
         let body = JSON.stringify(postBody);
-        let url = Config.Bookmarks + '/';
-        Service.UserAction(url, body, 'POST').then((jsonData)=>{
+        let url = Config.Bookmarks + '/' + this.state.bookmarksId;
+
+        Service.UserAction(url, body, 'PATCH').then((jsonData)=>{
             if(jsonData===null)
             {
                 ToastAndroid.show('请求失败！',ToastAndroid.SHORT);
             }
             else if(jsonData.ok)
             {
-                ToastAndroid.show('添加成功！',ToastAndroid.SHORT);
-            }
-            else if(jsonData._bodyText==='网摘已经收藏')
-            {
-                ToastAndroid.show('网摘已经收藏！',ToastAndroid.SHORT);
+                ToastAndroid.show('修改成功！',ToastAndroid.SHORT);
             }
             else
             {
                 ToastAndroid.show('发生错误，请稍后重试！',ToastAndroid.SHORT);
             }
+            this.props.navigation.state.params.callback();
             this.props.navigation.goBack();
         }).catch((error) => {
             ToastAndroid.show(err_info.NO_INTERNET ,ToastAndroid.SHORT);
@@ -123,7 +122,7 @@ export default class BlogBookmarks extends Component{
                     </View>
                     <View style={styles.divisionView}></View>
                     <Button style={styles.commitBtn}
-                        title='添加收藏'
+                        title='修改收藏'
                         onPress= {this._onPress}>
                     </Button>
                 </View>

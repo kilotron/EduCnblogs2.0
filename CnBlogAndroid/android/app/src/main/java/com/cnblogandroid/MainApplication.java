@@ -34,7 +34,7 @@ import static com.umeng.message.UmengDownloadResourceService.TAG;
 
 
 public class MainApplication extends Application implements ReactApplication {
-    private static final String umengAppKey = "5cb692ac570df31b8d000cd7";
+  private static final String umengAppKey = "5cb692ac570df31b8d000cd7";
   private static final String umengMessageSecret = "b2def4184d6c3bad76c1b5d7235e3398";
   private static final String TAG = MainApplication.class.getName();
   private Handler handler;
@@ -78,18 +78,6 @@ public class MainApplication extends Application implements ReactApplication {
     // 参数四：设备类型，必须参数，传参数为UMConfigure.DEVICE_TYPE_PHONE则表示手机；传参数为UMConfigure.DEVICE_TYPE_BOX则表示盒子；默认为手机；
     // 参数五：Push推送业务的secret 填充Umeng Message Secret对应信息（需替换）
     RNUMConfigure.init(this, umengAppKey, "ALL", UMConfigure.DEVICE_TYPE_PHONE, umengMessageSecret);
-    // PushAgent mPushAgent = PushAgent.getInstance(this);
-    // mPushAgent.register(new IUmengRegisterCallback() {
-    //   @Override
-    //   public void onSuccess(String deviceToken) {
-    //     //注册成功会返回deviceToken deviceToken是推送消息的唯一标志
-    //     Log.i(TAG,"注册成功：deviceToken：-------->  " + deviceToken);
-    //   }
-    //   @Override
-    //   public void onFailure(String s, String s1) {
-    //     Log.e(TAG,"注册失败：-------->  " + "s:" + s + ",s1:" + s1);
-    //   }
-    // });
     initUpush();
   }
 
@@ -181,7 +169,7 @@ public class MainApplication extends Application implements ReactApplication {
     mPushAgent.register(new IUmengRegisterCallback() {
         @Override
         public void onSuccess(String deviceToken) {
-            Log.i(TAG, "推送注册成功，device token: " + deviceToken);
+          Log.i(TAG, "推送注册成功，device token: " + deviceToken);
         }
 
         @Override

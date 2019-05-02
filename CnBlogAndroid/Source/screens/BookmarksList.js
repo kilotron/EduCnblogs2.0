@@ -15,8 +15,10 @@ import {
     ActivityIndicator,
     TouchableOpacity,
     ToastAndroid,
+    PanResponder,
     screen,
     Alert,
+    Button,
 } from 'react-native';
 
 import {
@@ -109,36 +111,82 @@ export default class BookmarksList extends Component {
         var DateAdded = item1.item.dateAdded;
         var FromCnBlogs = item1.item.fromCnBlogs;
         var DetailId = item1.item.detailId;
-        let blogApp = GetBlogApp(LinkUrl);
+        let BlogApp = GetBlogApp(LinkUrl);
 
+        let _panResponder = PanResponder.create({
+          onStartShouldSetPanResponder: (evt, gestureState) => true,
+          onMoveShouldSetPanResponder: (evt, gestureState) => true,
+          //onPanResponderGrant: this._handlePanResponderGrant,
+          //onPanResponderMove: this._handlePanResponderMove,
+          onPanResponderRelease: (evt, gestureState)=>{
+              if(gestureState.dx < 0 && gestureState.dx < -screenWidth*0.1) {
+                  //Alert.alert('位移为 '+ gestureState.dx + '\n删除 '+ WzLinkId);
+                  this._onPressDelBookmarks(WzLinkId);
+              }
+              else if(gestureState.dx > 0 && gestureState.dx > screenWidth*0.1) {
+                  //Alert.alert('位移为 '+ gestureState.dx + '\n编辑 '+ WzLinkId);
+                  this.props.navigation.navigate('BookmarksEdit',{Url: LinkUrl,
+                      Title: Title, Id: WzLinkId, callback: this._FlatListRefresh});
+              }
+              else{
+                  //Alert.alert('位移为 '+ gestureState.dx + '\n屏幕宽度 ' + screenWidth);
+
+                  this.props.navigation.navigate('BlogDetail',{Url: LinkUrl, Id: DetailId,
+                      blogApp: BlogApp, CommentCount: 0, Title: Title});
+              }
+          },
+          onPanResponderTerminate: (evt, gestureState)=>{console.log('bb ' + gestureState.dx)},
+        });
+
+
+/*
+<View>
+    <TouchableOpacity style={{width: screenWidth*0.2, flex: 1, backgroundColor: 'red', }}
+        onPress= {()=>{this._onPressDelBookmarks(WzLinkId);}}>
+        <Text>删除</Text>
+    </TouchableOpacity>
+</View>
+<View>
+    <TouchableOpacity style={{width: screenWidth*0.2, flex: 1, backgroundColor: 'blue',}}
+        onPress= {()=>{
+        this.props.navigation.navigate('BookmarksEdit',{Url: LinkUrl,
+            Title: Title, Id: WzLinkId, callback: this._FlatListRefresh});} }>
+        <Text>编辑</Text>
+    </TouchableOpacity>
+</View>
+{..._panResponder.panHandlers}
+*/
         return(
-            <View style={flatStyles.cell}>
-            <TouchableOpacity onPress={()=>{
-                this.props.navigation.navigate('BlogDetail',{Url: LinkUrl, Id: DetailId,
-                    blogApp: blogApp, CommentCount: 0, Title: Title});
-                }}
-                onLongPress={()=>{this._onPressDelBookmarks(WzLinkId);}}>
-                <View style={styles.textcontainer}>
-                    <Text numberOfLines={1} style={styles.titleContent}>
-                        {Title}
-                    </Text>
-                    <Text numberOfLines={3} style={styles.summaryContent}>
-                        <Text style={{color: 'gray'}}>摘要: </Text>
-                        {Summary}
-                    </Text>
-                    {/* tags信息待加入 */}
-                    <View style={{alignSelf: 'flex-end'}}>
-                        <Text style={styles.bookmarksBlogUrl}>
-                            {LinkUrl}
-                        </Text>
-                    </View>
-                    <View style={{alignSelf: 'flex-end'}}>
-                        <Text style={styles.bookmarksDateAdded}>
-                            {DateAdded}
-                        </Text>
-                    </View>
+            <View {..._panResponder.panHandlers}
+            >
+                <View style={flatStyles.cell }>
+                    <TouchableOpacity onPress={()=>{
+                        this.props.navigation.navigate('BlogDetail',{Url: LinkUrl, Id: DetailId,
+                            blogApp: BlogApp, CommentCount: 0, Title: Title});
+                        }}
+                        >
+                        <View style={styles.textcontainer}>
+                            <Text numberOfLines={1} style={styles.titleContent}>
+                                {Title}
+                            </Text>
+                            <Text numberOfLines={3} style={styles.summaryContent}>
+                                <Text style={{color: 'gray'}}>摘要: </Text>
+                                {Summary}
+                            </Text>
+                            {/* tags信息待加入 */}
+                            <View style={{alignSelf: 'flex-end'}}>
+                                <Text style={styles.bookmarksBlogUrl}>
+                                    {LinkUrl}
+                                </Text>
+                            </View>
+                            <View style={{alignSelf: 'flex-end'}}>
+                                <Text style={styles.bookmarksDateAdded}>
+                                    {DateAdded}
+                                </Text>
+                            </View>
+                        </View>
+                    </TouchableOpacity>
                 </View>
-            </TouchableOpacity>
             </View>
         )
     };

@@ -47,6 +47,7 @@ import BlogDetail from './Source/screens/BlogDetail'
 import BlogComment from './Source/screens/BlogComment'
 import BlogBookmarks from './Source/screens/BlogBookmarks'
 import BookmarksList from './Source/screens/BookmarksList'
+import BookmarksEdit from './Source/screens/BookmarksEdit'
 import ClassMember from './Source/screens/ClassMember'
 import ClassMemberAdd from './Source/screens/ClassMemberAdd'
 import MemberBlog from './Source/screens/MemberBlog'
@@ -367,7 +368,7 @@ const HomeTab = TabNavigator({
         }
     },
 
-     
+
 
 },{
     tabBarPosition: 'bottom',
@@ -647,6 +648,20 @@ const SimpleNavigation = StackNavigator({
         navigationOptions: {
             headerTintColor:'white',
             headerTitle: '添加收藏',
+            headerStyle: {
+                height: 40,
+                backgroundColor: UI.TOP_COLOR,
+            },
+            headerTitleStyle: {
+                fontSize: 18,
+            },
+        }
+    },
+    BookmarksEdit: {
+        screen: BookmarksEdit,
+        navigationOptions: {
+            headerTintColor:'white',
+            headerTitle: '修改收藏',
             headerStyle: {
                 height: 40,
                 backgroundColor: UI.TOP_COLOR,

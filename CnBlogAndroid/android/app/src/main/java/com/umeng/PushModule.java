@@ -36,7 +36,7 @@ public class PushModule extends ReactContextBaseJavaModule {
     private static Activity ma;
     private PushAgent mPushAgent;
     private Handler handler;
-
+    
     public PushModule(ReactApplicationContext reactContext) {
         super(reactContext);
         context = reactContext;
@@ -53,6 +53,12 @@ public class PushModule extends ReactContextBaseJavaModule {
     }
     private static void runOnMainThread(Runnable runnable) {
         mSDKHandler.postDelayed(runnable, 0);
+    }
+    @ReactMethod
+    public void getDeviceToken(Callback callback) {
+        PushAgent mPushAgent = PushAgent.getInstance(context);
+        String registrationId = mPushAgent.getRegistrationId();
+        callback.invoke(registrationId);
     }
     @ReactMethod
     public void addTag(String tag, final Callback successCallback) {

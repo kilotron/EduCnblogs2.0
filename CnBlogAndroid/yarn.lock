@@ -4675,6 +4675,11 @@ react-native-keyboard-aware-scroll-view@0.8.0, react-native-keyboard-aware-scrol
     prop-types "^15.6.2"
     react-native-iphone-x-helper "^1.0.3"
 
+react-native-md5@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.npm.taobao.org/react-native-md5/download/react-native-md5-1.0.0.tgz#2320be24d674938ae5ef4f492698edbbfa0e0205"
+  integrity sha1-IyC+JNZ0k4rl709JJpjtu/oOAgU=
+
 react-native-modal-dropdown@^0.6.2:
   version "0.6.2"
   resolved "http://registry.npm.taobao.org/react-native-modal-dropdown/download/react-native-modal-dropdown-0.6.2.tgz#da6027b3546d2031fbce46242bffc95561e13599"

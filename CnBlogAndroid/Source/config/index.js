@@ -1,6 +1,10 @@
 import Storage from 'react-native-storage';
 import {AsyncStorage} from 'react-native';
 
+export const umengConfig = {
+	appkey:'5cb692ac570df31b8d000cd7',
+	appMasterSecret:'b2def4184d6c3bad76c1b5d7235e3398'
+}
 export default{
 	apiDomain : 'https://api.cnblogs.com/',
 	AccessToken : 'https://oauth.cnblogs.com/connect/token',

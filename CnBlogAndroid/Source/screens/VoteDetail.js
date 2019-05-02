@@ -52,21 +52,26 @@ export default class VoteDetail extends Component {
             /* 每一个投票的题目和选项、图片等信息。*/
             voteContent: [],
 
-            /* 复选框是否选中的标记。根据参与投票的API，每个班级的voteOptionId是唯一的，
+            /**复选框是否选中的标记。根据参与投票的API，每个班级的voteOptionId是唯一的，
                那么，对某一个的投票来说，voteOptionId也是唯一的，因此，用voteOptionId作为
                复选框(也可作为单选框)的标识。一个isChecked的示例：
-               [123: {isChecked: false, option: '单选选项1', exclusiveOptionIds: [124]}, 
-                124: {isChecked: true, option: '单选选项2', exclusiveOptionIds: [123]},
+               [123: {isChecked: false, option: '单选选项1', exclusiveOptionIds: [124], indexOfThis: 0}, 
+                124: {isChecked: true, option: '单选选项2', exclusiveOptionIds: [123], indexOfThis: 1},
                 125: {isChecked: true, option: '复选选项1'},
                 126: {isChecked: true, option: '复选选项2'},]，
                其中，123、124都是voteOptionId。
                isChecked：该选项是否选中，
                option：选项内容
-               exclusiveOptionIds：一个单选题里的相互排斥的选项们，多选不需要该属性。 */
+               exclusiveOptionIds：一个单选题里的相互排斥的选项们，多选不需要该属性
+               indexOfThis: 单选题中，选项的编号（从零开始） */
             isChecked: new Map(), 
         }
-        /*每道题的所有选项ID为一组，用于检查是否完成所有问题。 例如[[123, 124], [125,126]]*/
-        this.buttonGroups = [];
+        /**每道题的所有选项ID为一组，用于检查是否完成所有问题。 
+          例如[1: {ids: [123, 124], selectedIndex: 0, isRadioButton: true}, 
+          2: {ids: [125,126], isRadioButton:false}]
+          其中1、2是voteContentId,[123, 124]、[125, 126]是同一题目的所有选项voteOptionId
+          selectedIndex是单选题中被选中选项的编号，从0开始，为null表示什么都没选中。*/
+        this.buttonGroups = new Map();
     }
 
     /**此函数只在获取投票内容后调用一次，来初始化state isChecked。
@@ -75,10 +80,16 @@ export default class VoteDetail extends Component {
      */
     _isCheckedInit() {
         for (var i in this.state.voteContent) {
-            voteOptions = this.state.voteContent[i].voteOptions;
-            isRadioButton = this.state.voteContent[i].voteMode == 1;// 是否为单选
+            var voteOptions = this.state.voteContent[i].voteOptions;
+            var isRadioButton = this.state.voteContent[i].voteMode == 1;// 是否为单选
+            var voteContentId = this.state.voteContent[i].voteContentId;//题目ID
             var aButtonGroup = [];
-            this.buttonGroups.push(aButtonGroup);
+            if (isRadioButton) {
+                this.buttonGroups.set(voteContentId, {ids: aButtonGroup, selectedIndex: null, isRadioButton: true});
+            } else {
+                this.buttonGroups.set(voteContentId, {ids: aButtonGroup, isRadioButton: false});
+            }
+            var idx = 0;
             for (var j in voteOptions) {
                 aButtonGroup.push(voteOptions[j].voteOptionId);
                 var data = {};
@@ -87,6 +98,7 @@ export default class VoteDetail extends Component {
                 data.voteOptionId = voteOptions[j].voteOptionId;
                 this.state.isChecked.set(data.voteOptionId, data);
                 if (isRadioButton) {
+                    data.indexOfThis = idx;
                     // 将同一组的其他选项加入data.exclusiveOptionIds中
                     data.exclusiveOptionIds = [];
                     for (var k in voteOptions) {
@@ -95,6 +107,7 @@ export default class VoteDetail extends Component {
                         }
                     }
                 }
+                idx++;
             }
         }
     }
@@ -104,6 +117,8 @@ export default class VoteDetail extends Component {
     componentWillMount = () => {
         this._isMounted = true;
         let contenturl = Config.VoteDetail + this.state.voteId;
+        let voteContentURL = Config.VoteContent + this.state.voteId;
+
         Service.Get(contenturl).then((jsonData) => {
             if (jsonData !== 'rejected') {
                 if (this._isMounted) {
@@ -125,24 +140,24 @@ export default class VoteDetail extends Component {
             }
         })
         .then(() => {
+            Service.Get(voteContentURL)
+            .then((jsonData) => {
+                if (jsonData !== 'rejected') {
+                    if (this._isMounted) {
+                        this.setState({voteContent: jsonData}, () => {
+                            this._isCheckedInit();
+                        });
+                    }
+                }
+            })
+            .catch((err) => {
+                alert('error');
+            })
+        })
+        .then(() => {
             this._getVoteState(); // 获取用户是否已经投票。
         })
         .catch((err)=>{});
-
-        let voteContentURL = Config.VoteContent + this.state.voteId;
-        Service.Get(voteContentURL)
-        .then((jsonData) => {
-            if (jsonData !== 'rejected') {
-                if (this._isMounted) {
-                    this.setState({voteContent: jsonData}, () => {
-                        this._isCheckedInit();
-                    });
-                }
-            }
-        })
-        .catch((err) => {
-            alert('error');
-        })
     }
 
     componentDidMount = () => {
@@ -188,9 +203,16 @@ export default class VoteDetail extends Component {
 
     /**一个单选题 
      * 参数index从0开始。
+     * item.voteMode: 投票模式
+     * item.voteContentId: 题目编号
     */
     _renderVoteItem = ({item, index}) => {
         if (item.voteMode == 1) { // 单选，item是API返回的数据
+            var selectedIndex = null;
+            if (this.buttonGroups.get(parseInt(item.voteContentId))) {
+                // 一开始this.buttonGroups可能还未初始化
+                selectedIndex = this.buttonGroups.get(parseInt(item.voteContentId)).selectedIndex;
+            }
             return (
                 <View >
                     {this._renderItemHeader({item, index})}
@@ -206,6 +228,7 @@ export default class VoteDetail extends Component {
                             data.isChecked = true;
                             this._uncheckOtherRadioButtonsInSameGroup(value);
                         }}
+                        selectedIndex={selectedIndex}
                     >
                         {this._renderRadioButtonItem(item.voteOptions)}
                     </RadioGroup>
@@ -235,6 +258,7 @@ export default class VoteDetail extends Component {
                     value={voteOptionId} 
                     key={voteOptionId}
                     style={styles.voteRadioButton}
+                    disabled={this.state.hasVoted} // 已经投票过则不能更改选项。
                 >
                     <Text style={styles.voteRadioButtonText}>{voteOptions[i].option}</Text>
                 </RadioButton>
@@ -277,7 +301,8 @@ export default class VoteDetail extends Component {
             <CheckBox 
                 key={data.voteOptionId}
                 rightText={data.option} 
-                rightTextStyle={styles.voteCheckBoxText}
+                rightTextStyle={this.state.hasVoted ? styles.voteCheckBoxTextDisabled 
+                    : styles.voteCheckBoxText}
                 onClick={() => {
                     data.isChecked = !data.isChecked;
                     if (this._isMounted) {
@@ -287,8 +312,9 @@ export default class VoteDetail extends Component {
                     }
                 }}
                 style={styles.voteCheckBox}
-                checkBoxColor='#666'
+                checkBoxColor={this.state.hasVoted ? '#CCC': '#666'}
                 isChecked={data.isChecked}
+                disabled={this.state.hasVoted}
             />
         )
     }
@@ -387,6 +413,7 @@ export default class VoteDetail extends Component {
         .then((jsonData) => {
             if (jsonData.isSuccess) {
                 Alert.alert('提示', '投票成功');
+                this._getVoteState();   // 刷新界面
             } else if (jsonData.isWarning) {
                 Alert.alert('提示', jsonData.message);
             } else  { // if (jsonData.isError)
@@ -402,44 +429,79 @@ export default class VoteDetail extends Component {
     _validateVoteOptions() {
         var complete = true;
 
-        for (var i in this.buttonGroups) {
-            buttons = this.buttonGroups[i];
+        this.buttonGroups.forEach((value, key, map) => {
+            // key是voteContentId。
+            buttons = value.ids;
             var thisButtonGrouphasOneChecked = false;
             for (var j in buttons) {
                 data = this.state.isChecked.get(buttons[j]);
                 thisButtonGrouphasOneChecked = thisButtonGrouphasOneChecked || data.isChecked;
             }
             complete = complete && thisButtonGrouphasOneChecked;
-        }
+        });
+
         return complete;
     }
 
-    /**判断用户是否已经投票过了。是则设置this.state.hasVoted=true */
+    /**判断用户是否已经投票过了。是则设置this.state.hasVoted=true,并设置this.state.isChecked */
     _getVoteState() {
         let user_url = Config.apiDomain + api.user.info;
+        var memberId = -1;
         Service.Get(user_url)
         .then((jsonData) => {
             var memberIdURL = Config.apiDomain + api.ClassGet.blogID2Mem + 
             jsonData.BlogId + '/' + this.state.schoolClassId;
-            Service.Get(memberIdURL)
-            .then((jsonData) => {
-                this.memberId = jsonData.memberId;
-                return this.memberId;
-            })
-            .then((memberId) => {
-                var voteIsCommitedURL = Config.VoteIsCommited + memberId +
+            return Service.Get(memberIdURL)
+        })
+        .then((jsonData) => {
+            memberId = jsonData.memberId;
+            var voteIsCommitedURL = Config.VoteIsCommited + memberId +
                     '/' + this.state.voteId;
-                Service.Get(voteIsCommitedURL)
-                .then((data) => {
-                    if (this._isMounted) {
-                        this.setState({
-                            hasVoted: data,
-                        })
-                    }
+             return Service.Get(voteIsCommitedURL)
+        })
+        .then((_hasVoted) => {
+            if (this._isMounted) {
+                this.setState({
+                    hasVoted: _hasVoted,
                 })
-                .catch(error => {});
-            })
-            .catch(error => {});
+            }
+            if (!_hasVoted) {
+                return null;
+            }
+            // 获取投票选项
+            let committedOptionsURL = Config.VoteCommittedOptions + memberId + 
+                '/' + this.state.voteId;
+            return Service.Get(committedOptionsURL)
+        })
+        .then((jsonData) => {
+            if (jsonData == null) {
+                return; // 没有投票
+            }
+            for (var voteContentId in jsonData) {
+                // jsonData[voteContentId]是投票选项的数组
+                var selectedOptions = jsonData[voteContentId];
+                var allOptions = this.buttonGroups.get(parseInt(voteContentId)).ids;
+                var isRadioButton = this.buttonGroups.get(parseInt(voteContentId)).isRadioButton;
+                for (var i in selectedOptions) {
+                    var selectedContent = selectedOptions[i];
+                    for (var j in allOptions) {
+                        var voteOptionId = allOptions[j];
+                        var voteContent = this.state.isChecked.get(voteOptionId).option;
+                        if (selectedContent == voteContent) {   // 已选中此项
+                            this.state.isChecked.get(voteOptionId).isChecked = true;
+                            if (isRadioButton) { // 单选框设置选中选项
+                                // 这里voteOptionId是被选中选项。
+                                this.buttonGroups.get(parseInt(voteContentId)).selectedIndex = this.state.isChecked.get(voteOptionId).indexOfThis;
+                            }
+                        }
+                    }
+                }
+            }
+            if (this._isMounted) {
+                this.setState({
+                    isChecked: this.state.isChecked,
+                });
+            }
         })
         .catch(error => {});      
     }
@@ -568,6 +630,11 @@ const styles = StyleSheet.create({
     voteCheckBoxText: {
         fontSize: 15, 
         color: '#555', 
+        marginLeft: 5
+    },
+    voteCheckBoxTextDisabled: {
+        fontSize: 15, 
+        color: '#BBB', 
         marginLeft: 5
     },
     voteCheckBox: {
@@ -722,5 +789,25 @@ voteId	number	是	投票Id	1
 返回示例：
                     
 false
+
+6.获取成员投票项
+
+请求方式：GET
+
+请求地址：https://api.cnblogs.com/api/edu/vote/committed/options/{memberId}/{voteId}
+
+Body参数名	类型	必需	描述	示例 e.g.
+memberId	number	是	成员Id	1
+voteId	number	是	投票Id	1
+返回示例：
+          
+{
+    "1": [
+        "一般，我会写好的"
+    ]
+}
+                            
+Body参数名	描述	类型
+1	投票内容Id	array
                       
 */

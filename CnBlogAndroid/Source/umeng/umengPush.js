@@ -8,7 +8,7 @@ import * as Service from '../request/request.js';
 export const umengConfig = {
     urlHead:'http://msg.umeng.com/api/',
 	appkey:'5cb692ac570df31b8d000cd7',
-	appMasterSecret:'b2def4184d6c3bad76c1b5d7235e3398',
+	appMasterSecret:'0qvlibhfma68xe5xe9untjujsilwlf14',
 	messageType:{
 		unicast:'unicast',
 		listcast:'listcast',

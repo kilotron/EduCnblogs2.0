@@ -1,17 +1,37 @@
-import {umengConfig} from '../config'
 import PushUtil from './PushUtil'
 
 import md5, { hex_md5 } from "react-native-md5";
-/*关于url的常量
+import {requireTime} from '../request/requireTime';
+import * as Service from '../request/request.js';
+
+//umeng相关参数，详见文档
+export const umengConfig = {
+    urlHead:'http://msg.umeng.com/api/',
+	appkey:'5cb692ac570df31b8d000cd7',
+	appMasterSecret:'b2def4184d6c3bad76c1b5d7235e3398',
+	messageType:{
+		unicast:'unicast',
+		listcast:'listcast',
+		filecast:'filecast',
+		broadcast:'broadcast',
+		groupcast:'groupcast',
+		customizedcast:'customizedcast',
+	},
+	displayType:{
+		notification:'notification',
+		message:'message',
+	},
+	requireType:{
+		send:'send',
+		getStatus:'status',
+		cancel:'cancel',
+		uploadFile:'upload',
+    },
+    
+}
+/*关于url的函数
 format: pushUrl + pushType + ?sign=mysign
 */
-const urlHead = 'http://msg.umeng.com/api/'
-const requireType = {
-    send:'send',
-    getStatus:'status',
-    cancel:'cancel',
-    uploadFile:'upload',
-}
 /*
 该函数用于:计算签名并得到最后的请求url
 关于签名：
@@ -28,25 +48,122 @@ const requireType = {
 function getUrl(type, postBody){
     let appMasterSecret=umengConfig.appMasterSecret;
     const method = 'POST';
-    let url = urlHead + type;
+    let url = umengConfig.urlHead + type;
     //md5加密
-    let rawString = method + url + JSON.stringify(postBody) + appMasterSecret;
+    console.log(postBody);
+    let rawString = encodeURI(method + url + JSON.stringify(postBody) + appMasterSecret);
     let sign = hex_md5(rawString);
-
+    
     return (url + '?sign=' + sign);
 }
 
 //获取deviceToken，可能仅当pushAgent注册后才能成功获取
-function getDeviceToken(){
+// function getDeviceToken(){
+//     let ret = PushUtil.getDeviceToken((deviceToken)=>{
+//         console.log(deviceToken);
+//         return deviceToken;
+//     });
+//     return ret;
+// }
+
+
+export function sendUnicast(params){
+    //单播通知请求函数
+    /*
+    输入：
+    params : 参数，json格式
+        ticker:必填，通知栏提示文字
+        title:必填，通知标题
+        text:必填，通知文字描述
+    输出：成功返回消息id;失败返回错误码。
+    */
+    let appkey = umengConfig.appkey;
+    let type = umengConfig.messageType.unicast;
+    // let deviceToken = getDeviceToken();
+
+    let displayType = umengConfig.displayType.notification;
+    let body = {
+        "ticker":params.ticker,
+        "title":params.title,
+        "text":params.text
+    };
+    let payload = {
+        "display_type":displayType,
+        "body":body,
+    }
     PushUtil.getDeviceToken((deviceToken)=>{
-        console.log(deviceToken);
-        return deviceToken;
+        requireTime().then((result)=>{
+            let timestamp = (result == -1 ? (new Date()).getTime() : result) +"";
+            let postBody = {
+                "appkey":appkey,
+                "timestamp":timestamp,
+                "type":type,
+                "production_mode":"false",
+                "device_tokens":deviceToken,
+                "payload":payload,
+                "description":"单播"
+            }
+            let url = getUrl(umengConfig.requireType.send,postBody);
+            Service.RawUserAction(url,JSON.stringify(postBody),'POST').then((result)=>{
+                result.json().then((jsonData)=>{
+                    if(result.ret == "SUCCESS"){
+                        return jsonData.data.msg_id;
+                    }
+                    else{
+                        console.log(jsonData.data.error_msg);
+                        return jsonData.data.error_code;
+                    }
+                }) 
+            }).catch((err)=>{
+                console.log(err);
+                return -1;
+            })
+        });
     });
 }
 
+/*
+关于tag的函数
+*/
 
+//为该设备添加一个tag，变量tag为字符串
+//若成功则返回0，若失败返回状态码
+export function addTag(tag){
+    PushUtil.addTag(tag,(code,remain) =>{
+        if(code == 200){
+            return 0;
+        }else{ 
+            console.log(remain);
+            return code;
+        }
+    });
+}
+
+//为该设备删除一个tag，变量tag为字符串
+//若成功则返回0，若失败返回状态码
+export function deleteTag(tag){
+    PushUtil.deleteTag(tag,(code,remain) =>{
+        if(code == 200){
+            return 0;
+        }else{ 
+            console.log(remain);
+            return code;
+        }
+    });
+}
+
+//展示该设备绑定的所有tag
+//若成功则返回一个包含所有tag的数组,若失败则返回状态码
+export function listTag(){
+    PushUtil.listTag((code,result) =>{
+        if(code == 200){
+            return result;
+        }
+        else return code;
+    })
+}
 
 
 export function testPush(){
-    console.log(getUrl(requireType.send,"假body"));
+    sendUnicast({ticker:"ticker",title:"title",text:"text"});``
 }

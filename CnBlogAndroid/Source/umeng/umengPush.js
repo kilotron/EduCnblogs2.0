@@ -51,7 +51,9 @@ function getUrl(type, postBody){
     let url = umengConfig.urlHead + type;
     //md5加密
     console.log(postBody);
-    let rawString = encodeURI(method + url + JSON.stringify(postBody) + appMasterSecret);
+    //let rawString = encodeURI(method + url + JSON.stringify(postBody) + appMasterSecret);
+    //fix here
+    let rawString = MyUtf8Convert(method + url + JSON.stringify(postBody) + appMasterSecret);
     let sign = hex_md5(rawString);
     
     return (url + '?sign=' + sign);
@@ -167,3 +169,90 @@ export function listTag(){
 export function testPush(){
     sendUnicast({ticker:"ticker",title:"title",text:"text"});``
 }
+
+//编码转换辅助函数
+	//判断字符是否是中文
+	function isChinese(s)
+        {
+            if(escape(s).indexOf("%u") < 0)
+            {
+		return false;
+	    }      
+		return true;
+	}
+        //转换成UTF8字节数组形式
+        function changeToUtf8Bytes(str, isGetBytes) {
+              var back = [];
+              var byteSize = 0;
+              for (var i = 0; i < str.length; i++) {
+                  var code = str.charCodeAt(i);
+                  if (0x00 <= code && code <= 0x7f) {
+                        byteSize += 1;
+                        back.push(code);
+                  } else if (0x80 <= code && code <= 0x7ff) {
+                        byteSize += 2;
+                        back.push((192 | (31 & (code >> 6))));
+                        back.push((128 | (63 & code)))
+                  } else if ((0x800 <= code && code <= 0xd7ff) 
+                          || (0xe000 <= code && code <= 0xffff)) {
+                        byteSize += 3;
+                        back.push((224 | (15 & (code >> 12))));
+                        back.push((128 | (63 & (code >> 6))));
+                        back.push((128 | (63 & code)))
+                  }
+               }
+               for (i = 0; i < back.length; i++) {
+                    back[i] &= 0xff;
+               }
+               if (isGetBytes) {
+                    return back
+               }
+               if (byteSize <= 0xff) {
+                    return [0, byteSize].concat(back);
+               } else {
+                    return [byteSize >> 8, byteSize & 0xff].concat(back);
+                }
+        }
+        //字节转换为字符串
+        function Byte2Str(origin){
+            var tmp = '\\x' + origin.toString(16);
+            return tmp;
+        }
+        //字节数组转换为字符串
+        function Bytes2Str(arr)
+        {
+            var str = "";
+            for(var i=2; i<arr.length; i++)
+            {
+               var tmp = '\\x' + arr[i].toString(16);
+               // if(tmp.length == 1)
+               // {
+               //     tmp = '\\e' + tmp;
+               // }
+               str += tmp;
+            }
+            return str;
+        }
+
+        //输入：字符串
+        //输出：将字符串中的中文转换为UTF8编码
+        function MyUtf8Convert(origin){
+            var handled = '';
+            var origin_arr = origin.split('');
+            for(var i=0; i < origin_arr.length; i++){
+                if(isChinese(origin_arr[i])){
+                    handled += Bytes2Str(changeToUtf8Bytes(origin_arr[i]));
+                }
+                else{
+                    handled += origin_arr[i];
+                }
+            }
+            return handled;
+        }
+
+        //测试
+        // let method = 'POST';
+        // let url = 'http://msg.umeng.com/api/send';
+        // let appMasterSecret="0qvlibhfma68xe5xe9untjujsilwlf14";
+        // let origin = method + url + postBody + appMasterSecret;
+        // console.log(MyUtf8Convert(origin));

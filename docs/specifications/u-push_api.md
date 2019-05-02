@@ -543,7 +543,7 @@ out_biz_no是开发者的消息标识，和消息一一对应，如果两条消�
 
 ### broadcast消息发送示例
 
-```json`
+```json
 // Android
 {
     "appkey":"你的appkey",
@@ -567,6 +567,7 @@ out_biz_no是开发者的消息标识，和消息一一对应，如果两条消�
     },
     "description":"测试广播通知-Android"
 }
+
 
 // iOS
 {
@@ -594,11 +595,12 @@ out_biz_no是开发者的消息标识，和消息一一对应，如果两条消�
    },
    "description":"测试广播通知-iOS"
 }
+
 ```
 
 返回结果示例：
 
-​```json
+```json
 // 返回成功
 {
     "ret":"SUCCESS",

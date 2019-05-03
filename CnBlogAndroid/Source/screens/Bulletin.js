@@ -20,12 +20,7 @@ import {
     Alert,
 } from 'react-native';
 
-import {
-    StackNavigator,
-    TabNavigator,
-    NavigationActions,
-
-} from 'react-navigation';
+const HTMLSpecialCharsDecode = require('../DataHandler/HTMLSpecialCharsDecode');
 
 const screenWidth= MyAdapter.screenWidth;
 const screenHeight= MyAdapter.screenHeight;

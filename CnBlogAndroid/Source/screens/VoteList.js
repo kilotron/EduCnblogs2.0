@@ -24,10 +24,7 @@ import {
     ActivityIndicator,
 } from 'react-native';
 
-import {
-    StackNavigator,
-    TabNavigator,
-} from 'react-navigation';
+const HTMLSpecialCharsDecode = require('../DataHandler/HTMLSpecialCharsDecode');
 
 const screenWidth = MyAdapter.screenWidth;
 const screenHeight = MyAdapter.screenHeight;
@@ -83,20 +80,6 @@ export default class VoteList extends Component {
         let url = Config.VoteList + '/' + this.state.classId + '/' + pageIndex + '-' + pageSize;
         return url;
     }
-
-    /*componentWillMount() {
-        let pageIndex = 1;
-        Service.Get(this.getUrl(pageIndex))
-            // 获取投票列表
-            .then((jsonData) => {
-                if (this._isMounted) {
-                    this.setState({ votes: jsonData });
-                    if (jsonData !== 'rejected') {
-                        this.setState({ isEmpty: false });
-                    }
-                }
-            })
-    }*/
 
     /** 解析this.state.votes的数据，返回一个数组。 */
     makeVotesList() {
@@ -197,7 +180,7 @@ export default class VoteList extends Component {
                     </Text>
 
                     <Text numberOfLines={3} style={styles.postDescription}>
-                        {item.description}
+                        {HTMLSpecialCharsDecode(item.description)}
                     </Text>
 
                     <View style={styles.postMetadataView}>

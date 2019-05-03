@@ -28,6 +28,7 @@ const titleFontSize= MyAdapter.titleFontSize;
 const abstractFontSize= MyAdapter.abstractFontSize;
 const informationFontSize= MyAdapter.informationFontSize;
 const btnFontSize= MyAdapter.btnFontSize;
+const HTMLSpecialCharsDecode = require('../DataHandler/HTMLSpecialCharsDecode');
 
 export default class HomeworkLists extends Component {
     constructor(props){
@@ -306,7 +307,7 @@ export default class HomeworkLists extends Component {
                         {title}
                     </Text>
                     <Text numberOfLines={3} style= {HomeworkStyles.abstractTextStyle}>
-                        {description}
+                        {HTMLSpecialCharsDecode(description)}
                     </Text>
                     <Text style= {isClosed ? HomeworkStyles.closedInformationTextStyle : (isFinished ? HomeworkStyles.outdateInformationTextStyle : HomeworkStyles.informationTextStyle)}>
                         截止于:{deadline.split('T')[0]+' '+deadline.split('T')[1].substring(0,8)}

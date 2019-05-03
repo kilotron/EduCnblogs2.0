@@ -39,6 +39,7 @@ const ClassBlogPostsListProps = {
 };
 
 const GetBlogApp = require('../DataHandler/BlogDetail/GetBlogApp');
+const HTMLSpecialCharsDecode = require('../DataHandler/HTMLSpecialCharsDecode');
 
 export default class ClassBlogPostsList extends Component {
 
@@ -246,7 +247,7 @@ export default class ClassBlogPostsList extends Component {
                     </Text>
 
                     <Text numberOfLines={3} style={styles.postDescription}>
-                        {item.description}
+                        {HTMLSpecialCharsDecode(item.description)}
                     </Text>
 
                     <View style={styles.postMetadataView}>

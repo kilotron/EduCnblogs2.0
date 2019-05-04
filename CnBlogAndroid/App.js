@@ -62,6 +62,7 @@ import BlogEdition from './Source/screens/BlogEdition'
 import Bulletin from './Source/screens/Bulletin'
 import BulletinAdd from './Source/screens/BulletinAdd'
 import BulletinEdition from './Source/screens/BulletinEdition'
+import HistoryList from './Source/screens/HistoryList'
 import ClassSelect from './Source/screens/ClassSelect'
 import VoteList from './Source/screens/VoteList'
 import Settings from './Source/screens/Settings'
@@ -367,9 +368,6 @@ const HomeTab = TabNavigator({
             )
         }
     },
-
-
-
 },{
     tabBarPosition: 'bottom',
     initialRouteName: 'PersonalBlog',
@@ -803,6 +801,20 @@ const SimpleNavigation = StackNavigator({
         navigationOptions:{
             headerTintColor : 'white',
             headerTitle: '公告',
+            headerStyle: {
+                height:40,
+                backgroundColor:UI.TOP_COLOR,
+            },
+            headerTitleStyle: {
+                fontSize: 18,
+            }
+        }
+    },
+    HistoryList: {
+        screen: HistoryList,
+        navigationOptions:{
+            headerTintColor : 'white',
+            headerTitle: '浏览记录',
             headerStyle: {
                 height:40,
                 backgroundColor:UI.TOP_COLOR,

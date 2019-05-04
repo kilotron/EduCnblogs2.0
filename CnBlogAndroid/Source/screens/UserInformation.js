@@ -222,6 +222,20 @@ export default class UserInformation extends Component{
             }}>
                 <Text style = {{fontSize: 18, fontWeight: 'bold', color:'rgb(51,51,51)'}}>收藏列表</Text>
             </TouchableHighlight>
+            <TouchableHighlight
+                underlayColor="white"
+                activeOpacity={0.5}
+                onPress={()=>{this.props.navigation.navigate('HistoryList');}}//关联函数
+                style = {{
+                    justifyContent:'center',
+                    alignItems: 'flex-start',
+                    height: 0.07*screenHeight,
+                    marginBottom: 0.01*screenHeight,
+                    backgroundColor: 'white',
+                    paddingLeft: 0.05*screenWidth,
+            }}>
+                <Text style = {{fontSize: 18, fontWeight: 'bold', color:'rgb(51,51,51)'}}>浏览记录</Text>
+            </TouchableHighlight>
 
             {
                 global.settings.showSettings ? (
@@ -241,7 +255,7 @@ export default class UserInformation extends Component{
                     </TouchableHighlight>
                 ) : (null)
             }
-            
+
             <TouchableHighlight
                 underlayColor="white"
                 activeOpacity={0.5}

@@ -20,7 +20,6 @@ import {
     ScrollView,
     TouchableHighlight,
     FlatList,
-    Animated,
     ActivityIndicator,
 } from 'react-native';
 
@@ -44,22 +43,8 @@ export default class VoteList extends Component {
             votes: [],
             classId: this.props.classId,
             isEmpy: true, //初始认为请求未成功，不进行渲染，以防App崩溃
-            headerTop: new Animated.Value(0), // 用于向下滚动隐藏筛选条件的动画
             networkError: false,
         }
-
-        /* 下面两个变量用于向下滚动隐藏筛选条件的动画。动画设置的参考链接ClassBlogPostList末尾。 */
-        this.top = this.state.headerTop.interpolate({
-            inputRange: [0, 270, 271, 280],
-            outputRange: [0, -50, -50, -50]
-        });
-        this.animatedEvent = Animated.event(
-            [{
-                nativeEvent: {
-                    contentOffset: { y: this.state.headerTop }
-                }
-            }]
-        );
     }
 
     _isMounted;
@@ -137,18 +122,7 @@ export default class VoteList extends Component {
     _renderEmptyList() {
         if (this.state.networkError) {
             return (
-                <View>
-                    {/** 网络未连接，暂时没有实现 */}
-                    {/*      <TouchableOpacity onPress={() => {
-                        ToastAndroid.show('This is a dinosaur.', ToastAndroid.SHORT);
-                    }}>
-                        <Image
-                            style={styles.dinosaurPic}
-                            source={require('../images/dinosaur.jpg')}
-                        />
-                    </TouchableOpacity>
-                    <Text style={styles.dinosaurText}>未连接到互联网</Text>
-                */} </View>
+                <View></View>
             );
         } else if (this.state.loadStatus !== 'loading') {
             return (
@@ -241,12 +215,7 @@ export default class VoteList extends Component {
     onPress2AddVote() {
         this.props.navigation.navigate('VoteAdd', {
             classId: this.state.classId,
-            //callback: this.UpdateData, 暂时不知道干嘛的
         });
-        /* this.props.navigation.navigate('VoteDetail', //获取详细信息
-        {
-            voteId: 1,
-        }); */
     }
 
     GetAddButton() {
@@ -267,45 +236,35 @@ export default class VoteList extends Component {
         return (
             <View style={styles.container}>
 
-                <Animated.View style={{ top: this.top }}>
-                    <View>
-                        {/* 需要使用View，不然FlatList无法显示 */}
-                        {/* 使用keyExtractor为每个item生成独有的key，就不必再data数组的每一个元素中添加key键。
-                            refreshing设置为false在列表更新时不显示转圈*/}
-                        {/*item设置了立体的样式，这里去掉ItemSeparatorComponent={this._separator}*/}
-                        {
-                            this.state.loadStatus === 'none' ?
-                                (
-                                    <View style={styles.footer}>
-                                        <Text>暂时没有投票</Text>
-                                    </View>
-                                ) : (null)
-                        }
-                        {<FlatList
-                            renderItem={this._renderItem}
-                            data={this.makeVotesList()}
-                            keyExtractor={(item, index) => index.toString()}
-                            onRefresh={this.updateData.bind(this)}
-                            refreshing={false}
-                            onEndReached={this._onEndReached.bind(this)}
-                            onEndReachedThreshold={0.5}
-                            //ListEmptyComponent={this._renderEmptyList.bind(this)}
-                            ListFooterComponent={this._renderFooter.bind(this)}
-                            onScroll={this.animatedEvent}
+                <View>
+                    {/* 需要使用View，不然FlatList无法显示 */}
+                    {/* 使用keyExtractor为每个item生成独有的key，就不必再data数组的每一个元素中添加key键。
+                        refreshing设置为false在列表更新时不显示转圈*/}
+                    {/*item设置了立体的样式，这里去掉ItemSeparatorComponent={this._separator}*/}
+                    {
+                        this.state.loadStatus === 'none' ?
+                            (
+                                <View style={styles.footer}>
+                                    <Text>暂时没有投票</Text>
+                                </View>
+                            ) : (null)
+                    }
+                    {<FlatList
+                        renderItem={this._renderItem}
+                        data={this.makeVotesList()}
+                        keyExtractor={(item, index) => index.toString()}
+                        onRefresh={this.updateData.bind(this)}
+                        refreshing={false}
+                        onEndReached={this._onEndReached.bind(this)}
+                        onEndReachedThreshold={0.5}
+                        ListFooterComponent={this._renderFooter.bind(this)}
+                        onScroll={this.animatedEvent}
+                    />}
 
-                        />}
-
-
-                    </View>
-                </Animated.View>
-
+                </View>
                 {this.GetAddButton()}
-
             </View>
-
         );
-
-
     }
 
 }
@@ -414,5 +373,3 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
 });
-
-// module.exports = VoteHandler;

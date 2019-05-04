@@ -126,16 +126,16 @@ export default class BookmarksList extends Component {
               else if(gestureState.dx > 0 && gestureState.dx > screenWidth*0.1) {
                   //Alert.alert('位移为 '+ gestureState.dx + '\n编辑 '+ WzLinkId);
                   this.props.navigation.navigate('BookmarksEdit',{Url: LinkUrl,
-                      Title: Title, Id: WzLinkId, callback: this._FlatListRefresh});
+                      Title: Title, Id: WzLinkId, Description: Summary, callback: this._FlatListRefresh});
               }
               else{
                   //Alert.alert('位移为 '+ gestureState.dx + '\n屏幕宽度 ' + screenWidth);
 
                   this.props.navigation.navigate('BlogDetail',{Url: LinkUrl, Id: DetailId,
-                      blogApp: BlogApp, CommentCount: 0, Title: Title});
+                      blogApp: BlogApp, CommentCount: 0, Title: Title, Description: Summary});
               }
           },
-          onPanResponderTerminate: (evt, gestureState)=>{console.log('bb ' + gestureState.dx)},
+          onPanResponderTerminate: (evt, gestureState)=>{;},
         });
 
 
@@ -162,7 +162,7 @@ export default class BookmarksList extends Component {
                 <View style={flatStyles.cell }>
                     <TouchableOpacity onPress={()=>{
                         this.props.navigation.navigate('BlogDetail',{Url: LinkUrl, Id: DetailId,
-                            blogApp: BlogApp, CommentCount: 0, Title: Title});
+                            blogApp: BlogApp, CommentCount: 0, Title: Title, Description: Summary});
                         }}
                         >
                         <View style={styles.textcontainer}>

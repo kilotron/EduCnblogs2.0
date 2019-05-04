@@ -30,7 +30,7 @@ export default class BookmarksEdit extends Component{
             blogTitle: this.props.navigation.state.params.Title,
             bookmarksId: this.props.navigation.state.params.Id,
             tagsContent: '',
-            summary: '',
+            summary: this.props.navigation.state.params.Description,
         }
     }
     _isMounted;

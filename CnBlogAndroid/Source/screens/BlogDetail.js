@@ -74,7 +74,7 @@ export default class BlogDetail extends Component{
                 })
                 // 取出前N个结果储存
                 storageData = result.slice(0, this.state.maxHistory);
-                console.log('存储：' + JSON.stringify(storageData));
+                // console.log('存储：' + JSON.stringify(storageData));
                 global.storage.save({key: StorageKey.BLOG_LIST, data: storageData});
             })
         }
@@ -140,7 +140,7 @@ export default class BlogDetail extends Component{
 
     _onPressBookmarks = ()=>{
         this.props.navigation.navigate('BlogBookmarks',{Url: this.props.navigation.state.params.Url,
-            Title: this.props.navigation.state.params.Title});
+            Title: this.props.navigation.state.params.Title, Description: this.props.navigation.state.params.Description});
     }
 
     /**选择博文内容来源。因为班级博文列表的API没有返回博文ID，只返回了URL。

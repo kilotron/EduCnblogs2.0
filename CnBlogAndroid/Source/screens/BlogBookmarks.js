@@ -29,7 +29,7 @@ export default class BlogBookmarks extends Component{
             blogUrl: this.props.navigation.state.params.Url,
             blogTitle: this.props.navigation.state.params.Title,
             tagsContent: '',
-            summary: '',
+            summary: this.props.navigation.state.params.Description,
         }
     }
     _isMounted;

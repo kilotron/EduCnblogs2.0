@@ -4687,6 +4687,11 @@ react-native-modal-dropdown@^0.6.2:
   dependencies:
     prop-types "^15.6.0"
 
+react-native-radio-master@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.npm.taobao.org/react-native-radio-master/download/react-native-radio-master-1.0.1.tgz#a3c375875e5d1130682a3ac72610713e5da163ea"
+  integrity sha1-o8N1h15dETBoKjrHJhBxPl2hY+o=
+
 react-native-safe-area-view@0.11.0:
   version "0.11.0"
   resolved "http://registry.npm.taobao.org/react-native-safe-area-view/download/react-native-safe-area-view-0.11.0.tgz#4f3dda43c2bace37965e7c6aef5fc83d4f19d174"

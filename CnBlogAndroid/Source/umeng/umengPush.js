@@ -3,7 +3,7 @@ import PushUtil from './PushUtil'
 import { md5 } from "../DataHandler/md5";
 import {requireTime} from '../request/requireTime';
 import * as Service from '../request/request.js';
-
+import * as Push from '../DataHandler/Push/PushHandler';
 //umeng相关参数，详见文档
 export const umengConfig = {
     urlHead:'http://msg.umeng.com/api/',
@@ -157,17 +157,19 @@ export function testPush(){
     // sendUnicast({title:"title" + (new Date()).getTime(),text:"text"});
 
     //组播测试
-    body = {ticker:"ticker",title:"title" + (new Date()).getTime(),text:"[groupcast]text"};
-    filter = {
-        "where": 
-        {
-            "and": 
-            [
-                {"tag":"test tag"}
-            ]
-        }
-    }
-    sendGroupcast(body,filter);
+    // body = {ticker:"ticker",title:"title" + (new Date()).getTime(),text:"[groupcast]text"};
+    // filter = {
+    //     "where": 
+    //     {
+    //         "and": 
+    //         [
+    //             {"tag":"test tag"}
+    //         ]
+    //     }
+    // }
+    // sendGroupcast(body,filter);
+    
+    Push.getHomeWorkList().then((list)=>{console.log(list);});
 }
 
 

@@ -22,10 +22,7 @@ import {
     FlatList,
     TouchableHighlight
 } from 'react-native';
-import {
-    StackNavigator,
-    TabNavigator,
-} from 'react-navigation';
+
 const screenWidth= MyAdapter.screenWidth;
 const screenHeight= MyAdapter.screenHeight;
 const titleFontSize= MyAdapter.titleFontSize;

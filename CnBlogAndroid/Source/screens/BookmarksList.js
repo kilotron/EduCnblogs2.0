@@ -160,31 +160,43 @@ export default class BookmarksList extends Component {
             <View {..._panResponder.panHandlers}
             >
                 <View style={flatStyles.cell }>
-                    <TouchableOpacity onPress={()=>{
+                    <TouchableOpacity style = {styles.listcontainer}
+                     onPress={()=>{
                         this.props.navigation.navigate('BlogDetail',{Url: LinkUrl, Id: DetailId,
                             blogApp: BlogApp, CommentCount: 0, Title: Title, Description: Summary});
                         }}
                         >
-                        <View style={styles.textcontainer}>
-                            <Text numberOfLines={1} style={styles.titleContent}>
-                                {Title}
+                        <Text style = {{
+                            fontSize: 18,
+                            fontWeight: 'bold',
+                            marginTop: 10,
+                            marginBottom: 2,
+                            textAlign: 'left',
+                            color: 'black',
+                            fontFamily : 'serif',
+                        }} >
+                            {Title}
+                        </Text>
+                        <Text  numberOfLines={2} style = {{
+                            lineHeight: 25,
+                            fontSize: 14,
+                            marginBottom: 8,
+                            textAlign: 'left',
+                            color: 'rgb(70,70,70)',
+                        }}>
+                            {Summary + '...'}
+                        </Text>
+                        <View style = {{
+                            flexDirection: 'row',
+                            marginBottom: 8,
+                            justifyContent: 'space-around',
+                            alignItems: 'flex-start',
+                        }}>
+                            <Text style = {{fontSize: 10, textAlign: 'right', color: 'black', flex: 1}}>
+                                {BlogApp+'\n添加于 '+DateAdded}
                             </Text>
-                            <Text numberOfLines={3} style={styles.summaryContent}>
-                                <Text style={{color: 'gray'}}>摘要: </Text>
-                                {Summary}
-                            </Text>
-                            {/* tags信息待加入 */}
-                            <View style={{alignSelf: 'flex-end'}}>
-                                <Text style={styles.bookmarksBlogUrl}>
-                                    {LinkUrl}
-                                </Text>
-                            </View>
-                            <View style={{alignSelf: 'flex-end'}}>
-                                <Text style={styles.bookmarksDateAdded}>
-                                    {DateAdded}
-                                </Text>
-                            </View>
                         </View>
+
                     </TouchableOpacity>
                 </View>
             </View>
@@ -230,8 +242,10 @@ export default class BookmarksList extends Component {
                 {
                     this.state.loadStatus==='none'?
                         (
-                            <View style={styles.footer}>
-                                <Text>这还什么都没有</Text>
+                            <View style={{height:30,alignItems:'center',justifyContent:'flex-start',}}>
+                                <Text style={{color:'#999999',fontSize:14,marginTop:5,marginBottom:5,}}>
+                                这还什么都没有
+                                </Text>
                             </View>
                         ):(null)
                 }
@@ -395,33 +409,19 @@ const styles = StyleSheet.create({
         alignItems:'center',
         marginBottom:10,
     },
-    textcontainer: {
-        justifyContent:'flex-start',
-        alignItems: 'flex-start',
-        flex: 4,
-        backgroundColor: 'white',
-        //alignSelf: 'stretch',
-    },
-    titleContent: {
-        color: 'black',
-        fontSize: 18,
-        left: 4,
-    },
-    summaryContent: {
-        color: 'black',
-        fontSize: 16,
-        left: 4,
-    },
-    bookmarksDateAdded: {
-        fontSize: 14,
-    },
-    bookmarksBlogUrl: {
-        fontSize: 12,
-    },
     strangeView:{
         height: 1,
         backgroundColor: 'rgb(225,225,225)',
         marginTop: 0.005*screenHeight,
         alignSelf:'stretch'
     },
+    listcontainer: {
+        justifyContent:'flex-start',
+        alignItems: 'flex-start',
+        flex:1,
+        alignSelf: 'stretch',
+        backgroundColor: 'white',
+        paddingLeft: 0.03*screenWidth,
+        paddingRight: 0.04*screenWidth,
+    }
 });

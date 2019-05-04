@@ -20,12 +20,43 @@ import {
 
 import {RadioGroup, RadioButton} from 'react-native-flexi-radio-button';
 import CheckBox from 'react-native-check-box';
+const HTMLSpecialCharsDecode = require('../DataHandler/HTMLSpecialCharsDecode');
 
 const screenWidth= MyAdapter.screenWidth;
 const screenHeight= MyAdapter.screenHeight;
 
 // 传入voteID作为参数
 export default class VoteDetail extends Component {
+    /**navigationOptions放在此处，可以在标题栏放一个按钮跳转到另一个页面。 */
+    static navigationOptions = ({navigation}) => ({
+        headerTintColor:'white',
+        headerTitle: '投票详情',
+        headerStyle: {
+            height: 40,
+            backgroundColor: UI.TOP_COLOR,
+        },
+        headerTitleStyle: {
+            fontSize: 18,
+        },
+        headerRight: (
+            <TouchableOpacity onPress={() => {
+                navigation.navigate('VoteMemberList', {
+                    schoolClassId: navigation.state.params.schoolClassId,
+                    voteId: navigation.state.params.voteId,
+                });
+            }}>
+                <Image 
+                    source={require('../images/nav_i.png')}
+                    style={{
+                        height: 22,
+                        width: 22, 
+                        marginRight: 12
+                    }}
+                />
+            </TouchableOpacity>
+        ),
+    })
+
     constructor(props) {
         super(props);
         /* 用户在这个班级的成员ID */
@@ -137,6 +168,8 @@ export default class VoteDetail extends Component {
                         isFinished: jsonData.isFinished,
                     })
                 }
+                // 为显示投票成员设置
+                this.props.navigation.setParams({schoolClassId: jsonData.schoolClassId});
             }
         })
         .then(() => {
@@ -541,7 +574,7 @@ export default class VoteDetail extends Component {
                     {/** content组件 */}
                     <View style={styles.content}>
                         <Text style={styles.contentText}>
-                            {this.state.content}
+                            {HTMLSpecialCharsDecode(this.state.content)}
                         </Text>
                     </View>
                 </View>

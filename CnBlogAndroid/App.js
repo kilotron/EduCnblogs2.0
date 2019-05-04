@@ -67,6 +67,7 @@ import VoteList from './Source/screens/VoteList'
 import Settings from './Source/screens/Settings'
 import VoteDetail from './Source/screens/VoteDetail'
 import VoteAdd from './Source/screens/VoteAdd'
+import VoteMemberList from './Source/screens/VoteMemberList'
 const { height, width } = Dimensions.get('window');
 
 const CODE_URL = [
@@ -400,17 +401,7 @@ const SimpleNavigation = StackNavigator({
 
     VoteDetail: {
         screen: VoteDetail,
-        navigationOptions: {
-            headerTintColor:'white',
-            headerTitle: '投票列表',
-            headerStyle: {
-                height: 40,
-                backgroundColor: UI.TOP_COLOR,
-            },
-            headerTitleStyle: {
-                fontSize: 18,
-            },
-        }
+        // navigationOptions放到VoteDetail.js里。
     },
 
     VoteList:{
@@ -424,7 +415,22 @@ const SimpleNavigation = StackNavigator({
             },
             headerTitleStyle: {
                 fontSize: 18,
-            }
+            },
+        }
+    },
+
+    VoteMemberList: {
+        screen: VoteMemberList,
+        navigationOptions: {
+            headerTintColor: 'white',
+            headerTitle: '已投票成员',
+            headerStyle: {
+                height:40,
+                backgroundColor:UI.TOP_COLOR,
+            },
+            headerTitleStyle: {
+                fontSize: 18,
+            },
         }
     },
 

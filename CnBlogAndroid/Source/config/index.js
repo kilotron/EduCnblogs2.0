@@ -35,6 +35,7 @@ export default{
 	VoteCommit : 'https://api.cnblogs.com/api/edu/vote/commit/', // 后接投票ID
 	VoteIsCommited: 'https://api.cnblogs.com/api/edu/vote/iscommitted/', // {memberId}/{voteId}
 	VoteCommittedOptions: 'https://api.cnblogs.com/api/edu/vote/committed/options/', //{memberId}/{voteId}
+	VoteCommittedMembers: 'https://api.cnblogs.com/api/edu/vote/committed/members/', //{schoolClassId}/{voteId}
 }
 
 export const authData = {

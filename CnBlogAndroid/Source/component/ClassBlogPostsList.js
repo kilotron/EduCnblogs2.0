@@ -134,9 +134,10 @@ export default class ClassBlogPostsList extends Component {
 			}
         })
         .catch((err) => {
-            this.setState({loadStatus: 'not loading', networkError: true});
+            if (this._isMounted) {
+                this.setState({loadStatus: 'not loading', networkError: true});
+            }
         });
-        this.setState({loadStatus: 'not loading'});
     }
 
     /** 解析this.state.blogs的数据，返回一个数组。 */

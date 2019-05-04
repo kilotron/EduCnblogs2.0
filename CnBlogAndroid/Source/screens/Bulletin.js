@@ -199,8 +199,10 @@ export default class Bulletin extends Component {
             {
                 this.state.loadStatus==='none'?
                     (
-                        <View style={styles.footer}>
-                            <Text>这还什么都没有</Text>
+                        <View style={{height:30,alignItems:'center',justifyContent:'flex-start',}}>
+                            <Text style={{color:'#999999',fontSize:14,marginTop:5,marginBottom:5,}}>
+                            这还什么都没有
+                            </Text>
                         </View>
                     ): ( null )
             }

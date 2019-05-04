@@ -5,7 +5,6 @@ import * as Service from '../request/request.js'
 import MyAdapter from './MyAdapter.js';
 import React, { Component} from 'react';
 import {UI} from '../config'
-import {err_info} from '../config'
 import {flatStyles} from '../styles/styles'
 import * as storage from '../Storage/storage.js'
 import {
@@ -17,6 +16,7 @@ import {
     ActivityIndicator,
     TouchableOpacity,
     ToastAndroid,
+    PanResponder,
     screen,
     Alert,
 } from 'react-native';
@@ -61,7 +61,6 @@ export default class HistoryList extends Component {
             [
                 {text: '取消'},
                 {text: '确认删除', onPress: ()=>{
-                    storageData = [];
                     global.storage.load({key: StorageKey.BLOG_LIST})
                     .then((ret)=>{
                         result = [];
@@ -76,27 +75,33 @@ export default class HistoryList extends Component {
                         this.setState({
                             theblogs: result,
                             theblogCount: blogCount,
+                            loadStatus:(blogCount>0)?'all loaded':'none',
                         });
                     })
                     .catch((err)=>{
-                        storageData = [];
+                        ToastAndroid.show(err.name,ToastAndroid.SHORT);
                     })
+                }},
+            ]
+        );
+    }
 
-                    /*
-                    result = [];
-                    blogCount = 0;
-                    this.state.theblogs.map((item,index)=>{
-                        if(item.id!=id){
-                            result.push(item);
-                            blogCount++;
-                        }
-                    })
-                    global.storage.save({key: StorageKey.BLOG_LIST, data: result});
+    _onPressDelAll(){
+        if(!this._isMounted){
+            return;
+        }
+        Alert.alert(
+            '删除所有历史记录',
+            '确定要删除吗？',
+            [
+                {text: '取消'},
+                {text: '确认删除', onPress: ()=>{
+                    global.storage.save({key: StorageKey.BLOG_LIST, data: []});
                     this.setState({
-                        theblogs: result,
-                        theblogCount: blogCount,
+                        theblogs: [],
+                        theblogCount: 0,
+                        loadStatus: 'none'
                     });
-                    */
                 }},
             ]
         );
@@ -112,8 +117,30 @@ export default class HistoryList extends Component {
         var CommentCount = item1.item.commentCount;
         var SummaryContent = item1.item.summaryContent;
         var DateAdded = item1.item.dateAdded;
+
+        /* 绑定左右滑动等参数 */
+        let _panResponder = PanResponder.create({
+          onStartShouldSetPanResponder: (evt, gestureState) => true,
+          onMoveShouldSetPanResponder: (evt, gestureState) => true,
+          //onPanResponderGrant: this._handlePanResponderGrant,
+          //onPanResponderMove: this._handlePanResponderMove,
+          onPanResponderRelease: (evt, gestureState)=>{
+              if(gestureState.dx < 0 && gestureState.dx < -screenWidth*0.1) {
+                  this._onPressDelHistory(Id);
+              }
+              else if(gestureState.dx > 0 && gestureState.dx > screenWidth*0.1) {
+                  this._onPressDelAll();
+              }
+              else{
+                  this.props.navigation.navigate('BlogDetail',
+                  {Id:Id, blogApp: BlogApp, CommentCount: CommentCount, Url: Url, Title: Title, Description:SummaryContent});
+              }
+          },
+          onPanResponderTerminate: (evt, gestureState)=>{;},
+        });
+
         return(
-            <View style={flatStyles.cell}>
+            <View style={flatStyles.cell}  {..._panResponder.panHandlers}>
                 <TouchableOpacity
                     style = {styles.listcontainer}
                     onLongPress = {()=> {this._onPressDelHistory(Id)}}
@@ -152,8 +179,6 @@ export default class HistoryList extends Component {
                     </View>
                 </TouchableOpacity>
             </View>
-
-
         )
     };
 
@@ -185,8 +210,10 @@ export default class HistoryList extends Component {
             {
                 this.state.loadStatus==='none'?
                     (
-                        <View style={styles.footer}>
-                            <Text>这还什么都没有</Text>
+                        <View style={{height:30,alignItems:'center',justifyContent:'flex-start',}}>
+                            <Text style={{color:'#999999',fontSize:14,marginTop:5,marginBottom:5,}}>
+                            这还什么都没有
+                            </Text>
                         </View>
                     ): ( null )
             }
@@ -236,10 +263,7 @@ export default class HistoryList extends Component {
 		if (this.state.currentPageIndex >= pageCount) {
 			return;
 		}
-        /*
-        console.log('pagecount: ' + pageCount);
-        console.log('currentPageIndex: '+ this.state.currentPageIndex );
-        */
+
         this.state.currentPageIndex++;
 		this.fetchPage();
     }
@@ -258,7 +282,7 @@ export default class HistoryList extends Component {
             this.setState({
                 theblogs: ret,
                 theblogCount: ret.length,
-                loadStatus: 'all loaded',
+                loadStatus: (ret.length>0)?'all loaded':'none',
                 currentPageIndex: 1,
             });
         })
@@ -299,32 +323,9 @@ export default class HistoryList extends Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         alignItems: 'center',
         backgroundColor: 'white',
-    },
-    header:{
-        flexDirection: 'row',
-        justifyContent:'flex-start',
-        alignItems: 'center',
-        backgroundColor: UI.TOP_COLOR,
-        height: screenHeight/12,
-        paddingLeft: 0.03*screenWidth,
-        alignSelf: 'stretch',
-    },
-    headertext: {
-        fontSize: 22,
-        color: 'white',
-        fontWeight:'bold',
-        fontFamily : 'serif',
-    },
-    content: {
-        flex: 11,
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'white',
-        alignSelf: 'stretch',
     },
     listcontainer: {
         justifyContent:'flex-start',

@@ -111,47 +111,65 @@ export function sendGroupcast(params, filter){
     });
 }
 
-export function addTag(tag){
-    //为该设备添加一个tag，变量tag为字符串
-    //若成功则返回0，若失败返回状态码
-    return PushUtil.addTag(tag,(code,remain) =>{
-        if(code == 200){
-            return 0;
-        }else{ 
-            console.log(remain);
-            return code;
-        }
-    });
+
+// function addTag(tag){
+//     //为该设备添加一个tag，变量tag为字符串
+//     //若成功则返回0，若失败返回状态码
+//     PushUtil.addTag(tag,(code,remain) =>{
+//         if(code == 200){
+//             return(remain);
+//         }else{ 
+//             console.log(remain);
+//             return(code);
+//         }
+//     });
+// }
+
+
+// function deleteTag(tag){
+//     //为该设备删除一个tag，变量tag为字符串
+//     //若成功则返回0，若失败返回状态码
+//     PushUtil.deleteTag(tag,(code,remain) =>{
+//         if(code == 200){
+//             return (remain);
+//         }else{ 
+//             console.log(remain);
+//             return(code);
+//         }
+//     });
+// }
+
+
+// function listTag(){
+//     //展示该设备绑定的所有tag
+//     //若成功则返回一个包含所有tag的数组,若失败则返回状态码
+//     return await PushUtil.listTag((code,result) =>{
+//         if(code == 200){
+//             return(result);
+//         }
+//         else return(code);
+//     })
+// }
+
+export function addHomeworkTag(classId,homeworkId){
+    return PushUtil.addTag(classId + "_" + homeworkId,()=>{});
 }
 
-
-export function deleteTag(tag){
-    //为该设备删除一个tag，变量tag为字符串
-    //若成功则返回0，若失败返回状态码
-    return PushUtil.deleteTag(tag,(code,remain) =>{
-        if(code == 200){
-            return 0;
-        }else{ 
-            console.log(remain);
-            return code;
-        }
-    });
+export function deleteHomeworkTag(classId,homeworkId){
+    return PushUtil.deleteTag(classId + "_" + homeworkId,()=>{});
 }
 
-
-export function listTag(){
-    //展示该设备绑定的所有tag
-    //若成功则返回一个包含所有tag的数组,若失败则返回状态码
-    return PushUtil.listTag((code,result) =>{
+export function deleteAllTags(){
+    PushUtil.listTag((code,result)=>{
         if(code == 200){
-            return result;
+            for(var i = 0; i < result.length; i++){
+                PushUtil.deleteTag(result[i],()=>{});
+            }
         }
-        else return code;
     })
 }
 
-
-export function testPush(){
+export async function testPush(){
     //单播测试
     // sendUnicast({ticker:"ticker",title:"title" + (new Date()).getTime(),text:"text"}); 
     // sendUnicast({title:"title" + (new Date()).getTime(),text:"text"});
@@ -169,7 +187,17 @@ export function testPush(){
     // }
     // sendGroupcast(body,filter);
     
-    Push.getHomeWorkList().then((list)=>{console.log(list);});
+    // Push.getHomeWorkList().then((list)=>{console.log(list);});
+
+    // deleteAllTags();
+    // PushUtil.listTag((code,result)=>{
+    //     console.log(result);
+    // });
+    // deleteHomeworkTag(1,2);
+    // PushUtil.listTag((code,result)=>{
+    //     console.log(result);
+    // });
+    // Push.initPush();
 }
 
 

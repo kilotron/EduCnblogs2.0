@@ -1,9 +1,10 @@
 // import * as storage from '../../Storage/storage'
 import Config from '../../config'
 import * as Service from '../../request/request'
+import {requireTime} from '../../request/requireTime.js';
 // import { AppRegistry } from 'react-native';
 import api from '../../api/api';
-
+import * as UmengPush from '../../umeng/umengPush'
 // export class Push{
 //     constructor(){
 //         this.classes = [];//班级列表
@@ -95,7 +96,53 @@ import api from '../../api/api';
 //     }
 // }
 
+export async function initPush(){
+    var homeworkMap = await getHomeWorkList();
+    for(var cls in homeworkMap){
+        var {classId, memberId, membership, homeworks} = homeworkMap[cls];
+        for(var i = 0; i < homeworks.length ; i++){
+                //是学生的才会提醒，老师、助教暂不提醒作业
+                if(membership == 1){
+                var {homeworkId, title, deadline, isClosed, isFinished} = homeworks[i];
+                let submitUrl = Config.SubmitJudge + memberId + '/' + homeworkId;
 
+                var isSubmitted = await Service.Get(submitUrl).then((bool)=>{
+                    return bool;
+                }).catch(()=>{return null;});
+                if(isSubmitted == null) {continue};
+
+                //已提交、已关闭、已完成的作业需要删除tag
+                if(isSubmitted || isClosed || isFinished){
+                    UmengPush.deleteHomeworkTag(classId,homeworkId);
+                    continue;
+                }
+
+                //未提交的作业需要增加tag
+                UmengPush.addHomeworkTag(classId,homeworkId);
+                var currentTime = await requireTime();
+                //如果在截止日期前三天内，推送提醒
+                let today = currentTime == -1 ? new Date() : new Date(currentTime); 
+                deadline = StringToDate(deadline);
+                let remainTime = deadline.getTime() - today.getTime();
+                if(remainTime > 0 && remainTime < 3*24*3600*1000){
+                    let days = Math.floor(remainTime/(24*3600*1000));
+                    let letfTime=remainTime%(24*3600*1000);
+                    let hours= Math.floor(letfTime/(3600*1000));
+                    letfTime = letfTime%(3600*1000) 
+                    let minutes = Math.floor(letfTime/(60*1000));
+                    letfTime = letfTime%(60*1000)  
+                    let seconds = Math.round(letfTime/1000);
+                    var text = '距离作业截止还剩下{days}天{hours}小时{minutes}分，请及时关注！'.format({days:days,hours:hours,minutes:minutes});
+                    UmengPush.sendUnicast({
+                        ticker:"作业截止提醒",
+                        title:"作业《" + title +"》截止提醒",
+                        text:text
+                    })
+                }
+            }
+        }
+    }
+}
 
 //对所有班级获取作业列表
 export async function getHomeWorkList(){
@@ -131,15 +178,18 @@ export async function getHomeWorkList(){
                 return memberUrl;
             });
             if(memberUrl == null) continue;
-            var membership = await Service.Get(memberUrl).then((jsonData)=>{
-                if(jsonData == 'rejected') return -1;
-                return jsonData.membership;
+            //	身份（1.学生、2.老师、3.助教）
+            var memberInfo = await Service.Get(memberUrl).then((jsonData)=>{
+                if(jsonData == 'rejected') return {};
+                return jsonData;
             });
-            if(membership == -1) continue;
+            if(jsonIsEmpty(memberInfo)) continue;
 
-            homeworkMap.schoolClassId = {
+            homeworkMap[schoolClassId] = {
+                classId:schoolClassId,
                 count:homeworkCount,
-                membership:membership,
+                memberId:memberInfo.memberId,
+                membership:memberInfo.membership,
                 homeworks:homeworks
             }
         }
@@ -186,4 +236,38 @@ function jsonIsEmpty(jsonData){
         return false;
     }
     return true;
+}
+
+function StringToDate(day){
+    // YYYY-MM-DDTHH:MM:SS
+    if(day == null)
+        return new Date();
+    let s1 = day.split('T')[0];
+    let s2 = day.split('T')[1];
+    let YMD = s1.split('-');
+    let HMS = s2.split(':');
+    return new Date(Number(YMD[0]),Number(YMD[1])-1,Number(YMD[2]),Number(HMS[0]),Number(HMS[1]),Number(HMS[2].substring(0,2)));
+}
+
+String.prototype.format = function(args) {
+    var result = this;
+    if (arguments.length > 0) {
+        if (arguments.length == 1 && typeof (args) == "object") {
+            for (var key in args) {
+                if(args[key]!=undefined){
+                    var reg = new RegExp("({" + key + "})", "g");
+                    result = result.replace(reg, args[key]);
+                }
+            }
+        }
+        else {
+            for (var i = 0; i < arguments.length; i++) {
+                if (arguments[i] != undefined) {
+                    var reg= new RegExp("({)" + i + "(})", "g");
+                    result = result.replace(reg, arguments[i]);
+                }
+            }
+        }
+    }
+    return result;
 }

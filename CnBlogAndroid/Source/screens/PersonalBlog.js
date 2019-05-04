@@ -9,7 +9,7 @@ import {StorageKey} from '../config'
 import {UI} from '../config'
 import {err_info} from '../config'
 import {flatStyles} from '../styles/styles'
-
+import * as Push from '../DataHandler/Push/PushHandler'; 
 import {
     StyleSheet,
     Text,
@@ -41,6 +41,7 @@ export default class PersonalBlog extends Component{
             postCount: 0,//随笔总数
             isRequestSuccess: false,
         };
+        Push.initPush();
     }
 	_isMounted;
     // 更新博客显示数据

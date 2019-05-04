@@ -38,6 +38,9 @@ const ClassBlogPostsListProps = {
     schoolClassId: PropTypes.number.isRequired,
 };
 
+const GetBlogApp = require('../DataHandler/BlogDetail/GetBlogApp');
+const HTMLSpecialCharsDecode = require('../DataHandler/HTMLSpecialCharsDecode');
+
 export default class ClassBlogPostsList extends Component {
 
     /**属性schoolClassId可能会改变，因此将其放到state中，在父组件改变schoolClassId后，调用
@@ -131,9 +134,10 @@ export default class ClassBlogPostsList extends Component {
 			}
         })
         .catch((err) => {
-            this.setState({loadStatus: 'not loading', networkError: true});
+            if (this._isMounted) {
+                this.setState({loadStatus: 'not loading', networkError: true});
+            }
         });
-        this.setState({loadStatus: 'not loading'});
     }
 
     /** 解析this.state.blogs的数据，返回一个数组。 */
@@ -232,10 +236,11 @@ export default class ClassBlogPostsList extends Component {
                         this.props.navigation.navigate('BlogDetail',
                             {
                                 Id:item.blogId,
-                                blogApp: item.url.split('/')[3],
+                                blogApp: GetBlogApp(item.url),
                                 CommentCount: item.commentCount,
                                 Url: item.url,
                                 Title: item.title,
+                                Description: item.description,
                             });
                     }}
                 >
@@ -244,7 +249,7 @@ export default class ClassBlogPostsList extends Component {
                     </Text>
 
                     <Text numberOfLines={3} style={styles.postDescription}>
-                        {item.description}
+                        {HTMLSpecialCharsDecode(item.description)}
                     </Text>
 
                     <View style={styles.postMetadataView}>
@@ -376,8 +381,8 @@ const styles = StyleSheet.create({
     },
     img:{
         width:screenWidth *0.05,
-        height:screenWidth *0.05, 
-        resizeMode:'stretch', 
+        height:screenWidth *0.05,
+        resizeMode:'stretch',
     },
     postTitle: {
 		fontSize: 18,

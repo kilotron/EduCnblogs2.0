@@ -20,12 +20,7 @@ import {
     Alert,
 } from 'react-native';
 
-import {
-    StackNavigator,
-    TabNavigator,
-    NavigationActions,
-
-} from 'react-navigation';
+const HTMLSpecialCharsDecode = require('../DataHandler/HTMLSpecialCharsDecode');
 
 const screenWidth= MyAdapter.screenWidth;
 const screenHeight= MyAdapter.screenHeight;
@@ -34,6 +29,8 @@ const abstractFontSize= MyAdapter.abstractFontSize;
 const informationFontSize= MyAdapter.informationFontSize;
 const btnFontSize= MyAdapter.btnFontSize;
 const pageSize = 10;
+
+const HtmlDecode = require('../DataHandler/HomeworkDetails/HtmlDecode');
 
 export default class Bulletin extends Component {
     constructor(props){
@@ -190,7 +187,7 @@ export default class Bulletin extends Component {
         {
         data.push({
             key: this.state.bulletins[i].bulletinId,
-            Content: this.state.bulletins[i].content,
+            Content: HtmlDecode(this.state.bulletins[i].content),
             Publisher: this.state.bulletins[i].publisher,
             BlogUrl: this.state.bulletins[i].blogUrl,
             //DateAdded: this.state.bulletins[i].dateAdded,
@@ -202,8 +199,10 @@ export default class Bulletin extends Component {
             {
                 this.state.loadStatus==='none'?
                     (
-                        <View style={styles.footer}>
-                            <Text>这还什么都没有</Text>
+                        <View style={{height:30,alignItems:'center',justifyContent:'flex-start',}}>
+                            <Text style={{color:'#999999',fontSize:14,marginTop:5,marginBottom:5,}}>
+                            这还什么都没有
+                            </Text>
                         </View>
                     ): ( null )
             }

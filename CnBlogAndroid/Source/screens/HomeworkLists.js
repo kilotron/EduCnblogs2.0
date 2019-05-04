@@ -28,6 +28,7 @@ const titleFontSize= MyAdapter.titleFontSize;
 const abstractFontSize= MyAdapter.abstractFontSize;
 const informationFontSize= MyAdapter.informationFontSize;
 const btnFontSize= MyAdapter.btnFontSize;
+const HTMLSpecialCharsDecode = require('../DataHandler/HTMLSpecialCharsDecode');
 
 export default class HomeworkLists extends Component {
     constructor(props){
@@ -306,7 +307,7 @@ export default class HomeworkLists extends Component {
                         {title}
                     </Text>
                     <Text numberOfLines={3} style= {HomeworkStyles.abstractTextStyle}>
-                        {description}
+                        {HTMLSpecialCharsDecode(description)}
                     </Text>
                     <Text style= {isClosed ? HomeworkStyles.closedInformationTextStyle : (isFinished ? HomeworkStyles.outdateInformationTextStyle : HomeworkStyles.informationTextStyle)}>
                         截止于:{deadline.split('T')[0]+' '+deadline.split('T')[1].substring(0,8)}
@@ -378,7 +379,7 @@ export default class HomeworkLists extends Component {
             let today = this.state.currentTime == -1 ? new Date() : new Date(this.state.currentTime); // 当前日期
             let _startday = this.state.homeworks[i].startTime; // 作业开始日期
             let startday = this.StringToDate(_startday);
-            if(today >= startday)//只显示已开始的作业
+            if(_startday == null || today >= startday)//只显示已开始的作业
             {
                 if(this.state.homeworks[i].isClosed){
                     closedData.push(

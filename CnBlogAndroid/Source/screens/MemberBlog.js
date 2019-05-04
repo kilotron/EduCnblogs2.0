@@ -110,7 +110,7 @@ export default class MemberBlog extends Component{
                     style = {styles.listcontainer}
                     onPress = {()=>{
                         this.props.navigation.navigate('BlogDetail',{Url: Url, Id:Id,
-                            blogApp: blogApp, CommentCount: CommentCount, Title: Title})}
+                            blogApp: blogApp, CommentCount: CommentCount, Title: Title, Description:Description,})}
                     }
                 >
                     <Text style = {{

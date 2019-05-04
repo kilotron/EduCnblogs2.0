@@ -12,19 +12,19 @@ import {
     Text,
     View,
     FlatList,
-    TouchableHighlight,
     ActivityIndicator,
     TouchableOpacity,
     ToastAndroid,
+    PanResponder,
     screen,
     Alert,
+    Button,
 } from 'react-native';
 
 import {
     StackNavigator,
     TabNavigator,
     NavigationActions,
-
 } from 'react-navigation';
 
 const screenWidth= MyAdapter.screenWidth;
@@ -34,6 +34,8 @@ const abstractFontSize= MyAdapter.abstractFontSize;
 const informationFontSize= MyAdapter.informationFontSize;
 const btnFontSize= MyAdapter.btnFontSize;
 const pageSize = 10;
+const GetDetailId = require('../DataHandler/BlogDetail/GetDetailId');
+const GetBlogApp = require('../DataHandler/BlogDetail/GetBlogApp');
 
 export default class BookmarksList extends Component {
     constructor(props){
@@ -109,38 +111,94 @@ export default class BookmarksList extends Component {
         var DateAdded = item1.item.dateAdded;
         var FromCnBlogs = item1.item.fromCnBlogs;
         var DetailId = item1.item.detailId;
+        let BlogApp = GetBlogApp(LinkUrl);
 
-        let arr = LinkUrl.split('/');
-        let blogApp = arr[3];
+        let _panResponder = PanResponder.create({
+          onStartShouldSetPanResponder: (evt, gestureState) => true,
+          onMoveShouldSetPanResponder: (evt, gestureState) => true,
+          //onPanResponderGrant: this._handlePanResponderGrant,
+          //onPanResponderMove: this._handlePanResponderMove,
+          onPanResponderRelease: (evt, gestureState)=>{
+              if(gestureState.dx < 0 && gestureState.dx < -screenWidth*0.1) {
+                  //Alert.alert('位移为 '+ gestureState.dx + '\n删除 '+ WzLinkId);
+                  this._onPressDelBookmarks(WzLinkId);
+              }
+              else if(gestureState.dx > 0 && gestureState.dx > screenWidth*0.1) {
+                  //Alert.alert('位移为 '+ gestureState.dx + '\n编辑 '+ WzLinkId);
+                  this.props.navigation.navigate('BookmarksEdit',{Url: LinkUrl,
+                      Title: Title, Id: WzLinkId, Description: Summary, callback: this._FlatListRefresh});
+              }
+              else{
+                  //Alert.alert('位移为 '+ gestureState.dx + '\n屏幕宽度 ' + screenWidth);
 
+                  this.props.navigation.navigate('BlogDetail',{Url: LinkUrl, Id: DetailId,
+                      blogApp: BlogApp, CommentCount: 0, Title: Title, Description: Summary});
+              }
+          },
+          onPanResponderTerminate: (evt, gestureState)=>{;},
+        });
+
+
+/*
+<View>
+    <TouchableOpacity style={{width: screenWidth*0.2, flex: 1, backgroundColor: 'red', }}
+        onPress= {()=>{this._onPressDelBookmarks(WzLinkId);}}>
+        <Text>删除</Text>
+    </TouchableOpacity>
+</View>
+<View>
+    <TouchableOpacity style={{width: screenWidth*0.2, flex: 1, backgroundColor: 'blue',}}
+        onPress= {()=>{
+        this.props.navigation.navigate('BookmarksEdit',{Url: LinkUrl,
+            Title: Title, Id: WzLinkId, callback: this._FlatListRefresh});} }>
+        <Text>编辑</Text>
+    </TouchableOpacity>
+</View>
+{..._panResponder.panHandlers}
+*/
         return(
-            <View style={flatStyles.cell}>
-            <TouchableOpacity onPress={()=>{
-                this.props.navigation.navigate('BlogDetail',{Url: LinkUrl, Id: DetailId,
-                    blogApp: blogApp, CommentCount: 0, Title: Title});
-                }}
-                onLongPress={()=>{this._onPressDelBookmarks(WzLinkId);}}>
-                <View style={styles.textcontainer}>
-                    <Text numberOfLines={1} style={styles.titleContent}>
-                        {Title}
-                    </Text>
-                    <Text numberOfLines={3} style={styles.summaryContent}>
-                        <Text style={{color: 'gray'}}>摘要: </Text>
-                        {Summary}
-                    </Text>
-                    {/* tags信息待加入 */}
-                    <View style={{alignSelf: 'flex-end'}}>
-                        <Text style={styles.bookmarksBlogUrl}>
-                            {LinkUrl}
+            <View {..._panResponder.panHandlers}
+            >
+                <View style={flatStyles.cell }>
+                    <TouchableOpacity style = {styles.listcontainer}
+                     onPress={()=>{
+                        this.props.navigation.navigate('BlogDetail',{Url: LinkUrl, Id: DetailId,
+                            blogApp: BlogApp, CommentCount: 0, Title: Title, Description: Summary});
+                        }}
+                        >
+                        <Text style = {{
+                            fontSize: 18,
+                            fontWeight: 'bold',
+                            marginTop: 10,
+                            marginBottom: 2,
+                            textAlign: 'left',
+                            color: 'black',
+                            fontFamily : 'serif',
+                        }} >
+                            {Title}
                         </Text>
-                    </View>
-                    <View style={{alignSelf: 'flex-end'}}>
-                        <Text style={styles.bookmarksDateAdded}>
-                            {DateAdded}
+                        <Text  numberOfLines={2} style = {{
+                            lineHeight: 25,
+                            fontSize: 14,
+                            marginBottom: 8,
+                            textAlign: 'left',
+                            color: 'rgb(70,70,70)',
+                        }}>
+                            {Summary + '...'}
                         </Text>
-                    </View>
+                        <View style = {{
+                            flexDirection: 'row',
+                            marginBottom: 8,
+                            justifyContent: 'space-around',
+                            alignItems: 'flex-start',
+                        }}>
+                            <Text style = {{fontSize: 10, textAlign: 'right', color: 'black', flex: 1}}>
+                                {BlogApp+'\n添加于 '+DateAdded}
+                            </Text>
+                        </View>
+
+                    </TouchableOpacity>
                 </View>
-            </TouchableOpacity>
             </View>
         )
     };
@@ -173,7 +231,8 @@ export default class BookmarksList extends Component {
                         tags: this.state.bookmarks[i].Tags,/* list数据 */
                         dateAdded: this.String2Date(this.state.bookmarks[i].DateAdded),
                         fromCnBlogs: this.state.bookmarks[i].FromCNBlogs,
-                        detailId: this.state.bookmarks[i].LinkUrl.match( /p\/([^%]+).html/)[1],
+                        detailId: GetDetailId(this.state.bookmarks[i].LinkUrl),
+                        //this.state.bookmarks[i].LinkUrl.match( /p\/([^%]+).html/)[1],
                     });
                 }
             }
@@ -183,8 +242,10 @@ export default class BookmarksList extends Component {
                 {
                     this.state.loadStatus==='none'?
                         (
-                            <View style={styles.footer}>
-                                <Text>这还什么都没有</Text>
+                            <View style={{height:30,alignItems:'center',justifyContent:'flex-start',}}>
+                                <Text style={{color:'#999999',fontSize:14,marginTop:5,marginBottom:5,}}>
+                                这还什么都没有
+                                </Text>
                             </View>
                         ):(null)
                 }
@@ -348,33 +409,19 @@ const styles = StyleSheet.create({
         alignItems:'center',
         marginBottom:10,
     },
-    textcontainer: {
-        justifyContent:'flex-start',
-        alignItems: 'flex-start',
-        flex: 4,
-        backgroundColor: 'white',
-        //alignSelf: 'stretch',
-    },
-    titleContent: {
-        color: 'black',
-        fontSize: 18,
-        left: 4,
-    },
-    summaryContent: {
-        color: 'black',
-        fontSize: 16,
-        left: 4,
-    },
-    bookmarksDateAdded: {
-        fontSize: 14,
-    },
-    bookmarksBlogUrl: {
-        fontSize: 12,
-    },
     strangeView:{
         height: 1,
         backgroundColor: 'rgb(225,225,225)',
         marginTop: 0.005*screenHeight,
         alignSelf:'stretch'
     },
+    listcontainer: {
+        justifyContent:'flex-start',
+        alignItems: 'flex-start',
+        flex:1,
+        alignSelf: 'stretch',
+        backgroundColor: 'white',
+        paddingLeft: 0.03*screenWidth,
+        paddingRight: 0.04*screenWidth,
+    }
 });

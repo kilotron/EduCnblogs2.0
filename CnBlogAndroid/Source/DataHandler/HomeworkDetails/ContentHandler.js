@@ -11,9 +11,4 @@ function ContentHandler(item){
     item.content = head + (item.convertedContent==null?HtmlDecode(item.content):HtmlDecode(item.convertedContent)) + tail;
     return item;
 }
-export function cutContent(item){
-    let newContent = item.content.replace(head,'');
-    newContent = newContent.replace(/(.*)<\/html>/,'');
-    item.content = HtmlDecode(newContent);
-}
 module.exports = ContentHandler;

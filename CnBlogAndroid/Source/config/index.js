@@ -1,6 +1,10 @@
 import Storage from 'react-native-storage';
 import {AsyncStorage} from 'react-native';
 
+export const umengConfig = {
+	appkey:'5cb692ac570df31b8d000cd7',
+	appMasterSecret:'b2def4184d6c3bad76c1b5d7235e3398'
+}
 export default{
 	apiDomain : 'https://api.cnblogs.com/',
 	AccessToken : 'https://oauth.cnblogs.com/connect/token',
@@ -28,6 +32,10 @@ export default{
 	VoteList : 'https://api.cnblogs.com/api/edu/schoolclass/votes', //分页获取投票信息
 	VoteDetail :'https://api.cnblogs.com/api/edu/vote/',
 	VoteContent : 'https://api.cnblogs.com/api/edu/vote/contents/',//后接投票ID
+	VoteCommit : 'https://api.cnblogs.com/api/edu/vote/commit/', // 后接投票ID
+	VoteIsCommited: 'https://api.cnblogs.com/api/edu/vote/iscommitted/', // {memberId}/{voteId}
+	VoteCommittedOptions: 'https://api.cnblogs.com/api/edu/vote/committed/options/', //{memberId}/{voteId}
+	VoteCommittedMembers: 'https://api.cnblogs.com/api/edu/vote/committed/members/', //{schoolClassId}/{voteId}
 }
 
 export const authData = {
@@ -52,7 +60,8 @@ export const StorageKey = {
 	BLOGAPP : "BLOGAPP",
 	SENIORITY : "SENIORITY",
 	BLOGDETAIL : "BLOGDETAIL",
-	HOMEWORKDETAIL : "HOMEWORKDETAIL"
+	HOMEWORKDETAIL : "HOMEWORKDETAIL",
+    BLOG_LIST: "BLOGLIST",
 }
 
 export const ActionType = {

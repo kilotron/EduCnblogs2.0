@@ -20,14 +20,10 @@ import {
     ScrollView,
     TouchableHighlight,
     FlatList,
-    Animated,
     ActivityIndicator,
 } from 'react-native';
 
-import {
-    StackNavigator,
-    TabNavigator,
-} from 'react-navigation';
+const HTMLSpecialCharsDecode = require('../DataHandler/HTMLSpecialCharsDecode');
 
 const screenWidth = MyAdapter.screenWidth;
 const screenHeight = MyAdapter.screenHeight;
@@ -47,22 +43,8 @@ export default class VoteList extends Component {
             votes: [],
             classId: this.props.classId,
             isEmpy: true, //初始认为请求未成功，不进行渲染，以防App崩溃
-            headerTop: new Animated.Value(0), // 用于向下滚动隐藏筛选条件的动画
             networkError: false,
         }
-
-        /* 下面两个变量用于向下滚动隐藏筛选条件的动画。动画设置的参考链接ClassBlogPostList末尾。 */
-        this.top = this.state.headerTop.interpolate({
-            inputRange: [0, 270, 271, 280],
-            outputRange: [0, -50, -50, -50]
-        });
-        this.animatedEvent = Animated.event(
-            [{
-                nativeEvent: {
-                    contentOffset: { y: this.state.headerTop }
-                }
-            }]
-        );
     }
 
     _isMounted;
@@ -83,20 +65,6 @@ export default class VoteList extends Component {
         let url = Config.VoteList + '/' + this.state.classId + '/' + pageIndex + '-' + pageSize;
         return url;
     }
-
-    /*componentWillMount() {
-        let pageIndex = 1;
-        Service.Get(this.getUrl(pageIndex))
-            // 获取投票列表
-            .then((jsonData) => {
-                if (this._isMounted) {
-                    this.setState({ votes: jsonData });
-                    if (jsonData !== 'rejected') {
-                        this.setState({ isEmpty: false });
-                    }
-                }
-            })
-    }*/
 
     /** 解析this.state.votes的数据，返回一个数组。 */
     makeVotesList() {
@@ -154,18 +122,7 @@ export default class VoteList extends Component {
     _renderEmptyList() {
         if (this.state.networkError) {
             return (
-                <View>
-                    {/** 网络未连接，暂时没有实现 */}
-                    {/*      <TouchableOpacity onPress={() => {
-                        ToastAndroid.show('This is a dinosaur.', ToastAndroid.SHORT);
-                    }}>
-                        <Image
-                            style={styles.dinosaurPic}
-                            source={require('../images/dinosaur.jpg')}
-                        />
-                    </TouchableOpacity>
-                    <Text style={styles.dinosaurText}>未连接到互联网</Text>
-                */} </View>
+                <View></View>
             );
         } else if (this.state.loadStatus !== 'loading') {
             return (
@@ -197,7 +154,7 @@ export default class VoteList extends Component {
                     </Text>
 
                     <Text numberOfLines={3} style={styles.postDescription}>
-                        {item.description}
+                        {HTMLSpecialCharsDecode(item.description)}
                     </Text>
 
                     <View style={styles.postMetadataView}>
@@ -255,48 +212,83 @@ export default class VoteList extends Component {
         );
     }
 
+    onPress2AddVote() {
+        this.props.navigation.navigate('VoteAdd', {
+            classId: this.state.classId,
+        });
+    }
+
+    GetAddButton() {
+        return (
+            <TouchableHighlight
+                underlayColor="#3b50ce"
+                activeOpacity={0.5}
+                style={styles.addButton}
+                onPress={this.onPress2AddVote.bind(this)} >
+                <Text style={styles.buttonContent}>
+                    +
+                </Text>
+            </TouchableHighlight>
+        );
+    }
+
     render() {
         return (
             <View style={styles.container}>
 
-                <Animated.View style={{ top: this.top }}>
-                    <View>
-                        {/* 需要使用View，不然FlatList无法显示 */}
-                        {/* 使用keyExtractor为每个item生成独有的key，就不必再data数组的每一个元素中添加key键。
-                            refreshing设置为false在列表更新时不显示转圈*/}
-                        {/*item设置了立体的样式，这里去掉ItemSeparatorComponent={this._separator}*/}
-                        {
-                            this.state.loadStatus === 'none' ?
-                                (
-                                    <View style={styles.footer}>
-                                        <Text>暂时没有投票</Text>
-                                    </View>
-                                ) : (null)
-                        }
-                        {<FlatList
-                            renderItem={this._renderItem}
-                            data={this.makeVotesList()}
-                            keyExtractor={(item, index) => index.toString()}
-                            onRefresh={this.updateData.bind(this)}
-                            refreshing={false}
-                            onEndReached={this._onEndReached.bind(this)}
-                            onEndReachedThreshold={0.5}
-                            //ListEmptyComponent={this._renderEmptyList.bind(this)}
-                            ListFooterComponent={this._renderFooter.bind(this)}
-                            onScroll={this.animatedEvent}
+                <View>
+                    {/* 需要使用View，不然FlatList无法显示 */}
+                    {/* 使用keyExtractor为每个item生成独有的key，就不必再data数组的每一个元素中添加key键。
+                        refreshing设置为false在列表更新时不显示转圈*/}
+                    {/*item设置了立体的样式，这里去掉ItemSeparatorComponent={this._separator}*/}
+                    {
+                        this.state.loadStatus === 'none' ?
+                            (
+                                <View style={styles.footer}>
+                                    <Text>暂时没有投票</Text>
+                                </View>
+                            ) : (null)
+                    }
+                    {<FlatList
+                        renderItem={this._renderItem}
+                        data={this.makeVotesList()}
+                        keyExtractor={(item, index) => index.toString()}
+                        onRefresh={this.updateData.bind(this)}
+                        refreshing={false}
+                        onEndReached={this._onEndReached.bind(this)}
+                        onEndReachedThreshold={0.5}
+                        ListFooterComponent={this._renderFooter.bind(this)}
+                        onScroll={this.animatedEvent}
+                    />}
 
-                        />}
-                    </View>
-                </Animated.View>
+                </View>
+                {this.GetAddButton()}
             </View>
         );
-
-
     }
 
 }
 
 const styles = StyleSheet.create({
+    buttonContent: { //button 内的字体
+        fontSize: 30,
+        color: '#ffffff',
+        textAlign: 'center',
+        fontWeight: '100',
+    },
+
+    addButton: {
+        position: 'absolute',
+        bottom: 20,
+        right: 10,
+        backgroundColor: "#3b50ce",
+        width: 52,
+        height: 52,
+        borderRadius: 26,
+        justifyContent: 'center',
+        alignItems: 'center',
+        margin: 20
+    },
     container: {
         flex: 1,
     },

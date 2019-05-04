@@ -47,6 +47,7 @@ import BlogDetail from './Source/screens/BlogDetail'
 import BlogComment from './Source/screens/BlogComment'
 import BlogBookmarks from './Source/screens/BlogBookmarks'
 import BookmarksList from './Source/screens/BookmarksList'
+import BookmarksEdit from './Source/screens/BookmarksEdit'
 import ClassMember from './Source/screens/ClassMember'
 import ClassMemberAdd from './Source/screens/ClassMemberAdd'
 import MemberBlog from './Source/screens/MemberBlog'
@@ -61,10 +62,13 @@ import BlogEdition from './Source/screens/BlogEdition'
 import Bulletin from './Source/screens/Bulletin'
 import BulletinAdd from './Source/screens/BulletinAdd'
 import BulletinEdition from './Source/screens/BulletinEdition'
+import HistoryList from './Source/screens/HistoryList'
 import ClassSelect from './Source/screens/ClassSelect'
 import VoteList from './Source/screens/VoteList'
 import Settings from './Source/screens/Settings'
 import VoteDetail from './Source/screens/VoteDetail'
+import VoteAdd from './Source/screens/VoteAdd'
+import VoteMemberList from './Source/screens/VoteMemberList'
 const { height, width } = Dimensions.get('window');
 
 const CODE_URL = [
@@ -339,19 +343,6 @@ const HomeTab = TabNavigator({
             )
         }
     },
-    // ClassLists: {
-    //     screen: ClassLists,
-    //     navigationOptions: {
-    //         tabBarLabel: '我的班级',
-    //         tabBarIcon: ({ tintColor, focused }) => (
-    //            <Image
-    //                 resizeMode='contain'
-    //                 source={require('./Source/images/nav_class.png')}
-    //                 style={{height: 20}}
-    //             ></Image>
-    //         )
-    //     }
-    // },
     ClassListsNew: {
         screen: ClassListsNew,
         navigationOptions: {
@@ -378,14 +369,6 @@ const HomeTab = TabNavigator({
             )
         }
     },
-
-    // VoteList:{
-    //     screen: VoteList,
-    //     navigationOptions:{
-    //         //未完成
-    //     }
-    // }
-
 },{
     tabBarPosition: 'bottom',
     initialRouteName: 'PersonalBlog',
@@ -416,6 +399,41 @@ const SimpleNavigation = StackNavigator({
 
     VoteDetail: {
         screen: VoteDetail,
+        // navigationOptions放到VoteDetail.js里。
+    },
+
+    VoteList:{
+        screen: VoteList,
+        navigationOptions:{
+            headerTintColor : 'white',
+            headerTitle: '投票',
+            headerStyle: {
+                height:40,
+                backgroundColor:UI.TOP_COLOR,
+            },
+            headerTitleStyle: {
+                fontSize: 18,
+            },
+        }
+    },
+
+    VoteMemberList: {
+        screen: VoteMemberList,
+        navigationOptions: {
+            headerTintColor: 'white',
+            headerTitle: '已投票成员',
+            headerStyle: {
+                height:40,
+                backgroundColor:UI.TOP_COLOR,
+            },
+            headerTitleStyle: {
+                fontSize: 18,
+            },
+        }
+    },
+
+    VoteAdd: {
+        screen: VoteAdd,
         navigationOptions: {
             headerTintColor:'white',
             headerTitle: '投票列表',
@@ -643,6 +661,20 @@ const SimpleNavigation = StackNavigator({
             },
         }
     },
+    BookmarksEdit: {
+        screen: BookmarksEdit,
+        navigationOptions: {
+            headerTintColor:'white',
+            headerTitle: '修改收藏',
+            headerStyle: {
+                height: 40,
+                backgroundColor: UI.TOP_COLOR,
+            },
+            headerTitleStyle: {
+                fontSize: 18,
+            },
+        }
+    },
     BlogComment: {
         screen: BlogComment,
         navigationOptions:{
@@ -775,6 +807,20 @@ const SimpleNavigation = StackNavigator({
         navigationOptions:{
             headerTintColor : 'white',
             headerTitle: '公告',
+            headerStyle: {
+                height:40,
+                backgroundColor:UI.TOP_COLOR,
+            },
+            headerTitleStyle: {
+                fontSize: 18,
+            }
+        }
+    },
+    HistoryList: {
+        screen: HistoryList,
+        navigationOptions:{
+            headerTintColor : 'white',
+            headerTitle: '浏览记录',
             headerStyle: {
                 height:40,
                 backgroundColor:UI.TOP_COLOR,

@@ -21,6 +21,7 @@ import {
     ToastAndroid,
     Modal,
     ScrollView,
+    Alert,
 } from 'react-native';
 import { Calendar, CalendarList, Agenda } from 'react-native-calendars';
 import { RichTextEditor, RichTextToolbar } from 'react-native-zss-rich-text-editor';
@@ -119,22 +120,54 @@ export default class VoteAdd extends Component {
         })
     }
 
+    /** 投票隐私 */
     getPrivacy() {
         return (
             <View style={styles.buttonContainer}>
                 <RadioModal
-                selectedValue={this.state.privacy}
-                onValueChange={(id,item) => this.setState({privacy : item})}
-                style={{ flexDirection:'row',
-                      flexWrap:'wrap',
-                      alignItems:'flex-start',
-                      flex:1,
-                      backgroundColor:'#ffffff',padding:5,marginTop:10
-                      }} 
+                    selectedValue={this.state.privacy}
+                    onValueChange={(id, item) => this.setState({ privacy: item })}
+                    style={{
+                        flexDirection: 'row',
+                        flexWrap: 'wrap',
+                        alignItems: 'flex-start',
+                        flex: 1,
+                        backgroundColor: '#ffffff', padding: 5, marginTop: 10
+                    }}
                 >
-                  <Text value="1">公开</Text>
-                  <Text value="2">匿名</Text>
-               </RadioModal>
+                    <Text value="1">公开</Text>
+                    <Text value="2">匿名</Text>
+                </RadioModal>
+            </View>
+        );
+    }
+
+    /** 投票标题 */
+    getVoteContentTitle() {
+        var varVoteContent = []; //即content部分
+        var varVoteOptions = [];
+        return (
+            <View style={styles.voteContentTitle}>
+                <Text>标题</Text>
+                <TextInput
+                    placeholder={'请在此输入投票标题'}
+                    onChangeText={(text) =>
+                        this.setState({voteContents: {title: text}})
+                    }
+                    style={styles.textInput}
+                    underlineColorAndroid="transparent"//设置下划线背景色透明 达到去掉下划线的效果
+                >
+                </TextInput>
+            </View>
+        );
+    }
+
+    /** 获得整个投票内容 */
+    getVoteContent() {
+        return (
+            <View style={styles.voteContentContainer}>
+                {/** 标题部分 */}
+                {this.getVoteContentTitle()}
             </View>
         );
     }
@@ -164,6 +197,8 @@ export default class VoteAdd extends Component {
                     {/** 投票隐私 */}
                     {this.getPrivacy()}
 
+                    {/** 整个投票内容 */}
+                    {this.getVoteContent()}
 
                 </KeyboardAwareScrollView>
             </View>
@@ -172,7 +207,15 @@ export default class VoteAdd extends Component {
 }
 
 const styles = StyleSheet.create({
-
+    voteContentContainer: { //存放voteContent这一个大项
+        flex: 1,
+    },
+    voteContentTitle: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        alignSelf: 'stretch',
+    },
     mybarContainer: { //与HomeworkPost中一致
         flexDirection: 'row',
         justifyContent: 'center',

@@ -160,6 +160,10 @@ export default class VoteAdd extends Component {
         );
     }
 
+    componentWillReceiveProps(nextProps) {
+        alert('更新');
+    }
+
 
     /** 增加一个投票问题 */
     addQuestion() {
@@ -180,7 +184,8 @@ export default class VoteAdd extends Component {
             if (num <= this.state.questionInitial) { //如果小于等于初始值，则不设定删除按钮
                 return (
                     <Question
-                        titleNum = {num}
+                        titleNum={num}
+                        isVisible={true}
                     />
                 );
             }
@@ -391,29 +396,53 @@ class MyBar extends Component {
 class Option extends Component {
     constructor(props) {
         super(props);
+        //alert('哈哈哈哈');
         this.state = {
             isVisible: true, //选项是否可见
             deleteButton: false, //删除按钮是否可见
             rank: this.props.rank, //不可修改
             titleNum: this.props.titleNum, //显示的标题num，可修改
+            that: this.props.myThis,
+
+            optionInitial: this.props.optionInitial,
         }
     }
 
+    /** 一按就删除功能，链接到question中的方法 */
+    _onPress() {
+        alert('我是真的运行了');
+        this.setState({ isVisible: !this.state.isVisible });
+        this.props.isVisible = false;
+    }
+
     render() {
-        return (
+        if (this.state.titleNum > this.state.optionInitial)
+            return (
+                <View style={styles.optionContainer}>
+                    <Text style={styles.text}>
+                        选项{this.state.titleNum}
+                    </Text>
+
+                    <TextInput
+                        style={styles.textInput}
+                        underlineColorAndroid="transparent"//设置下划线背景色透明 达到去掉下划线的效果
+                    />
+                    <Button
+                        onPress={() => { this._onPress() }}
+                        title='删除选项'
+                    />
+                </View>
+            );
+        else return (
             <View style={styles.optionContainer}>
                 <Text style={styles.text}>
                     选项{this.state.titleNum}
                 </Text>
 
-                {/** 标题 */}
-
-
                 <TextInput
                     style={styles.textInput}
                     underlineColorAndroid="transparent"//设置下划线背景色透明 达到去掉下划线的效果
                 />
-
             </View>
         );
     }
@@ -427,35 +456,84 @@ class Question extends Component {
             deleteButton: false, //删除按钮是否可见
             rank: this.props.rank, //不可修改
             titleNum: this.props.titleNum, //显示的问题标题num，可修改
-
             optionInitial: 2, //初始值定为2，
             optionNum: 2, //当前投票option的数量，每制造一个option则加一
-            voteContents: [],
+            voteContents: [], 
+            voteTitle : '',
+            voteMode : 0,
         }
     }
 
+    _isMounted;
+
     /** 点击就加一个option */
-    _onpress2AddOption(){
+    _onpress2AddOption() {
         varOptionNum = this.state.optionNum;
-        this.setState({optionNum : varOptionNum+1});
+        alert('first' + this.state.optionNum);
+        this.setState({ optionNum : varOptionNum+1 });
     }
+
+    /** 点击就删除一个option */
+    _onPress2DeleteOption(index) {
+        alert('我好了');
+        varOptionNum = this.state.optionNum;
+        this.setState({ optionNum: varOptionNum - 1 });
+        this.props.isVisible = false;
+    }
+
+    /** 在这里将预先定好的两个option设置，并装入到voteContents */
+    componentWillMount() {
+        //alert('先执行');
+        var array = this.state.voteContents;
+        var num = 0;
+        for (num = 1; num <= this.state.optionInitial; num++) {
+            array.push(
+                <Option
+                    titleNum={num}
+                    optionInitial={this.state.optionInitial}
+                    myThis={this}
+                    isVisible={true}
+                />
+            );
+        }
+        this.setState({ voteContents: array }); //回调函数
+    }
+
+    componentWillUpdate(nextProps, nextState) {
+        alert('更新在Question中执行方法');
+        var array = this.state.voteContents;
+        if (nextState.optionNum > array.length) { //证明要添加新的
+            array.push(
+                <Option
+                    titleNum={0}
+                    optionInitial={this.state.optionInitial}
+                    myThis={this}
+                    isVisible={true}
+                />
+            );
+        }
+        else { //可能是删除
+            array.forEach(element => {
+                if (element.isVisible == false)
+                    array.pop(element);
+            });
+        }
+        this.setState({ voteContents: array });
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        if (nextState.optionNum!=this.state.optionNum) return true;
+        if (nextState.voteContents != this.state.voteContents) return true;
+        return false;
+    }
+
 
     /** 点击就删除该question，该方法需链接到主类的删除方法 */
 
 
     //测试方法，测试添加选项功能
     addOptionTest() { //需要传参
-        var array = [];
-        var sum = 0;
-        var num = 0;
-        for (num = 1; num <= this.state.optionNum; num++) {
-            key={num}
-            array.push(
-                <Option
-                    titleNum={num}
-                />
-            );
-        }
+        var array = this.state.voteContents;
         return (
             <View style={styles.voteContentContainer}>
                 {array}
@@ -472,7 +550,7 @@ class Question extends Component {
                 <TextInput
                     placeholder={'请在此输入投票标题'}
                     onChangeText={(text) =>
-                        this.setState({ voteContents: { title: text } })
+                        this.setState({voteTitle : text })
                     }
                     style={styles.textInput}
                     underlineColorAndroid="transparent"//设置下划线背景色透明 达到去掉下划线的效果
@@ -487,8 +565,8 @@ class Question extends Component {
         return (
             <View style={styles.buttonContainer}>
                 <RadioModal
-                    selectedValue={this.state.voteContents.voteMode}
-                    onValueChange={(id, item) => this.setState({ voteContents: { voteMode: item } })}
+                    selectedValue={this.state.voteMode}
+                    onValueChange={(id, item) => this.setState({ voteMode: item})}
                     style={{
                         flexDirection: 'row',
                         flexWrap: 'wrap',
@@ -513,8 +591,8 @@ class Question extends Component {
                 </Text>
 
                 <Button
-                    onPress={() => { this._onpress2AddOption()}}
-                    title = '添加选项'
+                    onPress={() => { this._onpress2AddOption() }}
+                    title='添加选项'
                 />
 
                 {/** 标题部分 */}

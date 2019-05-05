@@ -83,6 +83,7 @@ public class MainApplication extends Application implements ReactApplication {
 
   private void initUpush() {
     PushAgent mPushAgent = PushAgent.getInstance(this);
+    mPushAgent.setDisplayNotificationNumber(0);//重要，设置能够显示的最大通知数量，最多10条
     handler = new Handler(getMainLooper());
 
     //sdk开启通知声音

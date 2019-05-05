@@ -111,7 +111,17 @@ export function sendGroupcast(params, filter){
     });
 }
 
+export function closePush(){
+    PushUtil.disablePush((ret)=>{
+        console.log(ret);
+    });
+}
 
+export function openPush(){
+    PushUtil.enablePush((ret)=>{
+        console.log(ret);
+    });
+}
 // function addTag(tag){
 //     //为该设备添加一个tag，变量tag为字符串
 //     //若成功则返回0，若失败返回状态码
@@ -171,7 +181,7 @@ export function deleteAllTags(){
 
 export async function testPush(){
     //单播测试
-    // sendUnicast({ticker:"ticker",title:"title" + (new Date()).getTime(),text:"text"}); 
+    sendUnicast({ticker:"ticker",title:"title" + (new Date()).getTime(),text:"text"}); 
     // sendUnicast({title:"title" + (new Date()).getTime(),text:"text"});
 
     //组播测试
@@ -198,6 +208,12 @@ export async function testPush(){
     //     console.log(result);
     // });
     // Push.initPush();
+    // PushUtil.enablePush((ret)=>{
+    //     console.log(ret);
+    // });
+    // PushUtil.disablePush((ret)=>{
+    //     console.log(ret);
+    // });
 }
 
 

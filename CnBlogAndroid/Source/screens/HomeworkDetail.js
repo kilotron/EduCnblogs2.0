@@ -18,6 +18,7 @@ import {
 import {
     StackNavigator,
 } from 'react-navigation';
+import * as umengPush from '../umeng/umengPush'
 const { height, width } = Dimensions.get('window');
 const HtmlDecode = require('../DataHandler/HomeworkDetails/HtmlDecode');
 const ContentHandler = require('../DataHandler/HomeworkDetails/ContentHandler');
@@ -176,6 +177,25 @@ export default class HomeWorkDetail extends Component{
             ]
         )
     }
+    remind = ()=>{
+        this.editView.show();
+        let params = {
+            ticker:'作业提交提醒',
+            title:"作业《" + this.state.title +"》截止提醒",
+            text:'老师/助教提醒您提交作业，请及时关注！（已提交请忽略）'
+        }
+        castId = this.state.classId + '_' + this.state.Id;
+        let filter = {
+            "where":
+            {
+                "and":
+                [
+                    {"tag":castId}
+                ]
+            }
+        }
+        umengPush.sendGroupcast(params,filter);
+    }
     renderBottomBar(Id,isFinished,classId,answerCount){
         isClosed = this.state.isClosed;
         if(this.state.membership === 1){
@@ -263,6 +283,13 @@ export default class HomeWorkDetail extends Component{
                         >
                         <Image source =
                         {require('../images/delete.png')}
+                        style = {styles.imagestyle}/>
+                    </TouchableOpacity>
+                    <TouchableOpacity style = {styles.touchbutton}
+                        onPress = {this.remind}
+                        >
+                        <Image source =
+                        {require('../images/dinosaur.jpg')}
                         style = {styles.imagestyle}/>
                     </TouchableOpacity>
                 </View>

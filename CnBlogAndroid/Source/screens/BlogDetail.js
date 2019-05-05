@@ -95,7 +95,7 @@ export default class BlogDetail extends Component{
 			global.storage.save({key:StorageKey.BLOGDETAIL+this.props.navigation.state.params.Id,data:this.state.content})
 			.catch((err)=>{
 				ToastAndroid.show("error",ToastAndroid.SHORT);
-			})
+            })
 		})
 		.catch((error) => {
             ToastAndroid.show(err_info.NO_INTERNET,ToastAndroid.SHORT);
@@ -109,7 +109,7 @@ export default class BlogDetail extends Component{
 				ToastAndroid.show(err_info.TIME_OUT,ToastAndroid.SHORT)
 			})
         });
-    }
+    };
     componentWillUnmount = ()=>{
         this._isMounted=false;
     }
@@ -156,6 +156,32 @@ export default class BlogDetail extends Component{
         if (this.props.navigation.state.params.useURL) {
             return {uri: this.props.navigation.state.params.Url};
         } else {
+            //FIX ME
+            //1. 目前使用的是CDN上的静态文件，加载需要消耗时间，后面可以下载到本地，去掉网络访问请求
+            //2. 需要修复某些小地方
+            let code_highlight = `
+            <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/default.min.css">
+            <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>          
+            <script src="https://cdn.bootcss.com/jquery/3.4.0/jquery.min.js"></script>            
+            <script>hljs.initHighlightingOnLoad();</script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" type="text/javascript">
+                $(document).ready(function() {
+                    MathJax.Hub.Config({
+                        tex2jax: {
+                            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+                            displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+                            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre','code','a'],
+                            ignoreClass:"class1"
+                            }
+                        });
+
+                    $('pre code').each(function(i, block) {
+                        hljs.highlightBlock(block);
+                    });
+                });
+            </script>
+            `;
+            content = code_highlight + content;
             return {
                 html: content,
                 baseUrl: this.props.navigation.state.params.Url

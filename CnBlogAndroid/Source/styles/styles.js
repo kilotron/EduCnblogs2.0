@@ -45,8 +45,25 @@ export const flatStyles = StyleSheet.create({
         elevation:3   //   高度，设置Z轴，可以产生立体效果
     },
 })
+export const nameImageStyles = StyleSheet.create({
+    nameContainer:{
+        width: 0.15*screenWidth,
+        height: 0.15*screenWidth,
+        borderRadius : 40,
+        left : 2,
+        marginTop: 5,
+        marginRight: 5,
+        backgroundColor: '#F5F5FF',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    nameText:{
+        fontSize: 24,
+        color: '#0A140A',
+    }
+})
 export const tabViewStyles = StyleSheet.create({
     ScrollableTabViewStyle:{
 
-    }, 
+    },
 })

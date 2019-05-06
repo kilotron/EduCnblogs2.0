@@ -6,7 +6,7 @@ import MyAdapter from './MyAdapter.js';
 import React, { Component} from 'react';
 import {UI} from '../config'
 import {err_info} from '../config'
-import {flatStyles} from '../styles/styles'
+import {flatStyles, nameImageStyles} from '../styles/styles'
 import {
     StyleSheet,
     Text,
@@ -152,8 +152,8 @@ export default class BookmarksList extends Component {
                         blogApp: BlogApp, CommentCount: 0, Title: Title, Description: Summary});
                     }}
                     >
-                    <View style = {styles.avatarstyle}>
-                        <Text style = {{fontSize: 24,}}>
+                    <View style = {nameImageStyles.nameContainer}>
+                        <Text style = {nameImageStyles.nameText}>
                             {BlogApp.slice(0, 2)}
                         </Text>
                     </View>

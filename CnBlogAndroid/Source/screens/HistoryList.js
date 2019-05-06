@@ -5,7 +5,7 @@ import * as Service from '../request/request.js'
 import MyAdapter from './MyAdapter.js';
 import React, { Component} from 'react';
 import {UI} from '../config'
-import {flatStyles} from '../styles/styles'
+import {flatStyles, nameImageStyles} from '../styles/styles'
 import * as storage from '../Storage/storage.js'
 import {
     StyleSheet,
@@ -155,8 +155,8 @@ export default class HistoryList extends Component {
                     onPress = {Url!=='' ? ()=>this.props.navigation.navigate('BlogDetail',
                     {Id:Id, blogApp: BlogApp, CommentCount: CommentCount, Url: Url, Title: Title, Description:SummaryContent}) : ()=>{}}
                 >
-                    <View style = {styles.avatarstyle}>
-                        <Text style = {{fontSize: 24,}}>
+                    <View style = {nameImageStyles.nameContainer}>
+                        <Text style = {nameImageStyles.nameText}>
                             {BlogApp.slice(0, 2)}
                         </Text>
                     </View>
@@ -317,13 +317,13 @@ export default class HistoryList extends Component {
             });
         })
         .catch((err)=>{
+            global.storage.save({key: StorageKey.BLOG_LIST, data: []});
             this.setState({
                 theblogs: [],
                 theblogCount: 0,
                 loadStatus: 'none',
                 currentPageIndex: 1,
             });
-            ToastAndroid.show(err.name,ToastAndroid.SHORT);
         })
     }
 

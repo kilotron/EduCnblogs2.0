@@ -399,7 +399,7 @@ class Option extends Component {
         //alert('哈哈哈哈');
         this.state = {
             isVisible: true, //选项是否可见
-            deleteButton: false, //删除按钮是否可见
+            deleteButton: this.props.deleteButton, //删除按钮是否可见
             rank: this.props.rank, //不可修改
             titleNum: this.props.titleNum, //显示的标题num，可修改
             that: this.props.myThis,
@@ -416,7 +416,8 @@ class Option extends Component {
     }
 
     render() {
-        if (this.state.titleNum > this.state.optionInitial)
+        alert(this.props.titleNum+'这是Option的render');
+        if (this.state.deleteButton)
             return (
                 <View style={styles.optionContainer}>
                     <Text style={styles.text}>
@@ -428,7 +429,7 @@ class Option extends Component {
                         underlineColorAndroid="transparent"//设置下划线背景色透明 达到去掉下划线的效果
                     />
                     <Button
-                        onPress={() => { this._onPress() }}
+                        onPress={() => { this.props.myThis._onPress2DeleteOption(3) }}
                         title='删除选项'
                     />
                 </View>
@@ -458,6 +459,7 @@ class Question extends Component {
             titleNum: this.props.titleNum, //显示的问题标题num，可修改
             optionInitial: 2, //初始值定为2，
             optionNum: 2, //当前投票option的数量，每制造一个option则加一
+            optionRank : 2, //每个option的标识符
             voteContents: [], 
             voteTitle : '',
             voteMode : 0,
@@ -475,7 +477,11 @@ class Question extends Component {
 
     /** 点击就删除一个option */
     _onPress2DeleteOption(index) {
-        alert('我好了');
+        var array = this.state.voteContents;
+        array.forEach(element => {
+            if(element.props.titleNum==index)
+                array.pop(element);
+        });
         varOptionNum = this.state.optionNum;
         this.setState({ optionNum: varOptionNum - 1 });
         this.props.isVisible = false;
@@ -489,12 +495,14 @@ class Question extends Component {
         for (num = 1; num <= this.state.optionInitial; num++) {
             array.push(
                 <Option
+                    deleteButton = {false}
                     titleNum={num}
                     optionInitial={this.state.optionInitial}
                     myThis={this}
                     isVisible={true}
                 />
             );
+            
         }
         this.setState({ voteContents: array }); //回调函数
     }
@@ -502,10 +510,13 @@ class Question extends Component {
     componentWillUpdate(nextProps, nextState) {
         alert('更新在Question中执行方法');
         var array = this.state.voteContents;
+        var varOptionRank = this.state.optionRank;
         if (nextState.optionNum > array.length) { //证明要添加新的
+            varOptionRank++;
             array.push(
                 <Option
-                    titleNum={0}
+                    deleteButton = {true} //需要有删除按钮
+                    titleNum={varOptionRank}
                     optionInitial={this.state.optionInitial}
                     myThis={this}
                     isVisible={true}
@@ -514,10 +525,12 @@ class Question extends Component {
         }
         else { //可能是删除
             array.forEach(element => {
-                if (element.isVisible == false)
+                if (element.props.isVisible == false)
                     array.pop(element);
+                    element.props.isVisible = false;
             });
         }
+        this.setState({optionRank: varOptionRank});
         this.setState({ voteContents: array });
     }
 

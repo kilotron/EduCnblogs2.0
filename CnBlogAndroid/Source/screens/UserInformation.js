@@ -64,13 +64,13 @@ export default class UserInformation extends Component{
         umengPush.openPush();
         var ret = await storage.setItem(StorageKey.RECEIVE_PUSH,'true');
         return ret;
-    } 
+    }
 
     async closeReceive(){
         umengPush.closePush();
         var ret = await storage.setItem(StorageKey.RECEIVE_PUSH,'false');
         return ret;
-    } 
+    }
 
     _logout=()=>{
         storage.removeItem(StorageKey.RECEIVE_PUSH).then(
@@ -175,7 +175,7 @@ export default class UserInformation extends Component{
                 flexDirection: 'row',
                 justifyContent:'flex-start',
                 alignItems: 'center',
-                marginBottom: 0.03*screenHeight,
+                marginBottom: 0.02*screenHeight,
                 backgroundColor: UI.TOP_COLOR,
                 height: screenHeight/12,
                 paddingLeft: 0.05*screenWidth,
@@ -186,7 +186,7 @@ export default class UserInformation extends Component{
                 flexDirection: 'row',
                 justifyContent:'flex-start',
                 alignItems: 'center',
-                marginBottom: 0.01*screenHeight,
+                marginBottom: 0.005*screenHeight,
                 backgroundColor: 'white',
                 height: 0.15*screenHeight,
                 paddingLeft: 0.05*screenWidth,
@@ -208,7 +208,7 @@ export default class UserInformation extends Component{
                 justifyContent:'center',
                 alignItems: 'flex-start',
                 height: 0.1*screenHeight,
-                marginBottom: 0.01*screenHeight,
+                marginBottom: 0.005*screenHeight,
                 backgroundColor: 'white',
                 paddingLeft: 0.05*screenWidth,
             }}>
@@ -219,7 +219,7 @@ export default class UserInformation extends Component{
                 justifyContent:'center',
                 alignItems: 'flex-start',
                 height: 0.1*screenHeight,
-                marginBottom: 0.01*screenHeight,
+                marginBottom: 0.005*screenHeight,
                 backgroundColor: 'white',
                 paddingLeft: 0.05*screenWidth,
             }}>
@@ -234,7 +234,7 @@ export default class UserInformation extends Component{
                     justifyContent:'center',
                     alignItems: 'flex-start',
                     height: 0.07*screenHeight,
-                    marginBottom: 0.01*screenHeight,
+                    marginBottom: 0.005*screenHeight,
                     backgroundColor: 'white',
                     paddingLeft: 0.05*screenWidth,
             }}>
@@ -248,7 +248,7 @@ export default class UserInformation extends Component{
                     justifyContent:'center',
                     alignItems: 'flex-start',
                     height: 0.07*screenHeight,
-                    marginBottom: 0.01*screenHeight,
+                    marginBottom: 0.005*screenHeight,
                     backgroundColor: 'white',
                     paddingLeft: 0.05*screenWidth,
             }}>
@@ -262,7 +262,7 @@ export default class UserInformation extends Component{
                     justifyContent:'center',
                     alignItems: 'flex-start',
                     height: 0.07*screenHeight,
-                    marginBottom: 0.01*screenHeight,
+                    marginBottom: 0.005*screenHeight,
                     backgroundColor: 'white',
                     paddingLeft: 0.05*screenWidth,
             }}>
@@ -300,13 +300,13 @@ export default class UserInformation extends Component{
                     justifyContent:'center',
                     alignItems: 'flex-start',
                     height: 0.07*screenHeight,
-                    marginBottom: 0.03*screenHeight,
+                    marginBottom: 0.01*screenHeight,
                     backgroundColor: 'white',
                     paddingLeft: 0.05*screenWidth,
             }}>
                 <Text style = {{fontSize: 18, fontWeight: 'bold', color:'rgb(51,51,51)'}}>关于App</Text>
             </TouchableHighlight>
-            
+
             <View
                 underlayColor="white"
                 // activeOpacity={0.5}
@@ -317,12 +317,12 @@ export default class UserInformation extends Component{
                     justifyContent:'center',
                     alignItems: 'flex-start',
                     height: 0.07*screenHeight,
-                    marginBottom: 0.03*screenHeight,
+                    marginBottom: 0.01*screenHeight,
                     backgroundColor: 'white',
                     paddingLeft: 0.05*screenWidth,
             }}>
             <Text style = {{fontSize: 18, fontWeight: 'bold', color:'rgb(51,51,51)'}}>接收推送</Text>
-            <Switch 
+            <Switch
                 onTintColor='#aadfd9'  //开关打开时的背景颜色
                 thumbTintColor='#ececec' //开关上按钮的颜色
                 tintColor='#abb0b4' //关闭时背景颜色

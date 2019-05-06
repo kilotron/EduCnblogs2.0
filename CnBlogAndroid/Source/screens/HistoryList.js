@@ -5,7 +5,7 @@ import * as Service from '../request/request.js'
 import MyAdapter from './MyAdapter.js';
 import React, { Component} from 'react';
 import {UI} from '../config'
-import {flatStyles} from '../styles/styles'
+import {nameImageStyles, flatStylesWithAvatar} from '../styles/styles'
 import * as storage from '../Storage/storage.js'
 import {
     StyleSheet,
@@ -91,11 +91,11 @@ export default class HistoryList extends Component {
             return;
         }
         Alert.alert(
-            '删除所有历史记录',
-            '确定要删除吗？',
+            '清空历史记录',
+            '确定要清空吗？',
             [
                 {text: '取消'},
-                {text: '确认删除', onPress: ()=>{
+                {text: '确认清空', onPress: ()=>{
                     global.storage.save({key: StorageKey.BLOG_LIST, data: []});
                     this.setState({
                         theblogs: [],
@@ -120,62 +120,73 @@ export default class HistoryList extends Component {
 
         /* 绑定左右滑动等参数 */
         let _panResponder = PanResponder.create({
-          onStartShouldSetPanResponder: (evt, gestureState) => true,
-          onMoveShouldSetPanResponder: (evt, gestureState) => true,
+          //onStartShouldSetPanResponder: (evt, gestureState) => true,
+          onMoveShouldSetPanResponder: (evt, gestureState) => {
+              if(gestureState.dx < -screenWidth*0.1 || gestureState.dx > screenWidth*0.1){
+                  return true;
+              }
+              else{
+                  return false;
+              }
+          },
           //onPanResponderGrant: this._handlePanResponderGrant,
           //onPanResponderMove: this._handlePanResponderMove,
           onPanResponderRelease: (evt, gestureState)=>{
-              if(gestureState.dx < 0 && gestureState.dx < -screenWidth*0.1) {
+              if(gestureState.dx < 0 ){
                   this._onPressDelHistory(Id);
               }
-              else if(gestureState.dx > 0 && gestureState.dx > screenWidth*0.1) {
-                  this._onPressDelAll();
-              }
               else{
-                  this.props.navigation.navigate('BlogDetail',
-                  {Id:Id, blogApp: BlogApp, CommentCount: CommentCount, Url: Url, Title: Title, Description:SummaryContent});
+                  this._onPressDelAll();
               }
           },
           onPanResponderTerminate: (evt, gestureState)=>{;},
         });
 
         return(
-            <View style={flatStyles.cell}  {..._panResponder.panHandlers}>
+            <View {..._panResponder.panHandlers} style={flatStylesWithAvatar.cell}
+            >
                 <TouchableOpacity
-                    style = {styles.listcontainer}
+                    style = {flatStylesWithAvatar.listcontainer}
                     onLongPress = {()=> {this._onPressDelHistory(Id)}}
                     onPress = {Url!=='' ? ()=>this.props.navigation.navigate('BlogDetail',
                     {Id:Id, blogApp: BlogApp, CommentCount: CommentCount, Url: Url, Title: Title, Description:SummaryContent}) : ()=>{}}
                 >
-                    <Text style = {{
-                        fontSize: 18,
-                        fontWeight: 'bold',
-                        marginTop: 10,
-                        marginBottom: 2,
-                        textAlign: 'left',
-                        color: 'black',
-                        fontFamily : 'serif',
-                    }} accessibilityLabel = {Url}>
-                        {Title}
-                    </Text>
-                    <Text  numberOfLines={2} style = {{
-                        lineHeight: 25,
-                        fontSize: 14,
-                        marginBottom: 8,
-                        textAlign: 'left',
-                        color: 'rgb(70,70,70)',
-                    }}>
-                        {SummaryContent + '...'}
-                    </Text>
-                    <View style = {{
-                        flexDirection: 'row',
-                        marginBottom: 8,
-                        justifyContent: 'space-around',
-                        alignItems: 'flex-start',
-                    }}>
-                        <Text style = {{fontSize: 10, textAlign: 'right', color: 'black', flex: 1}}>
-                            {BlogApp}
+                    <View style = {nameImageStyles.nameContainer}>
+                        <Text style = {nameImageStyles.nameText}>
+                            {BlogApp.slice(0, 2)}
                         </Text>
+                    </View>
+                    <View style = {{flex:1}}>
+                        <Text style = {{
+                            fontSize: 18,
+                            fontWeight: 'bold',
+                            marginTop: 10,
+                            marginBottom: 2,
+                            textAlign: 'left',
+                            color: 'black',
+                            fontFamily : 'serif',
+                        }} >
+                            {Title}
+                        </Text>
+                        <Text  numberOfLines={2} style = {{
+                            lineHeight: 25,
+                            fontSize: 14,
+                            marginBottom: 8,
+                            textAlign: 'left',
+                            color: 'rgb(70,70,70)',
+                        }}>
+                            {SummaryContent + '...'}
+                        </Text>
+                        <View style = {{
+                            flexDirection: 'row',
+                            marginBottom: 8,
+                            justifyContent: 'space-around',
+                            alignItems: 'flex-start',
+                        }}>
+                            <Text style = {{fontSize: 10, textAlign: 'right', color: 'black', flex: 1}}>
+                                {BlogApp}
+                            </Text>
+                        </View>
                     </View>
                 </TouchableOpacity>
             </View>
@@ -207,16 +218,7 @@ export default class HistoryList extends Component {
         }
         return(
             <View style={{width: screenWidth, }}>
-            {
-                this.state.loadStatus==='none'?
-                    (
-                        <View style={{height:30,alignItems:'center',justifyContent:'flex-start',}}>
-                            <Text style={{color:'#999999',fontSize:14,marginTop:5,marginBottom:5,}}>
-                            这还什么都没有
-                            </Text>
-                        </View>
-                    ): ( null )
-            }
+
                 <FlatList
                     renderItem={this._renderItem}
                     data= {data}
@@ -225,8 +227,26 @@ export default class HistoryList extends Component {
                     ListFooterComponent={this._renderFooter.bind(this)}
                     onEndReached={this._onEndReached.bind(this)}
                     onEndReachedThreshold={0.1}
+                    ListEmptyComponent={this._listEmptyComponent}
+                    ItemSeparatorComponent={this._itemSeparatorComponent}
                 />
             </View>
+        )
+    }
+
+    _listEmptyComponent(){
+        return (
+            <View style={flatStylesWithAvatar.promptTextContainer}>
+                <Text style={flatStylesWithAvatar.promptText}>
+                这还什么都没有
+                </Text>
+            </View>
+        );
+    }
+
+    _itemSeparatorComponent(){
+        return (
+            <View style={flatStylesWithAvatar.separatorStyle}/>
         )
     }
 
@@ -234,23 +254,16 @@ export default class HistoryList extends Component {
     _renderFooter(){
         if (this.state.loadStatus === 'all loaded') {
             return (
-                <View style={{height:30,alignItems:'center',justifyContent:'flex-start',}}>
-                    <Text style={{color:'#999999',fontSize:14,marginTop:5,marginBottom:5,}}>
+                <View style={flatStylesWithAvatar.promptTextContainer}>
+                    <Text style={flatStylesWithAvatar.promptText}>
                     没有更多数据了
                     </Text>
                 </View>
             );
-        } else if(this.state.loadStatus === 'loading') {
-            return (
-                <View style={styles.footer}>
-                    <ActivityIndicator />
-                    <Text>正在加载更多数据...</Text>
-                </View>
-            );
-        } //else 'not loading'
+        }
         return (
-            <View style={styles.footer}>
-                <Text></Text>
+            <View style={flatStylesWithAvatar.promptTextContainer}>
+                <Text style={flatStylesWithAvatar.promptText}/>
             </View>
         );
     }
@@ -268,7 +281,7 @@ export default class HistoryList extends Component {
 		this.fetchPage();
     }
 
-    /* 获取某页面的数据，这里简单的考虑第一页时重置历史记录列表，其他情况追加数据 */
+    /* 获取缓存的历史记录数据， */
     fetchPage() {
         if (!this._isMounted)
         {
@@ -287,13 +300,13 @@ export default class HistoryList extends Component {
             });
         })
         .catch((err)=>{
+            global.storage.save({key: StorageKey.BLOG_LIST, data: []});
             this.setState({
                 theblogs: [],
                 theblogCount: 0,
                 loadStatus: 'none',
                 currentPageIndex: 1,
             });
-            ToastAndroid.show(err.name,ToastAndroid.SHORT);
         })
     }
 
@@ -308,13 +321,10 @@ export default class HistoryList extends Component {
     render() {
         return (
             <View style = {styles.container}>
-
-                <View>
-                    <View style={{ height: 1, backgroundColor: 'rgb(225,225,225)',  marginTop: 0.005*screenHeight, alignSelf:'stretch'}}/>
-                    {
-                        this._renderHistoryList()
-                    }
-                </View>
+                <View style={styles.strangeView}/>
+                {
+                    this._renderHistoryList()
+                }
             </View>
         )
     }
@@ -327,13 +337,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: 'white',
     },
-    listcontainer: {
-        justifyContent:'flex-start',
-        alignItems: 'flex-start',
-        flex:1,
-        alignSelf: 'stretch',
-        backgroundColor: 'white',
-        paddingLeft: 0.03*screenWidth,
-        paddingRight: 0.04*screenWidth,
-    }
+    strangeView:{
+        height: 1,
+        backgroundColor: 'rgb(225,225,225)',
+        marginTop: 0.005*screenHeight,
+        alignSelf:'stretch',
+    },
 });

@@ -120,20 +120,23 @@ export default class HistoryList extends Component {
 
         /* 绑定左右滑动等参数 */
         let _panResponder = PanResponder.create({
-          onStartShouldSetPanResponder: (evt, gestureState) => true,
-          onMoveShouldSetPanResponder: (evt, gestureState) => true,
+          //onStartShouldSetPanResponder: (evt, gestureState) => true,
+          onMoveShouldSetPanResponder: (evt, gestureState) => {
+              if(gestureState.dx < -screenWidth*0.1 || gestureState.dx > screenWidth*0.1){
+                  return true;
+              }
+              else{
+                  return false;
+              }
+          },
           //onPanResponderGrant: this._handlePanResponderGrant,
           //onPanResponderMove: this._handlePanResponderMove,
           onPanResponderRelease: (evt, gestureState)=>{
-              if(gestureState.dx < 0 && gestureState.dx < -screenWidth*0.1) {
+              if(gestureState.dx < 0 ){
                   this._onPressDelHistory(Id);
               }
-              else if(gestureState.dx > 0 && gestureState.dx > screenWidth*0.1) {
-                  this._onPressDelAll();
-              }
               else{
-                  this.props.navigation.navigate('BlogDetail',
-                  {Id:Id, blogApp: BlogApp, CommentCount: CommentCount, Url: Url, Title: Title, Description:SummaryContent});
+                  this._onPressDelAll();
               }
           },
           onPanResponderTerminate: (evt, gestureState)=>{;},
@@ -363,7 +366,7 @@ const styles = StyleSheet.create({
         height: 0.15*screenWidth,
         borderRadius : 40,
         left : 2,
-        marginTop: 4,
+        marginTop: 5,
         marginRight: 5,
         backgroundColor: '#F5F5FF',
         alignItems: 'center',

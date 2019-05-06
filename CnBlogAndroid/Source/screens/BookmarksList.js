@@ -55,10 +55,6 @@ export default class BookmarksList extends Component {
     componentWillMount(){
         this.fetchPage(this.state.currentPageIndex);
     }
-    /*
-    componentWillUpdate(){
-    }
-    */
 
     /* 弹出选择框询问是否删除 */
     _onPressDelBookmarks(wzLinkId) {
@@ -115,28 +111,33 @@ export default class BookmarksList extends Component {
         let BlogApp = GetBlogApp(LinkUrl);
 
         let _panResponder = PanResponder.create({
-          onStartShouldSetPanResponder: (evt, gestureState) => true,
-          onMoveShouldSetPanResponder: (evt, gestureState) => true,
-          //onPanResponderGrant: this._handlePanResponderGrant,
-          //onPanResponderMove: this._handlePanResponderMove,
-          onPanResponderRelease: (evt, gestureState)=>{
-              if(gestureState.dx < 0 && gestureState.dx < -screenWidth*0.1) {
-                  //Alert.alert('位移为 '+ gestureState.dx + '\n删除 '+ WzLinkId);
-                  this._onPressDelBookmarks(WzLinkId);
-              }
-              else if(gestureState.dx > 0 && gestureState.dx > screenWidth*0.1) {
+            /*
+            onStartShouldSetPanResponder: (evt, gestureState) => true,
+            //onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
+            onMoveShouldSetPanResponder: (evt, gestureState) => true,
+            //onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
+            onPanResponderTerminationRequest: (evt, gestureState) => true,
+            */
+            onMoveShouldSetPanResponder: (evt, gestureState) => {
+                if(gestureState.dx < -screenWidth*0.1 || gestureState.dx > screenWidth*0.1){
+                    return true;
+                }
+                else{
+                    return false;
+                }
+            },
+            onPanResponderRelease: (evt, gestureState)=>{
+                if(gestureState.dx < 0) {
+                    //Alert.alert('位移为 '+ gestureState.dx + '\n删除 '+ WzLinkId);
+                    this._onPressDelBookmarks(WzLinkId);
+                }
+                else{
                   //Alert.alert('位移为 '+ gestureState.dx + '\n编辑 '+ WzLinkId);
                   this.props.navigation.navigate('BookmarksEdit',{Url: LinkUrl,
                       Title: Title, Id: WzLinkId, Description: Summary, callback: this._FlatListRefresh});
-              }
-              else{
-                  //Alert.alert('位移为 '+ gestureState.dx + '\n屏幕宽度 ' + screenWidth);
-
-                  this.props.navigation.navigate('BlogDetail',{Url: LinkUrl, Id: DetailId,
-                      blogApp: BlogApp, CommentCount: 0, Title: Title, Description: Summary});
-              }
-          },
-          onPanResponderTerminate: (evt, gestureState)=>{;},
+                }
+            },
+            onPanResponderTerminate: (evt, gestureState)=>{;},
         });
 
         return(
@@ -248,6 +249,7 @@ export default class BookmarksList extends Component {
                     ListFooterComponent={this._renderFooter.bind(this)}
                     onEndReached={this._onEndReached.bind(this)}
                     onEndReachedThreshold={0.1}
+                    ListEmptyComponent={this._listEmptyComponent}
                     ItemSeparatorComponent={this._itemSeparatorComponent}
                 />
             </View>
@@ -258,6 +260,12 @@ export default class BookmarksList extends Component {
         return (
             <View style={{width: screenWidth, height:screenHeight*0.005, backgroundColor: '#F5F5F5', }}/>
         )
+    }
+    _listEmptyComponent(){
+        return (
+            <View style={flatStyles.cell} >
+            </View>
+        );
     }
 
     /* 公告列表到达底部时，渲染底部文本 */
@@ -421,7 +429,7 @@ const styles = StyleSheet.create({
         height: 0.15*screenWidth,
         borderRadius : 40,
         left : 2,
-        marginTop: 4,
+        marginTop: 5,
         marginRight: 5,
         backgroundColor: '#F5F5FF',
         alignItems: 'center',

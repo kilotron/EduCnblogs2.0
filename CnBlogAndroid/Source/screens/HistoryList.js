@@ -5,7 +5,7 @@ import * as Service from '../request/request.js'
 import MyAdapter from './MyAdapter.js';
 import React, { Component} from 'react';
 import {UI} from '../config'
-import {flatStyles, nameImageStyles} from '../styles/styles'
+import {nameImageStyles, flatStylesWithAvatar} from '../styles/styles'
 import * as storage from '../Storage/storage.js'
 import {
     StyleSheet,
@@ -91,11 +91,11 @@ export default class HistoryList extends Component {
             return;
         }
         Alert.alert(
-            '删除所有历史记录',
-            '确定要删除吗？',
+            '清空历史记录',
+            '确定要清空吗？',
             [
                 {text: '取消'},
-                {text: '确认删除', onPress: ()=>{
+                {text: '确认清空', onPress: ()=>{
                     global.storage.save({key: StorageKey.BLOG_LIST, data: []});
                     this.setState({
                         theblogs: [],
@@ -143,14 +143,10 @@ export default class HistoryList extends Component {
         });
 
         return(
-            <View {..._panResponder.panHandlers} style={{flex: 1,
-                backgroundColor: 'white',
-                marginLeft: 5,
-                marginRight: 5,
-                borderColor: '#dddddd', }}
+            <View {..._panResponder.panHandlers} style={flatStylesWithAvatar.cell}
             >
                 <TouchableOpacity
-                    style = {styles.listcontainer}
+                    style = {flatStylesWithAvatar.listcontainer}
                     onLongPress = {()=> {this._onPressDelHistory(Id)}}
                     onPress = {Url!=='' ? ()=>this.props.navigation.navigate('BlogDetail',
                     {Id:Id, blogApp: BlogApp, CommentCount: CommentCount, Url: Url, Title: Title, Description:SummaryContent}) : ()=>{}}
@@ -222,16 +218,7 @@ export default class HistoryList extends Component {
         }
         return(
             <View style={{width: screenWidth, }}>
-            {
-                this.state.loadStatus==='none'?
-                    (
-                        <View style={{height:30,alignItems:'center',justifyContent:'flex-start',}}>
-                            <Text style={{color:'#999999',fontSize:14,marginTop:5,marginBottom:5,}}>
-                            这还什么都没有
-                            </Text>
-                        </View>
-                    ): ( null )
-            }
+
                 <FlatList
                     renderItem={this._renderItem}
                     data= {data}
@@ -249,14 +236,17 @@ export default class HistoryList extends Component {
 
     _listEmptyComponent(){
         return (
-            <View style={flatStyles.cell} >
+            <View style={flatStylesWithAvatar.promptTextContainer}>
+                <Text style={flatStylesWithAvatar.promptText}>
+                这还什么都没有
+                </Text>
             </View>
         );
     }
 
     _itemSeparatorComponent(){
         return (
-            <View style={{width: screenWidth, height:screenHeight*0.005, backgroundColor: '#F5F5F5', }}/>
+            <View style={flatStylesWithAvatar.separatorStyle}/>
         )
     }
 
@@ -264,23 +254,16 @@ export default class HistoryList extends Component {
     _renderFooter(){
         if (this.state.loadStatus === 'all loaded') {
             return (
-                <View style={{height:30,alignItems:'center',justifyContent:'flex-start',}}>
-                    <Text style={{color:'#999999',fontSize:14,marginTop:5,marginBottom:5,}}>
+                <View style={flatStylesWithAvatar.promptTextContainer}>
+                    <Text style={flatStylesWithAvatar.promptText}>
                     没有更多数据了
                     </Text>
                 </View>
             );
-        } else if(this.state.loadStatus === 'loading') {
-            return (
-                <View style={styles.footer}>
-                    <ActivityIndicator />
-                    <Text>正在加载更多数据...</Text>
-                </View>
-            );
-        } //else 'not loading'
+        }
         return (
-            <View style={styles.footer}>
-                <Text></Text>
+            <View style={flatStylesWithAvatar.promptTextContainer}>
+                <Text style={flatStylesWithAvatar.promptText}/>
             </View>
         );
     }
@@ -298,7 +281,7 @@ export default class HistoryList extends Component {
 		this.fetchPage();
     }
 
-    /* 获取某页面的数据，这里简单的考虑第一页时重置历史记录列表，其他情况追加数据 */
+    /* 获取缓存的历史记录数据， */
     fetchPage() {
         if (!this._isMounted)
         {
@@ -338,13 +321,10 @@ export default class HistoryList extends Component {
     render() {
         return (
             <View style = {styles.container}>
-
-                <View>
-                    <View style={{ height: 1, backgroundColor: 'rgb(225,225,225)',  marginTop: 0.005*screenHeight, alignSelf:'stretch'}}/>
-                    {
-                        this._renderHistoryList()
-                    }
-                </View>
+                <View style={styles.strangeView}/>
+                {
+                    this._renderHistoryList()
+                }
             </View>
         )
     }
@@ -357,19 +337,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: 'white',
     },
-    listcontainer: {
-        flex:1,
-        flexDirection: 'row',
-    },
-    avatarstyle: {
-        width: 0.15*screenWidth,
-        height: 0.15*screenWidth,
-        borderRadius : 40,
-        left : 2,
-        marginTop: 5,
-        marginRight: 5,
-        backgroundColor: '#F5F5FF',
-        alignItems: 'center',
-        justifyContent: 'center',
+    strangeView:{
+        height: 1,
+        backgroundColor: 'rgb(225,225,225)',
+        marginTop: 0.005*screenHeight,
+        alignSelf:'stretch',
     },
 });

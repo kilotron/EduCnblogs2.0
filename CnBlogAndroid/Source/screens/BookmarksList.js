@@ -6,7 +6,7 @@ import MyAdapter from './MyAdapter.js';
 import React, { Component} from 'react';
 import {UI} from '../config'
 import {err_info} from '../config'
-import {flatStyles, nameImageStyles} from '../styles/styles'
+import {nameImageStyles, flatStylesWithAvatar} from '../styles/styles'
 import {
     StyleSheet,
     Text,
@@ -18,8 +18,6 @@ import {
     PanResponder,
     screen,
     Alert,
-    Button,
-    Image,
 } from 'react-native';
 
 import {
@@ -141,12 +139,8 @@ export default class BookmarksList extends Component {
         });
 
         return(
-            <View style={{flex: 1,
-                backgroundColor: 'white',
-                marginLeft: 5,
-                marginRight: 5,
-                borderColor: '#dddddd', }} {..._panResponder.panHandlers}>
-                <TouchableOpacity style = {styles.listcontainer}
+            <View style={flatStylesWithAvatar.cell} {..._panResponder.panHandlers}>
+                <TouchableOpacity style = {flatStylesWithAvatar.listcontainer}
                  onPress={()=>{
                     this.props.navigation.navigate('BlogDetail',{Url: LinkUrl, Id: DetailId,
                         blogApp: BlogApp, CommentCount: 0, Title: Title, Description: Summary});
@@ -231,16 +225,6 @@ export default class BookmarksList extends Component {
         }
         return(
             <View style={{width: screenWidth, }}>
-                {
-                    this.state.loadStatus==='none'?
-                        (
-                            <View style={{height:30,alignItems:'center',justifyContent:'flex-start',}}>
-                                <Text style={{color:'#999999',fontSize:14,marginTop:5,marginBottom:5,}}>
-                                这还什么都没有
-                                </Text>
-                            </View>
-                        ):(null)
-                }
                 <FlatList
                     renderItem={this._renderItem}
                     data= {data}
@@ -256,39 +240,45 @@ export default class BookmarksList extends Component {
 
         )
     }
-    _itemSeparatorComponent(){
-        return (
-            <View style={{width: screenWidth, height:screenHeight*0.005, backgroundColor: '#F5F5F5', }}/>
-        )
-    }
+
     _listEmptyComponent(){
         return (
-            <View style={flatStyles.cell} >
+            <View style={flatStylesWithAvatar.promptTextContainer}>
+                <Text style={flatStylesWithAvatar.promptText}>
+                这还什么都没有
+                </Text>
             </View>
         );
+    }
+
+    _itemSeparatorComponent(){
+        return (
+            <View style={flatStylesWithAvatar.separatorStyle}/>
+        )
     }
 
     /* 公告列表到达底部时，渲染底部文本 */
     _renderFooter(){
         if (this.state.loadStatus === 'all loaded') {
             return (
-                <View style={{height:30,alignItems:'center',justifyContent:'flex-start',}}>
-                    <Text style={{color:'#999999',fontSize:14,marginTop:5,marginBottom:5,}}>
+                <View style={flatStylesWithAvatar.promptTextContainer}>
+                    <Text style={flatStylesWithAvatar.promptText}>
                     没有更多数据了
                     </Text>
                 </View>
             );
         } else if(this.state.loadStatus === 'loading') {
             return (
-                <View style={styles.footer}>
-                    <ActivityIndicator />
-                    <Text>正在加载更多数据...</Text>
+                <View style={flatStylesWithAvatar.promptTextContainer}>
+                    <Text style={flatStylesWithAvatar.promptText}>
+                    正在加载更多数据...
+                    </Text>
                 </View>
             );
         } //else 'not loading'
         return (
-            <View style={styles.footer}>
-                <Text></Text>
+            <View style={flatStylesWithAvatar.promptTextContainer}>
+                <Text style={flatStylesWithAvatar.promptText}/>
             </View>
         );
     }
@@ -407,32 +397,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: 'white',
     },
-    footer:{
-        flexDirection:'row',
-        height:24,
-        justifyContent:'center',
-        alignItems:'center',
-        marginBottom:10,
-    },
     strangeView:{
         height: 1,
         backgroundColor: 'rgb(225,225,225)',
         marginTop: 0.005*screenHeight,
-        alignSelf:'stretch'
-    },
-    listcontainer: {
-        flex:1,
-        flexDirection: 'row',
-    },
-    avatarstyle: {
-        width: 0.15*screenWidth,
-        height: 0.15*screenWidth,
-        borderRadius : 40,
-        left : 2,
-        marginTop: 5,
-        marginRight: 5,
-        backgroundColor: '#F5F5FF',
-        alignItems: 'center',
-        justifyContent: 'center',
+        alignSelf:'stretch',
     },
 });

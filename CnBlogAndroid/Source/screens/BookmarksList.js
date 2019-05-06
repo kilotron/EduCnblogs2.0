@@ -19,6 +19,7 @@ import {
     screen,
     Alert,
     Button,
+    Image,
 } from 'react-native';
 
 import {
@@ -138,38 +139,28 @@ export default class BookmarksList extends Component {
           onPanResponderTerminate: (evt, gestureState)=>{;},
         });
 
-
-/*
-<View>
-    <TouchableOpacity style={{width: screenWidth*0.2, flex: 1, backgroundColor: 'red', }}
-        onPress= {()=>{this._onPressDelBookmarks(WzLinkId);}}>
-        <Text>删除</Text>
-    </TouchableOpacity>
-</View>
-<View>
-    <TouchableOpacity style={{width: screenWidth*0.2, flex: 1, backgroundColor: 'blue',}}
-        onPress= {()=>{
-        this.props.navigation.navigate('BookmarksEdit',{Url: LinkUrl,
-            Title: Title, Id: WzLinkId, callback: this._FlatListRefresh});} }>
-        <Text>编辑</Text>
-    </TouchableOpacity>
-</View>
-{..._panResponder.panHandlers}
-*/
         return(
-            <View {..._panResponder.panHandlers}
-            >
-                <View style={flatStyles.cell }>
-                    <TouchableOpacity style = {styles.listcontainer}
-                     onPress={()=>{
-                        this.props.navigation.navigate('BlogDetail',{Url: LinkUrl, Id: DetailId,
-                            blogApp: BlogApp, CommentCount: 0, Title: Title, Description: Summary});
-                        }}
-                        >
+            <View style={{flex: 1,
+                backgroundColor: 'white',
+                marginLeft: 5,
+                marginRight: 5,
+                borderColor: '#dddddd', }} {..._panResponder.panHandlers}>
+                <TouchableOpacity style = {styles.listcontainer}
+                 onPress={()=>{
+                    this.props.navigation.navigate('BlogDetail',{Url: LinkUrl, Id: DetailId,
+                        blogApp: BlogApp, CommentCount: 0, Title: Title, Description: Summary});
+                    }}
+                    >
+                    <View style = {styles.avatarstyle}>
+                        <Text style = {{fontSize: 24,}}>
+                            {BlogApp.slice(0, 2)}
+                        </Text>
+                    </View>
+                    <View style = {{flex:1}}>
                         <Text style = {{
                             fontSize: 18,
                             fontWeight: 'bold',
-                            marginTop: 10,
+                            marginTop: 6,
                             marginBottom: 2,
                             textAlign: 'left',
                             color: 'black',
@@ -179,8 +170,8 @@ export default class BookmarksList extends Component {
                         </Text>
                         <Text  numberOfLines={2} style = {{
                             lineHeight: 25,
-                            fontSize: 14,
-                            marginBottom: 8,
+                            fontSize: 12,
+                            marginBottom: 2,
                             textAlign: 'left',
                             color: 'rgb(70,70,70)',
                         }}>
@@ -188,7 +179,7 @@ export default class BookmarksList extends Component {
                         </Text>
                         <View style = {{
                             flexDirection: 'row',
-                            marginBottom: 8,
+                            marginBottom: 4,
                             justifyContent: 'space-around',
                             alignItems: 'flex-start',
                         }}>
@@ -196,9 +187,9 @@ export default class BookmarksList extends Component {
                                 {BlogApp+'\n添加于 '+DateAdded}
                             </Text>
                         </View>
+                    </View>
 
-                    </TouchableOpacity>
-                </View>
+                </TouchableOpacity>
             </View>
         )
     };
@@ -257,9 +248,15 @@ export default class BookmarksList extends Component {
                     ListFooterComponent={this._renderFooter.bind(this)}
                     onEndReached={this._onEndReached.bind(this)}
                     onEndReachedThreshold={0.1}
+                    ItemSeparatorComponent={this._itemSeparatorComponent}
                 />
             </View>
 
+        )
+    }
+    _itemSeparatorComponent(){
+        return (
+            <View style={{width: screenWidth, height:screenHeight*0.005, backgroundColor: '#F5F5F5', }}/>
         )
     }
 
@@ -416,12 +413,18 @@ const styles = StyleSheet.create({
         alignSelf:'stretch'
     },
     listcontainer: {
-        justifyContent:'flex-start',
-        alignItems: 'flex-start',
         flex:1,
-        alignSelf: 'stretch',
-        backgroundColor: 'white',
-        paddingLeft: 0.03*screenWidth,
-        paddingRight: 0.04*screenWidth,
-    }
+        flexDirection: 'row',
+    },
+    avatarstyle: {
+        width: 0.15*screenWidth,
+        height: 0.15*screenWidth,
+        borderRadius : 40,
+        left : 2,
+        marginTop: 4,
+        marginRight: 5,
+        backgroundColor: '#F5F5FF',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
 });

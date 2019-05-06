@@ -140,42 +140,54 @@ export default class HistoryList extends Component {
         });
 
         return(
-            <View style={flatStyles.cell}  {..._panResponder.panHandlers}>
+            <View {..._panResponder.panHandlers} style={{flex: 1,
+                backgroundColor: 'white',
+                marginLeft: 5,
+                marginRight: 5,
+                borderColor: '#dddddd', }}
+            >
                 <TouchableOpacity
                     style = {styles.listcontainer}
                     onLongPress = {()=> {this._onPressDelHistory(Id)}}
                     onPress = {Url!=='' ? ()=>this.props.navigation.navigate('BlogDetail',
                     {Id:Id, blogApp: BlogApp, CommentCount: CommentCount, Url: Url, Title: Title, Description:SummaryContent}) : ()=>{}}
                 >
-                    <Text style = {{
-                        fontSize: 18,
-                        fontWeight: 'bold',
-                        marginTop: 10,
-                        marginBottom: 2,
-                        textAlign: 'left',
-                        color: 'black',
-                        fontFamily : 'serif',
-                    }} accessibilityLabel = {Url}>
-                        {Title}
-                    </Text>
-                    <Text  numberOfLines={2} style = {{
-                        lineHeight: 25,
-                        fontSize: 14,
-                        marginBottom: 8,
-                        textAlign: 'left',
-                        color: 'rgb(70,70,70)',
-                    }}>
-                        {SummaryContent + '...'}
-                    </Text>
-                    <View style = {{
-                        flexDirection: 'row',
-                        marginBottom: 8,
-                        justifyContent: 'space-around',
-                        alignItems: 'flex-start',
-                    }}>
-                        <Text style = {{fontSize: 10, textAlign: 'right', color: 'black', flex: 1}}>
-                            {BlogApp}
+                    <View style = {styles.avatarstyle}>
+                        <Text style = {{fontSize: 24,}}>
+                            {BlogApp.slice(0, 2)}
                         </Text>
+                    </View>
+                    <View style = {{flex:1}}>
+                        <Text style = {{
+                            fontSize: 18,
+                            fontWeight: 'bold',
+                            marginTop: 10,
+                            marginBottom: 2,
+                            textAlign: 'left',
+                            color: 'black',
+                            fontFamily : 'serif',
+                        }} >
+                            {Title}
+                        </Text>
+                        <Text  numberOfLines={2} style = {{
+                            lineHeight: 25,
+                            fontSize: 14,
+                            marginBottom: 8,
+                            textAlign: 'left',
+                            color: 'rgb(70,70,70)',
+                        }}>
+                            {SummaryContent + '...'}
+                        </Text>
+                        <View style = {{
+                            flexDirection: 'row',
+                            marginBottom: 8,
+                            justifyContent: 'space-around',
+                            alignItems: 'flex-start',
+                        }}>
+                            <Text style = {{fontSize: 10, textAlign: 'right', color: 'black', flex: 1}}>
+                                {BlogApp}
+                            </Text>
+                        </View>
                     </View>
                 </TouchableOpacity>
             </View>
@@ -225,8 +237,23 @@ export default class HistoryList extends Component {
                     ListFooterComponent={this._renderFooter.bind(this)}
                     onEndReached={this._onEndReached.bind(this)}
                     onEndReachedThreshold={0.1}
+                    ListEmptyComponent={this._listEmptyComponent}
+                    ItemSeparatorComponent={this._itemSeparatorComponent}
                 />
             </View>
+        )
+    }
+
+    _listEmptyComponent(){
+        return (
+            <View style={flatStyles.cell} >
+            </View>
+        );
+    }
+
+    _itemSeparatorComponent(){
+        return (
+            <View style={{width: screenWidth, height:screenHeight*0.005, backgroundColor: '#F5F5F5', }}/>
         )
     }
 
@@ -328,12 +355,18 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
     },
     listcontainer: {
-        justifyContent:'flex-start',
-        alignItems: 'flex-start',
         flex:1,
-        alignSelf: 'stretch',
-        backgroundColor: 'white',
-        paddingLeft: 0.03*screenWidth,
-        paddingRight: 0.04*screenWidth,
-    }
+        flexDirection: 'row',
+    },
+    avatarstyle: {
+        width: 0.15*screenWidth,
+        height: 0.15*screenWidth,
+        borderRadius : 40,
+        left : 2,
+        marginTop: 4,
+        marginRight: 5,
+        backgroundColor: '#F5F5FF',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
 });

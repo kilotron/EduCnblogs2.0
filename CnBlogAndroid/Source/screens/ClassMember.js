@@ -120,7 +120,7 @@ export default class ClassMember extends Component{
     }
 
     _onPress = ()=>{
-        if(this.state.membership===1)
+        if(this.state.membership!=2 || this.state.membership!=3)
         {
             ToastAndroid.show("您没有权限，只有老师和助教才能添加班级成员哦！",ToastAndroid.SHORT);
         }
@@ -129,6 +129,41 @@ export default class ClassMember extends Component{
             this.props.navigation.navigate('ClassMemberAdd',
             {classId: this.props.navigation.state.params.classId})
         }
+    }
+    generateAddButton(){
+        if(this.state.membership == 2 || this.state.membership == 3){
+            return(
+                <TouchableHighlight 
+                    underlayColor="#3b50ce"
+                    activeOpacity={0.5}
+                    style={{
+                        position:'absolute',
+                        bottom:20,
+                        right:10, 
+                        backgroundColor: "#3b50ce",
+                        width: 52, 
+                        height: 52, 
+                        borderRadius: 26,
+                        justifyContent: 'center', 
+                        alignItems: 'center', 
+                        margin: 20}} 
+                        onPress={this._onPress} >
+                    
+                    <Text
+                        style= {{
+                            fontSize: 30,
+                            color: '#ffffff',
+                            textAlign: 'center',
+                            fontWeight: '100',
+                        }}
+                    >
+                        +
+                    </Text>
+                    
+                </TouchableHighlight>
+            );
+        }
+        else return;
     }
     render(){
         var data = [];
@@ -165,34 +200,7 @@ export default class ClassMember extends Component{
                         onRefresh = {this.UpdateData}
                         refreshing= {false}
                     />
-					<TouchableHighlight 
-						underlayColor="#3b50ce"
-						activeOpacity={0.5}
-						style={{
-							position:'absolute',
-							bottom:20,
-							right:10, 
-							backgroundColor: "#3b50ce",
-							width: 52, 
-							height: 52, 
-							borderRadius: 26,
-							justifyContent: 'center', 
-							alignItems: 'center', 
-							margin: 20}} 
-							onPress={this._onPress} >
-						
-						<Text
-                            style= {{
-                                fontSize: 30,
-                                color: '#ffffff',
-                                textAlign: 'center',
-                                fontWeight: '100',
-                            }}
-                        >
-                            +
-                        </Text>
-						
-					</TouchableHighlight>
+					{this.generateAddButton()}
                 </View>
             </View>
         )

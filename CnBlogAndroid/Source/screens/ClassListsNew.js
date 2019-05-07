@@ -55,6 +55,9 @@ export default class ClassListsNew extends Component {
 
 	// 从选择班级页面返回时调用这个函数，刷新页面
 	_classSelectGoBack = (chosedClassName, chosedSchoolClassId) => {
+		if(chosedSchoolClassId == null){
+			return;
+		}
 		this.setState({
 			className: chosedClassName,
 			schoolClassId: chosedSchoolClassId,

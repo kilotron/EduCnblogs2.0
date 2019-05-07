@@ -77,12 +77,17 @@ export default class ClassSelect extends Component {
         if (this.props.navigation.state.params.classSelected) {
             return; // 如果父页面已选择班级，则按返回键时不重新选择。
         }
+        if(this.state.classes.length == 0){
+            this.props.navigation.state.params.callback(null, null);
+            return;
+        }
         for (var i in this.state.classes) {
             var schoolClassId = this.state.classes[i].schoolClassId;
             var nameCn = this.state.classes[i].nameCn;
             this.props.navigation.state.params.callback(nameCn, schoolClassId);
-            break;  // 取第一个班级
+            return;  // 取第一个班级
         }
+        
     }
 
     UpdateData =()=> {

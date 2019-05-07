@@ -111,7 +111,8 @@ export default class ClassSelect extends Component {
             }
         })
         .then(() => {
-            global.storage.save({key : StorageKey.CLASS_EMPTY,data : this.state.isEmpty});
+            let isEmpty = this.state.isEmpy;
+            global.storage.save({key : StorageKey.CLASS_EMPTY,data : isEmpty});
         })
         // 获取每个班级的图标
         .then(() => {
@@ -134,10 +135,10 @@ export default class ClassSelect extends Component {
         })
         // 缓存班级信息与班级图片
         .then(() => {
-            global.storage.save({key : StorageKey.CLASS_LIST,data : this.state.classes});
+            if(this.state.classes.length != 0) global.storage.save({key : StorageKey.CLASS_LIST,data : this.state.classes});
         })
         .then(() => {
-            global.storage.save({key : StorageKey.CLASS_LIST_IMG,data : this.state.imgs});
+            if(this.state.classes.length != 0) global.storage.save({key : StorageKey.CLASS_LIST_IMG,data : this.state.imgs});
         })
         .catch((error) => {
             // 出错则获取之前缓存
@@ -216,7 +217,12 @@ export default class ClassSelect extends Component {
 				universityNameCn: this.state.classes[i].universityNameCn,
 				imgurl: this.state.imgs[i],
             })
-		}}
+        }}
+        if(data.length == 0){
+            return <View style={styles.container}>
+                <Text>还没有加入班级哦~</Text>
+            </View>
+        }
         return (
             <View style={styles.container}>
 				<View style= {styles.listViewStyle}>

@@ -579,7 +579,7 @@ export default class VoteDetail extends Component {
                     <View style={styles.content}>
                             <FoldText
                                 //HTMLSpecialCharsDecode(this.state.content)
-                                maxLines={10}
+                                maxLines={5} //
                                 text={this.state.content}
                             />
                     </View>

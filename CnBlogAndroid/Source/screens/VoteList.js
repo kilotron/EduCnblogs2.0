@@ -219,17 +219,19 @@ export default class VoteList extends Component {
     }
 
     GetAddButton() {
-        return (
-            <TouchableHighlight
-                underlayColor="#3b50ce"
-                activeOpacity={0.5}
-                style={styles.addButton}
-                onPress={this.onPress2AddVote.bind(this)} >
-                <Text style={styles.buttonContent}>
-                    +
-                </Text>
-            </TouchableHighlight>
-        );
+        if(this.state.membership == 2 || this.state.membership == 3){
+            return (
+                <TouchableHighlight
+                    underlayColor="#3b50ce"
+                    activeOpacity={0.5}
+                    style={styles.addButton}
+                    onPress={this.onPress2AddVote.bind(this)} >
+                    <Text style={styles.buttonContent}>
+                        +
+                    </Text>
+                </TouchableHighlight>
+            );
+        }
     }
 
     render() {

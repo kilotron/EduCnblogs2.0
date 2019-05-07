@@ -4662,6 +4662,11 @@ react-native-flexi-radio-button@^0.2.2:
   resolved "http://registry.npm.taobao.org/react-native-flexi-radio-button/download/react-native-flexi-radio-button-0.2.2.tgz#a0180393c531ba3477722c6e42a31ceb1c11623b"
   integrity sha1-oBgDk8UxujR3cixuQqMc6xwRYjs=
 
+react-native-fold-text@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.npm.taobao.org/react-native-fold-text/download/react-native-fold-text-1.0.2.tgz#7553f657cab574df6787cb75728afb7a334ada79"
+  integrity sha1-dVP2V8q1dN9nh8t1cor7ejNK2nk=
+
 react-native-iphone-x-helper@^1.0.3:
   version "1.2.0"
   resolved "http://registry.npm.taobao.org/react-native-iphone-x-helper/download/react-native-iphone-x-helper-1.2.0.tgz#9f8a376eb00bc712115abff4420318a0063fa796"
@@ -4686,6 +4691,11 @@ react-native-modal-dropdown@^0.6.2:
   integrity sha1-2mAns1RtIDH7zkYkK//JVWHhNZk=
   dependencies:
     prop-types "^15.6.0"
+
+react-native-radio-master@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.npm.taobao.org/react-native-radio-master/download/react-native-radio-master-1.0.1.tgz#a3c375875e5d1130682a3ac72610713e5da163ea"
+  integrity sha1-o8N1h15dETBoKjrHJhBxPl2hY+o=
 
 react-native-safe-area-view@0.11.0:
   version "0.11.0"

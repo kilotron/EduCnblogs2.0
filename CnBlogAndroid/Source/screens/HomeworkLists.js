@@ -335,7 +335,7 @@ export default class HomeworkLists extends Component {
         return new Date(Number(YMD[0]),Number(YMD[1])-1,Number(YMD[2]),Number(HMS[0]),Number(HMS[1]),Number(HMS[2].substring(0,2)));
     }
     generateAddButton(){
-        if(this.state.membership != 1){
+        if(this.state.membership == 2 || this.state.membership == 3){
             return(
                 <TouchableHighlight 
                     underlayColor="#3b50ce"
@@ -461,7 +461,7 @@ export default class HomeworkLists extends Component {
                     refreshing= {false}
                 />
             </View>
-            {this.generateAddButton()}     
+            {this.generateAddButton()}
       </View>
     );
   }

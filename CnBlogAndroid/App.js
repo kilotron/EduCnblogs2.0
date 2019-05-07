@@ -87,6 +87,8 @@ class App extends Component {
     render() {
         //这里一定要测试一下，如果是刚刚下载的软件，一开始打开是不是会显示登陆界面
         const {navigate} = this.props.navigation;
+        //推送开关变量
+        
         return (
             <View style={styles.container}>
                 <Welcome/>
@@ -127,44 +129,53 @@ class Welcome extends Component{
         this.props.navigation.dispatch(resetAction);
     }
 
+    async setPush(){
+        var receivePush = await storage.getItem(StorageKey.RECEIVE_PUSH);
+        if(receivePush === null){
+            storage.setItem(StorageKey.RECEIVE_PUSH,'true');
+        }
+    }
+
     componentDidMount(){
         this.timer = setTimeout(
             ()=>{
-                storage.getItem(StorageKey.USER_TOKEN).then((token)=>{
-                    if(token === null)
-                    {
-                        this.toHome();
-                    }
-                    else{
-                        if(token.access_token !== 'undefined')
-                        {
-                            let url = Config.apiDomain+'api/users/';
-                            Service.GetInfo(url,token.access_token)
-                            .then((jsonData)=>{
-                                if(jsonData !== "rejected")
-                                {
-                                    this.toPersonalBlog();
-                                }
-                                else
-                                {
-                                    storage.removeItem(StorageKey.USER_TOKEN).then((res)=>{
-                                        CookieManager.clearAll()
-                                        .then((res)=>{
-                                            this.props.navigation.navigate('Loginer')
-                                        })
-                                    })
-                                }
-                            })
-                            .catch((error) => {
-                                this.toPersonalBlog();
-                            });
-                        }
-                        else
+                this.setPush().then(
+                    storage.getItem(StorageKey.USER_TOKEN).then((token)=>{
+                        if(token === null)
                         {
                             this.toHome();
                         }
-                    }
-                })
+                        else{
+                            if(token.access_token !== 'undefined')
+                            {
+                                let url = Config.apiDomain+'api/users/';
+                                Service.GetInfo(url,token.access_token)
+                                .then((jsonData)=>{
+                                    if(jsonData !== "rejected")
+                                    {
+                                        this.toPersonalBlog();
+                                    }
+                                    else
+                                    {
+                                        storage.removeItem(StorageKey.USER_TOKEN).then((res)=>{
+                                            CookieManager.clearAll()
+                                            .then((res)=>{
+                                                this.props.navigation.navigate('Loginer')
+                                            })
+                                        })
+                                    }
+                                })
+                                .catch((error) => {
+                                    this.toPersonalBlog();
+                                });
+                            }
+                            else
+                            {
+                                this.toHome();
+                            }
+                        }
+                    })
+                )
             }
             ,1000)
     }

@@ -4,6 +4,7 @@ import {authData} from '../config';
 import * as Service from '../request/request.js';
 import MyAdapter from './MyAdapter.js';
 import React, { Component} from 'react';
+import * as umengPush from '../umeng/umengPush'
 import {
     StyleSheet,
     Text,
@@ -103,6 +104,7 @@ export default class HomeworkSubmit extends Component {
                             ToastAndroid.show("请求失败，您的身份可能不对！",ToastAndroid.SHORT);
                         else if(jsonData.isSuccess)
                         {
+                            umengPush.deleteHomeworkTag(postBody.schoolClassId,postBody.homeworkId);
                             ToastAndroid.show('添加成功，请刷新查看！',ToastAndroid.SHORT);
                             this.props.navigation.goBack();
                         }

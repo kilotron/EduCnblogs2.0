@@ -14,6 +14,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.umeng.message.IUmengCallback;
 import com.umeng.message.MsgConstant;
 import com.umeng.message.PushAgent;
 import com.umeng.message.UTrack;
@@ -59,6 +60,39 @@ public class PushModule extends ReactContextBaseJavaModule {
         PushAgent mPushAgent = PushAgent.getInstance(context);
         String registrationId = mPushAgent.getRegistrationId();
         callback.invoke(registrationId);
+    }
+
+    @ReactMethod
+    public void disablePush(final Callback callback){
+        mPushAgent.disable(new IUmengCallback() {
+            @Override
+            public void onSuccess() {
+                callback.invoke(true);
+            }
+
+            @Override
+            public void onFailure(String s, String s1) {
+                callback.invoke(false);
+            }
+
+        });
+    }
+
+    @ReactMethod
+    public void enablePush(final Callback callback){
+        mPushAgent.enable(new IUmengCallback() {
+
+            @Override
+            public void onSuccess() {
+                callback.invoke(true);
+            }
+
+            @Override
+            public void onFailure(String s, String s1) {
+                callback.invoke(false);
+            }
+
+        });
     }
     @ReactMethod
     public void addTag(String tag, final Callback successCallback) {

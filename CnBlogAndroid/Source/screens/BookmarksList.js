@@ -6,7 +6,7 @@ import MyAdapter from './MyAdapter.js';
 import React, { Component} from 'react';
 import {UI} from '../config'
 import {err_info} from '../config'
-import {flatStyles} from '../styles/styles'
+import {nameImageStyles, flatStylesWithAvatar} from '../styles/styles'
 import {
     StyleSheet,
     Text,
@@ -18,7 +18,6 @@ import {
     PanResponder,
     screen,
     Alert,
-    Button,
 } from 'react-native';
 
 import {
@@ -54,10 +53,6 @@ export default class BookmarksList extends Component {
     componentWillMount(){
         this.fetchPage(this.state.currentPageIndex);
     }
-    /*
-    componentWillUpdate(){
-    }
-    */
 
     /* 弹出选择框询问是否删除 */
     _onPressDelBookmarks(wzLinkId) {
@@ -114,62 +109,53 @@ export default class BookmarksList extends Component {
         let BlogApp = GetBlogApp(LinkUrl);
 
         let _panResponder = PanResponder.create({
-          onStartShouldSetPanResponder: (evt, gestureState) => true,
-          onMoveShouldSetPanResponder: (evt, gestureState) => true,
-          //onPanResponderGrant: this._handlePanResponderGrant,
-          //onPanResponderMove: this._handlePanResponderMove,
-          onPanResponderRelease: (evt, gestureState)=>{
-              if(gestureState.dx < 0 && gestureState.dx < -screenWidth*0.1) {
-                  //Alert.alert('位移为 '+ gestureState.dx + '\n删除 '+ WzLinkId);
-                  this._onPressDelBookmarks(WzLinkId);
-              }
-              else if(gestureState.dx > 0 && gestureState.dx > screenWidth*0.1) {
+            /*
+            onStartShouldSetPanResponder: (evt, gestureState) => true,
+            //onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
+            onMoveShouldSetPanResponder: (evt, gestureState) => true,
+            //onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
+            onPanResponderTerminationRequest: (evt, gestureState) => true,
+            */
+            onMoveShouldSetPanResponder: (evt, gestureState) => {
+                if(gestureState.dx < -screenWidth*0.1 || gestureState.dx > screenWidth*0.1){
+                    return true;
+                }
+                else{
+                    return false;
+                }
+            },
+            onPanResponderRelease: (evt, gestureState)=>{
+                if(gestureState.dx < 0) {
+                    //Alert.alert('位移为 '+ gestureState.dx + '\n删除 '+ WzLinkId);
+                    this._onPressDelBookmarks(WzLinkId);
+                }
+                else{
                   //Alert.alert('位移为 '+ gestureState.dx + '\n编辑 '+ WzLinkId);
                   this.props.navigation.navigate('BookmarksEdit',{Url: LinkUrl,
                       Title: Title, Id: WzLinkId, Description: Summary, callback: this._FlatListRefresh});
-              }
-              else{
-                  //Alert.alert('位移为 '+ gestureState.dx + '\n屏幕宽度 ' + screenWidth);
-
-                  this.props.navigation.navigate('BlogDetail',{Url: LinkUrl, Id: DetailId,
-                      blogApp: BlogApp, CommentCount: 0, Title: Title, Description: Summary});
-              }
-          },
-          onPanResponderTerminate: (evt, gestureState)=>{;},
+                }
+            },
+            onPanResponderTerminate: (evt, gestureState)=>{;},
         });
 
-
-/*
-<View>
-    <TouchableOpacity style={{width: screenWidth*0.2, flex: 1, backgroundColor: 'red', }}
-        onPress= {()=>{this._onPressDelBookmarks(WzLinkId);}}>
-        <Text>删除</Text>
-    </TouchableOpacity>
-</View>
-<View>
-    <TouchableOpacity style={{width: screenWidth*0.2, flex: 1, backgroundColor: 'blue',}}
-        onPress= {()=>{
-        this.props.navigation.navigate('BookmarksEdit',{Url: LinkUrl,
-            Title: Title, Id: WzLinkId, callback: this._FlatListRefresh});} }>
-        <Text>编辑</Text>
-    </TouchableOpacity>
-</View>
-{..._panResponder.panHandlers}
-*/
         return(
-            <View {..._panResponder.panHandlers}
-            >
-                <View style={flatStyles.cell }>
-                    <TouchableOpacity style = {styles.listcontainer}
-                     onPress={()=>{
-                        this.props.navigation.navigate('BlogDetail',{Url: LinkUrl, Id: DetailId,
-                            blogApp: BlogApp, CommentCount: 0, Title: Title, Description: Summary});
-                        }}
-                        >
+            <View style={flatStylesWithAvatar.cell} {..._panResponder.panHandlers}>
+                <TouchableOpacity style = {flatStylesWithAvatar.listcontainer}
+                 onPress={()=>{
+                    this.props.navigation.navigate('BlogDetail',{Url: LinkUrl, Id: DetailId,
+                        blogApp: BlogApp, CommentCount: 0, Title: Title, Description: Summary});
+                    }}
+                    >
+                    <View style = {nameImageStyles.nameContainer}>
+                        <Text style = {nameImageStyles.nameText}>
+                            {BlogApp.slice(0, 2)}
+                        </Text>
+                    </View>
+                    <View style = {{flex:1}}>
                         <Text style = {{
                             fontSize: 18,
                             fontWeight: 'bold',
-                            marginTop: 10,
+                            marginTop: 6,
                             marginBottom: 2,
                             textAlign: 'left',
                             color: 'black',
@@ -179,8 +165,8 @@ export default class BookmarksList extends Component {
                         </Text>
                         <Text  numberOfLines={2} style = {{
                             lineHeight: 25,
-                            fontSize: 14,
-                            marginBottom: 8,
+                            fontSize: 12,
+                            marginBottom: 2,
                             textAlign: 'left',
                             color: 'rgb(70,70,70)',
                         }}>
@@ -188,7 +174,7 @@ export default class BookmarksList extends Component {
                         </Text>
                         <View style = {{
                             flexDirection: 'row',
-                            marginBottom: 8,
+                            marginBottom: 4,
                             justifyContent: 'space-around',
                             alignItems: 'flex-start',
                         }}>
@@ -196,9 +182,9 @@ export default class BookmarksList extends Component {
                                 {BlogApp+'\n添加于 '+DateAdded}
                             </Text>
                         </View>
+                    </View>
 
-                    </TouchableOpacity>
-                </View>
+                </TouchableOpacity>
             </View>
         )
     };
@@ -239,16 +225,6 @@ export default class BookmarksList extends Component {
         }
         return(
             <View style={{width: screenWidth, }}>
-                {
-                    this.state.loadStatus==='none'?
-                        (
-                            <View style={{height:30,alignItems:'center',justifyContent:'flex-start',}}>
-                                <Text style={{color:'#999999',fontSize:14,marginTop:5,marginBottom:5,}}>
-                                这还什么都没有
-                                </Text>
-                            </View>
-                        ):(null)
-                }
                 <FlatList
                     renderItem={this._renderItem}
                     data= {data}
@@ -257,9 +233,27 @@ export default class BookmarksList extends Component {
                     ListFooterComponent={this._renderFooter.bind(this)}
                     onEndReached={this._onEndReached.bind(this)}
                     onEndReachedThreshold={0.1}
+                    ListEmptyComponent={this._listEmptyComponent}
+                    ItemSeparatorComponent={this._itemSeparatorComponent}
                 />
             </View>
 
+        )
+    }
+
+    _listEmptyComponent(){
+        return (
+            <View style={flatStylesWithAvatar.promptTextContainer}>
+                <Text style={flatStylesWithAvatar.promptText}>
+                这还什么都没有
+                </Text>
+            </View>
+        );
+    }
+
+    _itemSeparatorComponent(){
+        return (
+            <View style={flatStylesWithAvatar.separatorStyle}/>
         )
     }
 
@@ -267,23 +261,24 @@ export default class BookmarksList extends Component {
     _renderFooter(){
         if (this.state.loadStatus === 'all loaded') {
             return (
-                <View style={{height:30,alignItems:'center',justifyContent:'flex-start',}}>
-                    <Text style={{color:'#999999',fontSize:14,marginTop:5,marginBottom:5,}}>
+                <View style={flatStylesWithAvatar.promptTextContainer}>
+                    <Text style={flatStylesWithAvatar.promptText}>
                     没有更多数据了
                     </Text>
                 </View>
             );
         } else if(this.state.loadStatus === 'loading') {
             return (
-                <View style={styles.footer}>
-                    <ActivityIndicator />
-                    <Text>正在加载更多数据...</Text>
+                <View style={flatStylesWithAvatar.promptTextContainer}>
+                    <Text style={flatStylesWithAvatar.promptText}>
+                    正在加载更多数据...
+                    </Text>
                 </View>
             );
         } //else 'not loading'
         return (
-            <View style={styles.footer}>
-                <Text></Text>
+            <View style={flatStylesWithAvatar.promptTextContainer}>
+                <Text style={flatStylesWithAvatar.promptText}/>
             </View>
         );
     }
@@ -402,26 +397,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: 'white',
     },
-    footer:{
-        flexDirection:'row',
-        height:24,
-        justifyContent:'center',
-        alignItems:'center',
-        marginBottom:10,
-    },
     strangeView:{
         height: 1,
         backgroundColor: 'rgb(225,225,225)',
         marginTop: 0.005*screenHeight,
-        alignSelf:'stretch'
+        alignSelf:'stretch',
     },
-    listcontainer: {
-        justifyContent:'flex-start',
-        alignItems: 'flex-start',
-        flex:1,
-        alignSelf: 'stretch',
-        backgroundColor: 'white',
-        paddingLeft: 0.03*screenWidth,
-        paddingRight: 0.04*screenWidth,
-    }
 });

@@ -4,7 +4,7 @@ import { authData, err_info, StorageKey } from '../config'
 import * as Service from '../request/request.js'
 import MyAdapter from './MyAdapter.js';
 import React, { Component } from 'react';
-import {UI} from '../../Source/config';
+import { UI } from '../../Source/config';
 import {
     Platform,
     StyleSheet,
@@ -18,18 +18,20 @@ import {
     Alert
 } from 'react-native';
 
-import {RadioGroup, RadioButton} from 'react-native-flexi-radio-button';
+import FoldText from "react-native-fold-text";
+import { RadioGroup, RadioButton } from 'react-native-flexi-radio-button';
 import CheckBox from 'react-native-check-box';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 const HTMLSpecialCharsDecode = require('../DataHandler/HTMLSpecialCharsDecode');
 
-const screenWidth= MyAdapter.screenWidth;
-const screenHeight= MyAdapter.screenHeight;
+const screenWidth = MyAdapter.screenWidth;
+const screenHeight = MyAdapter.screenHeight;
 
 // 传入voteID作为参数
 export default class VoteDetail extends Component {
     /**navigationOptions放在此处，可以在标题栏放一个按钮跳转到另一个页面。 */
-    static navigationOptions = ({navigation}) => ({
-        headerTintColor:'white',
+    static navigationOptions = ({ navigation }) => ({
+        headerTintColor: 'white',
         headerTitle: '投票详情',
         headerStyle: {
             height: 40,
@@ -45,11 +47,11 @@ export default class VoteDetail extends Component {
                     voteId: navigation.state.params.voteId,
                 });
             }}>
-                <Image 
+                <Image
                     source={require('../images/nav_i.png')}
                     style={{
                         height: 22,
-                        width: 22, 
+                        width: 22,
                         marginRight: 12
                     }}
                 />
@@ -79,7 +81,7 @@ export default class VoteDetail extends Component {
 
             /**是否已经投票 */
             hasVoted: undefined,
-            
+
             /* 每一个投票的题目和选项、图片等信息。*/
             voteContent: [],
 
@@ -95,7 +97,7 @@ export default class VoteDetail extends Component {
                option：选项内容
                exclusiveOptionIds：一个单选题里的相互排斥的选项们，多选不需要该属性
                indexOfThis: 单选题中，选项的编号（从零开始） */
-            isChecked: new Map(), 
+            isChecked: new Map(),
         }
         /**每道题的所有选项ID为一组，用于检查是否完成所有问题。 
           例如[1: {ids: [123, 124], selectedIndex: 0, isRadioButton: true}, 
@@ -116,9 +118,9 @@ export default class VoteDetail extends Component {
             var voteContentId = this.state.voteContent[i].voteContentId;//题目ID
             var aButtonGroup = [];
             if (isRadioButton) {
-                this.buttonGroups.set(voteContentId, {ids: aButtonGroup, selectedIndex: null, isRadioButton: true});
+                this.buttonGroups.set(voteContentId, { ids: aButtonGroup, selectedIndex: null, isRadioButton: true });
             } else {
-                this.buttonGroups.set(voteContentId, {ids: aButtonGroup, isRadioButton: false});
+                this.buttonGroups.set(voteContentId, { ids: aButtonGroup, isRadioButton: false });
             }
             var idx = 0;
             for (var j in voteOptions) {
@@ -169,28 +171,28 @@ export default class VoteDetail extends Component {
                     })
                 }
                 // 为显示投票成员设置
-                this.props.navigation.setParams({schoolClassId: jsonData.schoolClassId});
+                this.props.navigation.setParams({ schoolClassId: jsonData.schoolClassId });
             }
         })
-        .then(() => {
-            Service.Get(voteContentURL)
-            .then((jsonData) => {
-                if (jsonData !== 'rejected') {
-                    if (this._isMounted) {
-                        this.setState({voteContent: jsonData}, () => {
-                            this._isCheckedInit();
-                        });
-                    }
-                }
+            .then(() => {
+                Service.Get(voteContentURL)
+                    .then((jsonData) => {
+                        if (jsonData !== 'rejected') {
+                            if (this._isMounted) {
+                                this.setState({ voteContent: jsonData }, () => {
+                                    this._isCheckedInit();
+                                });
+                            }
+                        }
+                    })
+                    .catch((err) => {
+                        alert('error');
+                    })
             })
-            .catch((err) => {
-                alert('error');
+            .then(() => {
+                this._getVoteState(); // 获取用户是否已经投票。
             })
-        })
-        .then(() => {
-            this._getVoteState(); // 获取用户是否已经投票。
-        })
-        .catch((err)=>{});
+            .catch((err) => { });
     }
 
     componentDidMount = () => {
@@ -202,15 +204,15 @@ export default class VoteDetail extends Component {
     }
 
     /**一道题的序号、标题和图片 */
-    _renderItemHeader({item, index}) {
+    _renderItemHeader({ item, index }) {
         return (
             <View style={styles.voteItemHeaderView}>
-                <Text style={styles.voteItemTitleText}>{(index+1) + '. ' + item.title}</Text>
+                <Text style={styles.voteItemTitleText}>{(index + 1) + '. ' + item.title}</Text>
                 {
                     item.picture == null ? (null) : (
                         <Image
                             style={styles.voteItemImage}
-                            source={{uri:item.picture}}
+                            source={{ uri: item.picture }}
                             resizeMode='contain'
                             alignSelf='center'
                         />
@@ -239,7 +241,7 @@ export default class VoteDetail extends Component {
      * item.voteMode: 投票模式
      * item.voteContentId: 题目编号
     */
-    _renderVoteItem = ({item, index}) => {
+    _renderVoteItem = ({ item, index }) => {
         if (item.voteMode == 1) { // 单选，item是API返回的数据
             var selectedIndex = null;
             if (this.buttonGroups.get(parseInt(item.voteContentId))) {
@@ -248,8 +250,8 @@ export default class VoteDetail extends Component {
             }
             return (
                 <View >
-                    {this._renderItemHeader({item, index})}
-                    <RadioGroup 
+                    {this._renderItemHeader({ item, index })}
+                    <RadioGroup
                         style={styles.voteRadioGroup}
                         size={18}                   // radio button的大小
                         thickness={2}
@@ -270,14 +272,14 @@ export default class VoteDetail extends Component {
         } else if (item.voteMode == 2) {    // 多选
             return (
                 <View>
-                    {this._renderItemHeader({item, index})}
+                    {this._renderItemHeader({ item, index })}
                     <View style={styles.checkBoxesView}>
                         {this._renderCheckboxItems(item.voteOptions)}
                     </View>
                 </View>
             )
         } else {
-            alert('暂未实现的投票模式:'+item.title);
+            alert('暂未实现的投票模式:' + item.title);
         }
     }
 
@@ -287,8 +289,8 @@ export default class VoteDetail extends Component {
         for (var i in voteOptions) {
             let voteOptionId = voteOptions[i].voteOptionId;
             result.push(
-                <RadioButton 
-                    value={voteOptionId} 
+                <RadioButton
+                    value={voteOptionId}
                     key={voteOptionId}
                     style={styles.voteRadioButton}
                     disabled={this.state.hasVoted} // 已经投票过则不能更改选项。
@@ -331,10 +333,10 @@ export default class VoteDetail extends Component {
      */
     _renderACheckBox(data) {
         return (
-            <CheckBox 
+            <CheckBox
                 key={data.voteOptionId}
-                rightText={data.option} 
-                rightTextStyle={this.state.hasVoted ? styles.voteCheckBoxTextDisabled 
+                rightText={data.option}
+                rightTextStyle={this.state.hasVoted ? styles.voteCheckBoxTextDisabled
                     : styles.voteCheckBoxText}
                 onClick={() => {
                     data.isChecked = !data.isChecked;
@@ -345,7 +347,7 @@ export default class VoteDetail extends Component {
                     }
                 }}
                 style={styles.voteCheckBox}
-                checkBoxColor={this.state.hasVoted ? '#CCC': '#666'}
+                checkBoxColor={this.state.hasVoted ? '#CCC' : '#666'}
                 isChecked={data.isChecked}
                 disabled={this.state.hasVoted}
             />
@@ -355,14 +357,14 @@ export default class VoteDetail extends Component {
     /**所有的投票内容 */
     _renderVoteContent() {
         return (
-            <View style={{flex:1}}>
+            <View style={{ flex: 1 }}>
                 <FlatList
                     renderItem={this._renderVoteItem}
                     data={this.state.voteContent}
                     /* 添加extraData属性保证复选框被点击时FlatList更新。复选框被点击时改变了
                        this.state.isChecked，但未改变this.state.voteContent，所以如果没有
                        extraData属性，FlatList不会更新。 */
-                    extraData={this.state}  
+                    extraData={this.state}
                     keyExtractor={(item, index) => index.toString()}
                     ListFooterComponent={this._renderSubmitButton.bind(this)}
                     ListHeaderComponent={this._renderHasVotedBanner.bind(this)}
@@ -402,17 +404,17 @@ export default class VoteDetail extends Component {
     /**调试用 */
     _debugOptions() {
         var s = '';
-        this.state.isChecked.forEach(function (value, key, map){
-            s = s + 'key: ' + key + ', ' + value.option + ', ' + value.isChecked + '\n' ;
+        this.state.isChecked.forEach(function (value, key, map) {
+            s = s + 'key: ' + key + ', ' + value.option + ', ' + value.isChecked + '\n';
             if (value.exclusiveOptionIds) {
                 s = s + 'exclude: ';
                 for (var i in value.exclusiveOptionIds) {
-                    s = s+value.exclusiveOptionIds[i]+' ';
+                    s = s + value.exclusiveOptionIds[i] + ' ';
                 }
-                s+='\n';
+                s += '\n';
             }
         });
-        alert(s+this._validateVoteOptions());
+        alert(s + this._validateVoteOptions());
     }
 
     /**点击提交按钮调用此函数提交问卷。 */
@@ -423,7 +425,7 @@ export default class VoteDetail extends Component {
         }
         var commitURL = Config.VoteCommit + this.state.voteId;
         var ids = [];
-        this.state.isChecked.forEach(function(value, key, map){
+        this.state.isChecked.forEach(function (value, key, map) {
             if (value.isChecked) {
                 ids.push(key);
             }
@@ -434,28 +436,28 @@ export default class VoteDetail extends Component {
         }
         postBody = JSON.stringify(postBody);
         Service.UserAction(commitURL, postBody, 'POST')
-        .then((response) => {
-            if (response === 'rejected') {
-                return null; // 提示信息由UserAction输出
-            }
-            if(response.status!==200){
-                return null;
-            }
-            return response.json(); // 返回的是Promise对象
-        })
-        .then((jsonData) => {
-            if (jsonData.isSuccess) {
-                Alert.alert('提示', '投票成功');
-                this._getVoteState();   // 刷新界面
-            } else if (jsonData.isWarning) {
-                Alert.alert('提示', jsonData.message);
-            } else  { // if (jsonData.isError)
-                Alert.alert('错误', '投票失败');
-            }
-        })
-        .catch((error) => {
-            ToastAndroid.show(err_info.NO_INTERNET ,ToastAndroid.SHORT);
-        });
+            .then((response) => {
+                if (response === 'rejected') {
+                    return null; // 提示信息由UserAction输出
+                }
+                if (response.status !== 200) {
+                    return null;
+                }
+                return response.json(); // 返回的是Promise对象
+            })
+            .then((jsonData) => {
+                if (jsonData.isSuccess) {
+                    Alert.alert('提示', '投票成功');
+                    this._getVoteState();   // 刷新界面
+                } else if (jsonData.isWarning) {
+                    Alert.alert('提示', jsonData.message);
+                } else { // if (jsonData.isError)
+                    Alert.alert('错误', '投票失败');
+                }
+            })
+            .catch((error) => {
+                ToastAndroid.show(err_info.NO_INTERNET, ToastAndroid.SHORT);
+            });
     }
 
     /**完成了问卷所有内容则返回true。 */
@@ -481,62 +483,62 @@ export default class VoteDetail extends Component {
         let user_url = Config.apiDomain + api.user.info;
         var memberId = -1;
         Service.Get(user_url)
-        .then((jsonData) => {
-            var memberIdURL = Config.apiDomain + api.ClassGet.blogID2Mem + 
-            jsonData.BlogId + '/' + this.state.schoolClassId;
-            return Service.Get(memberIdURL)
-        })
-        .then((jsonData) => {
-            memberId = jsonData.memberId;
-            var voteIsCommitedURL = Config.VoteIsCommited + memberId +
+            .then((jsonData) => {
+                var memberIdURL = Config.apiDomain + api.ClassGet.blogID2Mem +
+                    jsonData.BlogId + '/' + this.state.schoolClassId;
+                return Service.Get(memberIdURL)
+            })
+            .then((jsonData) => {
+                memberId = jsonData.memberId;
+                var voteIsCommitedURL = Config.VoteIsCommited + memberId +
                     '/' + this.state.voteId;
-             return Service.Get(voteIsCommitedURL)
-        })
-        .then((_hasVoted) => {
-            if (this._isMounted) {
-                this.setState({
-                    hasVoted: _hasVoted,
-                })
-            }
-            if (!_hasVoted) {
-                return null;
-            }
-            // 获取投票选项
-            let committedOptionsURL = Config.VoteCommittedOptions + memberId + 
-                '/' + this.state.voteId;
-            return Service.Get(committedOptionsURL)
-        })
-        .then((jsonData) => {
-            if (jsonData == null) {
-                return; // 没有投票
-            }
-            for (var voteContentId in jsonData) {
-                // jsonData[voteContentId]是投票选项的数组
-                var selectedOptions = jsonData[voteContentId];
-                var allOptions = this.buttonGroups.get(parseInt(voteContentId)).ids;
-                var isRadioButton = this.buttonGroups.get(parseInt(voteContentId)).isRadioButton;
-                for (var i in selectedOptions) {
-                    var selectedContent = selectedOptions[i];
-                    for (var j in allOptions) {
-                        var voteOptionId = allOptions[j];
-                        var voteContent = this.state.isChecked.get(voteOptionId).option;
-                        if (selectedContent == voteContent) {   // 已选中此项
-                            this.state.isChecked.get(voteOptionId).isChecked = true;
-                            if (isRadioButton) { // 单选框设置选中选项
-                                // 这里voteOptionId是被选中选项。
-                                this.buttonGroups.get(parseInt(voteContentId)).selectedIndex = this.state.isChecked.get(voteOptionId).indexOfThis;
+                return Service.Get(voteIsCommitedURL)
+            })
+            .then((_hasVoted) => {
+                if (this._isMounted) {
+                    this.setState({
+                        hasVoted: _hasVoted,
+                    })
+                }
+                if (!_hasVoted) {
+                    return null;
+                }
+                // 获取投票选项
+                let committedOptionsURL = Config.VoteCommittedOptions + memberId +
+                    '/' + this.state.voteId;
+                return Service.Get(committedOptionsURL)
+            })
+            .then((jsonData) => {
+                if (jsonData == null) {
+                    return; // 没有投票
+                }
+                for (var voteContentId in jsonData) {
+                    // jsonData[voteContentId]是投票选项的数组
+                    var selectedOptions = jsonData[voteContentId];
+                    var allOptions = this.buttonGroups.get(parseInt(voteContentId)).ids;
+                    var isRadioButton = this.buttonGroups.get(parseInt(voteContentId)).isRadioButton;
+                    for (var i in selectedOptions) {
+                        var selectedContent = selectedOptions[i];
+                        for (var j in allOptions) {
+                            var voteOptionId = allOptions[j];
+                            var voteContent = this.state.isChecked.get(voteOptionId).option;
+                            if (selectedContent == voteContent) {   // 已选中此项
+                                this.state.isChecked.get(voteOptionId).isChecked = true;
+                                if (isRadioButton) { // 单选框设置选中选项
+                                    // 这里voteOptionId是被选中选项。
+                                    this.buttonGroups.get(parseInt(voteContentId)).selectedIndex = this.state.isChecked.get(voteOptionId).indexOfThis;
+                                }
                             }
                         }
                     }
                 }
-            }
-            if (this._isMounted) {
-                this.setState({
-                    isChecked: this.state.isChecked,
-                });
-            }
-        })
-        .catch(error => {});      
+                if (this._isMounted) {
+                    this.setState({
+                        isChecked: this.state.isChecked,
+                    });
+                }
+            })
+            .catch(error => { });
     }
 
     DateFormat = (date) => {
@@ -548,8 +550,47 @@ export default class VoteDetail extends Component {
     }
 
     render() {
+        if(this.state.content!="")
         return (
-            <View style={{flex:1, backgroundColor: 'white'}}>
+            <View style={{ flex: 1, backgroundColor: 'white' }}>
+                <KeyboardAwareScrollView>
+                    {/** header组件 */}
+                    <View style={styles.header}>
+                        <Text style={styles.headerText}>
+                            {this.state.name}
+                        </Text>
+                    </View>
+
+                    {/** detail组件 */}
+                    {/** 用于存放如publisher和privacy等信息 */}
+                    <View style={styles.detail}>
+                        <Text style={styles.publisherText} >
+                            {this.state.publisher + '\n'}
+                        </Text>
+                        <Text style={styles.detailText} >
+                            {'发布于: ' + this.DateFormat(this.state.dateAdded) + '\n'}
+                            {'结束于: ' + this.DateFormat(this.state.deadline) + '\n'}
+                            {this.state.privacy == 1 ? '公开投票' : '匿名投票'}
+                        </Text>
+                    </View>
+
+                    {/** content组件 */}
+
+                    <View style={styles.content}>
+                            <FoldText
+                                //HTMLSpecialCharsDecode(this.state.content)
+                                maxLines={5} //
+                                text={this.state.content}
+                            />
+                    </View>
+
+                
+                {this._renderVoteContent()}
+                </KeyboardAwareScrollView>
+            </View>
+        )
+        return (
+            <View style={{ flex: 1, backgroundColor: 'white' }}>
                 <View>
                     {/** header组件 */}
                     <View style={styles.header}>
@@ -572,11 +613,6 @@ export default class VoteDetail extends Component {
                     </View>
 
                     {/** content组件 */}
-                    <View style={styles.content}>
-                        <Text style={styles.contentText}>
-                            {HTMLSpecialCharsDecode(this.state.content)}
-                        </Text>
-                    </View>
                 </View>
                 {this._renderVoteContent()}
             </View>
@@ -596,7 +632,7 @@ const styles = StyleSheet.create({
         color: '#2c2c2c',
     },
     content: {
-        justifyContent:'flex-start',
+        justifyContent: 'flex-start',
         borderColor: UI.TOP_COLOR,
         borderStyle: null,
         borderWidth: 0.5,
@@ -634,56 +670,56 @@ const styles = StyleSheet.create({
         marginTop: 5
     },
     voteItemTitleText: {
-        fontSize: 16, 
+        fontSize: 16,
         color: '#444'
     },
     voteItemImage: {
-        width: 200, 
-        height: 100, 
+        width: 200,
+        height: 100,
         marginTop: 10
     },
     voteRadioGroup: {
-        marginHorizontal: 15, 
+        marginHorizontal: 15,
         marginVertical: 10
     },
     checkBoxesView: {
-        marginHorizontal: 15, 
+        marginHorizontal: 15,
         marginVertical: 10
     },
     voteRadioButton: {
-        padding: 5, 
-        marginHorizontal: 10, 
+        padding: 5,
+        marginHorizontal: 10,
         marginVertical: 2
     },
     voteRadioButtonText: {
-        fontSize: 15, 
-        color: '#555', 
+        fontSize: 15,
+        color: '#555',
         marginLeft: 5
     },
     voteCheckBoxText: {
-        fontSize: 15, 
-        color: '#555', 
+        fontSize: 15,
+        color: '#555',
         marginLeft: 5
     },
     voteCheckBoxTextDisabled: {
-        fontSize: 15, 
-        color: '#BBB', 
+        fontSize: 15,
+        color: '#BBB',
         marginLeft: 5
     },
     voteCheckBox: {
-        padding: 2, 
-        marginHorizontal: 10, 
+        padding: 2,
+        marginHorizontal: 10,
         marginVertical: 2
     },
     submitButton: {
         flex: 1,
-        height: buttonHeightRatio*screenWidth,
-        width: buttonWidthRatio*screenWidth,
+        height: buttonHeightRatio * screenWidth,
+        width: buttonWidthRatio * screenWidth,
         justifyContent: 'center',
         alignItems: 'center',
         marginTop: 10,
         marginBottom: 20,
-        marginLeft: (1-buttonWidthRatio)/2*screenWidth, //居中
+        marginLeft: (1 - buttonWidthRatio) / 2 * screenWidth, //居中
         backgroundColor: 'white',
         borderColor: '#0077FF',
         borderWidth: 0.5,
@@ -696,7 +732,7 @@ const styles = StyleSheet.create({
     hasVotedView: {
         flex: 1,
         marginTop: 10,
-        marginHorizontal:50,
+        marginHorizontal: 50,
         alignItems: 'center',
     },
     hasVotedText: {
@@ -734,8 +770,8 @@ Body示例：
 }
 
 Body参数名	类型	必需	描述	示例 e.g.
-voteId	number	是	投票Id	
-schoolClassId	number	是	操作人班级Id	
+voteId	number	是	投票Id
+schoolClassId	number	是	操作人班级Id
 voteOptionIds	array	是	投票选项Id列表
 
 详细说明：
@@ -758,7 +794,7 @@ Body参数名	类型	必需	描述	示例 e.g.
 blogId	string	是	博客Id	10000
 schoolClassId	string	是	班级Id	1
 返回示例：
-          
+
 {
     "memberId": 60,
     "studentNo": "1513933002",
@@ -767,7 +803,7 @@ schoolClassId	string	是	班级Id	1
     "membership": 1,
     "dateAdded": "2017-08-31T17:35:11.9467634"
 }
-                   
+
 Body参数名	描述	类型
 memberId	成员Id	number
 studentNo	学号	string
@@ -788,7 +824,7 @@ Authorization	string	是		Bearer your access_token
 
 获取当前登录用户信息
 返回示例：
-                            
+
 {
   "UserId": "4566ea6b-f2b3",
   "SpaceUserId": 2,
@@ -799,7 +835,7 @@ Authorization	string	是		Bearer your access_token
   "Seniority": "sample string 7",
   "BlogApp": "sample string 8"
 }
-                            
+
 Body参数名	描述	类型
 UserId	用户id	string
 SpaceUserId	用户显示名称id	number
@@ -820,7 +856,7 @@ Body参数名	类型	必需	描述	示例 e.g.
 memberId	number	是	成员Id	1
 voteId	number	是	投票Id	1
 返回示例：
-                    
+
 false
 
 6.获取成员投票项
@@ -833,14 +869,14 @@ Body参数名	类型	必需	描述	示例 e.g.
 memberId	number	是	成员Id	1
 voteId	number	是	投票Id	1
 返回示例：
-          
+
 {
     "1": [
         "一般，我会写好的"
     ]
 }
-                            
+
 Body参数名	描述	类型
 1	投票内容Id	array
-                      
+
 */

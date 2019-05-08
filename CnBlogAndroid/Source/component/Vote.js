@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 
 import {
     View,
+    Text,
     FlatList,
 } from 'react-native';
 
@@ -30,7 +31,6 @@ VoteProps = {
 export default class Vote extends Component {
     constructor(props) {
         super(props);
-
         /** 各个选项的选中状态, key是题目编号，value是一个Map
          * 这个Map的key是选项id，value是true/false。
          * this.optionIdsState是维护Vote组件内所有选项选中状态的变量，在子组件Choice
@@ -60,7 +60,7 @@ export default class Vote extends Component {
 
     componentWillReceiveProps(nextProps) {
         // 更新optionsIdsState变量
-        this.resetOptionIdsState(nextProps.data)
+        this.resetOptionIdsState(nextProps.data);
     }
 
     /**所有的投票内容 */

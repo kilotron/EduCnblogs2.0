@@ -13,12 +13,12 @@ import {
 } from 'react-native';
 import * as Service from '../request/request.js';
 import Config from '../config';
-import {flatStyles} from '../styles/styles';
+import {flatStylesWithAvatar} from '../styles/styles';
 import MyAdapter from './MyAdapter.js';
 
 const ItemHandler = require('../DataHandler/ClassMember/ItemHandler')
 
-
+/**props.navigation传递schoolClassId和voteId和voteContent */
 export default class VoteMemberList extends Component {
     
     constructor(props) {
@@ -42,10 +42,13 @@ export default class VoteMemberList extends Component {
                         members: jsonData,
                     })
                 }
+            } else { // 没有投票成员
+                Alert.alert('提示', '没有投票成员');
+                this.props.navigation.goBack();
             }
         })
         .catch((error) => {
-            alert('未实现');
+            alert('错误');
         })
     }
 
@@ -59,20 +62,27 @@ export default class VoteMemberList extends Component {
 
     _renderItem = ({item}) => {
         return (
-            <View style={flatStyles.cell}>
+            <View style={flatStylesWithAvatar.cell}>
                 <TouchableOpacity
-                    onPress={() => {alert('待完成：显示成员投票项')}}
+                    onPress={() => {
+                        let params = this.props.navigation.state.params;
+                        this.props.navigation.navigate('VoteMemberCommit', {
+                            memberId: item.memberId,
+                            voteId: params.voteId,
+                            voteContent: params.voteContent,
+                        })
+                    }}
                     style={styles.listcontainer}
                 >
-                    <View style = {{flex:1}}>
+                    <View style = {{flex:0}}>
                         <Image 
                             source = {
                                 item.avatarUrl?{uri:item.avatarUrl}:require('../images/defaultface.png')}
-                            style = {styles.avatarstyle}
+                            style = {flatStylesWithAvatar.avatarstyle}
                         />
                     </View>
-                    <View style = {styles.textcontainer}>
-                        <Text style = {{fontSize: 20,color: '#000000',flex:2}}>
+                    <View style = {{flex: 1,alignItems:'center', justifyContent:'center'}}>
+                        <Text style = {{fontSize: 20,color: '#333',textAlign:'center'}}>
                         {item.displayName+ ItemHandler(item.realName)}</Text>
                     </View>
                 </TouchableOpacity>
@@ -97,8 +107,15 @@ export default class VoteMemberList extends Component {
                     renderItem={this._renderItem}
                     data={data}
                     keyExtractor={(item, index) => index.toString()}
+                    ItemSeparatorComponent={this._itemSeparatorComponent}
                 />
             </View>
+        )
+    }
+
+    _itemSeparatorComponent(){
+        return (
+            <View style={flatStylesWithAvatar.separatorStyle}/>
         )
     }
 }
@@ -109,6 +126,7 @@ const screenHeight= MyAdapter.screenHeight;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: 'white',
     },
     listcontainer: {
         flexDirection: 'row',
@@ -128,4 +146,9 @@ const styles = StyleSheet.create({
         borderRadius : 40,
         left : 2,
     },
+    textcontainer: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    }
 })

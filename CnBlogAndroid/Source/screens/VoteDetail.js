@@ -350,12 +350,20 @@ export default class VoteDetail extends Component {
                             <FoldText
                                 //HTMLSpecialCharsDecode(this.state.content)
                                 maxLines={5} //
-                                text={this.state.content}
+                                text={HTMLSpecialCharsDecode(this.state.content)}
                             />
                     </View>
 
-                
-                {this._renderVoteContent()}
+                    <Vote
+                        data={this.state.voteData}
+                        recvSelectedIds={(ids, info) => {
+                            this.selectedIds = ids;
+                            this.info = info;
+                        }}
+                        headerComponent={this._renderHasVotedBanner.bind(this)}
+                        footerComponent={this._renderSubmitButton.bind(this)}
+                        disabled={this.state.hasVoted}
+                    />
                 </KeyboardAwareScrollView>
             </View>
         )

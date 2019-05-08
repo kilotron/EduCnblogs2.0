@@ -4,6 +4,7 @@ test('null test', ()=>{
 	var teststr0 = null;
 	var testRes0 = "";
 	expect(HtmlDecode(teststr0)).toBe(testRes0);
+	expect(HtmlDecode(testRes0)).toBe(testRes0);
 });
 
 test('decode test', ()=>{

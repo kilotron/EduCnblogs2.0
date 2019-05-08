@@ -9,7 +9,7 @@ import {StorageKey} from '../config'
 import {UI} from '../config'
 import {err_info} from '../config'
 import {flatStyles} from '../styles/styles'
-
+import * as Push from '../DataHandler/Push/PushHandler'; 
 import {
     StyleSheet,
     Text,
@@ -41,6 +41,7 @@ export default class PersonalBlog extends Component{
             postCount: 0,//随笔总数
             isRequestSuccess: false,
         };
+        Push.initPush();
     }
 	_isMounted;
     // 更新博客显示数据
@@ -181,7 +182,7 @@ export default class PersonalBlog extends Component{
                 <TouchableOpacity
                     style = {styles.listcontainer}
                     onPress = {Url!=='' ? ()=>this.props.navigation.navigate('BlogDetail',
-                    {Id:Id, blogApp: global.user_information.BlogApp, CommentCount: CommentCount, Url: Url, Title: Title}) : ()=>{}}
+                    {Id:Id, blogApp: global.user_information.BlogApp, CommentCount: CommentCount, Url: Url, Title: Title, Description: Description,}) : ()=>{}}
                 >
                     <Text style = {{
                         fontSize: 18,

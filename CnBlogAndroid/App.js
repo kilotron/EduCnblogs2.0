@@ -10,7 +10,7 @@ import fetch from 'react-native-fetch-polyfill'
 import React, { Component,} from 'react';
 import CookieManager from 'react-native-cookies'
 import { Icon } from 'native-base';
-
+import * as umengAnalysis from './Source/umeng/umengAnalysis'
 import {
     Platform,
     StyleSheet,
@@ -47,6 +47,7 @@ import BlogDetail from './Source/screens/BlogDetail'
 import BlogComment from './Source/screens/BlogComment'
 import BlogBookmarks from './Source/screens/BlogBookmarks'
 import BookmarksList from './Source/screens/BookmarksList'
+import BookmarksEdit from './Source/screens/BookmarksEdit'
 import ClassMember from './Source/screens/ClassMember'
 import ClassMemberAdd from './Source/screens/ClassMemberAdd'
 import MemberBlog from './Source/screens/MemberBlog'
@@ -61,8 +62,13 @@ import BlogEdition from './Source/screens/BlogEdition'
 import Bulletin from './Source/screens/Bulletin'
 import BulletinAdd from './Source/screens/BulletinAdd'
 import BulletinEdition from './Source/screens/BulletinEdition'
+import HistoryList from './Source/screens/HistoryList'
 import ClassSelect from './Source/screens/ClassSelect'
 import VoteList from './Source/screens/VoteList'
+import Settings from './Source/screens/Settings'
+import VoteDetail from './Source/screens/VoteDetail'
+import VoteAdd from './Source/screens/VoteAdd'
+import VoteMemberList from './Source/screens/VoteMemberList'
 const { height, width } = Dimensions.get('window');
 
 const CODE_URL = [
@@ -81,6 +87,8 @@ class App extends Component {
     render() {
         //这里一定要测试一下，如果是刚刚下载的软件，一开始打开是不是会显示登陆界面
         const {navigate} = this.props.navigation;
+        //推送开关变量
+        
         return (
             <View style={styles.container}>
                 <Welcome/>
@@ -121,44 +129,53 @@ class Welcome extends Component{
         this.props.navigation.dispatch(resetAction);
     }
 
+    async setPush(){
+        var receivePush = await storage.getItem(StorageKey.RECEIVE_PUSH);
+        if(receivePush === null){
+            storage.setItem(StorageKey.RECEIVE_PUSH,'true');
+        }
+    }
+
     componentDidMount(){
         this.timer = setTimeout(
             ()=>{
-                storage.getItem(StorageKey.USER_TOKEN).then((token)=>{
-                    if(token === null)
-                    {
-                        this.toHome();
-                    }
-                    else{
-                        if(token.access_token !== 'undefined')
-                        {
-                            let url = Config.apiDomain+'api/users/';
-                            Service.GetInfo(url,token.access_token)
-                            .then((jsonData)=>{
-                                if(jsonData !== "rejected")
-                                {
-                                    this.toPersonalBlog();
-                                }
-                                else
-                                {
-                                    storage.removeItem(StorageKey.USER_TOKEN).then((res)=>{
-                                        CookieManager.clearAll()
-                                        .then((res)=>{
-                                            this.props.navigation.navigate('Loginer')
-                                        })
-                                    })
-                                }
-                            })
-                            .catch((error) => {
-                                this.toPersonalBlog();
-                            });
-                        }
-                        else
+                this.setPush().then(
+                    storage.getItem(StorageKey.USER_TOKEN).then((token)=>{
+                        if(token === null)
                         {
                             this.toHome();
                         }
-                    }
-                })
+                        else{
+                            if(token.access_token !== 'undefined')
+                            {
+                                let url = Config.apiDomain+'api/users/';
+                                Service.GetInfo(url,token.access_token)
+                                .then((jsonData)=>{
+                                    if(jsonData !== "rejected")
+                                    {
+                                        this.toPersonalBlog();
+                                    }
+                                    else
+                                    {
+                                        storage.removeItem(StorageKey.USER_TOKEN).then((res)=>{
+                                            CookieManager.clearAll()
+                                            .then((res)=>{
+                                                this.props.navigation.navigate('Loginer')
+                                            })
+                                        })
+                                    }
+                                })
+                                .catch((error) => {
+                                    this.toPersonalBlog();
+                                });
+                            }
+                            else
+                            {
+                                this.toHome();
+                            }
+                        }
+                    })
+                )
             }
             ,1000)
     }
@@ -238,6 +255,7 @@ class UrlLogin extends Component{
             storage.setItem(StorageKey.USER_TOKEN,responseJson);
         }).then(()=>{
             this.toPerson();
+            umengAnalysis.onEvent(umengAnalysis.umengEventId.logInEvent);
         })
         .catch((error)=>{
             ToastAndroid.show(err_info.NO_INTERNET,ToastAndroid.SHORT);
@@ -336,19 +354,6 @@ const HomeTab = TabNavigator({
             )
         }
     },
-    // ClassLists: {
-    //     screen: ClassLists,
-    //     navigationOptions: {
-    //         tabBarLabel: '我的班级',
-    //         tabBarIcon: ({ tintColor, focused }) => (
-    //            <Image
-    //                 resizeMode='contain'
-    //                 source={require('./Source/images/nav_class.png')}
-    //                 style={{height: 20}}
-    //             ></Image>
-    //         )
-    //     }
-    // },
     ClassListsNew: {
         screen: ClassListsNew,
         navigationOptions: {
@@ -375,14 +380,6 @@ const HomeTab = TabNavigator({
             )
         }
     },
-
-    // VoteList:{
-    //     screen: VoteList,
-    //     navigationOptions:{
-    //         //未完成
-    //     }
-    // }
-
 },{
     tabBarPosition: 'bottom',
     initialRouteName: 'PersonalBlog',
@@ -410,6 +407,57 @@ const HomeTab = TabNavigator({
 })
 
 const SimpleNavigation = StackNavigator({
+
+    VoteDetail: {
+        screen: VoteDetail,
+        // navigationOptions放到VoteDetail.js里。
+    },
+
+    VoteList:{
+        screen: VoteList,
+        navigationOptions:{
+            headerTintColor : 'white',
+            headerTitle: '投票',
+            headerStyle: {
+                height:40,
+                backgroundColor:UI.TOP_COLOR,
+            },
+            headerTitleStyle: {
+                fontSize: 18,
+            },
+        }
+    },
+
+    VoteMemberList: {
+        screen: VoteMemberList,
+        navigationOptions: {
+            headerTintColor: 'white',
+            headerTitle: '已投票成员',
+            headerStyle: {
+                height:40,
+                backgroundColor:UI.TOP_COLOR,
+            },
+            headerTitleStyle: {
+                fontSize: 18,
+            },
+        }
+    },
+
+    VoteAdd: {
+        screen: VoteAdd,
+        navigationOptions: {
+            headerTintColor:'white',
+            headerTitle: '投票列表',
+            headerStyle: {
+                height: 40,
+                backgroundColor: UI.TOP_COLOR,
+            },
+            headerTitleStyle: {
+                fontSize: 18,
+            },
+        }
+    },
+
     ClassFunction: {
         screen: ClassFunction,
         navigationOptions: {
@@ -624,6 +672,20 @@ const SimpleNavigation = StackNavigator({
             },
         }
     },
+    BookmarksEdit: {
+        screen: BookmarksEdit,
+        navigationOptions: {
+            headerTintColor:'white',
+            headerTitle: '修改收藏',
+            headerStyle: {
+                height: 40,
+                backgroundColor: UI.TOP_COLOR,
+            },
+            headerTitleStyle: {
+                fontSize: 18,
+            },
+        }
+    },
     BlogComment: {
         screen: BlogComment,
         navigationOptions:{
@@ -765,6 +827,20 @@ const SimpleNavigation = StackNavigator({
             }
         }
     },
+    HistoryList: {
+        screen: HistoryList,
+        navigationOptions:{
+            headerTintColor : 'white',
+            headerTitle: '浏览记录',
+            headerStyle: {
+                height:40,
+                backgroundColor:UI.TOP_COLOR,
+            },
+            headerTitleStyle: {
+                fontSize: 18,
+            }
+        }
+    },
     BulletinAdd: {
         screen: BulletinAdd,
         navigationOptions:{
@@ -806,7 +882,21 @@ const SimpleNavigation = StackNavigator({
                 fontSize: 18,
             }
         }
-    }
+    },
+    Settings: {
+        screen: Settings,
+        navigationOptions:{
+            headerTintColor : 'white',
+            headerTitle: '设置',
+            headerStyle: {
+                height:40,
+                backgroundColor: '#555',
+            },
+            headerTitleStyle: {
+                fontSize: 18,
+            }
+        }
+    },
 },{
     initialRouteName: 'Welcome',
 });

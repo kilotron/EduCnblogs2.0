@@ -45,8 +45,63 @@ export const flatStyles = StyleSheet.create({
         elevation:3   //   高度，设置Z轴，可以产生立体效果
     },
 })
+export const flatStylesWithAvatar = StyleSheet.create({
+    cell:{
+        flex: 1,
+        backgroundColor: 'white',
+        marginLeft: 5,
+        marginRight: 5,
+        borderColor: '#dddddd',
+    },
+    listcontainer:{
+        flex:1,
+        flexDirection: 'row',
+        marginRight: 5,
+    },
+    separatorStyle:{
+        width: screenWidth,
+        height:screenHeight*0.005,
+        backgroundColor: '#F5F5F5',
+    },
+    avatarstyle: {
+        width: 0.15*screenWidth,
+        height: 0.15*screenWidth,
+        marginBottom: 5,
+        marginTop: 5,
+        borderRadius : 40,
+        left : 2,
+    },
+    promptText:{
+        color:'#999999',
+        fontSize:14,
+        marginTop:5,
+        marginBottom:5,
+    },
+    promptTextContainer:{
+        height:30,
+        alignItems:'center',
+        justifyContent:'flex-start',
+    },
+})
+export const nameImageStyles = StyleSheet.create({
+    nameContainer:{
+        width: 0.15*screenWidth,
+        height: 0.15*screenWidth,
+        borderRadius : 40,
+        left : 2,
+        marginTop: 5,
+        marginRight: 5,
+        backgroundColor: '#F5F5FF',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    nameText:{
+        fontSize: 24,
+        color: '#0A140A',
+    }
+})
 export const tabViewStyles = StyleSheet.create({
     ScrollableTabViewStyle:{
 
-    }, 
+    },
 })

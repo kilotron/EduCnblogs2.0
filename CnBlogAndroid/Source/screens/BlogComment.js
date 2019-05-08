@@ -29,6 +29,8 @@ const getComments = require('../DataHandler/BlogComment/getComments');
 const screenWidth= MyAdapter.screenWidth;
 const screenHeight= MyAdapter.screenHeight;
 var Authors = [];
+const HTMLSpecialCharsDecode = require('../DataHandler/HTMLSpecialCharsDecode');
+
 // 博客评论页面
 // 接受评论数量 CommentCount 和 博客名 blogApp 以及博文Id作为参数
 // 这里定义一个用于粗略解决返回的评论字符串内包含无法解析的html标签的函数
@@ -98,7 +100,7 @@ export default class BlogComment extends Component{
               </Left>
               <Body>
                 <Text>{Author}</Text>
-                <Text note>{Bodys}</Text>
+                <Text note>{HTMLSpecialCharsDecode(Bodys)}</Text>
                 <Text style = {{fontSize: 10, textAlign: 'right', color: 'gray'}}>{'评论于: '+DateAdded.split('T')[0]+' '+DateAdded.split('T')[1].substring(0,8)}</Text>
               </Body>
             </ListItem>

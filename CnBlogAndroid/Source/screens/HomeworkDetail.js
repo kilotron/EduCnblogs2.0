@@ -18,6 +18,7 @@ import {
 import {
     StackNavigator,
 } from 'react-navigation';
+import * as umengPush from '../umeng/umengPush'
 const { height, width } = Dimensions.get('window');
 const HtmlDecode = require('../DataHandler/HomeworkDetails/HtmlDecode');
 const ContentHandler = require('../DataHandler/HomeworkDetails/ContentHandler');
@@ -37,6 +38,7 @@ export default class HomeWorkDetail extends Component{
             isShowInHome:false,
             originContent:'',
             isClosed:false,
+            sendTime:0,
         }
     }
     _isMounted;
@@ -110,7 +112,7 @@ export default class HomeWorkDetail extends Component{
                     })
                     .then((jsonData)=>{
                         if(jsonData==null)
-                            ToastAndroid.show("请求失败，您的身份可能不对！",ToastAndroid.SHORT);
+                            ToastAndroid.show("请求失败，未知错误",ToastAndroid.SHORT);
                         else if(jsonData.isSuccess)
                         {
                             ToastAndroid.show('成功关闭作业',ToastAndroid.SHORT);
@@ -157,7 +159,7 @@ export default class HomeWorkDetail extends Component{
                     })
                     .then((jsonData)=>{
                         if(jsonData==null)
-                            ToastAndroid.show("请求失败，您的身份可能不对！",ToastAndroid.SHORT);
+                            ToastAndroid.show("请求失败，未知错误",ToastAndroid.SHORT);
                         else if(jsonData.isSuccess)
                         {
                             ToastAndroid.show('成功删除作业',ToastAndroid.SHORT);
@@ -175,6 +177,35 @@ export default class HomeWorkDetail extends Component{
                 }},
             ]
         )
+    }
+    remind = ()=>{
+        let currentTime = (new Date()).getTime();
+        //十分钟内发送一条
+        if(currentTime - this.state.sendTime < 60*60*1000){
+            ToastAndroid.show("提醒发送的间隔为至少1小时，请稍后再试！",ToastAndroid.LONG);
+            return;
+        }
+        let params = {
+            ticker:"作业《" + this.state.title +"》截止提醒",
+            title:"作业《" + this.state.title +"》截止提醒",
+            text:'老师/助教提醒您提交作业，请及时关注！（已提交请忽略）'
+        }
+        castId = this.state.classId + '_' + this.state.Id;
+        let filter = {
+            "where":
+            {
+                "and":
+                [
+                    {"tag":castId}
+                ]
+            }
+        }
+        umengPush.sendGroupcast(params,filter);
+        currentTime = (new Date()).getTime();
+        this.setState({
+            sendTime:currentTime
+        })
+        ToastAndroid.show("提醒已发送",ToastAndroid.LONG);
     }
     renderBottomBar(Id,isFinished,classId,answerCount){
         isClosed = this.state.isClosed;
@@ -263,6 +294,13 @@ export default class HomeWorkDetail extends Component{
                         >
                         <Image source =
                         {require('../images/delete.png')}
+                        style = {styles.imagestyle}/>
+                    </TouchableOpacity>
+                    <TouchableOpacity style = {styles.touchbutton}
+                        onPress = {this.remind}
+                        >
+                        <Image source =
+                        {require('../images/dinosaur.jpg')}
                         style = {styles.imagestyle}/>
                     </TouchableOpacity>
                 </View>

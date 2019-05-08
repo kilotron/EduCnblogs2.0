@@ -4,6 +4,7 @@ import api from '../api/api.js';
 import {authData,err_info} from '../config'
 import * as Service from '../request/request.js'
 import React, { Component} from 'react';
+import * as umengPush from '../umeng/umengPush'
 import {
     StyleSheet,
     Text,
@@ -25,6 +26,25 @@ export default class BulletinEdition extends Component {
         };
     }
 
+    sendBulletinCast(classId,content){
+        let className = this.props.navigation.state.params.className;
+        let params = {
+            ticker:"班级公告修改《"+ className +"》",
+            title:"班级公告修改《"+ className +"》",
+            text:content,
+        }
+        castId = classId;
+        let filter = {
+            "where":
+            {
+                "and":
+                [
+                    {"tag":castId}
+                ]
+            }
+        }
+        umengPush.sendGroupcast(params,filter);
+    }
     /* 单击修改后的响应函数 */
     _onPress = ()=>{
         if (this.state.bulletinText === '')
@@ -37,10 +57,7 @@ export default class BulletinEdition extends Component {
             content: this.state.bulletinText,
         }
         let body = JSON.stringify(postBody);
-        //let url = 'https://api.cnblogs.com/api/edu/member/register/displayName';
         let url = Config.BulletinEdit + this.state.bulletinId;
-        //console.log(url);
-        //console.log(postBody);
         Service.UserAction(url, body, 'PATCH').then((response)=>{
             if(response.status!==200)
             {
@@ -59,6 +76,7 @@ export default class BulletinEdition extends Component {
             else if(jsonData.isSuccess)
             {
                 ToastAndroid.show('修改成功',ToastAndroid.SHORT);
+                this.sendBulletinCast(postBody.schoolClassId,postBody.content);
                 /* 调用回调函数更新公告列表 */
                 this.props.navigation.state.params.callback();
                 this.props.navigation.goBack();
@@ -72,6 +90,7 @@ export default class BulletinEdition extends Component {
                 ToastAndroid.show('发生错误，请稍后重试！',ToastAndroid.SHORT);
             }
         }).catch((error) => {
+            console.log(error);
             ToastAndroid.show(err_info.NO_INTERNET ,ToastAndroid.SHORT);
             this.props.navigation.state.params.callback();
             this.props.navigation.goBack();
@@ -95,15 +114,14 @@ export default class BulletinEdition extends Component {
                       width:0.35*screenWidth,
                       alignSelf: 'center', }}
                 >
-                    {
-                        (this.state.membership==2||this.state.membership==3)?
-                        (<Button style={styles.commitBtn}
-                            title='修改公告'
-                            onPress={ this._onPress }>
-                        </Button>):
-                        (null)
-                    }
-
+                {
+                    (this.state.membership==2||this.state.membership==3)?
+                    (<Button style={styles.commitBtn}
+                        title='修改公告'
+                        onPress={ this._onPress }>
+                    </Button>):
+                    (null)
+                }
                 </View>
             </View>
         );

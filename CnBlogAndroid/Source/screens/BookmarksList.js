@@ -6,16 +6,16 @@ import MyAdapter from './MyAdapter.js';
 import React, { Component} from 'react';
 import {UI} from '../config'
 import {err_info} from '../config'
-import {flatStyles} from '../styles/styles'
+import {nameImageStyles, flatStylesWithAvatar} from '../styles/styles'
 import {
     StyleSheet,
     Text,
     View,
     FlatList,
-    TouchableHighlight,
     ActivityIndicator,
     TouchableOpacity,
     ToastAndroid,
+    PanResponder,
     screen,
     Alert,
 } from 'react-native';
@@ -24,7 +24,6 @@ import {
     StackNavigator,
     TabNavigator,
     NavigationActions,
-
 } from 'react-navigation';
 
 const screenWidth= MyAdapter.screenWidth;
@@ -34,6 +33,8 @@ const abstractFontSize= MyAdapter.abstractFontSize;
 const informationFontSize= MyAdapter.informationFontSize;
 const btnFontSize= MyAdapter.btnFontSize;
 const pageSize = 10;
+const GetDetailId = require('../DataHandler/BlogDetail/GetDetailId');
+const GetBlogApp = require('../DataHandler/BlogDetail/GetBlogApp');
 
 export default class BookmarksList extends Component {
     constructor(props){
@@ -52,10 +53,6 @@ export default class BookmarksList extends Component {
     componentWillMount(){
         this.fetchPage(this.state.currentPageIndex);
     }
-    /*
-    componentWillUpdate(){
-    }
-    */
 
     /* 弹出选择框询问是否删除 */
     _onPressDelBookmarks(wzLinkId) {
@@ -109,38 +106,85 @@ export default class BookmarksList extends Component {
         var DateAdded = item1.item.dateAdded;
         var FromCnBlogs = item1.item.fromCnBlogs;
         var DetailId = item1.item.detailId;
+        let BlogApp = GetBlogApp(LinkUrl);
 
-        let arr = LinkUrl.split('/');
-        let blogApp = arr[3];
+        let _panResponder = PanResponder.create({
+            /*
+            onStartShouldSetPanResponder: (evt, gestureState) => true,
+            //onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
+            onMoveShouldSetPanResponder: (evt, gestureState) => true,
+            //onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
+            onPanResponderTerminationRequest: (evt, gestureState) => true,
+            */
+            onMoveShouldSetPanResponder: (evt, gestureState) => {
+                if(gestureState.dx < -screenWidth*0.1 || gestureState.dx > screenWidth*0.1){
+                    return true;
+                }
+                else{
+                    return false;
+                }
+            },
+            onPanResponderRelease: (evt, gestureState)=>{
+                if(gestureState.dx < 0) {
+                    //Alert.alert('位移为 '+ gestureState.dx + '\n删除 '+ WzLinkId);
+                    this._onPressDelBookmarks(WzLinkId);
+                }
+                else{
+                  //Alert.alert('位移为 '+ gestureState.dx + '\n编辑 '+ WzLinkId);
+                  this.props.navigation.navigate('BookmarksEdit',{Url: LinkUrl,
+                      Title: Title, Id: WzLinkId, Description: Summary, callback: this._FlatListRefresh});
+                }
+            },
+            onPanResponderTerminate: (evt, gestureState)=>{;},
+        });
 
         return(
-            <View style={flatStyles.cell}>
-            <TouchableOpacity onPress={()=>{
-                this.props.navigation.navigate('BlogDetail',{Url: LinkUrl, Id: DetailId,
-                    blogApp: blogApp, CommentCount: 0, Title: Title});
-                }}
-                onLongPress={()=>{this._onPressDelBookmarks(WzLinkId);}}>
-                <View style={styles.textcontainer}>
-                    <Text numberOfLines={1} style={styles.titleContent}>
-                        {Title}
-                    </Text>
-                    <Text numberOfLines={3} style={styles.summaryContent}>
-                        <Text style={{color: 'gray'}}>摘要: </Text>
-                        {Summary}
-                    </Text>
-                    {/* tags信息待加入 */}
-                    <View style={{alignSelf: 'flex-end'}}>
-                        <Text style={styles.bookmarksBlogUrl}>
-                            {LinkUrl}
+            <View style={flatStylesWithAvatar.cell} {..._panResponder.panHandlers}>
+                <TouchableOpacity style = {flatStylesWithAvatar.listcontainer}
+                 onPress={()=>{
+                    this.props.navigation.navigate('BlogDetail',{Url: LinkUrl, Id: DetailId,
+                        blogApp: BlogApp, CommentCount: 0, Title: Title, Description: Summary});
+                    }}
+                    >
+                    <View style = {nameImageStyles.nameContainer}>
+                        <Text style = {nameImageStyles.nameText}>
+                            {BlogApp.slice(0, 2)}
                         </Text>
                     </View>
-                    <View style={{alignSelf: 'flex-end'}}>
-                        <Text style={styles.bookmarksDateAdded}>
-                            {DateAdded}
+                    <View style = {{flex:1}}>
+                        <Text style = {{
+                            fontSize: 18,
+                            fontWeight: 'bold',
+                            marginTop: 6,
+                            marginBottom: 2,
+                            textAlign: 'left',
+                            color: 'black',
+                            fontFamily : 'serif',
+                        }} >
+                            {Title}
                         </Text>
+                        <Text  numberOfLines={2} style = {{
+                            lineHeight: 25,
+                            fontSize: 12,
+                            marginBottom: 2,
+                            textAlign: 'left',
+                            color: 'rgb(70,70,70)',
+                        }}>
+                            {Summary + '...'}
+                        </Text>
+                        <View style = {{
+                            flexDirection: 'row',
+                            marginBottom: 4,
+                            justifyContent: 'space-around',
+                            alignItems: 'flex-start',
+                        }}>
+                            <Text style = {{fontSize: 10, textAlign: 'right', color: 'black', flex: 1}}>
+                                {BlogApp+'\n添加于 '+DateAdded}
+                            </Text>
+                        </View>
                     </View>
-                </View>
-            </TouchableOpacity>
+
+                </TouchableOpacity>
             </View>
         )
     };
@@ -163,29 +207,24 @@ export default class BookmarksList extends Component {
         {
             if(this.state.bookmarks[i].FromCNBlogs)
             {
-                data.push({
-                    key: this.state.bookmarks[i].LinkUrl,
-                    wzLinkId: this.state.bookmarks[i].WzLinkId,
-                    title: this.state.bookmarks[i].Title,
-                    linkUrl: this.state.bookmarks[i].LinkUrl,
-                    summary: this.state.bookmarks[i].Summary,
-                    tags: this.state.bookmarks[i].Tags,/* list数据 */
-                    dateAdded: this.String2Date(this.state.bookmarks[i].DateAdded),
-                    fromCnBlogs: this.state.bookmarks[i].FromCNBlogs,
-                    detailId: this.state.bookmarks[i].LinkUrl.match( /p\/([^%]+).html/)[1],
-                });
+                if(this.state.bookmarks[i].LinkUrl.match( /p\/([^%]+).html/) !== null){
+                    data.push({
+                        key: this.state.bookmarks[i].LinkUrl,
+                        wzLinkId: this.state.bookmarks[i].WzLinkId,
+                        title: this.state.bookmarks[i].Title,
+                        linkUrl: this.state.bookmarks[i].LinkUrl,
+                        summary: this.state.bookmarks[i].Summary,
+                        tags: this.state.bookmarks[i].Tags,/* list数据 */
+                        dateAdded: this.String2Date(this.state.bookmarks[i].DateAdded),
+                        fromCnBlogs: this.state.bookmarks[i].FromCNBlogs,
+                        detailId: GetDetailId(this.state.bookmarks[i].LinkUrl),
+                        //this.state.bookmarks[i].LinkUrl.match( /p\/([^%]+).html/)[1],
+                    });
+                }
             }
         }
         return(
             <View style={{width: screenWidth, }}>
-                {
-                    this.state.loadStatus==='none'?
-                        (
-                            <View style={styles.footer}>
-                                <Text>这还什么都没有</Text>
-                            </View>
-                        ):(null)
-                }
                 <FlatList
                     renderItem={this._renderItem}
                     data= {data}
@@ -194,9 +233,27 @@ export default class BookmarksList extends Component {
                     ListFooterComponent={this._renderFooter.bind(this)}
                     onEndReached={this._onEndReached.bind(this)}
                     onEndReachedThreshold={0.1}
+                    ListEmptyComponent={this._listEmptyComponent}
+                    ItemSeparatorComponent={this._itemSeparatorComponent}
                 />
             </View>
 
+        )
+    }
+
+    _listEmptyComponent(){
+        return (
+            <View style={flatStylesWithAvatar.promptTextContainer}>
+                <Text style={flatStylesWithAvatar.promptText}>
+                这还什么都没有
+                </Text>
+            </View>
+        );
+    }
+
+    _itemSeparatorComponent(){
+        return (
+            <View style={flatStylesWithAvatar.separatorStyle}/>
         )
     }
 
@@ -204,23 +261,24 @@ export default class BookmarksList extends Component {
     _renderFooter(){
         if (this.state.loadStatus === 'all loaded') {
             return (
-                <View style={{height:30,alignItems:'center',justifyContent:'flex-start',}}>
-                    <Text style={{color:'#999999',fontSize:14,marginTop:5,marginBottom:5,}}>
+                <View style={flatStylesWithAvatar.promptTextContainer}>
+                    <Text style={flatStylesWithAvatar.promptText}>
                     没有更多数据了
                     </Text>
                 </View>
             );
         } else if(this.state.loadStatus === 'loading') {
             return (
-                <View style={styles.footer}>
-                    <ActivityIndicator />
-                    <Text>正在加载更多数据...</Text>
+                <View style={flatStylesWithAvatar.promptTextContainer}>
+                    <Text style={flatStylesWithAvatar.promptText}>
+                    正在加载更多数据...
+                    </Text>
                 </View>
             );
         } //else 'not loading'
         return (
-            <View style={styles.footer}>
-                <Text></Text>
+            <View style={flatStylesWithAvatar.promptTextContainer}>
+                <Text style={flatStylesWithAvatar.promptText}/>
             </View>
         );
     }
@@ -339,40 +397,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: 'white',
     },
-    footer:{
-        flexDirection:'row',
-        height:24,
-        justifyContent:'center',
-        alignItems:'center',
-        marginBottom:10,
-    },
-    textcontainer: {
-        justifyContent:'flex-start',
-        alignItems: 'flex-start',
-        flex: 4,
-        backgroundColor: 'white',
-        //alignSelf: 'stretch',
-    },
-    titleContent: {
-        color: 'black',
-        fontSize: 18,
-        left: 4,
-    },
-    summaryContent: {
-        color: 'black',
-        fontSize: 16,
-        left: 4,
-    },
-    bookmarksDateAdded: {
-        fontSize: 14,
-    },
-    bookmarksBlogUrl: {
-        fontSize: 12,
-    },
     strangeView:{
         height: 1,
         backgroundColor: 'rgb(225,225,225)',
         marginTop: 0.005*screenHeight,
-        alignSelf:'stretch'
+        alignSelf:'stretch',
     },
 });

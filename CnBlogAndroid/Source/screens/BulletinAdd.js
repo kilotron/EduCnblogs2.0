@@ -4,6 +4,7 @@ import api from '../api/api.js';
 import {authData,err_info} from '../config'
 import * as Service from '../request/request.js'
 import React, { Component} from 'react';
+import * as umengPush from '../umeng/umengPush'
 import {
     StyleSheet,
     Text,
@@ -23,6 +24,25 @@ export default class BulletinAdd extends Component {
         };
     }
 
+    sendBulletinCast(classId,content){
+        let className = this.props.navigation.state.params.className;
+        let params = {
+            ticker:"班级公告更新《"+ className +"》",
+            title:"班级公告更新《"+ className +"》",
+            text:content,
+        }
+        castId = classId;
+        let filter = {
+            "where":
+            {
+                "and":
+                [
+                    {"tag":castId}
+                ]
+            }
+        }
+        umengPush.sendGroupcast(params,filter);
+    }
     /* 单击发布后的响应函数 */
     _onPress = ()=> {
         if (this.state.bulletinText === '')
@@ -35,7 +55,6 @@ export default class BulletinAdd extends Component {
             content: this.state.bulletinText,
         }
         let body = JSON.stringify(postBody);
-        //let url = 'https://api.cnblogs.com/api/edu/member/register/displayName';
         let url = Config.BulletinPublish;
         Service.UserAction(url, body, 'POST').then((response)=>{
             if(response.status!==200)
@@ -52,7 +71,8 @@ export default class BulletinAdd extends Component {
             }
             else if(jsonData.isSuccess)
             {
-                ToastAndroid.show('添加成功！',ToastAndroid.SHORT);
+                ToastAndroid.show('添加公告成功！',ToastAndroid.SHORT);
+                this.sendBulletinCast(postBody.schoolClassId,postBody.content);
                 /* 调用回调函数更新公告列表 */
                 this.props.navigation.state.params.callback();
                 this.props.navigation.goBack();

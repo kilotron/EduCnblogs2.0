@@ -9,12 +9,17 @@
   "dependencies": {
     "native-base": "^2.3.5",
     "react": "16.0.0",
-    "react-native": "0.51.0",
+    "react-native": "^0.51.0",
     "react-native-calendars": "^1.15.0",
+    "react-native-check-box": "^2.1.7",
     "react-native-cookies": "^3.2.0",
     "react-native-fetch-polyfill": "^1.1.2",
+    "react-native-flexi-radio-button": "^0.2.2",
+    "react-native-fold-text": "^1.0.2",
     "react-native-keyboard-aware-scroll-view": "^0.8.0",
+    "react-native-md5": "^1.0.0",
     "react-native-modal-dropdown": "^0.6.2",
+    "react-native-radio-master": "^1.0.1",
     "react-native-scrollable-tab-view": "^0.10.0",
     "react-native-storage": "^0.2.2",
     "react-native-webview-bridge": "^0.40.1",
@@ -26,7 +31,7 @@
   "devDependencies": {
     "babel-jest": "21.2.0",
     "babel-preset-react-native": "4.0.0",
-    "jest": "21.2.1",
+    "jest": "23.0.0-charlie.1",
     "react-test-renderer": "16.0.0"
   },
   "jest": {

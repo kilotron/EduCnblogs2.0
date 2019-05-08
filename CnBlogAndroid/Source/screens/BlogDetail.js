@@ -3,6 +3,7 @@ import api from '../api/api.js';
 import {authData,err_info,StorageKey} from '../config'
 import * as Service from '../request/request.js'
 import MyAdapter from './MyAdapter.js';
+import * as storage from '../Storage/storage.js'
 import React, { Component } from 'react';
 import {
     Platform,
@@ -31,14 +32,53 @@ export default class BlogDetail extends Component{
     constructor(props){
         super(props);
         this.state = {
+            incognitoMode: false, // 是否是无痕模式
+            maxHistory: 40, // 最大保存的历史记录长度
             content: '',
             isRequestSuccess: false,
-            url:this.props.navigation.state.params.Url,
+            url: this.props.navigation.state.params.Url,
         }
     }
     _isMounted;
     componentWillMount = ()=>{
         this._isMounted=true;
+        if(!this.state.incognitoMode){
+            storageData = [];
+            global.storage.load({key: StorageKey.BLOG_LIST})
+            .then((ret)=>{
+                storageData = ret;
+            })
+            .catch((err)=>{
+                storageData = [];
+            })
+            .then(()=>{
+                var thisData = [{
+                    title: this.props.navigation.state.params.Title,
+                    url: this.props.navigation.state.params.Url,
+                    id: this.props.navigation.state.params.Id,
+                    blogApp: this.props.navigation.state.params.blogApp,
+                    commentCount: this.props.navigation.state.params.CommentCount,
+                    summaryContent: this.props.navigation.state.params.Description,
+                    addTime: '',
+                }];
+                // 合并结果并去重
+                thisData = thisData.concat(storageData),//合并成一个数组
+                temp = {}; //用于id判断重复
+                result = []; //最后的新数组
+                //遍历thisData数组，将每个item.id在temp中是否存在值做判断，
+                thisData.map((item,index)=>{
+                    if(!temp[item.id]){
+                        result.push(item);
+                        temp[item.id] = true
+                    }
+                })
+                // 取出前N个结果储存
+                storageData = result.slice(0, this.state.maxHistory);
+                // console.log('存储：' + JSON.stringify(storageData));
+                global.storage.save({key: StorageKey.BLOG_LIST, data: storageData});
+            })
+        }
+
 		let contenturl = Config.BlogDetail+this.props.navigation.state.params.Id+'/body';
         Service.Get(contenturl).then((jsonData)=>{
             if(jsonData!=='rejected'){
@@ -55,7 +95,7 @@ export default class BlogDetail extends Component{
 			global.storage.save({key:StorageKey.BLOGDETAIL+this.props.navigation.state.params.Id,data:this.state.content})
 			.catch((err)=>{
 				ToastAndroid.show("error",ToastAndroid.SHORT);
-			})
+            })
 		})
 		.catch((error) => {
             ToastAndroid.show(err_info.NO_INTERNET,ToastAndroid.SHORT);
@@ -69,7 +109,7 @@ export default class BlogDetail extends Component{
 				ToastAndroid.show(err_info.TIME_OUT,ToastAndroid.SHORT)
 			})
         });
-    }
+    };
     componentWillUnmount = ()=>{
         this._isMounted=false;
     }
@@ -100,7 +140,7 @@ export default class BlogDetail extends Component{
 
     _onPressBookmarks = ()=>{
         this.props.navigation.navigate('BlogBookmarks',{Url: this.props.navigation.state.params.Url,
-            Title: this.props.navigation.state.params.Title});
+            Title: this.props.navigation.state.params.Title, Description: this.props.navigation.state.params.Description});
     }
 
     /**选择博文内容来源。因为班级博文列表的API没有返回博文ID，只返回了URL。
@@ -116,6 +156,32 @@ export default class BlogDetail extends Component{
         if (this.props.navigation.state.params.useURL) {
             return {uri: this.props.navigation.state.params.Url};
         } else {
+            //FIX ME
+            //1. 目前使用的是CDN上的静态文件，加载需要消耗时间，后面可以下载到本地，去掉网络访问请求
+            //2. 需要修复某些小地方
+            let code_highlight = `
+            <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/default.min.css">
+            <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>          
+            <script src="https://cdn.bootcss.com/jquery/3.4.0/jquery.min.js"></script>            
+            <script>hljs.initHighlightingOnLoad();</script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" type="text/javascript">
+                $(document).ready(function() {
+                    MathJax.Hub.Config({
+                        tex2jax: {
+                            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+                            displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+                            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre','code','a'],
+                            ignoreClass:"class1"
+                            }
+                        });
+
+                    $('pre code').each(function(i, block) {
+                        hljs.highlightBlock(block);
+                    });
+                });
+            </script>
+            `;
+            content = code_highlight + content;
             return {
                 html: content,
                 baseUrl: this.props.navigation.state.params.Url

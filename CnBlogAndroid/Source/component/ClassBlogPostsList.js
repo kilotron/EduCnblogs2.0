@@ -38,6 +38,9 @@ const ClassBlogPostsListProps = {
     schoolClassId: PropTypes.number.isRequired,
 };
 
+const GetBlogApp = require('../DataHandler/BlogDetail/GetBlogApp');
+const HTMLSpecialCharsDecode = require('../DataHandler/HTMLSpecialCharsDecode');
+
 export default class ClassBlogPostsList extends Component {
 
     /**属性schoolClassId可能会改变，因此将其放到state中，在父组件改变schoolClassId后，调用
@@ -114,10 +117,9 @@ export default class ClassBlogPostsList extends Component {
      * */
 	fetchPage(pageIndex) {
         //这里是否需要检查？
-		this.setState({loadStatus: 'loading'});
+        this.setState({loadStatus: 'loading'});
 		Service.Get(this.URLOf(pageIndex))
 		.then((jsonData) => {
-            //alert(this.URLOf(pageIndex));
             // 初始时schoolClassId不正确，返回的jsonData是rejected。
             if (jsonData === 'rejected') {
                 return;
@@ -132,7 +134,9 @@ export default class ClassBlogPostsList extends Component {
 			}
         })
         .catch((err) => {
-            this.setState({loadStatus: 'not loading', networkError: true});
+            if (this._isMounted) {
+                this.setState({loadStatus: 'not loading', networkError: true});
+            }
         });
     }
 
@@ -141,15 +145,14 @@ export default class ClassBlogPostsList extends Component {
         var data = [];
         for (var i in this.state.blogs) {
             data.push({
-                //blogId: 1,
-                blogId: this.state.blogs[i].url.match( /p\/([^%]+).html/)[1],
-                //blogId: this.state.blogs[i].blogId,//注意不是博文的编号，不能通过这个获取博文
+                blogId: this.state.blogs[i].url.match( /p\/([^%]+).html/)[1],//博文的编号
                 title: this.state.blogs[i].title,
                 url: this.state.blogs[i].url,
                 description: this.state.blogs[i].description,
                 postDate: this.state.blogs[i].dateAdded,
                 viewCount: this.state.blogs[i].viewCount,
                 commentCount: this.state.blogs[i].commentCount,
+                author: this.state.blogs[i].author,
             })
         }
         return data;
@@ -194,6 +197,9 @@ export default class ClassBlogPostsList extends Component {
                             <Picker.Item label="老师/助教" value="tutor" />
                             <Picker.Item label="学生" value="student" />
                         </Picker>
+                        <View onPress={this.refs.picker} style={styles.imgView}>
+                            <Image source={require('../images/arrowDown.png')} style={styles.img}/>
+                        </View>
                     </View>
                 </Animated.View>
 
@@ -230,13 +236,12 @@ export default class ClassBlogPostsList extends Component {
                         this.props.navigation.navigate('BlogDetail',
                             {
                                 Id:item.blogId,
-                                blogApp: item.url.split('/')[3],
+                                blogApp: GetBlogApp(item.url),
                                 CommentCount: item.commentCount,
                                 Url: item.url,
                                 Title: item.title,
-                                //useURL: true,
+                                Description: item.description,
                             });
-                        {/*alert(Id);*/} // bug: ID不对
                     }}
                 >
                     <Text style={styles.postTitle} accessibilityLabel={item.url}>
@@ -244,7 +249,7 @@ export default class ClassBlogPostsList extends Component {
                     </Text>
 
                     <Text numberOfLines={3} style={styles.postDescription}>
-                        {item.description}
+                        {HTMLSpecialCharsDecode(item.description)}
                     </Text>
 
                     <View style={styles.postMetadataView}>
@@ -253,14 +258,31 @@ export default class ClassBlogPostsList extends Component {
                              + item.commentCount + ' 评论'}
                         </Text>
                         <Text style={styles.postDate}>
-                            {'发布于: ' + item.postDate.split('T')[0] + ' '
-                             + item.postDate.split('T')[1]}
+                            {item.author + ' 发布于: ' + this.parsePostDate(item.postDate)}
                         </Text>
                     </View>
                 </TouchableOpacity>
             </View>
 		)
     };
+
+    /**根据设置返回要显示的时间 */
+    parsePostDate(postDate) {
+        if (global.settings.displayDetailTime) {
+            return this.YMDInPostDate(postDate) + ' ' + this.timeInPostDate(postDate);
+        } else {
+            return this.YMDInPostDate(postDate);
+        }
+    }
+
+    /**参数为‘2019-04-09T17:05:00+08:00’，返回字符串年月日 */
+    YMDInPostDate(postDate) {
+        return postDate.match(/\d{4}-\d{2}-\d{2}/)[0];
+    }
+
+    timeInPostDate(postDate) {
+        return postDate.match(/(\d{2}:\d{2}):\d{2}/)[1];
+    }
 
     /**FlatList滚动到到底部时调用此函数，获取新的一页。 */
     _onEndReached() {
@@ -340,14 +362,27 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     header: {
+        flexDirection:'row',
         height: 40,
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        width: screenWidth,
     },
     picker: {
         height: 40,
-        width: screenWidth,
+        width: screenWidth *0.9,
         backgroundColor: 'white',
+    },
+    imgView:{
+        width:screenWidth*0.1,
+        height:screenWidth*0.1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    img:{
+        width:screenWidth *0.05,
+        height:screenWidth *0.05,
+        resizeMode:'stretch',
     },
     postTitle: {
 		fontSize: 18,
@@ -374,13 +409,12 @@ const styles = StyleSheet.create({
     viewCountAndCommentCount: {
         fontSize: 10,
         textAlign: 'left',
-        color: 'black',
-        flex: 1
+        color: 'gray',
     },
     postDate: {
         fontSize: 10,
         textAlign: 'right',
-        color: 'black',
+        color: 'gray',
         flex: 1
     },
     allLoadedView: {

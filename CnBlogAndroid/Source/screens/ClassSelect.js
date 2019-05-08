@@ -25,6 +25,7 @@ import {
   TabNavigator,
 } from 'react-navigation';
 import {flatStyles} from '../styles/styles';
+import {BackHandler} from 'react-native';
 
 const screenWidth= MyAdapter.screenWidth;
 const screenHeight= MyAdapter.screenHeight;
@@ -33,7 +34,18 @@ const abstractFontSize= MyAdapter.abstractFontSize;
 const informationFontSize= MyAdapter.informationFontSize;
 const btnFontSize= MyAdapter.btnFontSize;
 
+/**使用ClassSelect需要用navigation传递2个参数：
+ * callback: 类型：函数，用于从ClassSelect页面返回时设置选择的班级ID和班级名称
+ * classSelected: 类型：布尔，使用ClassSelect的页面是否已选择班级，这个参数会
+ * 影响ClassSelect的表现。如果未选择班级（classSelect为false），并且有班级可选
+ * 择，ClassSelect返回时若未选择班级，则默认选择第一个班级。
+ */
+
 export default class ClassSelect extends Component {
+    // 用于处理按返回键的时选择默认的班级
+    _didFocusSubscription;
+    _willBlurSubscription;  
+
     constructor(props){
         super(props);
         this.state={
@@ -41,16 +53,41 @@ export default class ClassSelect extends Component {
             imgs:[],
             isEmpy: true, //初始认为请求未成功，不进行渲染，以防App崩溃
         }
+        this._didFocusSubscription = props.navigation.addListener('didFocus', payload =>
+            BackHandler.addEventListener('hardwareBackPress', this.onBackButtonPressAndroid)
+        ); //按返回键时调用this.onBackButtonPressAndroid
     }
 
     _isMounted;
     
     componentWillUnmount() {
         this._isMounted = false;
+        // Remove the listener when you are done
+        this._didFocusSubscription && this._didFocusSubscription.remove();
+        this._willBlurSubscription && this._willBlurSubscription.remove();
     }
 
-    _separator = () => {
-        return <View style={{ height: 1, backgroundColor: 'rgb(204,204,204)' }}/>;
+    componentDidMount() {
+        this._willBlurSubscription = this.props.navigation.addListener('willBlur', payload =>
+            BackHandler.removeEventListener('hardwareBackPress', this.onBackButtonPressAndroid))
+    }
+
+    /**按返回键时选择第一个班级（如果有的话）。 */
+    onBackButtonPressAndroid = () => {
+        if (this.props.navigation.state.params.classSelected) {
+            return; // 如果父页面已选择班级，则按返回键时不重新选择。
+        }
+        if(this.state.classes.length == 0){
+            this.props.navigation.state.params.callback(null, null);
+            return;
+        }
+        for (var i in this.state.classes) {
+            var schoolClassId = this.state.classes[i].schoolClassId;
+            var nameCn = this.state.classes[i].nameCn;
+            this.props.navigation.state.params.callback(nameCn, schoolClassId);
+            return;  // 取第一个班级
+        }
+        
     }
 
     UpdateData =()=> {
@@ -72,11 +109,15 @@ export default class ClassSelect extends Component {
                 this.setState({classes: jsonData});
                 if (jsonData !== 'rejected') {
                     this.setState({isEmpty: false});
+                    if (jsonData.length == 0) { // 班级列表为空
+                        ToastAndroid.show('还未加入任何班级~', ToastAndroid.SHORT);
+                    }
                 }
             }
         })
         .then(() => {
-            global.storage.save({key : StorageKey.CLASS_EMPTY,data : this.state.isEmpty});
+            let isEmpty = this.state.isEmpy;
+            global.storage.save({key : StorageKey.CLASS_EMPTY,data : isEmpty});
         })
         // 获取每个班级的图标
         .then(() => {
@@ -99,10 +140,10 @@ export default class ClassSelect extends Component {
         })
         // 缓存班级信息与班级图片
         .then(() => {
-            global.storage.save({key : StorageKey.CLASS_LIST,data : this.state.classes});
+            if(this.state.classes.length != 0) global.storage.save({key : StorageKey.CLASS_LIST,data : this.state.classes});
         })
         .then(() => {
-            global.storage.save({key : StorageKey.CLASS_LIST_IMG,data : this.state.imgs});
+            if(this.state.classes.length != 0) global.storage.save({key : StorageKey.CLASS_LIST_IMG,data : this.state.imgs});
         })
         .catch((error) => {
             // 出错则获取之前缓存
@@ -143,7 +184,7 @@ export default class ClassSelect extends Component {
             <TouchableOpacity 
                 style= {styles.listItemTouchableStyle}
                 onPress={()=>{
-                {     this.props.navigation.state.params.callback(item.nameCn, item.key);}
+                    this.props.navigation.state.params.callback(item.nameCn, item.key);
                     this.props.navigation.goBack();
                 }}>
 
@@ -181,7 +222,12 @@ export default class ClassSelect extends Component {
 				universityNameCn: this.state.classes[i].universityNameCn,
 				imgurl: this.state.imgs[i],
             })
-		}}
+        }}
+        if(data.length == 0){
+            return <View style={styles.container}>
+                <Text>还没有加入班级哦~</Text>
+            </View>
+        }
         return (
             <View style={styles.container}>
 				<View style= {styles.listViewStyle}>
@@ -189,7 +235,6 @@ export default class ClassSelect extends Component {
 						onRefresh = {this.UpdateData}
 						refreshing= {false}
 						data={data}
-						ItemSeparatorComponent={this._separator}
 						renderItem={this._renderItem}
 					/>
 				</View>

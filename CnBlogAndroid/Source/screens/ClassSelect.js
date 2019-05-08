@@ -77,12 +77,17 @@ export default class ClassSelect extends Component {
         if (this.props.navigation.state.params.classSelected) {
             return; // 如果父页面已选择班级，则按返回键时不重新选择。
         }
+        if(this.state.classes.length == 0){
+            this.props.navigation.state.params.callback(null, null);
+            return;
+        }
         for (var i in this.state.classes) {
             var schoolClassId = this.state.classes[i].schoolClassId;
             var nameCn = this.state.classes[i].nameCn;
             this.props.navigation.state.params.callback(nameCn, schoolClassId);
-            break;  // 取第一个班级
+            return;  // 取第一个班级
         }
+        
     }
 
     UpdateData =()=> {
@@ -111,7 +116,8 @@ export default class ClassSelect extends Component {
             }
         })
         .then(() => {
-            global.storage.save({key : StorageKey.CLASS_EMPTY,data : this.state.isEmpty});
+            let isEmpty = this.state.isEmpy;
+            global.storage.save({key : StorageKey.CLASS_EMPTY,data : isEmpty});
         })
         // 获取每个班级的图标
         .then(() => {
@@ -134,10 +140,10 @@ export default class ClassSelect extends Component {
         })
         // 缓存班级信息与班级图片
         .then(() => {
-            global.storage.save({key : StorageKey.CLASS_LIST,data : this.state.classes});
+            if(this.state.classes.length != 0) global.storage.save({key : StorageKey.CLASS_LIST,data : this.state.classes});
         })
         .then(() => {
-            global.storage.save({key : StorageKey.CLASS_LIST_IMG,data : this.state.imgs});
+            if(this.state.classes.length != 0) global.storage.save({key : StorageKey.CLASS_LIST_IMG,data : this.state.imgs});
         })
         .catch((error) => {
             // 出错则获取之前缓存
@@ -216,7 +222,12 @@ export default class ClassSelect extends Component {
 				universityNameCn: this.state.classes[i].universityNameCn,
 				imgurl: this.state.imgs[i],
             })
-		}}
+        }}
+        if(data.length == 0){
+            return <View style={styles.container}>
+                <Text>还没有加入班级哦~</Text>
+            </View>
+        }
         return (
             <View style={styles.container}>
 				<View style= {styles.listViewStyle}>

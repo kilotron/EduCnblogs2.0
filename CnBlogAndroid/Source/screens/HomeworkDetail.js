@@ -186,7 +186,7 @@ export default class HomeWorkDetail extends Component{
             return;
         }
         let params = {
-            ticker:'作业提交提醒',
+            ticker:"作业《" + this.state.title +"》截止提醒",
             title:"作业《" + this.state.title +"》截止提醒",
             text:'老师/助教提醒您提交作业，请及时关注！（已提交请忽略）'
         }

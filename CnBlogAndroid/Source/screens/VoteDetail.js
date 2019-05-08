@@ -4,7 +4,7 @@ import { authData, err_info, StorageKey } from '../config'
 import * as Service from '../request/request.js'
 import MyAdapter from './MyAdapter.js';
 import React, { Component } from 'react';
-import {UI} from '../../Source/config';
+import { UI } from '../../Source/config';
 import {
     Platform,
     StyleSheet,
@@ -20,16 +20,18 @@ import {
 
 import Vote from '../component/Vote';
 
+import FoldText from "react-native-fold-text";
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 const HTMLSpecialCharsDecode = require('../DataHandler/HTMLSpecialCharsDecode');
 
-const screenWidth= MyAdapter.screenWidth;
-const screenHeight= MyAdapter.screenHeight;
+const screenWidth = MyAdapter.screenWidth;
+const screenHeight = MyAdapter.screenHeight;
 
 // 传入voteID作为参数
 export default class VoteDetail extends Component {
     /**navigationOptions放在此处，可以在标题栏放一个按钮跳转到另一个页面。 */
-    static navigationOptions = ({navigation}) => ({
-        headerTintColor:'white',
+    static navigationOptions = ({ navigation }) => ({
+        headerTintColor: 'white',
         headerTitle: '投票详情',
         headerStyle: {
             height: 40,
@@ -45,11 +47,11 @@ export default class VoteDetail extends Component {
                     voteId: navigation.state.params.voteId,
                 });
             }}>
-                <Image 
+                <Image
                     source={require('../images/nav_i.png')}
                     style={{
                         height: 22,
-                        width: 22, 
+                        width: 22,
                         marginRight: 12
                     }}
                 />
@@ -79,7 +81,7 @@ export default class VoteDetail extends Component {
 
             /**是否已经投票 */
             hasVoted: undefined,
-            
+
             /* 每一个投票的题目和选项、图片等信息。*/
             voteContent: [],
 
@@ -119,7 +121,7 @@ export default class VoteDetail extends Component {
                     })
                 }
                 // 为显示投票成员设置
-                this.props.navigation.setParams({schoolClassId: jsonData.schoolClassId});
+                this.props.navigation.setParams({ schoolClassId: jsonData.schoolClassId });
             }
         })
         .then(() => {
@@ -139,7 +141,7 @@ export default class VoteDetail extends Component {
                 alert('error');
             })
         })
-        .catch((err)=>{alert('e')});
+        .catch((err)=>{alert('error')});
     }
 
     componentDidMount = () => {
@@ -222,28 +224,28 @@ export default class VoteDetail extends Component {
         }
         postBody = JSON.stringify(postBody);
         Service.UserAction(commitURL, postBody, 'POST')
-        .then((response) => {
-            if (response === 'rejected') {
-                return null; // 提示信息由UserAction输出
-            }
-            if(response.status!==200){
-                return null;
-            }
-            return response.json(); // 返回的是Promise对象
-        })
-        .then((jsonData) => {
-            if (jsonData.isSuccess) {
-                Alert.alert('提示', '投票成功');
-                this._getVoteState();   // 刷新界面
-            } else if (jsonData.isWarning) {
-                Alert.alert('提示', jsonData.message);
-            } else  { // if (jsonData.isError)
-                Alert.alert('错误', '投票失败');
-            }
-        })
-        .catch((error) => {
-            ToastAndroid.show(err_info.NO_INTERNET ,ToastAndroid.SHORT);
-        });
+            .then((response) => {
+                if (response === 'rejected') {
+                    return null; // 提示信息由UserAction输出
+                }
+                if (response.status !== 200) {
+                    return null;
+                }
+                return response.json(); // 返回的是Promise对象
+            })
+            .then((jsonData) => {
+                if (jsonData.isSuccess) {
+                    Alert.alert('提示', '投票成功');
+                    this._getVoteState();   // 刷新界面
+                } else if (jsonData.isWarning) {
+                    Alert.alert('提示', jsonData.message);
+                } else { // if (jsonData.isError)
+                    Alert.alert('错误', '投票失败');
+                }
+            })
+            .catch((error) => {
+                ToastAndroid.show(err_info.NO_INTERNET, ToastAndroid.SHORT);
+            });
     }
 
     /**判断用户是否已经投票过了。是则设置this.state.hasVoted=true */
@@ -318,8 +320,47 @@ export default class VoteDetail extends Component {
     }
 
     render() {
+        if(this.state.content!="")
         return (
-            <View style={{flex:1, backgroundColor: 'white'}}>
+            <View style={{ flex: 1, backgroundColor: 'white' }}>
+                <KeyboardAwareScrollView>
+                    {/** header组件 */}
+                    <View style={styles.header}>
+                        <Text style={styles.headerText}>
+                            {this.state.name}
+                        </Text>
+                    </View>
+
+                    {/** detail组件 */}
+                    {/** 用于存放如publisher和privacy等信息 */}
+                    <View style={styles.detail}>
+                        <Text style={styles.publisherText} >
+                            {this.state.publisher + '\n'}
+                        </Text>
+                        <Text style={styles.detailText} >
+                            {'发布于: ' + this.DateFormat(this.state.dateAdded) + '\n'}
+                            {'结束于: ' + this.DateFormat(this.state.deadline) + '\n'}
+                            {this.state.privacy == 1 ? '公开投票' : '匿名投票'}
+                        </Text>
+                    </View>
+
+                    {/** content组件 */}
+
+                    <View style={styles.content}>
+                            <FoldText
+                                //HTMLSpecialCharsDecode(this.state.content)
+                                maxLines={5} //
+                                text={this.state.content}
+                            />
+                    </View>
+
+                
+                {this._renderVoteContent()}
+                </KeyboardAwareScrollView>
+            </View>
+        )
+        return (
+            <View style={{ flex: 1, backgroundColor: 'white' }}>
                 <View>
                     {/** header组件 */}
                     <View style={styles.header}>
@@ -342,11 +383,6 @@ export default class VoteDetail extends Component {
                     </View>
 
                     {/** content组件 */}
-                    <View style={styles.content}>
-                        <Text style={styles.contentText}>
-                            {HTMLSpecialCharsDecode(this.state.content)}
-                        </Text>
-                    </View>
                 </View>
                 <Vote
                     data={this.state.voteData}
@@ -376,7 +412,7 @@ const styles = StyleSheet.create({
         color: '#2c2c2c',
     },
     content: {
-        justifyContent:'flex-start',
+        justifyContent: 'flex-start',
         borderColor: UI.TOP_COLOR,
         borderStyle: null,
         borderWidth: 0.5,
@@ -411,13 +447,13 @@ const styles = StyleSheet.create({
     },
     submitButton: {
         flex: 1,
-        height: buttonHeightRatio*screenWidth,
-        width: buttonWidthRatio*screenWidth,
+        height: buttonHeightRatio * screenWidth,
+        width: buttonWidthRatio * screenWidth,
         justifyContent: 'center',
         alignItems: 'center',
         marginTop: 10,
         marginBottom: 20,
-        marginLeft: (1-buttonWidthRatio)/2*screenWidth, //居中
+        marginLeft: (1 - buttonWidthRatio) / 2 * screenWidth, //居中
         backgroundColor: 'white',
         borderColor: '#0077FF',
         borderWidth: 0.5,
@@ -430,7 +466,7 @@ const styles = StyleSheet.create({
     hasVotedView: {
         flex: 1,
         marginTop: 10,
-        marginHorizontal:50,
+        marginHorizontal: 50,
         alignItems: 'center',
     },
     hasVotedText: {
@@ -468,8 +504,8 @@ Body示例：
 }
 
 Body参数名	类型	必需	描述	示例 e.g.
-voteId	number	是	投票Id	
-schoolClassId	number	是	操作人班级Id	
+voteId	number	是	投票Id
+schoolClassId	number	是	操作人班级Id
 voteOptionIds	array	是	投票选项Id列表
 
 详细说明：
@@ -492,7 +528,7 @@ Body参数名	类型	必需	描述	示例 e.g.
 blogId	string	是	博客Id	10000
 schoolClassId	string	是	班级Id	1
 返回示例：
-          
+
 {
     "memberId": 60,
     "studentNo": "1513933002",
@@ -501,7 +537,7 @@ schoolClassId	string	是	班级Id	1
     "membership": 1,
     "dateAdded": "2017-08-31T17:35:11.9467634"
 }
-                   
+
 Body参数名	描述	类型
 memberId	成员Id	number
 studentNo	学号	string
@@ -522,7 +558,7 @@ Authorization	string	是		Bearer your access_token
 
 获取当前登录用户信息
 返回示例：
-                            
+
 {
   "UserId": "4566ea6b-f2b3",
   "SpaceUserId": 2,
@@ -533,7 +569,7 @@ Authorization	string	是		Bearer your access_token
   "Seniority": "sample string 7",
   "BlogApp": "sample string 8"
 }
-                            
+
 Body参数名	描述	类型
 UserId	用户id	string
 SpaceUserId	用户显示名称id	number
@@ -554,7 +590,7 @@ Body参数名	类型	必需	描述	示例 e.g.
 memberId	number	是	成员Id	1
 voteId	number	是	投票Id	1
 返回示例：
-                    
+
 false
 
 6.获取成员投票项
@@ -567,14 +603,14 @@ Body参数名	类型	必需	描述	示例 e.g.
 memberId	number	是	成员Id	1
 voteId	number	是	投票Id	1
 返回示例：
-          
+
 {
     "1": [
         "一般，我会写好的"
     ]
 }
-                            
+
 Body参数名	描述	类型
 1	投票内容Id	array
-                      
+
 */

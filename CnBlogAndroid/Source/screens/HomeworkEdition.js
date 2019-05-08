@@ -46,7 +46,7 @@ export default class homeworkEdition extends Component {
         let startDotTime = startDateAndTime[1].split(':');
         let endDateAndTime = deadline.split('T');
         let endDotTime = endDateAndTime[1].split(':');
-        // content = this.cutContent(content);
+        content = HtmlDecode(content);
         this.state={
             formatType: formatType,//1: TintMce 2: Markdown
             title: title,
@@ -159,10 +159,10 @@ export default class homeworkEdition extends Component {
             }}
         >
             <KeyboardAwareScrollView>
-                <View style= {styles.attentionContainer}>
+                {/* <View style= {styles.attentionContainer}>
                     <Text style={styles.attentionText}>注意:</Text>
                     <Text style={styles.atext}>由于兼容问题，网页端发布的作业在编辑时会出现乱码，此时请勿继续发布编辑！</Text>
-                </View>
+                </View> */}
                 <Modal
                 animationType={"slide"}
                 transparent={false}

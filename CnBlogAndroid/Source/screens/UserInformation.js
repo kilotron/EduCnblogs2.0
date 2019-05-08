@@ -163,6 +163,7 @@ export default class UserInformation extends Component{
     }
 
     render() {
+    let blogUrl = this.state.BlogApp == null || this.state.BlogApp == '' ? '您尚未开通博客主页' : 'https://www.cnblogs.com/' + this.state.BlogApp;
     return (
         <ScrollView>
         <View
@@ -213,7 +214,7 @@ export default class UserInformation extends Component{
                 paddingLeft: 0.05*screenWidth,
             }}>
                 <Text style = {{fontSize: 18, fontWeight: 'bold', color:'rgb(51,51,51)'}}>博客地址:</Text>
-                <Text style = {{fontSize: 15}}>https://www.cnblogs.com/{this.state.BlogApp}/</Text>
+                <Text style = {{fontSize: 15}}>{blogUrl}</Text>
             </View>
             <View style = {{
                 justifyContent:'center',

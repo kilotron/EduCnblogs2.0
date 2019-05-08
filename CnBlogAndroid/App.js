@@ -69,6 +69,7 @@ import Settings from './Source/screens/Settings'
 import VoteDetail from './Source/screens/VoteDetail'
 import VoteAdd from './Source/screens/VoteAdd'
 import VoteMemberList from './Source/screens/VoteMemberList'
+import VoteMemberCommit from './Source/screens/VoteMemberCommit'
 const { height, width } = Dimensions.get('window');
 
 const CODE_URL = [
@@ -433,6 +434,21 @@ const SimpleNavigation = StackNavigator({
         navigationOptions: {
             headerTintColor: 'white',
             headerTitle: '已投票成员',
+            headerStyle: {
+                height:40,
+                backgroundColor:UI.TOP_COLOR,
+            },
+            headerTitleStyle: {
+                fontSize: 18,
+            },
+        }
+    },
+
+    VoteMemberCommit: {
+        screen: VoteMemberCommit,
+        navigationOptions: {
+            headerTintColor: 'white',
+            headerTitle: '投票详情',
             headerStyle: {
                 height:40,
                 backgroundColor:UI.TOP_COLOR,

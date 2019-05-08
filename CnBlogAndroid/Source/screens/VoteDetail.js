@@ -19,10 +19,11 @@ import {
 } from 'react-native';
 
 import Vote from '../component/Vote';
-
+import VoteCommit from '../component/VoteCommit';
 import FoldText from "react-native-fold-text";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 const HTMLSpecialCharsDecode = require('../DataHandler/HTMLSpecialCharsDecode');
+const extractVoteContentData = require('../DataHandler/VoteContent');
 
 const screenWidth = MyAdapter.screenWidth;
 const screenHeight = MyAdapter.screenHeight;
@@ -42,9 +43,14 @@ export default class VoteDetail extends Component {
         },
         headerRight: (
             <TouchableOpacity onPress={() => {
+                if (typeof(navigation.state.params.voteContent) == 'undefined') {
+                    ToastAndroid.show('请等待1秒', ToastAndroid.SHORT);
+                    return; // voteContent还没有获取到
+                }
                 navigation.navigate('VoteMemberList', {
                     schoolClassId: navigation.state.params.schoolClassId,
                     voteId: navigation.state.params.voteId,
+                    voteContent: navigation.state.params.voteContent,
                 });
             }}>
                 <Image
@@ -86,7 +92,6 @@ export default class VoteDetail extends Component {
             voteContent: [],
 
             voteData: [],   // 传递给Vote组件的数据
-
         }
         this.selectedIds = [],
         this.info = {};
@@ -130,8 +135,10 @@ export default class VoteDetail extends Component {
                 if (jsonData !== 'rejected') {
                     if (this._isMounted) {
                         this.setState({voteContent: jsonData});
-                        this.setState({voteData: this.extractData(jsonData)});
+                        this.setState({voteData: extractVoteContentData(jsonData)});
                     }
+                    // 传递votenContent到显示投票成员页面
+                    this.props.navigation.setParams({voteContent: jsonData});
                 }
             })
             .then(() => {
@@ -144,43 +151,8 @@ export default class VoteDetail extends Component {
         .catch((err)=>{alert('error')});
     }
 
-    componentDidMount = () => {
-        //this._isMounted = true;
-    }
-
     componentWillUnmount = () => {
         this._isMounted = false;
-    }
-
-    extractData(voteContent) {
-        let result = [];
-        let cnt = 1;    // 题目序号
-        for (let i in voteContent) {
-            let vote = {};
-            vote.serialNumber = cnt;
-            if (voteContent[i].voteMode == 1) {
-                vote.type = 'Single';
-            } else if (voteContent[i].voteMode == 2) {
-                vote.type = 'Multiple';
-            } else {
-                alert('未实现的投票模式');
-                return result;
-            }
-            vote.title = voteContent[i].title;
-            vote.imageSource = voteContent[i].picture;
-            vote.options = [];
-            for (let j in voteContent[i].voteOptions) {
-                let option = {};
-                option.id = voteContent[i].voteOptions[j].voteOptionId;
-                option.text = voteContent[i].voteOptions[j].option;
-                option.selected = false;
-                vote.options.push(option);
-            }
-            vote.contentId = voteContent[i].voteContentId;
-            result.push(vote);
-            cnt++;
-        }
-        return result;
     }
 
     _renderSubmitButton() {
@@ -251,8 +223,7 @@ export default class VoteDetail extends Component {
     /**判断用户是否已经投票过了。是则设置this.state.hasVoted=true */
     _getVoteState() {
         let user_url = Config.apiDomain + api.user.info;
-        let memberId = -1;
-        let data = this.extractData(this.state.voteContent);
+        let data = extractVoteContentData(this.state.voteContent);
         Service.Get(user_url)
         .then((jsonData) => {
             var memberIdURL = Config.apiDomain + api.ClassGet.blogID2Mem + 
@@ -260,8 +231,8 @@ export default class VoteDetail extends Component {
             return Service.Get(memberIdURL)
         })
         .then((jsonData) => {
-            memberId = jsonData.memberId;
-            let voteIsCommitedURL = Config.VoteIsCommited + memberId +
+            this.memberId = jsonData.memberId;
+            let voteIsCommitedURL = Config.VoteIsCommited + this.memberId +
                     '/' + this.state.voteId;
              return Service.Get(voteIsCommitedURL)
         })
@@ -270,40 +241,6 @@ export default class VoteDetail extends Component {
                 this.setState({
                     hasVoted: _hasVoted,
                 })
-            }
-            if (!_hasVoted) {
-                return null;
-            }
-            // 获取投票选项
-            let committedOptionsURL = Config.VoteCommittedOptions + memberId + 
-                '/' + this.state.voteId;
-            return Service.Get(committedOptionsURL)
-        })
-        .then((jsonData) => {
-            if (jsonData == null) {
-                return; // 没有投票
-            }
-            for (let voteContentId in jsonData) {
-                let selectedOptionsText = jsonData[voteContentId];
-                for (let i in data) { // data是转换后的，可以提供给Vote组件的数据
-                    if (voteContentId != data[i].contentId) {
-                        continue;
-                    }
-                    // 对于相同的题目
-                    let options = data[i].options;
-                    for (let j in options) {
-                        for (let k in selectedOptionsText) {
-                            // 如果某个选项被选中
-                            if (selectedOptionsText[k] == options[j].text) {
-                                // 则设置其selected为true
-                                options[j].selected = true;
-                            }
-                        }
-                    }
-                }
-            }
-            if (this._isMounted) {
-                this.setState({voteData: data});
             }
         })
         .catch(error => {});
@@ -348,14 +285,31 @@ export default class VoteDetail extends Component {
 
                     <View style={styles.content}>
                             <FoldText
-                                //HTMLSpecialCharsDecode(this.state.content)
                                 maxLines={5} //
-                                text={this.state.content}
+                                text={HTMLSpecialCharsDecode(this.state.content)}
                             />
                     </View>
-
-                
-                {this._renderVoteContent()}
+                    {
+                        this.state.hasVoted ? (
+                            <VoteCommit
+                                memberId={this.memberId}
+                                voteId={this.state.voteId}
+                                voteContent={this.state.voteContent}
+                                headerComponent={this._renderHasVotedBanner.bind(this)}
+                            />
+                        ) : (
+                            <Vote
+                                data={this.state.voteData}
+                                recvSelectedIds={(ids, info) => {
+                                    this.selectedIds = ids;
+                                    this.info = info;
+                                }}
+                                headerComponent={this._renderHasVotedBanner.bind(this)}
+                                footerComponent={this._renderSubmitButton.bind(this)}
+                                disabled={this.state.hasVoted}
+                            />
+                        )
+                    }
                 </KeyboardAwareScrollView>
             </View>
         )

@@ -1,11 +1,9 @@
 import React, { Component } from 'react';
 import {
-    Platform,
     StyleSheet,
     Text,
     View,
     ToastAndroid,
-    AppRegistry,
     TouchableOpacity,
     FlatList,
     Image,

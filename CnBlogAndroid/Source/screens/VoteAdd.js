@@ -1,7 +1,7 @@
 import MyAdapter from './MyAdapter.js';
 import Config, { UI } from '../config';
 import api from '../api/api.js';
-import { authData, err_info } from '../config'
+import config, { authData, err_info } from '../config'
 import * as Service from '../request/request.js'
 import React, { Component } from 'react';
 import {
@@ -41,7 +41,7 @@ export default class VoteAdd extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            schoolClassId: this.props.classId,
+            schoolClassId: this.props.navigation.state.params.classId,
             name: '', //投票名称
             content: "", //投票说明
             privacy: 0, //（1.公开、2.匿名）
@@ -50,7 +50,6 @@ export default class VoteAdd extends Component {
             voteOptions: [],
 
             ModalVisible: false, //是否可见日历
-            dateChosen: "", //所选日期
             hour: "00",
             minute: "00",
 
@@ -60,12 +59,53 @@ export default class VoteAdd extends Component {
         }
     }
 
-    addOption() {
-
-    }
-
+    /** 发布投票函数 */
     _onpress2AddVote() {
-
+        //设定各个部分不为空
+        var option = '第一个初始选项';
+        var varOption2 = '第二个初始选项';
+        var title = '初始标题';
+        var voteMode = 1;
+        var picture = null;
+        var voteOptions = [{'option' : option},{'option' : varOption2}];
+        var voteContents = [{'title':title, 'voteMode':voteMode,'picture': picture,'voteOptions': voteOptions}];
+        let postBody = {
+            schoolClassId: this.state.schoolClassId,
+            name: this.state.name, //投票名称
+            content: this.state.content, //投票说明
+            privacy: this.state.privacy, //（1.公开、2.匿名）
+            deadline: this.state.deadline+' '+this.state.hour+':'+this.state.minute, //"2017-09-10 17:00"
+            voteContents: voteContents,
+        }
+        let body = JSON.stringify(postBody);
+        let url = Config.VoteAdd;
+        Service.UserAction(url, body, 'POST').then((response) => {
+            if (response.status !== 200) {
+                return null;
+            }
+            else {
+                return response.json();
+            }
+        }).then((jsonData) => {
+            if (jsonData === null) {
+                ToastAndroid.show('请求失败！', ToastAndroid.SHORT);
+            }
+            else if (jsonData.isSuccess) {
+                ToastAndroid.show('添加成功！', ToastAndroid.SHORT);
+                this.props.navigation.state.params.callback();
+                this.props.navigation.goBack();
+            }
+            else if (jsonData.isWarning) {
+                ToastAndroid.show(jsonData.message, ToastAndroid.SHORT);
+            }
+            else {
+                ToastAndroid.show('发生错误，请稍后重试！', ToastAndroid.SHORT);
+            }
+        }).catch((error) => {
+            ToastAndroid.show(err_info.NO_INTERNET, ToastAndroid.SHORT);
+            this.props.navigation.state.params.callback();
+            this.props.navigation.goBack();
+        });
     }
 
     /** 投票名称*/
@@ -109,7 +149,7 @@ export default class VoteAdd extends Component {
                 <View style={styles.container}>
                     <Calendar
                         onDayPress={(day) => {
-                            this.setState({ dateChosen: day.dateString });
+                            this.setState({ deadline: day.dateString });
                             this.setState({ ModalVisible: !this.state.ModalVisible });
                         }}
                         theme={{
@@ -135,7 +175,7 @@ export default class VoteAdd extends Component {
             <View style={styles.buttonContainer}>
                 <RadioModal
                     selectedValue={this.state.privacy}
-                    onValueChange={(id, item) => this.setState({ privacy: item })}
+                    onValueChange={(id, item) => this.setState({ privacy: id })}
                     style={{
                         flexDirection: 'row',
                         flexWrap: 'wrap',
@@ -144,8 +184,8 @@ export default class VoteAdd extends Component {
                         backgroundColor: '#ffffff', padding: 5, marginTop: 10
                     }}
                 >
-                    <Text value="1">公开</Text>
-                    <Text value="2">匿名</Text>
+                    <Text value={1}>公开</Text>
+                    <Text value={2}>匿名</Text>
                 </RadioModal>
             </View>
         );
@@ -196,11 +236,22 @@ export default class VoteAdd extends Component {
 
     }
 
+    /** 投票按钮 */
+    getVoteAddButton() {
+        return (
+            <Button
+                title = '投票发布'
+                onPress={() => { this._onpress2AddVote()}}
+            >
+
+            </Button>
+        )
+    }
+
     render() {
         return (
             <View style={styles.container}>
                 <KeyboardAwareScrollView>
-
                     {/**投票名称 */}
                     {this.getTitle()}
 
@@ -213,7 +264,7 @@ export default class VoteAdd extends Component {
                         <MyBar
                             title="投票截止时间"
                             onPress={() => { this.setState({ ModalVisible: true }); }}
-                            placeholder={this.state.dateChosen}
+                            placeholder={this.state.deadline}
                             myThis={this}
                         />
                     </View>
@@ -224,6 +275,8 @@ export default class VoteAdd extends Component {
                     {/** 整个投票内容 */}
                     {this.getAllVoteContent()}
 
+                    {/** 投票发布按钮 */}
+                    {this.getVoteAddButton()}
                 </KeyboardAwareScrollView>
             </View>
         );
@@ -375,7 +428,7 @@ class MyBar extends Component {
                         itemStyle={{ textAlign: 'center' }}
                         items={this.hours}
                         onChange={(index) => {
-                            this.props.myThis.setState({ hour: (index.length == 1 ? '0' + index : "" + index) });
+                            this.props.myThis.setState({ hour: (index.length == 1 ? ("0" + index) : ("" + index)) });
                         }}
                     />
                     <Text>:</Text>
@@ -384,7 +437,7 @@ class MyBar extends Component {
                         itemStyle={{ textAlign: 'center' }}
                         items={this.minutes}
                         onChange={(index) => {
-                            this.props.myThis.setState({ minute: (index.length == 1 ? '0' + index : "" + index) });
+                            this.props.myThis.setState({ minute: (index.length == 1 ? "0" + index : "" + index) });
                         }}
                     />
                 </View>
@@ -404,11 +457,11 @@ class Option extends Component {
             //titleNum: this.props.titleNum, //显示的标题num，可修改
             that: this.props.myThis,
             optionInitial: this.props.optionInitial,
-            OptionInput : '',
+            OptionInput: '',
         }
     }
 
-    shouldComponentUpdate(){
+    shouldComponentUpdate() {
         return false;
     }
 
@@ -443,9 +496,9 @@ class Option extends Component {
                 <TextInput
                     style={styles.textInput}
                     underlineColorAndroid="transparent"//设置下划线背景色透明 达到去掉下划线的效果
-                    // onChangeText={(text) =>
-                    //     this.setState({ OptionInput: text })
-                    // }
+                // onChangeText={(text) =>
+                //     this.setState({ OptionInput: text })
+                // }
                 />
             </View>
         );

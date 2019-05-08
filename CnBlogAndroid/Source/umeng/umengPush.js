@@ -161,6 +161,10 @@ export function openPush(){
 //     })
 // }
 
+export function addClassTag(classId){
+    return PushUtil.addTag(classId + '',()=>{});
+}
+
 export function addHomeworkTag(classId,homeworkId){
     return PushUtil.addTag(classId + "_" + homeworkId,()=>{});
 }

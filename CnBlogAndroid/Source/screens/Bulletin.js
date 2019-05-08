@@ -60,6 +60,7 @@ export default class Bulletin extends Component {
         if(this.state.membership===1) {
             this.props.navigation.navigate('BulletinEdition',{
                 schoolClassId: this.props.schoolClassId,
+                className:this.props.className,
                 bulletinText: content,
                 bulletinId: id,
                 membership: this.state.membership,
@@ -142,6 +143,7 @@ export default class Bulletin extends Component {
             <TouchableOpacity onPress={()=>{
                 this.props.navigation.navigate('BulletinEdition',{
                     schoolClassId: this.props.schoolClassId,
+                    className:this.props.className,
                     bulletinText: Content,
                     bulletinId: Id,
                     membership: this.state.membership,
@@ -315,7 +317,7 @@ export default class Bulletin extends Component {
     _onPress = ()=>{
         if (this.state.membership==2||this.state.membership==3)
             this.props.navigation.navigate('BulletinAdd',
-                {schoolClassId: this.props.schoolClassId, callback: this._FlatListRefresh});
+                {schoolClassId: this.props.schoolClassId, className:this.props.className, callback: this._FlatListRefresh});
         else
         {
             ToastAndroid.show("您没有权限，只有老师和助教才能发布公告哦！",ToastAndroid.SHORT);

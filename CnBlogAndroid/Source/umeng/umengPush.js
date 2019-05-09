@@ -298,7 +298,7 @@ async function unicastBody(params){
     let postBody = {
         "appkey":umengConfig.appkey,
         "type":umengConfig.messageType.unicast,
-        "production_mode":"false",
+        "production_mode":"true",
         "payload":payload,
         "description":"单播"
     }
@@ -325,7 +325,7 @@ async function groupcastBody(params, filter){
     let postBody = {
         "appkey":umengConfig.appkey,
         "type":umengConfig.messageType.groupcast,
-        "production_mode":"false",
+        "production_mode":"true",
         "payload":payload,
         "description":"组播",
         "filter":filter

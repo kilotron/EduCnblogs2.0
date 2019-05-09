@@ -73,6 +73,8 @@ export default class UserInformation extends Component{
     }
 
     _logout=()=>{
+        // 简单的清空浏览记录
+        global.storage.save({key: StorageKey.BLOG_LIST, data: []});
         storage.removeItem(StorageKey.RECEIVE_PUSH).then(
             storage.removeItem(StorageKey.USER_TOKEN).then((res)=>{
                 CookieManager.clearAll()
@@ -176,9 +178,9 @@ export default class UserInformation extends Component{
                 flexDirection: 'row',
                 justifyContent:'flex-start',
                 alignItems: 'center',
-                marginBottom: 0.02*screenHeight,
+                marginBottom: 0.01*screenHeight,
                 backgroundColor: UI.TOP_COLOR,
-                height: screenHeight/12,
+                height: screenHeight/16,
                 paddingLeft: 0.05*screenWidth,
             }}>
                 <Text style = {{fontSize: 18, fontWeight: 'bold', color:'white'}}>个人信息</Text>

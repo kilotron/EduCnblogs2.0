@@ -4,8 +4,10 @@ import android.app.Activity;
 import java.util.List;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -14,6 +16,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.umeng.message.IUmengCallback;
 import com.umeng.message.MsgConstant;
 import com.umeng.message.PushAgent;
@@ -37,11 +40,13 @@ public class PushModule extends ReactContextBaseJavaModule {
     private static Activity ma;
     private PushAgent mPushAgent;
     private Handler handler;
+    // private OpenNativeModule openNativeModule = new OpenNativeModule(context);
     
     public PushModule(ReactApplicationContext reactContext) {
         super(reactContext);
         context = reactContext;
         mPushAgent = PushAgent.getInstance(context);
+
     }
 
     public static void initPushSDK(Activity activity) {
@@ -57,11 +62,23 @@ public class PushModule extends ReactContextBaseJavaModule {
     }
     @ReactMethod
     public void getDeviceToken(Callback callback) {
-        PushAgent mPushAgent = PushAgent.getInstance(context);
         String registrationId = mPushAgent.getRegistrationId();
         callback.invoke(registrationId);
     }
 
+    public void sendEventToRn(String eventName, @Nullable WritableMap params){
+        context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                .emit("notification", params);
+    }
+    @ReactMethod
+    public void test(Callback callback){
+        WritableMap event = Arguments.createMap();
+        //传递的参数
+        event.putString("title","myTitle");
+        // openNativeModule.sendEventToRn("notification", event);
+        sendEventToRn("notification",event);
+        callback.invoke(true);
+    }
     @ReactMethod
     public void disablePush(final Callback callback){
         mPushAgent.disable(new IUmengCallback() {

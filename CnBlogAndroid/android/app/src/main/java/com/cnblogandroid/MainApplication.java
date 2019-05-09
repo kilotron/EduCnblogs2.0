@@ -156,6 +156,7 @@ public class MainApplication extends Application implements ReactApplication {
      * 如果需启动Activity，需添加Intent.FLAG_ACTIVITY_NEW_TASK
      * */
     UmengNotificationClickHandler notificationClickHandler = new UmengNotificationClickHandler() {
+
         @Override
         public void dealWithCustomAction(Context context, UMessage msg) {
             Toast.makeText(context, msg.custom, Toast.LENGTH_LONG).show();

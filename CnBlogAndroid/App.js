@@ -26,6 +26,7 @@ import {
     AsyncStorage,
     Alert,
     BackHandler,
+    DeviceEventEmitter,
 } from 'react-native';
 import {
     StackNavigator,
@@ -137,7 +138,17 @@ class Welcome extends Component{
         }
     }
 
+    componentWillUnmount(){
+        // DeviceEventEmitter.removeListener('notification',this.notification);
+    }
+
+    notification = (params) =>{
+        console.log(params);
+    }
+
     componentDidMount(){
+        DeviceEventEmitter.addListener('notification',this.notification);
+        this.subscription = DeviceEventEmitter.addListener('xxxName', Function);//监听通知
         this.timer = setTimeout(
             ()=>{
                 this.setPush().then(

@@ -185,7 +185,7 @@ export function deleteAllTags(){
 
 export async function testPush(){
     //单播测试
-    sendUnicast({ticker:"ticker",title:"title" + (new Date()).getTime(),text:"text"}); 
+    // sendUnicast({ticker:"ticker",title:"title" + (new Date()).getTime(),text:"text"}); 
     // sendUnicast({title:"title" + (new Date()).getTime(),text:"text"});
 
     //组播测试
@@ -218,6 +218,7 @@ export async function testPush(){
     // PushUtil.disablePush((ret)=>{
     //     console.log(ret);
     // });
+    PushUtil.test(()=>{});
 }
 
 

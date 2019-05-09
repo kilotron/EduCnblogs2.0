@@ -1,14 +1,18 @@
 package com.cnblogandroid;
 
+import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.Application;
 import android.app.Notification;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.os.Handler;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import com.facebook.react.ReactApplication;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.github.alinz.reactnativewebviewbridge.WebViewBridgePackage;
 import com.psykar.cookiemanager.CookieManagerPackage;
 import com.facebook.react.ReactNativeHost;
@@ -157,9 +161,44 @@ public class MainApplication extends Application implements ReactApplication {
      * */
     UmengNotificationClickHandler notificationClickHandler = new UmengNotificationClickHandler() {
 
+        private boolean _isApplicationRunning(Context context) {
+            ActivityManager activityManager = (ActivityManager) context.getApplicationContext().getSystemService(context.ACTIVITY_SERVICE);
+            List<ActivityManager.RunningAppProcessInfo> processInfos = activityManager.getRunningAppProcesses();
+            for (ActivityManager.RunningAppProcessInfo processInfo : processInfos) {
+                if (processInfo.processName.equals(context.getApplicationContext().getPackageName())) {
+                    if (processInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
+                        for (String d: processInfo.pkgList) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
         @Override
         public void dealWithCustomAction(Context context, UMessage msg) {
-            Toast.makeText(context, msg.custom, Toast.LENGTH_LONG).show();
+//            Toast.makeText(context, msg.custom, Toast.LENGTH_LONG).show();
+            Log.i("my_dealWithCustomAction","dealWithCustomAction执行");
+            //应用是否运行
+            if(!_isApplicationRunning(context)){
+//                Intent in = new Intent(context, MainActivity.class);
+//                in.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                context.startActivity(in);
+            }
+
+//            context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+//                    .emit("notification", params);
+        }
+        @Override
+        public void openActivity(Context context, UMessage msg) {
+            Log.i("my_openActivity","openActivity执行");
+            //super.openActivity(context, msg);//不可调用，否则无效
+//            Toast.makeText(context, "测试跳转", Toast.LENGTH_LONG).show();
+            if(!_isApplicationRunning(context)){
+//                Intent in = new Intent(context, MainActivity.class);
+//                in.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                context.startActivity(in);
+            }
         }
     };
     //使用自定义的NotificationHandler，来结合友盟统计处理消息通知，参考http://bbs.umeng.com/thread-11112-1-1.html

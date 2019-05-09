@@ -35,6 +35,7 @@ export default class HomeWorkDetail extends Component{
             membership: this.props.navigation.state.params.membership,
             Id:0,
             classId:0,
+            isFinished:false,
             isShowInHome:false,
             originContent:'',
             isClosed:false,
@@ -65,6 +66,7 @@ export default class HomeWorkDetail extends Component{
                     deadline:jsonData.deadline,
                     isShowInHome:jsonData.isShowInHome,
                     isClosed:jsonData.isClosed,
+                    isFinished:jsonData.isFinished,
                 })
             }
         })
@@ -188,7 +190,15 @@ export default class HomeWorkDetail extends Component{
         let params = {
             ticker:"作业《" + this.state.title +"》截止提醒",
             title:"作业《" + this.state.title +"》截止提醒",
-            text:'老师/助教提醒您提交作业，请及时关注！（已提交请忽略）'
+            text:'老师/助教提醒您提交作业，请及时关注！（已提交请忽略）',
+            after_open:"go_custom",
+            custom:{
+                screen:'HomeworkDetail',
+                classId:this.state.classId,
+                homeworkId:this.state.Id,
+                membership:this.state.membership,
+                isFinished:this.state.isFinished,
+            }
         }
         castId = this.state.classId + '_' + this.state.Id;
         let filter = {

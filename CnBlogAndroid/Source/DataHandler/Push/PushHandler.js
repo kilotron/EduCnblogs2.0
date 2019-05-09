@@ -138,7 +138,15 @@ export async function initPush(){
                     UmengPush.sendUnicast({
                         ticker:"作业截止提醒",
                         title:"作业《" + title +"》截止提醒",
-                        text:text
+                        text:text,
+                        after_open:"go_custom",
+                        custom:{
+                            screen:'HomeworkDetail',
+                            classId:classId,
+                            homeworkId:homeworkId,
+                            membership:membership,
+                            isFinished:isFinished,
+                        }
                     })
                 }
             }

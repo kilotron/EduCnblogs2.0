@@ -30,6 +30,10 @@ export default class BulletinAdd extends Component {
             ticker:"班级公告更新《"+ className +"》",
             title:"班级公告更新《"+ className +"》",
             text:content,
+            after_open:"go_custom",
+            custom:{
+                screen:'BulletinEdition',
+            }
         }
         castId = classId;
         let filter = {

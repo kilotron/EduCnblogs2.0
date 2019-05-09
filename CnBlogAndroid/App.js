@@ -144,11 +144,13 @@ class Welcome extends Component{
 
     notification = (params) =>{
         console.log(params);
+        console.log('success');
+        this.props.navigation.navigate('HomeworkDetail');
     }
 
     componentDidMount(){
-        DeviceEventEmitter.addListener('notification',this.notification);
-        this.subscription = DeviceEventEmitter.addListener('xxxName', Function);//监听通知
+        DeviceEventEmitter.addListener('openNotification',this.notification);
+        // this.subscription = DeviceEventEmitter.addListener('xxxName', Function);//监听通知
         this.timer = setTimeout(
             ()=>{
                 this.setPush().then(

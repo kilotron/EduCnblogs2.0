@@ -1,4 +1,4 @@
-package com.cnblogandroid;
+package com.pureman;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -50,7 +50,7 @@ public class MainActivity extends ReactActivity {
         super.onResume();
         MobclickAgent.onResume(this);
     }
-    
+
     @Override
     protected void onPause() {
         super.onPause();

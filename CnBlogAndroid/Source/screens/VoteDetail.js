@@ -145,10 +145,10 @@ export default class VoteDetail extends Component {
                 this._getVoteState(); // 获取用户是否已经投票。
             })
             .catch((err) => {
-                alert('error');
+                // 无网络连接
             })
         })
-        .catch((err)=>{alert('error')});
+    .catch((err)=>{/* 无网络连接*/});
     }
 
     componentWillUnmount = () => {

@@ -24,6 +24,7 @@ import {
     Alert
 } from 'react-native';
 import Toast from 'teaset/components/Toast/Toast';
+const HTMLSpecialCharsDecode = require('../DataHandler/HTMLSpecialCharsDecode');
 
 const screenWidth= MyAdapter.screenWidth;
 const screenHeight= MyAdapter.screenHeight;
@@ -63,7 +64,7 @@ export default class HomeworkLists extends Component {
                         {title}
                     </Text>
                     <Text numberOfLines={3} style= {HomeworkStyles.abstractTextStyle}>
-                        {description}
+                        {HTMLSpecialCharsDecode(description)}
                     </Text>
                     <Text style= {HomeworkStyles.informationTextStyle}>
                         截止于:{deadline.split('T')[0]+' '+deadline.split('T')[1].substring(0,8)}

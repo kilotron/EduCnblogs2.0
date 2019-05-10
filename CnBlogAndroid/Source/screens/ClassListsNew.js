@@ -288,6 +288,7 @@ const styles = StyleSheet.create({
 	buttonStyle:{
 		height: (screenHeight) / 16,
 		width:(screenHeight) / 10,
+		marginRight: 5,
 		justifyContent:'center',
 		alignItems:'center',
 	},

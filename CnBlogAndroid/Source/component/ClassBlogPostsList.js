@@ -24,7 +24,7 @@ import {
     ActivityIndicator,
     Animated,
 } from 'react-native';
-import {flatStyles} from '../styles/styles';
+import {flatStylesWithAvatar, nameImageStyles} from '../styles/styles';
 import Config, { err_info } from '../config';
 import * as Service from '../request/request.js';
 import MyAdapter from '../screens/MyAdapter';
@@ -219,6 +219,7 @@ export default class ClassBlogPostsList extends Component {
                             ListEmptyComponent={this._renderEmptyList.bind(this)}
                             ListFooterComponent={this._renderFooter.bind(this)}
                             onScroll={this.animatedEvent}
+                            ItemSeparatorComponent={this._itemSeparatorComponent}
                         />
                     </View>
                 </Animated.View>
@@ -226,17 +227,25 @@ export default class ClassBlogPostsList extends Component {
         );
     }
 
+    _itemSeparatorComponent(){
+        return (
+            <View style={flatStylesWithAvatar.separatorStyle}/>
+        )
+    }
+
     /**FlatList的renderItem */
     _renderItem = ({item}) => {
+        var BlogApp = GetBlogApp(item.url);
 		return(
-            <View style={flatStyles.cell}>
+            <View style={flatStylesWithAvatar.cell}>
+
                 <TouchableOpacity
-                    style = {flatStyles.listContainer}
+                    style = {flatStylesWithAvatar.listcontainer}
                     onPress = {() => {
                         this.props.navigation.navigate('BlogDetail',
                             {
                                 Id:item.blogId,
-                                blogApp: GetBlogApp(item.url),
+                                blogApp: BlogApp,
                                 CommentCount: item.commentCount,
                                 Url: item.url,
                                 Title: item.title,
@@ -244,22 +253,30 @@ export default class ClassBlogPostsList extends Component {
                             });
                     }}
                 >
-                    <Text style={styles.postTitle} accessibilityLabel={item.url}>
-                        {item.title}
-                    </Text>
-
-                    <Text numberOfLines={3} style={styles.postDescription}>
-                        {HTMLSpecialCharsDecode(item.description)}
-                    </Text>
-
-                    <View style={styles.postMetadataView}>
-                        <Text style={styles.viewCountAndCommentCount}>
-                            {item.viewCount + ' 阅读' + '  '
-                             + item.commentCount + ' 评论'}
+                    <View style = {nameImageStyles.nameContainer}>
+                        <Text style = {nameImageStyles.nameText}>
+                            {BlogApp.slice(0, 2)}
                         </Text>
-                        <Text style={styles.postDate}>
-                            {item.author + ' 发布于: ' + this.parsePostDate(item.postDate)}
+                    </View>
+                    <View style={{flex: 1,}}>
+
+                        <Text style={styles.postTitle} accessibilityLabel={item.url}>
+                            {item.title}
                         </Text>
+
+                        <Text numberOfLines={2} style={styles.postDescription}>
+                            {HTMLSpecialCharsDecode(item.description)}
+                        </Text>
+
+                        <View style={styles.postMetadataView}>
+                            <Text style={styles.viewCountAndCommentCount}>
+                                {item.viewCount + ' 阅读' + '  '
+                                 + item.commentCount + ' 评论'}
+                            </Text>
+                            <Text style={styles.postDate}>
+                                {item.author + ' 发布于: ' + this.parsePostDate(item.postDate)}
+                            </Text>
+                        </View>
                     </View>
                 </TouchableOpacity>
             </View>

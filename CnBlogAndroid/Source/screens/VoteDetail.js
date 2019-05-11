@@ -32,15 +32,7 @@ const screenHeight = MyAdapter.screenHeight;
 export default class VoteDetail extends Component {
     /**navigationOptions放在此处，可以在标题栏放一个按钮跳转到另一个页面。 */
     static navigationOptions = ({ navigation }) => ({
-        headerTintColor: 'white',
         headerTitle: '投票详情',
-        headerStyle: {
-            height: 40,
-            backgroundColor: UI.TOP_COLOR,
-        },
-        headerTitleStyle: {
-            fontSize: 18,
-        },
         headerRight: (
             <TouchableOpacity onPress={() => {
                 if (typeof(navigation.state.params.voteContent) == 'undefined') {

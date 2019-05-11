@@ -9,6 +9,7 @@ import React, { Component} from 'react';
 import {
     StyleSheet,
     View,
+    WebView,
     ToastAndroid,
     TouchableOpacity,
     Image,
@@ -23,6 +24,9 @@ import {
     StackNavigator,
     TabNavigator,
 } from 'react-navigation';
+ import Markdown from 'react-native-easy-markdown';
+ import HTMLView from 'react-native-htmlview'; 
+//import Markdown from 'react-native-simple-markdown';
 const CommentHandler = require('../DataHandler/BlogComment/CommentHandler');
 const ItemHandler = require('../DataHandler/BlogComment/ItemHandler');
 const getComments = require('../DataHandler/BlogComment/getComments');
@@ -78,11 +82,23 @@ export default class BlogComment extends Component{
     _separator = () => {
         return <View style={{ height: 1, backgroundColor: 'rgb(204,204,204)' }}/>;
     }
+    /**
+     * 有哪些标签需要进行转义
+     * <b></b> => ** ** 
+     * <a href ="url">description</a> => [description](url)
+     * [code=java]some code[/code] => ``` some code ```
+     * <img src = "url" border="0" onload="..."/> => ![图片](url)
+     *  1. 根据<img src="url" 获取url
+     *  2. 将<img *...>替换成![图片](url)
+     * <fieldset class = "comment_quote"><legend>引用</legend>
+     * 
+     */
     _renderItem = (item)=>{
         let item1 = item;
         item = ItemHandler(item);
         let {key,Bodys,Author,DateAdded,AuthorUrl,FaceUrl} = item;
         //FaceUrl = FaceUrlHandler();
+        const htmlContent = `<p><a href="http://jsdf.co">&hearts; nice job!</a></p>`;       
         return(
             <ListItem avatar
                 onPress={()=>this.props.navigation.navigate
@@ -100,7 +116,29 @@ export default class BlogComment extends Component{
               </Left>
               <Body>
                 <Text>{Author}</Text>
-                <Text note>{HTMLSpecialCharsDecode(Bodys)}</Text>
+                {/* <Text note>{HTMLSpecialCharsDecode(Bodys)}</Text> */}
+                <Markdown>
+                {
+                        HTMLSpecialCharsDecode(Bodys)
+                }
+                </Markdown>
+                {/* TODO 删掉下面的测试 */}
+                 {/* <Markdown styles={markdownStyles}>
+                    # --Markdown--  {'\n\n'}
+                    [超链接](http://www.jianshu.com) {'\n\n'}
+                    ![图片](https://upload.jianshu.io/users/upload_avatars/5847426/d79b9d30-0c75-43a6-8372-711deae3ce52.jpg?imageMogr2/auto-orient/strip|imageView2/1/w/240/h/240)
+                    You can **emphasize** what you want, or just _suggest it_ 😏…{'\n'}
+                    {HTMLSpecialCharsDecode(Bodys)}
+                </Markdown>  */}
+                {/* <HTMLView
+                    value={htmlContent2}
+                    stylesheet={styles}
+                /> */}
+                {/* <WebView
+                    source={htmlContent2}
+                    style={{width:'50%',height:'50%'}}
+                    javaScriptEnabled={true}
+                /> */}
                 <Text style = {{fontSize: 10, textAlign: 'right', color: 'gray'}}>{'评论于: '+DateAdded.split('T')[0]+' '+DateAdded.split('T')[1].substring(0,8)}</Text>
               </Body>
             </ListItem>

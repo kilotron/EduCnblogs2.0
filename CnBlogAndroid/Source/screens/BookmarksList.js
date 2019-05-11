@@ -404,3 +404,25 @@ const styles = StyleSheet.create({
         alignSelf:'stretch',
     },
 });
+
+/*
+分页获取收藏列表
+请求方式：GET
+请求地址：https://api.cnblogs.com/api/Bookmarks?pageIndex={pageIndex}&pageSize={pageSize}
+
+
+Body参数名	类型	必需	描述	示例 e.g.
+pageIndex	number	是	页码	1
+pageSize	number	是	页容量	10
+
+
+Body参数名	描述	类型
+WzLinkId	收藏编号	string
+Title	标题	string
+LinkUrl	收藏链接	string
+Summary	收藏标题	string
+Tags	标签	string
+DateAdded	添加时间	string
+FromCNBlogs	是否来自博客园	string
+
+*/

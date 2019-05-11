@@ -498,3 +498,25 @@ const styles = StyleSheet.create({
         fontSize: 12,
     },
 });
+
+/*
+分页获取班级公告列表
+请求方式：GET
+请求地址：https://api.cnblogs.com/api/edu/schoolclass/bulletins/{schoolClassId}/{pageIndex}-{pageSize}
+
+
+Body参数名	类型	必需	描述	示例 e.g.
+schoolClassId	number	是	班级Id	1
+pageIndex	number	是	页码	1
+pageSize	number	是	页容量	10
+
+
+Body参数名	描述	类型
+totalCount	            公告总数	number
+bulletins               公告列表	array
+bulletins.bulletinId	公告Id	number
+bulletins.content       内容	string
+bulletins.publisher	    发布者	string
+bulletins.blogUrl       发布者博客	string
+bulletins.dateAdded	    发布时间	datetime
+*/

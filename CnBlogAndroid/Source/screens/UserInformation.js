@@ -8,6 +8,7 @@ import React, { Component} from 'react';
 import CookieManager from 'react-native-cookies'
 import * as storage from '../Storage/storage.js'
 import * as umengPush from '../umeng/umengPush'
+import * as Push from '../DataHandler/Push/PushHandler'; 
 import {
     StyleSheet,
     Text,
@@ -340,6 +341,7 @@ export default class UserInformation extends Component{
                     }
                     else{
                         this.openReceive().then(()=>{
+                            Push.initPush();
                             this.setState({
                                 receive_push:true
                             })

@@ -97,6 +97,7 @@ import * as UmengPush from '../../umeng/umengPush'
 // }
 
 export async function initPush(){
+    await UmengPush.deleteAllTags();
     var homeworkMap = await getHomeWorkList();
     for(var cls in homeworkMap){
         var {classId, memberId, membership, homeworks} = homeworkMap[cls];

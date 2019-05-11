@@ -11,6 +11,8 @@ import React, { Component,} from 'react';
 import CookieManager from 'react-native-cookies'
 import { Icon } from 'native-base';
 import * as umengAnalysis from './Source/umeng/umengAnalysis'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
 import {
     Platform,
     StyleSheet,
@@ -278,31 +280,50 @@ class UrlLogin extends Component{
     render()
     {
         return (
-            <View style={styles.container}>
+            
+            <View style={{flex: 1, justifyContent: 'center'}}>
+                <View style={{
+                    flexDirection: 'row', 
+                    justifyContent: 'flex-start', 
+                    alignItems: 'center',
+                    backgroundColor: '#EDEDED', 
+                    height: 80, 
+                }}>
+                    <Image source={require('./Source/images/login.png')}
+                        style={{height: 35, width: 35, marginLeft: 40}}
+                        resizeMode='contain'/>
+                    <Text style={{
+                        fontSize: 30,
+                        color: '#444', 
+                        marginLeft: 15,
+                    }}>登录</Text>
+                </View>
+                <View style={{ height: 0.75, backgroundColor: '#DADADA'}}/>
                 <WebView
                     onNavigationStateChange = {(event)=>{
                     var first_sta = event.url.indexOf('#');
-                    if(event.url.substring(0,first_sta) === Config.CallBack)
-                    {
-                        var sta = event.url.indexOf('=');
-                        var end = event.url.indexOf('&');
-                        this.setState({
-                            code : event.url.substring(sta+1,end)
-                        })
-                        if(this.state.code != '')
+                        if(event.url.substring(0,first_sta) === Config.CallBack)
                         {
-                            this.getTokenFromApi(this.state.code);
+                            var sta = event.url.indexOf('=');
+                            var end = event.url.indexOf('&');
+                            this.setState({
+                                code : event.url.substring(sta+1,end)
+                            })
+                            if(this.state.code != '')
+                            {
+                                this.getTokenFromApi(this.state.code);
+                            }
                         }
-                    }
-                }}
-                source={{uri: CODE_URL}}
-                style={{height: height-40, width: width}}
-                startInLoadingState={true}
-                domStorageEnabled={true}
-                javaScriptEnabled={true}
-                onError = {()=>Alert.alert('网络异常，请稍后再试！')}
+                    }}
+                    source={{uri: CODE_URL}}
+                    style={{height: height-40, width: width}}
+                    startInLoadingState={true}
+                    domStorageEnabled={true}
+                    javaScriptEnabled={true}
+                    onError = {()=>Alert.alert('网络异常，请稍后再试！')}
                 />
             </View>
+
         )
     }
 }
@@ -430,75 +451,35 @@ const SimpleNavigation = StackNavigator({
     VoteList:{
         screen: VoteList,
         navigationOptions:{
-            headerTintColor : 'white',
             headerTitle: '投票',
-            headerStyle: {
-                height:40,
-                backgroundColor:UI.TOP_COLOR,
-            },
-            headerTitleStyle: {
-                fontSize: 18,
-            },
         }
     },
 
     VoteMemberList: {
         screen: VoteMemberList,
         navigationOptions: {
-            headerTintColor: 'white',
             headerTitle: '已投票成员',
-            headerStyle: {
-                height:40,
-                backgroundColor:UI.TOP_COLOR,
-            },
-            headerTitleStyle: {
-                fontSize: 18,
-            },
         }
     },
 
     VoteMemberCommit: {
         screen: VoteMemberCommit,
         navigationOptions: {
-            headerTintColor: 'white',
             headerTitle: '投票详情',
-            headerStyle: {
-                height:40,
-                backgroundColor:UI.TOP_COLOR,
-            },
-            headerTitleStyle: {
-                fontSize: 18,
-            },
         }
     },
 
     VoteAdd: {
         screen: VoteAdd,
         navigationOptions: {
-            headerTintColor:'white',
             headerTitle: '投票列表',
-            headerStyle: {
-                height: 40,
-                backgroundColor: UI.TOP_COLOR,
-            },
-            headerTitleStyle: {
-                fontSize: 18,
-            },
         }
     },
 
     ClassFunction: {
         screen: ClassFunction,
         navigationOptions: {
-            headerTintColor:'white',
             headerTitle: '班级功能',
-            headerStyle: {
-                height: 40,
-                backgroundColor: UI.TOP_COLOR,
-            },
-            headerTitleStyle: {
-                fontSize: 18,
-            }
         },
     },
 
@@ -517,51 +498,40 @@ const SimpleNavigation = StackNavigator({
     LoginPage: {
         screen: UrlLogin,
         navigationOptions: {
-            header: null,
+            header:null,
+            headerLeft: null,
+            headerRight: null,
+            headerTitle: '登录',
+            headerTintColor: '#0077FF',
+            headerStyle: {
+                height: 40,
+                backgroundColor: '#F8F8F8',//网页背景色：#EDEDED
+                elevation: 1,           // 减轻阴影效果
+            },
+            headerTitleStyle: {
+                flex: 1,
+                textAlign: 'center', // 标题居中
+                fontSize: 18,
+                fontWeight: 'normal',
+            },
         },
     },
     HomeworkLists: {
         screen: HomeworkLists,
         navigationOptions: {
-            //header: null,
-            headerTintColor:'white',
             headerTitle: '作业列表',
-            headerStyle: {
-                height: 40,
-                backgroundColor: UI.TOP_COLOR,
-            },
-            headerTitleStyle: {
-                fontSize: 18,
-            }
         },
     },
     UnfinishedHomeworkList: {
         screen: UnfinishedHomeworkList,
         navigationOptions: {
-            //header: null,
-            headerTintColor:'white',
             headerTitle: '未完成作业列表',
-            headerStyle: {
-                height: 40,
-                backgroundColor: UI.TOP_COLOR,
-            },
-            headerTitleStyle: {
-                fontSize: 18,
-            }
         },
     },
     HomeworkDetail: {
         screen: HomeworkDetail,
         navigationOptions: {
-            headerTintColor:'white',
             headerTitle: '作业详情',
-            headerStyle: {
-                height: 40,
-                backgroundColor: UI.TOP_COLOR,
-            },
-            headerTitleStyle: {
-                fontSize: 18,
-            }
         },
     },
     ClassLists: {
@@ -592,341 +562,163 @@ const SimpleNavigation = StackNavigator({
     ClassHome: {
         screen: ClassHome,
         navigationOptions: {
-            headerTintColor:'white',
             headerTitle: '班级博客',
-            headerStyle: {
-                height: 40,
-                backgroundColor: UI.TOP_COLOR,
-            },
-            headerTitleStyle: {
-                fontSize: 18,
-            }
         }
     },
     HomeworkPost: {
         screen: HomeworkPost,
         navigationOptions: {
-            headerTintColor:'white',
             headerTitle: '作业发布',
-            headerStyle: {
-                height: 40,
-                backgroundColor: UI.TOP_COLOR,
-            },
-            headerTitleStyle: {
-                fontSize: 18,
-            }
         }
     },
     HomeworkEdition: {
         screen: HomeworkEdition,
         navigationOptions: {
-            headerTintColor:'white',
             headerTitle: '作业编辑',
-            headerStyle: {
-                height: 40,
-                backgroundColor: UI.TOP_COLOR,
-            },
-            headerTitleStyle: {
-                fontSize: 18,
-            }
         }
     },
     ScheduleReminding: {
         screen: ScheduleReminding,
         navigationOptions: {
-            headerTintColor:'white',
             headerTitle: '日程提醒',
-            headerStyle: {
-                height: 40,
-                backgroundColor: UI.TOP_COLOR,
-            },
-            headerTitleStyle: {
-                fontSize: 18,
-            }
         }
     },
     BlogDetail: {
         screen: BlogDetail,
         navigationOptions: {
-            headerTintColor:'white',
             headerTitle: '博文详情',
-            headerStyle: {
-                height: 40,
-                backgroundColor: UI.TOP_COLOR,
-            },
-            headerTitleStyle: {
-                fontSize: 18,
-            },
         }
     },
     BookmarksList:{
         screen: BookmarksList,
         navigationOptions: {
-            headerTintColor:'white',
             headerTitle: '收藏列表',
-            headerStyle: {
-                height: 40,
-                backgroundColor: UI.TOP_COLOR,
-            },
-            headerTitleStyle: {
-                fontSize: 18,
-            },
         }
     },
     BlogEdition: {
         screen: BlogEdition,
         navigationOptions: {
-            headerTintColor:'white',
             headerTitle: '编辑博文',
-            headerStyle: {
-                height: 40,
-                backgroundColor: UI.TOP_COLOR,
-            },
-            headerTitleStyle: {
-                fontSize: 18,
-            },
         }
     },
     BlogBookmarks: {
         screen: BlogBookmarks,
         navigationOptions: {
-            headerTintColor:'white',
             headerTitle: '添加收藏',
-            headerStyle: {
-                height: 40,
-                backgroundColor: UI.TOP_COLOR,
-            },
-            headerTitleStyle: {
-                fontSize: 18,
-            },
         }
     },
     BookmarksEdit: {
         screen: BookmarksEdit,
         navigationOptions: {
-            headerTintColor:'white',
             headerTitle: '修改收藏',
-            headerStyle: {
-                height: 40,
-                backgroundColor: UI.TOP_COLOR,
-            },
-            headerTitleStyle: {
-                fontSize: 18,
-            },
         }
     },
     BlogComment: {
         screen: BlogComment,
         navigationOptions:{
-            headerTintColor:'white',
             headerTitle: '评论',
-            headerStyle:{
-                height: 40,
-                backgroundColor: UI.TOP_COLOR,
-            },
-            headerTitleStyle: {
-                fontSize: 18,
-            }
         }
     },
     ClassMember: {
         screen: ClassMember,
         navigationOptions:{
-            headerTintColor:'white',
             headerTitle: '班级成员',
-            headerStyle: {
-                height:40,
-                backgroundColor: UI.TOP_COLOR,
-            },
-            headerTitleStyle: {
-                fontSize: 18,
-            }
         }
     },
     ClassMemberAdd: {
         screen: ClassMemberAdd,
         navigationOptions:{
-            headerTintColor:'white',
             headerTitle: '添加班级成员',
-            headerStyle: {
-                height:40,
-                backgroundColor: UI.TOP_COLOR,
-            },
-            headerTitleStyle: {
-                fontSize: 18,
-            }
         }
     },
     MemberBlog: {
         screen: MemberBlog,
         navigationOptions:{
-            headerTintColor:'white',
             headerTitle: '他的博客',
-            headerStyle: {
-                height:40,
-                backgroundColor: UI.TOP_COLOR,
-            },
-            headerTitleStyle: {
-                fontSize: 18,
-            }
         }
     },
     CommentAdd: {
         screen: CommentAdd,
         navigationOptions:{
-            headerTintColor:'white',
             headerTitle: '添加评论',
-            headerStyle: {
-                height:40,
-                backgroundColor:UI.TOP_COLOR,
-            },
-            headerTitleStyle: {
-                fontSize: 18,
-            }
         }
     },
     AppInformation: {
         screen: AppInformation,
         navigationOptions:{
-            headerTintColor:'white',
             headerTitle: '关于app',
-            headerStyle: {
-                height:40,
-                backgroundColor:UI.TOP_COLOR,
-            },
-            headerTitleStyle: {
-                fontSize: 18,
-            }
         }
-
     },
     ContactPage: {
         screen: ContactPage,
         navigationOptions:{
-            headerTintColor:'white',
             headerTitle: '联系开发者',
-            headerStyle: {
-                height:40,
-                backgroundColor:UI.TOP_COLOR,
-            },
-            headerTitleStyle: {
-                fontSize: 18,
-            }
         }
     },
     Submitted: {
         screen: Submitted,
         navigationOptions:{
-            headerTintColor:'white',
             headerTitle: '提交列表',
-            headerStyle: {
-                height:40,
-                backgroundColor:UI.TOP_COLOR,
-            },
-            headerTitleStyle: {
-                fontSize: 18,
-            }
         }
     },
     HomeworkSubmit: {
         screen: HomeworkSubmit,
         navigationOptions:{
-            headerTintColor : 'white',
             headerTitle: '请选择你要提交的博文',
-            headerStyle: {
-                height:40,
-                backgroundColor:UI.TOP_COLOR,
-            },
-            headerTitleStyle: {
-                fontSize: 18,
-            }
         }
     },
     Bulletin: {
         screen: Bulletin,
         navigationOptions:{
-            headerTintColor : 'white',
             headerTitle: '公告',
-            headerStyle: {
-                height:40,
-                backgroundColor:UI.TOP_COLOR,
-            },
-            headerTitleStyle: {
-                fontSize: 18,
-            }
         }
     },
     HistoryList: {
         screen: HistoryList,
         navigationOptions:{
-            headerTintColor : 'white',
             headerTitle: '浏览记录',
-            headerStyle: {
-                height:40,
-                backgroundColor:UI.TOP_COLOR,
-            },
-            headerTitleStyle: {
-                fontSize: 18,
-            }
         }
     },
     BulletinAdd: {
         screen: BulletinAdd,
         navigationOptions:{
-            headerTintColor : 'white',
             headerTitle: '添加公告',
-            headerStyle: {
-                height:40,
-                backgroundColor:UI.TOP_COLOR,
-            },
-            headerTitleStyle: {
-                fontSize: 18,
-            }
         }
     },
     BulletinEdition: {
         screen: BulletinEdition,
         navigationOptions:{
-            headerTintColor : 'white',
             headerTitle: '编辑公告',
-            headerStyle: {
-                height:40,
-                backgroundColor:UI.TOP_COLOR,
-            },
-            headerTitleStyle: {
-                fontSize: 18,
-            }
         }
     },
     ClassSelect: {
         screen: ClassSelect,
         navigationOptions:{
-            headerTintColor : 'white',
             headerTitle: '选择班级',
-            headerStyle: {
-                height:40,
-                backgroundColor:UI.TOP_COLOR,
-            },
-            headerTitleStyle: {
-                fontSize: 18,
-            }
         }
     },
     Settings: {
         screen: Settings,
         navigationOptions:{
-            headerTintColor : 'white',
             headerTitle: '设置',
-            headerStyle: {
-                height:40,
-                backgroundColor: '#555',
-            },
-            headerTitleStyle: {
-                fontSize: 18,
-            }
         }
     },
 },{
     initialRouteName: 'Welcome',
+    // 默认的navigationOptions
+    navigationOptions: {
+        headerTintColor: 'white', // 标题栏文字颜色
+        headerStyle: {
+            height: 40,
+            backgroundColor: UI.TOP_COLOR,
+        },
+        headerTitleStyle: {
+            flex: 1,
+            textAlign: 'center', // 标题居中
+            fontSize: 18,
+            fontWeight: 'normal',//不加粗
+        },
+        headerRight: <View/>, // 标题居中
+    }
 });
 export default SimpleNavigation;

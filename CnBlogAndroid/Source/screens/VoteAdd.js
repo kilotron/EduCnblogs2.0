@@ -44,10 +44,10 @@ export default class VoteAdd extends Component {
             schoolClassId: this.props.navigation.state.params.classId,
             name: '', //投票名称
             content: "", //投票说明
-            privacy: 0, //（1.公开、2.匿名）
+            privacy: 1, //（1.公开、2.匿名）
             deadline: "", //"2017-09-10 17:00"
             voteContents: [],
-            voteOptions: [],
+
             voteQuestions: [], //投票问题
 
             ModalVisible: false, //是否可见日历
@@ -60,23 +60,53 @@ export default class VoteAdd extends Component {
         }
     }
 
+    //判断函数
+    judgeAddEmpty(test) {
+        //如果test为空或者全空格，返回true
+        if (test.match(/^[ ]*$/))
+            return true;
+        return false;
+    }
+
+    //判断此时的投票是否符合条件，不符合则返回false
+    judgeAddOk() {
+        var varThisState = this.state;
+        if (this.judgeAddEmpty(varThisState.name) || this.judgeAddEmpty(varThisState.content)) {
+            alert('请输入投票名称或说明');
+            return false;
+        }
+        if (this.judgeAddEmpty(varThisState.deadline)) {
+            alert('请选择日期');
+            return false;
+        }
+        var num, i;
+        for (num = 0; num < varThisState.voteContents.length; num++) {
+            if (this.judgeAddEmpty(varThisState.voteContents[num].title)) {
+                alert('问题' + (num+1) + '标题未填写');
+                return false;
+            }
+            var varVoteOptions = varThisState.voteContents[num].voteOptions;
+            for (i = 0; i < varVoteOptions.length; i++) {
+                if (this.judgeAddEmpty(varVoteOptions[i].option)) {
+                    alert('问题' + (num+1) + ' 选项' + (i+1) + '未填写');
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     /** 发布投票函数 */
     _onpress2AddVote() {
         //设定各个部分不为空
-        var option = '第一个初始选项';
-        var varOption2 = '第二个初始选项';
-        var title = '初始标题';
-        var voteMode = 1;
-        var picture = null;
-        var voteOptions = [{ 'option': option }, { 'option': varOption2 }];
-        var voteContents = [{ 'title': title, 'voteMode': voteMode, 'picture': picture, 'voteOptions': voteOptions }];
+        if (!this.judgeAddOk()) return;
+
         let postBody = {
             schoolClassId: this.state.schoolClassId,
             name: this.state.name, //投票名称
             content: this.state.content, //投票说明
             privacy: this.state.privacy, //（1.公开、2.匿名）
             deadline: this.state.deadline + ' ' + this.state.hour + ':' + this.state.minute, //"2017-09-10 17:00"
-            //voteContents: voteContents,
             voteContents: this.state.voteContents,
         }
         let body = JSON.stringify(postBody);
@@ -94,8 +124,8 @@ export default class VoteAdd extends Component {
             }
             else if (jsonData.isSuccess) {
                 ToastAndroid.show('添加成功！', ToastAndroid.SHORT);
-                this.props.navigation.state.params.callback();
-                this.props.navigation.goBack();
+                //this.props.navigation.state.params.callback();
+                //this.props.navigation.goBack();
             }
             else if (jsonData.isWarning) {
                 ToastAndroid.show(jsonData.message, ToastAndroid.SHORT);
@@ -168,12 +198,6 @@ export default class VoteAdd extends Component {
         );
     }
 
-    onSelect(index, value) {
-        this.setState({
-            privacy: value
-        })
-    }
-
     /** 投票隐私 */
     getPrivacy() {
         return (
@@ -196,16 +220,8 @@ export default class VoteAdd extends Component {
         );
     }
 
-    /** 投票选项 */
-    getVoteContentOption() {
-        return (
-            <View>
-                {/** 先建造两个不可取消的选项，再通过方法不断增加或减少选项 */}
-            </View>
-        );
-    }
 
-    /** 增加一个投票问题 */
+    /** 增加一个投票问题，暂时未实现 */
     addQuestion() {
         return (
             <View style={styles.voteContentContainer}>
@@ -524,8 +540,8 @@ class Question extends Component {
             voteOptions: [],
             voteOptionsText: [], //放文本的
             voteTitle: '',
-            voteMode: 0,
-
+            voteMode: 1, //初始设置成1，即单选
+            picture : null,
             questionEntire: [], //整个问题的主体部分
         }
     }
@@ -576,6 +592,7 @@ class Question extends Component {
         //var voteOptions = [{ 'option': option }, { 'option': varOption2 }];
         this.setState({ voteOptions: array }); //回调函数
         this.setState({ voteOptionsText: arrayText });
+        this.editQuestion();
     }
 
     componentWillUpdate(nextProps, nextState) {
@@ -604,23 +621,19 @@ class Question extends Component {
         this.setState({ voteOptions: array });
     }
 
-    componentDidUpdate(){
+    componentDidUpdate() {
         this.editQuestion();
     }
 
     editQuestion() {
-        //自己初始设置，待删
-        var option = '第一个初始选项';
-        var varOption2 = '第二个初始选项';
-        var voteOptions = [{ 'option': option }, { 'option': varOption2 }];
         this.props.myThis.setState({ voteContents: [{ 'title': this.state.voteTitle, 'voteMode': this.state.voteMode, 'picture': this.state.picture, 'voteOptions': this.state.voteOptionsText }] });
-
     }
 
 
     shouldComponentUpdate(nextProps, nextState) {
         if (nextState.optionNum != this.state.optionNum) return true;
         if (nextState.voteOptions != this.state.voteOptions) return true;
+        if (nextState.voteOptionsText != this.state.voteOptionsText) return true;
         if (nextState.voteTitle != this.state.voteTitle) return true;
         if (nextState.voteMode != this.state.voteMode) return true;
         return false;
@@ -699,11 +712,13 @@ class Question extends Component {
         return (
             <View style={styles.container}>
 
+                {/** 问题标号 */}
                 <Text style={styles.text}>
                     问题{this.state.titleNum}
                 </Text>
 
-            {/*暂时不上线这个功能*/}
+                {/*暂时不上线这个功能*/}
+                {/* 添加选项*/}
                 {/* <Button
                     onPress={() => { this._onpress2AddOption() }}
                     title='添加选项'

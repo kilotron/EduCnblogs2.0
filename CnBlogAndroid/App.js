@@ -11,6 +11,8 @@ import React, { Component,} from 'react';
 import CookieManager from 'react-native-cookies'
 import { Icon } from 'native-base';
 import * as umengAnalysis from './Source/umeng/umengAnalysis'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
 import {
     Platform,
     StyleSheet,
@@ -278,31 +280,50 @@ class UrlLogin extends Component{
     render()
     {
         return (
-            <View style={styles.container}>
+            
+            <View style={{flex: 1, justifyContent: 'center'}}>
+                <View style={{
+                    flexDirection: 'row', 
+                    justifyContent: 'flex-start', 
+                    alignItems: 'center',
+                    backgroundColor: '#EDEDED', 
+                    height: 80, 
+                }}>
+                    <Image source={require('./Source/images/login.png')}
+                        style={{height: 35, width: 35, marginLeft: 40}}
+                        resizeMode='contain'/>
+                    <Text style={{
+                        fontSize: 30,
+                        color: '#444', 
+                        marginLeft: 15,
+                    }}>登录</Text>
+                </View>
+                <View style={{ height: 0.75, backgroundColor: '#DADADA'}}/>
                 <WebView
                     onNavigationStateChange = {(event)=>{
                     var first_sta = event.url.indexOf('#');
-                    if(event.url.substring(0,first_sta) === Config.CallBack)
-                    {
-                        var sta = event.url.indexOf('=');
-                        var end = event.url.indexOf('&');
-                        this.setState({
-                            code : event.url.substring(sta+1,end)
-                        })
-                        if(this.state.code != '')
+                        if(event.url.substring(0,first_sta) === Config.CallBack)
                         {
-                            this.getTokenFromApi(this.state.code);
+                            var sta = event.url.indexOf('=');
+                            var end = event.url.indexOf('&');
+                            this.setState({
+                                code : event.url.substring(sta+1,end)
+                            })
+                            if(this.state.code != '')
+                            {
+                                this.getTokenFromApi(this.state.code);
+                            }
                         }
-                    }
-                }}
-                source={{uri: CODE_URL}}
-                style={{height: height-40, width: width}}
-                startInLoadingState={true}
-                domStorageEnabled={true}
-                javaScriptEnabled={true}
-                onError = {()=>Alert.alert('网络异常，请稍后再试！')}
+                    }}
+                    source={{uri: CODE_URL}}
+                    style={{height: height-40, width: width}}
+                    startInLoadingState={true}
+                    domStorageEnabled={true}
+                    javaScriptEnabled={true}
+                    onError = {()=>Alert.alert('网络异常，请稍后再试！')}
                 />
             </View>
+
         )
     }
 }
@@ -353,12 +374,6 @@ const styles = StyleSheet.create({
         resizeMode: 'stretch',
     }
 });
-
-const StackOptions = ({navigation}) => {
-    const {state} = navigation;
-    const headerTitle = state.params.title;
-    return {headerTitle};
-}
 
 const HomeTab = TabNavigator({
     PersonalBlog: {
@@ -483,7 +498,22 @@ const SimpleNavigation = StackNavigator({
     LoginPage: {
         screen: UrlLogin,
         navigationOptions: {
-            header: null,
+            header:null,
+            headerLeft: null,
+            headerRight: null,
+            headerTitle: '登录',
+            headerTintColor: '#0077FF',
+            headerStyle: {
+                height: 40,
+                backgroundColor: '#F8F8F8',//网页背景色：#EDEDED
+                elevation: 1,           // 减轻阴影效果
+            },
+            headerTitleStyle: {
+                flex: 1,
+                textAlign: 'center', // 标题居中
+                fontSize: 18,
+                fontWeight: 'normal',
+            },
         },
     },
     HomeworkLists: {
@@ -686,6 +716,7 @@ const SimpleNavigation = StackNavigator({
             flex: 1,
             textAlign: 'center', // 标题居中
             fontSize: 18,
+            fontWeight: 'normal',//不加粗
         },
         headerRight: <View/>, // 标题居中
     }

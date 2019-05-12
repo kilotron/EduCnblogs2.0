@@ -12,10 +12,20 @@ import {
     TextInput,
     ToastAndroid,
     Button,
+    TouchableOpacity,
 } from 'react-native';
 const screenWidth= MyAdapter.screenWidth;
 // 该页面使用navigate参数为classId
 export default class BulletinEdition extends Component {
+    static navigationOptions = ({ navigation }) => ({
+        headerStyle: {
+            height: 45,
+            elevation: 1,
+            backgroundColor: global.theme.headerBackgroundColor,
+        },
+        headerTintColor: global.theme.headerTintColor,
+    })
+
     constructor(props){
         super(props);
         this.state={
@@ -102,10 +112,9 @@ export default class BulletinEdition extends Component {
     };
     render() {
         return (
-            <View style = {styles.container}>
+            <View style = {[styles.container,{backgroundColor:global.theme.backgroundColor}]}>
                 <View style={styles.detailView}>
-                    <Text style={styles.promptText}>公告内容</Text>
-                    <TextInput style={styles.bulletinDetail} multiline={true}
+                    <TextInput style={[styles.bulletinDetail,{color:global.theme.textColor}]} multiline={true}
                         onChangeText= {(text)=>
                             this.setState({bulletinText: text})
                             }
@@ -114,23 +123,23 @@ export default class BulletinEdition extends Component {
                         >
                     </TextInput>
                 </View>
-                <View  style= {{
-                      width:0.35*screenWidth,
-                      alignSelf: 'center', }}
-                >
                 {
                     (this.state.membership==2||this.state.membership==3)?
-                    (<Button style={styles.commitBtn}
-                        title='修改公告'
-                        onPress={ this._onPress }>
-                    </Button>):
-                    (null)
+                    (
+                        <TouchableOpacity style={[styles.commitBtn, {
+                                backgroundColor:global.theme.buttonColor,
+                                borderColor: global.theme.buttonBorderColor,
+                            }]} onPress={this._onPress}>
+                            <Text style={[styles.commitBtnText, {color: global.theme.buttonTextColor}]}>修改公告</Text>
+                        </TouchableOpacity>
+                    )
+                    : (null)
                 }
-                </View>
             </View>
         );
   }
 }
+
 const styles = StyleSheet.create({
     container: {
         backgroundColor: 'white',
@@ -141,19 +150,33 @@ const styles = StyleSheet.create({
     },
     detailView:{
         flex: 8,
+        marginHorizontal: 20,
     },
     commitBtn: {
-        flex: 1,
+        width: 0.25*screenWidth,
+        height: 0.1*screenWidth,
+        alignSelf: 'center',
+        justifyContent: 'center',
+        marginTop: 15,
+        marginBottom: 25,
+        borderWidth: 0.75,
+        borderRadius: 4,
+    },
+    commitBtnText: {
+        fontSize: 18,
+        textAlign:'center',
     },
     promptText: {
         fontSize: 16,
         color: 'gray',
+        marginTop: 15,
+        marginBottom: 10, 
     },
     bulletinDetail: {
         flex: 1,
         borderColor: 'gray',
         color: 'black',
-        fontSize: 20,
+        fontSize: 18,
         textAlignVertical: 'top',
         borderRadius: 10,
     },

@@ -73,6 +73,7 @@ import VoteDetail from './Source/screens/VoteDetail'
 import VoteAdd from './Source/screens/VoteAdd'
 import VoteMemberList from './Source/screens/VoteMemberList'
 import VoteMemberCommit from './Source/screens/VoteMemberCommit'
+import { themes, ThemeContext } from './Source/styles/theme-context';
 const { height, width } = Dimensions.get('window');
 
 const CODE_URL = [
@@ -88,6 +89,10 @@ const CODE_URL = [
 //首先使用上次的token来获取用户信息，如果失败那么重新登陆
 //用户退出之后一定要清空token
 class App extends Component {
+    constructor(props) {
+        super(props);
+    }
+
     render() {
         //这里一定要测试一下，如果是刚刚下载的软件，一开始打开是不是会显示登陆界面
         const {navigate} = this.props.navigation;
@@ -688,7 +693,7 @@ const SimpleNavigation = StackNavigator({
     BulletinEdition: {
         screen: BulletinEdition,
         navigationOptions:{
-            headerTitle: '编辑公告',
+            headerTitle: '公告',
         }
     },
     ClassSelect: {
@@ -711,6 +716,7 @@ const SimpleNavigation = StackNavigator({
         headerStyle: {
             height: 40,
             backgroundColor: UI.TOP_COLOR,
+            elevation: 1,
         },
         headerTitleStyle: {
             flex: 1,

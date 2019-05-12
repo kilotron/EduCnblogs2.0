@@ -124,8 +124,8 @@ export default class VoteAdd extends Component {
             }
             else if (jsonData.isSuccess) {
                 ToastAndroid.show('添加成功！', ToastAndroid.SHORT);
-                //this.props.navigation.state.params.callback();
-                //this.props.navigation.goBack();
+                this.props.navigation.state.params.callback();
+                this.props.navigation.goBack();
             }
             else if (jsonData.isWarning) {
                 ToastAndroid.show(jsonData.message, ToastAndroid.SHORT);

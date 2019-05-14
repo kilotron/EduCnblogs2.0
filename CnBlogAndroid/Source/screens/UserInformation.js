@@ -351,7 +351,7 @@ export default class UserInformation extends Component{
             />
             </View>
 
-            <TouchableHighlight
+            {/* <TouchableHighlight
                 underlayColor="white"
                 activeOpacity={0.5}
                 onPress={()=>{
@@ -366,7 +366,7 @@ export default class UserInformation extends Component{
                     paddingLeft: 0.05*screenWidth,
             }}>
             <Text style = {{fontSize: 18, fontWeight: 'bold', color:'rgb(51,51,51)'}}>测试按钮</Text>
-            </TouchableHighlight>
+            </TouchableHighlight> */}
             <TouchableOpacity style = {{
                 justifyContent:'center',
                 alignItems: 'flex-start',

@@ -101,11 +101,11 @@ export async function initPush(){
     var homeworkMap = await getHomeWorkList();
     for(var cls in homeworkMap){
         var {classId, memberId, membership, homeworks} = homeworkMap[cls];
+        UmengPush.addClassTag(classId);
         for(var i = 0; i < homeworks.length ; i++){
-            
                 //是学生的才会提醒，老师、助教暂不提醒作业
-            if(membership == 1){
-                UmengPush.addClassTag(classId);
+            if(membership != 2 && membership != 3){
+                
                 var {homeworkId, title, deadline, isClosed, isFinished} = homeworks[i];
                 let submitUrl = Config.SubmitJudge + memberId + '/' + homeworkId;
 

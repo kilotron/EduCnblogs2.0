@@ -11,6 +11,7 @@ import React, { Component,} from 'react';
 import CookieManager from 'react-native-cookies'
 import { Icon } from 'native-base';
 import * as umengAnalysis from './Source/umeng/umengAnalysis'
+import * as umengPush from './Source/umeng/umengPush'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import {
@@ -152,11 +153,16 @@ class Welcome extends Component{
     notification = (params) =>{
         console.log(params);
         console.log('success');
-        this.props.navigation.navigate('HomeworkDetail');
+        alert(params);
+        // this.props.navigation.navigate('HomeworkDetail');
     }
 
-    componentDidMount(){
-        DeviceEventEmitter.addListener('openNotification',this.notification);
+    componentWillMount(){
+        umengPush.initHandler();
+        DeviceEventEmitter.addListener('notification',this.notification);
+        console.log('开始监听');
+    }
+    componentDidMount(){       
         // this.subscription = DeviceEventEmitter.addListener('xxxName', Function);//监听通知
         this.timer = setTimeout(
             ()=>{
@@ -218,6 +224,7 @@ class Loginer extends Component{
         );
     }
     componentWillMount() {
+
       if (Platform.OS === 'android') {
         BackHandler.addEventListener('hardwareBackPress', this.onBackAndroid);
       }

@@ -1,5 +1,6 @@
 package com.pureman;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +16,7 @@ import com.umeng.analytics.MobclickAgent;
 import com.umeng.message.PushAgent;
 
 public class MainActivity extends ReactActivity {
+    private static Activity mCurrentActivity;
     ReactContext reactcontext;
 //    String title = "Login";
     String jumpTo;
@@ -28,6 +30,13 @@ public class MainActivity extends ReactActivity {
         return "CnBlogAndroid";
     }
 
+    public static Activity getCurrentActivity() {
+        return mCurrentActivity;
+    }
+
+    private void setCurrentActivity(Activity activity) {
+        mCurrentActivity = activity;
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +57,7 @@ public class MainActivity extends ReactActivity {
     @Override
     public void onResume() {
         super.onResume();
+        setCurrentActivity(this);
         MobclickAgent.onResume(this);
     }
 

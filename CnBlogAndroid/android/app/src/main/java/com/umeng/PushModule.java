@@ -2,6 +2,11 @@ package com.umeng;
 
 import android.app.Activity;
 import java.util.List;
+
+import android.app.ActivityManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
@@ -11,18 +16,22 @@ import android.widget.Toast;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.pureman.MainActivity;
 import com.umeng.message.IUmengCallback;
 import com.umeng.message.MsgConstant;
 import com.umeng.message.PushAgent;
 import com.umeng.message.UTrack;
+import com.umeng.message.UmengNotificationClickHandler;
 import com.umeng.message.common.UmengMessageDeviceConfig;
 import com.umeng.message.common.inter.ITagManager;
+import com.umeng.message.entity.UMessage;
 import com.umeng.message.tag.TagManager;
 
 /**
@@ -35,28 +44,102 @@ public class PushModule extends ReactContextBaseJavaModule {
     private final int CANCEL = -1;
     private static final String TAG = PushModule.class.getSimpleName();
     private static Handler mSDKHandler = new Handler(Looper.getMainLooper());
-    private ReactApplicationContext context;
+    private static ReactApplicationContext context;
     private boolean isGameInited = false;
     private static Activity ma;
     private PushAgent mPushAgent;
     private Handler handler;
     // private OpenNativeModule openNativeModule = new OpenNativeModule(context);
-    
+    public static class NotificationReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // TODO: This method is called when the BroadcastReceiver is receiving
+            // an Intent broadcast.
+            if(intent.getAction().equals("puremanNotification")){
+                String params = intent.getExtras().getString("params");
+                if(params != null){
+                    sendEventToRn("notification",params);
+                }
+            }
+        }
+    }
     public PushModule(ReactApplicationContext reactContext) {
         super(reactContext);
         context = reactContext;
         mPushAgent = PushAgent.getInstance(context);
-
     }
-
-    public static void initPushSDK(Activity activity) {
-        ma = activity;
-    }
-
     @Override
     public String getName() {
         return "UMPushModule";
     }
+
+    @ReactMethod
+    public void initClickHandler(Callback callback){
+        UmengNotificationClickHandler notificationClickHandler = new UmengNotificationClickHandler() {
+
+            private boolean _isApplicationRunning(Context context) {
+                ActivityManager activityManager = (ActivityManager) context.getApplicationContext().getSystemService(context.ACTIVITY_SERVICE);
+                List<ActivityManager.RunningAppProcessInfo> processInfos = activityManager.getRunningAppProcesses();
+                for (ActivityManager.RunningAppProcessInfo processInfo : processInfos) {
+                    if (processInfo.processName.equals(context.getApplicationContext().getPackageName())) {
+                        if (processInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
+                            for (String d: processInfo.pkgList) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+                return false;
+            }
+            @Override
+            public void dealWithCustomAction(Context context, UMessage msg) {
+
+                Log.i("my_dealWithCustomAction","dealWithCustomAction执行");
+                //应用是否运行
+                if(!_isApplicationRunning(context)){
+                    Intent in = new Intent(context, MainActivity.class);
+                    in.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(in);
+                }
+                else {
+                    Toast.makeText(context, "测试跳转", Toast.LENGTH_LONG).show();
+                    Intent intent =new Intent();
+                    intent.setAction("puremanNotification");
+                    intent.putExtra("params",msg.getRaw().toString());
+                    Activity currentActivity = MainActivity.getCurrentActivity();
+                    currentActivity.sendBroadcast(intent);
+                }
+//            context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+//                    .emit("notification", params);
+            }
+            @Override
+            public void openActivity(Context context, UMessage msg) {
+                Log.i("my_openActivity","openActivity执行");
+                //super.openActivity(context, msg);//不可调用，否则无效
+//            Toast.makeText(context, "测试跳转", Toast.LENGTH_LONG).show();
+                if(!_isApplicationRunning(context)){
+//                Intent in = new Intent(context, MainActivity.class);
+//                in.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                context.startActivity(in);
+                }
+            }
+        };
+        //使用自定义的NotificationHandler，来结合友盟统计处理消息通知，参考http://bbs.umeng.com/thread-11112-1-1.html
+        //CustomNotificationHandler notificationClickHandler = new CustomNotificationHandler();
+        mPushAgent.setNotificationClickHandler(notificationClickHandler);
+        callback.invoke(true);
+    }
+
+    public static void sendEventToRn(String eventName, @Nullable String params){
+        context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                .emit("notification", params);
+    }
+    public static void initPushSDK(Activity activity) {
+        ma = activity;
+    }
+
+
     private static void runOnMainThread(Runnable runnable) {
         mSDKHandler.postDelayed(runnable, 0);
     }
@@ -66,19 +149,7 @@ public class PushModule extends ReactContextBaseJavaModule {
         callback.invoke(registrationId);
     }
 
-    public void sendEventToRn(String eventName, @Nullable WritableMap params){
-        context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                .emit("notification", params);
-    }
-    @ReactMethod
-    public void test(Callback callback){
-        WritableMap event = Arguments.createMap();
-        //传递的参数
-        event.putString("title","myTitle");
-        // openNativeModule.sendEventToRn("notification", event);
-        sendEventToRn("notification",event);
-        callback.invoke(true);
-    }
+
     @ReactMethod
     public void disablePush(final Callback callback){
         mPushAgent.disable(new IUmengCallback() {

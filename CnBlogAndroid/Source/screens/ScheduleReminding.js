@@ -49,13 +49,13 @@ export default class App extends Component {
     }
     componentWillMount = () => {
         time = new Date();
-        if(global.timeTouch != null && (time.getTime() - global.timeTouch.getTime() < 1800000)){
-            this.setState({
-                unsubmitHomeworks: global.unsubmitted
-            })
-            return;
-        }
-        global.timeTouch = time;
+        // if(global.timeTouch != null && (time.getTime() - global.timeTouch.getTime() < 1800000)){
+        //     this.setState({
+        //         unsubmitHomeworks: global.unsubmitted
+        //     })
+        //     return;
+        // }
+        // global.timeTouch = time;
         var memberId;
         this._isMounted = true;
         this.state.myMarkedDates={};

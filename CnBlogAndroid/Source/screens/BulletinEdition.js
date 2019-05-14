@@ -12,18 +12,32 @@ import {
     TextInput,
     ToastAndroid,
     Button,
+    ScrollView,
     TouchableOpacity,
 } from 'react-native';
 const screenWidth= MyAdapter.screenWidth;
+const screenHeight = MyAdapter.screenHeight;
+const navigationHeaderHeight = 45;
+const Teacher = 2;
+const TA = 3;
+
 // 该页面使用navigate参数为classId
 export default class BulletinEdition extends Component {
     static navigationOptions = ({ navigation }) => ({
         headerStyle: {
-            height: 45,
+            height: navigationHeaderHeight,
             elevation: 1,
             backgroundColor: global.theme.headerBackgroundColor,
         },
         headerTintColor: global.theme.headerTintColor,
+        headerRight: (
+            navigation.state.params.membership == Teacher ||
+            navigation.state.params.membership == TA 
+            ? (
+                <TouchableOpacity style={{marginRight:18}} onPress={()=>{alert('编辑公告')}}>
+                    <Text style={{color: global.theme.headerTintColor, fontSize: 18}}>编辑</Text>
+                </TouchableOpacity>)
+            : (null)),
     })
 
     constructor(props){
@@ -113,6 +127,38 @@ export default class BulletinEdition extends Component {
     render() {
         return (
             <View style = {[styles.container,{backgroundColor:global.theme.backgroundColor}]}>
+                <ScrollView style={styles.detailView}
+                    contentContainerStyle={styles.contentContainer}
+                >
+                    <Text style={[styles.bulletinDetail,{color:global.theme.textColor}]}
+                        selectable={true}
+                        selectionColor={global.theme.selectionColor}
+                    >{this.state.bulletinText}</Text>
+                    <TouchableOpacity style={[styles.commitBtn, {
+                            backgroundColor:global.theme.buttonColor,
+                            borderColor: global.theme.buttonBorderColor,
+                        }]} onPress={()=>{this.props.navigation.goBack()}}>
+                        <Text style={[styles.commitBtnText, {color: global.theme.buttonTextColor}]}>完成</Text>
+                    </TouchableOpacity>
+                </ScrollView>
+               {/*} <View style={styles.detailView}>
+                    <TextInput style={[styles.bulletinDetail,{color:global.theme.textColor}]} multiline={true}
+                        onChangeText= {(text)=>
+                            this.setState({bulletinText: text})
+                            }
+                        defaultValue={this.state.bulletinText}
+                        editable={(this.state.membership==2||this.state.membership==3)?true: false}
+                        >
+                    </TextInput>
+                        </View>*/}
+
+            </View>
+        );
+    }
+/*
+    render() {
+        return (
+            <View style = {[styles.container,{backgroundColor:global.theme.backgroundColor}]}>
                 <View style={styles.detailView}>
                     <TextInput style={[styles.bulletinDetail,{color:global.theme.textColor}]} multiline={true}
                         onChangeText= {(text)=>
@@ -137,7 +183,7 @@ export default class BulletinEdition extends Component {
                 }
             </View>
         );
-  }
+    }*/
 }
 
 const styles = StyleSheet.create({
@@ -149,10 +195,14 @@ const styles = StyleSheet.create({
         alignSelf: 'stretch',
     },
     detailView:{
-        flex: 8,
-        marginHorizontal: 20,
+        flexDirection: 'column',
+        marginLeft: 0,
+        marginRight: 2, // 滚动条离屏幕右边缘有一点距离
+        marginTop: 0,
+        marginBottom: 0,
     },
     commitBtn: {
+        flex: 0,
         width: 0.25*screenWidth,
         height: 0.1*screenWidth,
         alignSelf: 'center',
@@ -174,10 +224,13 @@ const styles = StyleSheet.create({
     },
     bulletinDetail: {
         flex: 1,
-        borderColor: 'gray',
         color: 'black',
-        fontSize: 18,
-        textAlignVertical: 'top',
-        borderRadius: 10,
+        fontSize: 17,
+        lineHeight: 33,
+        marginRight: 10,
+        marginLeft: 18,
+    },
+    contentContainer: {
+        flexGrow: 1,    // ScrollView的contentContainerStyle
     },
 });

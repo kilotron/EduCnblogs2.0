@@ -8,6 +8,7 @@ export const themes = {
         buttonTextColor: '#0077FF',
         buttonColor: '#FBFBFB',
         buttonBorderColor: '#0077FF',
+        selectionColor: '#DDF1FF',
     },
     dark: {
         headerBackgroundColor: '#363636',
@@ -17,5 +18,6 @@ export const themes = {
         buttonTextColor: '#FFCC00',
         buttonColor: '#3A3A3A',
         buttonBorderColor: '#FFCC00',
+        selectionColor: '#555555',
     },
 };

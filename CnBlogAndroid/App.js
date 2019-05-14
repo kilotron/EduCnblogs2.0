@@ -176,7 +176,6 @@ class Welcome extends Component{
                 })
                 console.log('跳转后');
             }
-           
         }catch(err){
             console.log(err);
         }
@@ -279,6 +278,37 @@ class UrlLogin extends Component{
         this.state = {
             code : '',
         };
+    }
+
+    notification = (paramString) =>{
+        console.log(paramString);
+        console.log('success');
+        // alert(params);
+        // this.props.navigation.navigate('HomeworkDetail');
+        try{
+            let params = JSON.parse(paramString);
+            let screen = params.body.custom.screen;
+            console.log(screen);
+            if(screen == 'HomeworkDetail'){
+                let {classId,homeworkId,membership,isFinished} = params.body.custom;
+                var callback = ()=>{
+                    toPersonalBlog();
+                }
+                console.log('跳转前');
+                this.props.navigation.navigate('HomeworkDetail',{
+                    Id: homeworkId,
+                    classId: classId, 
+                    isFinished: isFinished,
+                    membership:membership,
+                    callback:callback,
+                    //编辑作业所需参数,学生收到提醒不需要编辑。
+                    blogId:0,
+                })
+                console.log('跳转后');
+            }
+        }catch(err){
+            console.log(err);
+        }
     }
 
     toPerson()

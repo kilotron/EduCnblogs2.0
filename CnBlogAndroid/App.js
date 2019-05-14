@@ -64,8 +64,8 @@ import HomeworkSubmit from './Source/screens/HomeworkSubmit'
 import UnfinishedHomeworkList from './Source/screens/UnfinishedHomeworkList'
 import BlogEdition from './Source/screens/BlogEdition'
 import Bulletin from './Source/screens/Bulletin'
-import BulletinAdd from './Source/screens/BulletinAdd'
-import BulletinEdition from './Source/screens/BulletinEdition'
+import BulletinDisplay from './Source/screens/BulletinDisplay'
+import BulletinEdit from './Source/screens/BulletinEdit'
 import HistoryList from './Source/screens/HistoryList'
 import ClassSelect from './Source/screens/ClassSelect'
 import VoteList from './Source/screens/VoteList'
@@ -718,17 +718,14 @@ const SimpleNavigation = StackNavigator({
             headerTitle: '浏览记录',
         }
     },
-    BulletinAdd: {
-        screen: BulletinAdd,
-        navigationOptions:{
-            headerTitle: '添加公告',
-        }
-    },
-    BulletinEdition: {
-        screen: BulletinEdition,
+    BulletinDisplay: {
+        screen: BulletinDisplay,
         navigationOptions:{
             headerTitle: '公告',
         }
+    },
+    BulletinEdit: {
+        screen: BulletinEdit,
     },
     ClassSelect: {
         screen: ClassSelect,

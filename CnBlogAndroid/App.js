@@ -104,7 +104,7 @@ class App extends Component {
                 <Welcome/>
             </View>
         );
-    }
+    } 
 }
 
 // 在App中调用的登录界面组件
@@ -150,17 +150,40 @@ class Welcome extends Component{
         // DeviceEventEmitter.removeListener('notification',this.notification);
     }
 
-    notification = (params) =>{
-        console.log(params);
+    notification = (paramString) =>{
+        console.log(paramString);
         console.log('success');
-        alert(params);
+        // alert(params);
         // this.props.navigation.navigate('HomeworkDetail');
+        try{
+            let params = JSON.parse(paramString);
+            let screen = params.body.custom.screen;
+            console.log(screen);
+            if(screen == 'HomeworkDetail'){
+                let {classId,homeworkId,membership,isFinished} = params.body.custom;
+                var callback = ()=>{
+                    toPersonalBlog();
+                }
+                console.log('跳转前');
+                this.props.navigation.navigate('HomeworkDetail',{
+                    Id: homeworkId,
+                    classId: classId, 
+                    isFinished: isFinished,
+                    membership:membership,
+                    callback:callback,
+                    //编辑作业所需参数,学生收到提醒不需要编辑。
+                    blogId:0,
+                })
+                console.log('跳转后');
+            }
+           
+        }catch(err){
+            console.log(err);
+        }
     }
 
     componentWillMount(){
         umengPush.initHandler();
-        DeviceEventEmitter.addListener('notification',this.notification);
-        console.log('开始监听');
     }
     componentDidMount(){       
         // this.subscription = DeviceEventEmitter.addListener('xxxName', Function);//监听通知
@@ -180,6 +203,8 @@ class Welcome extends Component{
                                 .then((jsonData)=>{
                                     if(jsonData !== "rejected")
                                     {
+                                        DeviceEventEmitter.addListener('notification',this.notification);
+                                        console.log('开始监听通知');
                                         this.toPersonalBlog();
                                     }
                                     else
@@ -266,6 +291,8 @@ class UrlLogin extends Component{
             ]
         });
         this.props.navigation.dispatch(resetAction);
+        DeviceEventEmitter.addListener('notification',this.notification);
+        console.log('开始监听通知');
         this.props.navigation.navigate('PersonalBlog');
     }
     getTokenFromApi(Code)

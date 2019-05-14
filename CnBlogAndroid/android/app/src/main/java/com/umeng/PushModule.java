@@ -103,7 +103,7 @@ public class PushModule extends ReactContextBaseJavaModule {
                     context.startActivity(in);
                 }
                 else {
-                    Toast.makeText(context, "测试跳转", Toast.LENGTH_LONG).show();
+//                    Toast.makeText(context, "测试跳转", Toast.LENGTH_LONG).show();
                     Intent intent =new Intent();
                     intent.setAction("puremanNotification");
                     intent.putExtra("params",msg.getRaw().toString());

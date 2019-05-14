@@ -196,7 +196,7 @@ export default class HomeWorkDetail extends Component{
                 screen:'HomeworkDetail',
                 classId:this.state.classId,
                 homeworkId:this.state.Id,
-                membership:this.state.membership,
+                membership:1,//发给学生
                 isFinished:this.state.isFinished,
             }
         }
@@ -219,7 +219,7 @@ export default class HomeWorkDetail extends Component{
     }
     renderBottomBar(Id,isFinished,classId,answerCount){
         isClosed = this.state.isClosed;
-        if(this.state.membership === 1){
+        if(this.state.membership !== 2 && this.state.membership !== 3){
             return(
                 <View style = {styles.bottom}>
                     <TouchableOpacity

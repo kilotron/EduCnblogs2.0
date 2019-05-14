@@ -122,32 +122,6 @@ export default class HistoryList extends Component {
         var SummaryContent = item1.item.summaryContent;
         var DateAdded = item1.item.dateAdded;
 
-        /* 绑定左右滑动等参数 */
-        /*
-        let _panResponder = PanResponder.create({
-            //onStartShouldSetPanResponder: (evt, gestureState) => true,
-            onMoveShouldSetPanResponder: (evt, gestureState) => {
-                if(gestureState.dx < -screenWidth*0.1 || gestureState.dx > screenWidth*0.1){
-                    return true;
-                }
-                else{
-                    return false;
-                }
-            },
-            //onPanResponderGrant: this._handlePanResponderGrant,
-            //onPanResponderMove: this._handlePanResponderMove,
-            onPanResponderRelease: (evt, gestureState)=>{
-                if(gestureState.dx < 0 ){
-                    this._onPressDelHistory(Id);
-                }
-                else{
-                    this._onPressDelAll();
-                }
-            },
-            onPanResponderTerminate: (evt, gestureState)=>{;},
-        });
-        */
-
         var BtnsLeft = [{ text: '清空', type: 'delete',  onPress: ()=> this._onPressDelAll()},];
         var BtnsRight = [{ text: '删除', type: 'delete', onPress: ()=>this._onPressDelHistory(Id)},];
 
@@ -315,7 +289,6 @@ export default class HistoryList extends Component {
         global.storage.load({key: StorageKey.BLOG_LIST})
         .then((ret)=>{
             var storageData=ret;
-            console.log('解析：' + JSON.stringify( storageData));
             //Alert.alert('长度：' + ret.length);
             this.setState({
                 theblogs: ret,

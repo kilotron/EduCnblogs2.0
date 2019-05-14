@@ -1,17 +1,9 @@
 import MyAdapter from './MyAdapter.js';
-import Config from '../config';
-import api from '../api/api.js';
-import {authData,err_info} from '../config'
-import * as Service from '../request/request.js'
 import React, { Component} from 'react';
-import * as umengPush from '../umeng/umengPush'
 import {
     StyleSheet,
     Text,
     View,
-    TextInput,
-    ToastAndroid,
-    Button,
     ScrollView,
     TouchableOpacity,
 } from 'react-native';
@@ -19,6 +11,9 @@ import {getHeaderStyle} from '../styles/theme-context';
 
 const screenWidth= MyAdapter.screenWidth;
 const screenHeight = MyAdapter.screenHeight;
+
+// membership
+const student = 1;
 const Teacher = 2;
 const TA = 3;
 

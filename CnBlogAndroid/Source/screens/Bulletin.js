@@ -58,7 +58,7 @@ export default class Bulletin extends Component {
             return;
         }
         if(this.state.membership===1) {
-            this.props.navigation.navigate('BulletinEdition',{
+            this.props.navigation.navigate('BulletinDisplay',{
                 schoolClassId: this.props.schoolClassId,
                 className:this.props.className,
                 bulletinText: content,
@@ -141,7 +141,7 @@ export default class Bulletin extends Component {
         var DateAdded = item1.item.DateAdded;
         return(
             <TouchableOpacity onPress={()=>{
-                this.props.navigation.navigate('BulletinEdition',{
+                this.props.navigation.navigate('BulletinDisplay',{
                     schoolClassId: this.props.schoolClassId,
                     bulletinId: Id,
                     bulletinText: Content,

@@ -143,9 +143,9 @@ export default class Bulletin extends Component {
             <TouchableOpacity onPress={()=>{
                 this.props.navigation.navigate('BulletinEdition',{
                     schoolClassId: this.props.schoolClassId,
-                    className:this.props.className,
-                    bulletinText: Content,
                     bulletinId: Id,
+                    bulletinText: Content,
+                    className:this.props.className,
                     membership: this.state.membership,
                     callback: this._FlatListRefresh
                 });
@@ -192,7 +192,6 @@ export default class Bulletin extends Component {
             Content: HtmlDecode(this.state.bulletins[i].content),
             Publisher: this.state.bulletins[i].publisher,
             BlogUrl: this.state.bulletins[i].blogUrl,
-            //DateAdded: this.state.bulletins[i].dateAdded,
             DateAdded: this.String2Date(this.state.bulletins[i].dateAdded),
         })
         }
@@ -254,10 +253,6 @@ export default class Bulletin extends Component {
 		if (this.state.currentPageIndex >= pageCount) {
 			return;
 		}
-        /*
-        console.log('pagecount: ' + pageCount);
-        console.log('currentPageIndex: '+ this.state.currentPageIndex );
-        */
         this.state.currentPageIndex++;
 		this.fetchPage(this.state.currentPageIndex);
     }
@@ -270,7 +265,6 @@ export default class Bulletin extends Component {
         }
         let url = Config.BulletinList + this.props.schoolClassId + '/'+ pageIndex + '-'+ pageSize;
         Service.Get(url).then((jsonData)=>{
-            //console.log(jsonData);
             let pageCount = Math.ceil(jsonData.totalCount / pageSize);
             if(jsonData!=='rejected')
             {
@@ -315,17 +309,18 @@ export default class Bulletin extends Component {
 
     /* 单击添加公告列表时的响应函数 */
     _onPress = ()=>{
-        if (this.state.membership==2||this.state.membership==3)
-            this.props.navigation.navigate('BulletinAdd',
-                {schoolClassId: this.props.schoolClassId, className:this.props.className, callback: this._FlatListRefresh});
+        if (this.state.membership==2||this.state.membership==3) {
+            this.props.navigation.navigate('BulletinEdit', {
+                createNew: true,
+                schoolClassId: this.props.schoolClassId,
+                className: this.props.className,
+                callback: this._FlatListRefresh,
+            })
+        }
         else
         {
             ToastAndroid.show("您没有权限，只有老师和助教才能发布公告哦！",ToastAndroid.SHORT);
         }
-        /*
-        this.props.navigation.navigate('BulletinAdd',
-            {schoolClassId: this.props.schoolClassId, callback: this._FlatListRefresh});
-        */
     }
 
     /* 修改prop属性时调用 */
@@ -345,16 +340,12 @@ export default class Bulletin extends Component {
         Service.Get(url1).then((jsonData)=>{
             let url2= Config.apiDomain+"api/edu/member/"+jsonData.BlogId+"/"+this.props.schoolClassId;
             Service.Get(url2).then((jsonData)=>{
-                //console.log(jsonData);
-                //console.log('jsonData.membership  ' + jsonData.membership);
                 if(this._isMounted && jsonData!=='rejected'){
                     membership = jsonData.membership;
                 }
             }).then(()=>{
-                    //console.log('membership  '+ membership);
                     this.setState({
                         changedSchoolClassId: true,
-                        //changedSchoolClassId: true,
                         membership: membership,
                         bulletins: [],
                         bulletinCount: 0,
@@ -366,7 +357,6 @@ export default class Bulletin extends Component {
                 ToastAndroid.show(err_info.TIME_OUT,ToastAndroid.SHORT);
                 this.setState({
                     changedSchoolClassId: true,
-                    //changedSchoolClassId: true,
                     membership: membership,
                     bulletins: [],
                     bulletinCount: 0,
@@ -378,7 +368,6 @@ export default class Bulletin extends Component {
             ToastAndroid.show(err_info.TIME_OUT,ToastAndroid.SHORT);
             this.setState({
                 changedSchoolClassId: true,
-                //changedSchoolClassId: true,
                 membership: membership,
                 bulletins: [],
                 bulletinCount: 0,
@@ -484,7 +473,6 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start',
         flex: 4,
         backgroundColor: 'white',
-        //alignSelf: 'stretch',
     },
     bulletinContent: {
         color: 'black',

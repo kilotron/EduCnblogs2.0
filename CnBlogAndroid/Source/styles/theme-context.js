@@ -21,3 +21,13 @@ export const themes = {
         selectionColor: '#555555',
     },
 };
+
+const navigationHeaderHeight = 45;
+
+export function getHeaderStyle() {
+    return {
+        height: navigationHeaderHeight,
+        elevation: 1,
+        backgroundColor: global.theme.headerBackgroundColor,
+    };
+}

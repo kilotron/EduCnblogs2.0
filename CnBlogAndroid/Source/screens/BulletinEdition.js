@@ -15,26 +15,41 @@ import {
     ScrollView,
     TouchableOpacity,
 } from 'react-native';
+import {getHeaderStyle} from '../styles/theme-context';
+
 const screenWidth= MyAdapter.screenWidth;
 const screenHeight = MyAdapter.screenHeight;
-const navigationHeaderHeight = 45;
 const Teacher = 2;
 const TA = 3;
 
-// 该页面使用navigate参数为classId
+/**navigation需要传递参数：
+ * schoolClassId：
+ * bulletinId：提交修改公告所需要的参数
+ * bulletinText：修改公告需要公告原来的内容
+ * className: 班级名
+ * membership: 用户身份
+ * callback：修改公告完毕后调用的函数
+ */
 export default class BulletinEdition extends Component {
     static navigationOptions = ({ navigation }) => ({
-        headerStyle: {
-            height: navigationHeaderHeight,
-            elevation: 1,
-            backgroundColor: global.theme.headerBackgroundColor,
-        },
+        /* 使用global.theme的地方需要单独在页面写static navigationOptions,
+            以便切换主题时及时更新。*/
+        headerStyle: getHeaderStyle(), 
         headerTintColor: global.theme.headerTintColor,
         headerRight: (
             navigation.state.params.membership == Teacher ||
             navigation.state.params.membership == TA 
             ? (
-                <TouchableOpacity style={{marginRight:18}} onPress={()=>{alert('编辑公告')}}>
+                <TouchableOpacity style={{marginRight:18}} onPress={()=>{
+                    navigation.navigate('BulletinEdit', {
+                        createNew: false,
+                        schoolClassId: navigation.state.params.schoolClassId,
+                        bulletinId: navigation.state.params.bulletinId,
+                        bulletinText: navigation.state.params.bulletinText,
+                        className: navigation.state.params.className,
+                        callback: navigation.state.params.refresh,
+                    })
+                }}>
                     <Text style={{color: global.theme.headerTintColor, fontSize: 18}}>编辑</Text>
                 </TouchableOpacity>)
             : (null)),
@@ -48,82 +63,16 @@ export default class BulletinEdition extends Component {
             bulletinId: this.props.navigation.state.params.bulletinId,
             membership: this.props.navigation.state.params.membership,
         };
+        this.props.navigation.setParams({refresh: this.refresh});
     }
 
-    sendBulletinCast(classId,content){
-        let className = this.props.navigation.state.params.className;
-        let params = {
-            ticker:"班级公告修改《"+ className +"》",
-            title:"班级公告修改《"+ className +"》",
-            text:content,
-            after_open:"go_custom",
-            custom:{
-                screen:'BulletinEdition',
-            }
-        }
-        castId = classId;
-        let filter = {
-            "where":
-            {
-                "and":
-                [
-                    {"tag":castId}
-                ]
-            }
-        }
-        umengPush.sendGroupcast(params,filter);
+    /** 修改公告之后需要更新列表和公告显示页面 */
+    refresh = (newBulletinText) => {
+        this.props.navigation.state.params.callback();
+        this.setState({bulletinText: newBulletinText});
+        this.props.navigation.setParams({bulletinText: newBulletinText});
     }
-    /* 单击修改后的响应函数 */
-    _onPress = ()=>{
-        if (this.state.bulletinText === '')
-        {
-            ToastAndroid.show('公告内容不可为空',ToastAndroid.SHORT);
-            return ;
-        }
-        let postBody = {
-            schoolClassId: this.state.schoolClassId,
-            content: this.state.bulletinText,
-        }
-        let body = JSON.stringify(postBody);
-        let url = Config.BulletinEdit + this.state.bulletinId;
-        Service.UserAction(url, body, 'PATCH').then((response)=>{
-            if(response.status!==200)
-            {
-                return null;
-            }
-            else{
-                return response.json();
-            }
-        }).then((jsonData)=>{
-            if(jsonData===null)
-            {
-                ToastAndroid.show('请求失败！您可能不是该班级的教师或助教，无此权限！',ToastAndroid.SHORT);
-                this.props.navigation.state.params.callback();
-                this.props.navigation.goBack();
-            }
-            else if(jsonData.isSuccess)
-            {
-                ToastAndroid.show('修改成功',ToastAndroid.SHORT);
-                this.sendBulletinCast(postBody.schoolClassId,postBody.content);
-                /* 调用回调函数更新公告列表 */
-                this.props.navigation.state.params.callback();
-                this.props.navigation.goBack();
-            }
-            else if(jsonData.isWarning)
-            {
-                ToastAndroid.show(jsonData.message,ToastAndroid.SHORT);
-            }
-            else
-            {
-                ToastAndroid.show('发生错误，请稍后重试！',ToastAndroid.SHORT);
-            }
-        }).catch((error) => {
-            console.log(error);
-            ToastAndroid.show(err_info.NO_INTERNET ,ToastAndroid.SHORT);
-            this.props.navigation.state.params.callback();
-            this.props.navigation.goBack();
-        });
-    };
+
     render() {
         return (
             <View style = {[styles.container,{backgroundColor:global.theme.backgroundColor}]}>
@@ -141,49 +90,9 @@ export default class BulletinEdition extends Component {
                         <Text style={[styles.commitBtnText, {color: global.theme.buttonTextColor}]}>完成</Text>
                     </TouchableOpacity>
                 </ScrollView>
-               {/*} <View style={styles.detailView}>
-                    <TextInput style={[styles.bulletinDetail,{color:global.theme.textColor}]} multiline={true}
-                        onChangeText= {(text)=>
-                            this.setState({bulletinText: text})
-                            }
-                        defaultValue={this.state.bulletinText}
-                        editable={(this.state.membership==2||this.state.membership==3)?true: false}
-                        >
-                    </TextInput>
-                        </View>*/}
-
             </View>
         );
     }
-/*
-    render() {
-        return (
-            <View style = {[styles.container,{backgroundColor:global.theme.backgroundColor}]}>
-                <View style={styles.detailView}>
-                    <TextInput style={[styles.bulletinDetail,{color:global.theme.textColor}]} multiline={true}
-                        onChangeText= {(text)=>
-                            this.setState({bulletinText: text})
-                            }
-                        defaultValue={this.state.bulletinText}
-                        editable={(this.state.membership==2||this.state.membership==3)?true: false}
-                        >
-                    </TextInput>
-                </View>
-                {
-                    (this.state.membership==2||this.state.membership==3)?
-                    (
-                        <TouchableOpacity style={[styles.commitBtn, {
-                                backgroundColor:global.theme.buttonColor,
-                                borderColor: global.theme.buttonBorderColor,
-                            }]} onPress={this._onPress}>
-                            <Text style={[styles.commitBtnText, {color: global.theme.buttonTextColor}]}>修改公告</Text>
-                        </TouchableOpacity>
-                    )
-                    : (null)
-                }
-            </View>
-        );
-    }*/
 }
 
 const styles = StyleSheet.create({
@@ -195,7 +104,6 @@ const styles = StyleSheet.create({
         alignSelf: 'stretch',
     },
     detailView:{
-        flexDirection: 'column',
         marginLeft: 0,
         marginRight: 2, // 滚动条离屏幕右边缘有一点距离
         marginTop: 0,
@@ -215,12 +123,6 @@ const styles = StyleSheet.create({
     commitBtnText: {
         fontSize: 18,
         textAlign:'center',
-    },
-    promptText: {
-        fontSize: 16,
-        color: 'gray',
-        marginTop: 15,
-        marginBottom: 10, 
     },
     bulletinDetail: {
         flex: 1,

@@ -104,7 +104,7 @@ class App extends Component {
                 <Welcome/>
             </View>
         );
-    }
+    } 
 }
 
 // 在App中调用的登录界面组件

@@ -11,10 +11,12 @@ import {
     View,
     TextInput,
     ToastAndroid,
-    ScrollView,
+    Alert,
     TouchableOpacity,
 } from 'react-native';
+import {BackHandler} from 'react-native';
 import {getHeaderStyle} from '../styles/theme-context';
+import {HeaderBackButton} from 'react-navigation';
 
 const screenWidth= MyAdapter.screenWidth;
 const screenHeight = MyAdapter.screenHeight;
@@ -32,6 +34,11 @@ export default class BulletinEdit extends Component {
         headerStyle: getHeaderStyle(), 
         headerTitle: navigation.state.params.createNew ? '创建新公告' : '编辑公告',
         headerTintColor: global.theme.headerTintColor,
+        headerLeft: (<HeaderBackButton tintColor={global.theme.headerTintColor} onPress={()=>{
+            if (!navigation.state.params.confirm()) { // 返回false则返回上一页面
+                navigation.goBack();
+            }
+        }}/>),
         headerRight: (
             <TouchableOpacity style={{marginRight:18}} onPress={()=>{
                 navigation.state.params.commit()
@@ -39,7 +46,10 @@ export default class BulletinEdit extends Component {
                 <Text style={{color: global.theme.headerTintColor, fontSize: 18}}>完成</Text>
             </TouchableOpacity>
         ),
-    })
+    });
+
+    _didFocusSubscription;
+    _willBlurSubscription;
 
     constructor(props){
         super(props);
@@ -51,7 +61,43 @@ export default class BulletinEdit extends Component {
             bulletinText: this.props.navigation.state.params.bulletinText,
             bulletinId: this.props.navigation.state.params.bulletinId,
         };
-        this.props.navigation.setParams({commit: this._onPress});
+        this.props.navigation.setParams({
+            commit: this._onPress,
+            confirm: this.onBackButtonPressAndroid
+        });
+        this._didFocusSubscription = props.navigation.addListener('didFocus', payload =>
+            BackHandler.addEventListener('hardwareBackPress', this.onBackButtonPressAndroid)
+        ); //按返回键时调用this.onBackButtonPressAndroid
+        this.bulletinTextModified = false;
+        this.prevBulletinText = this.props.navigation.state.params.createNew 
+            ? ''
+            : this.props.navigation.state.params.bulletinText;
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
+        // Remove the listener when you are done
+        this._didFocusSubscription && this._didFocusSubscription.remove();
+        this._willBlurSubscription && this._willBlurSubscription.remove();
+    }
+
+    componentDidMount() {
+        this._willBlurSubscription = this.props.navigation.addListener('willBlur', payload =>
+            BackHandler.removeEventListener('hardwareBackPress', this.onBackButtonPressAndroid))
+    }
+
+    /**弹窗提醒 */
+    onBackButtonPressAndroid = () => {
+        if (this.bulletinTextModified && this.prevBulletinText != this.state.bulletinText) {
+            Alert.alert('提示', '公告尚未保存，确定返回吗？', [
+                {text: '确定', onPress: ()=>{this.props.navigation.goBack()}},
+                {text: '提交', onPress: ()=>{this._onPress()}},
+                {text: '继续编辑'}
+            ], {cancelable: false})
+            return true;    // 已修改，弹出提示框
+        } else {
+            return false;   //公告未修改，返回上一页面
+        }
     }
 
     sendBulletinCast(classId,content){
@@ -139,6 +185,7 @@ export default class BulletinEdit extends Component {
                 <TextInput style={[styles.bulletinDetail,{color:global.theme.textColor}]} 
                     multiline={true}
                     onChangeText= {(text)=> {
+                        this.bulletinTextModified = true;
                         this.setState({bulletinText: text});
                     }}
                     defaultValue={this.state.bulletinText}

@@ -118,39 +118,6 @@ class Welcome extends Component{
             </View>
         )
     }
-
-    toPersonalBlog()
-    {
-        this.reset();
-        this.props.navigation.navigate('PersonalBlog');
-    }
-
-    toHome()
-    {
-        this.props.navigation.navigate('Loginer');
-    }
-    reset = ()=>{
-        // 重置路由：使得无法返回登录界面
-        const resetAction = NavigationActions.reset({
-            index: 0,
-            actions: [
-                NavigationActions.navigate({ routeName: 'AfterloginTab'}),
-            ]
-        });
-        this.props.navigation.dispatch(resetAction);
-    }
-
-    async setPush(){
-        var receivePush = await storage.getItem(StorageKey.RECEIVE_PUSH);
-        if(receivePush === null){
-            storage.setItem(StorageKey.RECEIVE_PUSH,'true');
-        }
-    }
-
-    componentWillUnmount(){
-        // DeviceEventEmitter.removeListener('notification',this.notification);
-    }
-
     notification = (paramString) =>{
         console.log(paramString);
         console.log('success');
@@ -177,9 +144,50 @@ class Welcome extends Component{
                 })
                 console.log('跳转后');
             }
-           
+            else if(screen == 'BulletinDisplay'){
+                let {schoolClassId,bulletinId,bulletinText,className} = params.body.custom;
+                var callback = ()=>{
+                    toPersonalBlog();
+                }
+                console.log('跳转前');
+                this.props.navigation.navigate('BulltinDisplay',{
+                    schoolClassId: schoolClassId,
+                    bulletinId:bulletinId,
+                    bulletinText:bulletinText,
+                    className:className,
+                    membership:1,
+                    callback:callback,
+                })
+            }
         }catch(err){
             console.log(err);
+        }
+    };
+    toPersonalBlog()
+    {
+        this.reset();
+        this.props.navigation.navigate('PersonalBlog');
+    }
+
+    toHome()
+    {
+        this.props.navigation.navigate('Loginer');
+    }
+    reset = ()=>{
+        // 重置路由：使得无法返回登录界面
+        const resetAction = NavigationActions.reset({
+            index: 0,
+            actions: [
+                NavigationActions.navigate({ routeName: 'AfterloginTab'}),
+            ]
+        });
+        this.props.navigation.dispatch(resetAction);
+    }
+
+    async setPush(){
+        var receivePush = await storage.getItem(StorageKey.RECEIVE_PUSH);
+        if(receivePush === null){
+            storage.setItem(StorageKey.RECEIVE_PUSH,'true');
         }
     }
 
@@ -281,7 +289,51 @@ class UrlLogin extends Component{
             code : '',
         };
     }
-
+    notification = (paramString) =>{
+        console.log(paramString);
+        console.log('success');
+        // alert(params);
+        // this.props.navigation.navigate('HomeworkDetail');
+        try{
+            let params = JSON.parse(paramString);
+            let screen = params.body.custom.screen;
+            console.log(screen);
+            if(screen == 'HomeworkDetail'){
+                let {classId,homeworkId,membership,isFinished} = params.body.custom;
+                var callback = ()=>{
+                    toPersonalBlog();
+                }
+                console.log('跳转前');
+                this.props.navigation.navigate('HomeworkDetail',{
+                    Id: homeworkId,
+                    classId: classId, 
+                    isFinished: isFinished,
+                    membership:membership,
+                    callback:callback,
+                    //编辑作业所需参数,学生收到提醒不需要编辑。
+                    blogId:0,
+                })
+                console.log('跳转后');
+            }
+            else if(screen == 'BulletinDisplay'){
+                let {schoolClassId,bulletinId,bulletinText,className} = params.body.custom;
+                var callback = ()=>{
+                    toPersonalBlog();
+                }
+                console.log('跳转前');
+                this.props.navigation.navigate('BulltinDisplay',{
+                    schoolClassId: schoolClassId,
+                    bulletinId:bulletinId,
+                    bulletinText:bulletinText,
+                    className:className,
+                    membership:1,
+                    callback:callback,
+                })
+            }
+        }catch(err){
+            console.log(err);
+        }
+    };
     toPerson()
     {
         // 这里重置路由，阻止用户返回登录界面

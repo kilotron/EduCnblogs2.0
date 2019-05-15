@@ -413,13 +413,13 @@ export default class Bulletin extends Component {
                         (this.state.membership==2||this.state.membership==3)?
                         (
                             <TouchableHighlight
-                                underlayColor="#3b50ce"
+                                underlayColor={global.theme.addUnderlaydColor}
                                 activeOpacity={0.5}
                                 style={{
                                     position:'absolute',
                                     bottom:20,
                                     right:10,
-                                    backgroundColor: "#3b50ce",
+                                    backgroundColor: global.theme.addBackgroundColor,
                                     width: 52,
                                     height: 52,
                                     borderRadius: 26,
@@ -431,7 +431,7 @@ export default class Bulletin extends Component {
                                 <Text
                                     style= {{
                                         fontSize: 30,
-                                        color: '#ffffff',
+                                        color: global.theme.addTextColor,
                                         textAlign: 'center',
                                         fontWeight: '100',
                                     }}

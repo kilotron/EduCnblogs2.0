@@ -74,7 +74,8 @@ import VoteDetail from './Source/screens/VoteDetail'
 import VoteAdd from './Source/screens/VoteAdd'
 import VoteMemberList from './Source/screens/VoteMemberList'
 import VoteMemberCommit from './Source/screens/VoteMemberCommit'
-import { themes, ThemeContext } from './Source/styles/theme-context';
+import { themes, ThemeContext, getHeaderStyle } from './Source/styles/theme-context';
+//import { globalAgent } from 'https';
 const { height, width } = Dimensions.get('window');
 
 const CODE_URL = [
@@ -419,11 +420,11 @@ const HomeTab = TabNavigator({
         screen: PersonalBlog,
         navigationOptions: {
             tabBarLabel: '我的博客',
-            tabBarIcon: ({ tintColor, focused }) => (
+            tabBarIcon: ({focused, tintColor}) => (
                 <Image
                     resizeMode='contain'
                     source={require('./Source/images/nav_blog.png')}
-                    style={{height: 20}}
+                    style={{height: 20, tintColor: tintColor}}
                 ></Image>
             )
         }
@@ -436,7 +437,7 @@ const HomeTab = TabNavigator({
                 <Image
                     resizeMode='contain'
                     source={require('./Source/images/nav_class.png')}
-                    style={{height: 20}}
+                    style={{height: 20, tintColor: tintColor}}
                 ></Image>
             )
         }
@@ -449,10 +450,10 @@ const HomeTab = TabNavigator({
                 <Image
                     resizeMode='contain'
                     source={require('./Source/images/nav_i.png')}
-                    style={{height: 20}}
+                    style={{height: 20, tintColor: tintColor}}
                 ></Image>
-            )
-        }
+            ),
+        },
     },
 },{
     tabBarPosition: 'bottom',
@@ -462,20 +463,23 @@ const HomeTab = TabNavigator({
     tabBarOptions: {
         showIcon: true,
         showLabel: true,
-        style: {
-//            height: 30,
-
-        },
+        activeTintColor: global.theme.tabBarActiveTintColor,
+        inactiveTintColor: global.theme.tabBarInactiveTintColor,
         labelStyle: {
             marginTop: 0,
-            fontSize: 8
+            fontSize: 10,
         },
         iconStyle: {
             marginTop: 10,
         },
+        style: {
+            backgroundColor: global.theme.headerBackgroundColor,
+        },
         tabStyle: {
-            backgroundColor: UI.BOTTOM_COLOR,
             height: height/13,
+        },
+        indicatorStyle: {
+            height: 0, // 去掉指示线
         },
     },
 })
@@ -743,12 +747,8 @@ const SimpleNavigation = StackNavigator({
     initialRouteName: 'Welcome',
     // 默认的navigationOptions
     navigationOptions: {
-        headerTintColor: 'white', // 标题栏文字颜色
-        headerStyle: {
-            height: 40,
-            backgroundColor: UI.TOP_COLOR,
-            elevation: 1,
-        },
+        headerTintColor: global.theme.headerTintColor, // 标题栏文字颜色
+        headerStyle: getHeaderStyle(),
         headerTitleStyle: {
             flex: 1,
             textAlign: 'center', // 标题居中

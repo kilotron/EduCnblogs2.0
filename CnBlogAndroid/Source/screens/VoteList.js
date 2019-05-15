@@ -231,13 +231,13 @@ export default class VoteList extends Component {
     GetAddButton() {
         return (
             <TouchableHighlight
-                underlayColor="#3b50ce"
+                underlayColor={global.theme.addUnderlayColor}
                 activeOpacity={0.5}
-                style={styles.addButton}
+                style={[styles.addButton, {backgroundColor: global.theme.addBackgroundColor}]}
                 onPress={this.onPress2AddVote.bind(this)} >
-                <Text style={styles.buttonContent}>
+                <Text style={[styles.buttonContent, {color: global.theme.addTextColor}]}>
                     +
-                    </Text>
+                </Text>
             </TouchableHighlight>
         );
     }

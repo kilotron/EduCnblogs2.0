@@ -98,7 +98,10 @@ export default class BlogComment extends Component{
         item = ItemHandler(item);
         let {key,Bodys,Author,DateAdded,AuthorUrl,FaceUrl} = item;
         //FaceUrl = FaceUrlHandler();
-        const htmlContent = `<p><a href="http://jsdf.co">&hearts; nice job!</a></p>`;       
+        // const htmlContent = `<p><a href="http://jsdf.co">&hearts; nice job!</a></p>`;       
+        // const testContent = `\n\n> 测试引\n\n</br><a href="www.baidu.com">百度</a>这里的话呢[链接文字](https://www.baidu.com)`;
+        // const testContent2 = '';
+        //HTMLSpecialCharsDecode(Bodys)
         return(
             <ListItem avatar
                 onPress={()=>this.props.navigation.navigate
@@ -116,29 +119,15 @@ export default class BlogComment extends Component{
               </Left>
               <Body>
                 <Text>{Author}</Text>
-                {/* <Text note>{HTMLSpecialCharsDecode(Bodys)}</Text> */}
-                <Markdown>
+                {/* <Markdown>
                 {
-                        HTMLSpecialCharsDecode(Bodys)
+                    "![www.baidu.com](www.baidu.com)"
                 }
-                </Markdown>
-                {/* TODO 删掉下面的测试 */}
-                 {/* <Markdown styles={markdownStyles}>
-                    # --Markdown--  {'\n\n'}
-                    [超链接](http://www.jianshu.com) {'\n\n'}
-                    ![图片](https://upload.jianshu.io/users/upload_avatars/5847426/d79b9d30-0c75-43a6-8372-711deae3ce52.jpg?imageMogr2/auto-orient/strip|imageView2/1/w/240/h/240)
-                    You can **emphasize** what you want, or just _suggest it_ 😏…{'\n'}
-                    {HTMLSpecialCharsDecode(Bodys)}
-                </Markdown>  */}
-                {/* <HTMLView
-                    value={htmlContent2}
-                    stylesheet={styles}
-                /> */}
-                {/* <WebView
-                    source={htmlContent2}
-                    style={{width:'50%',height:'50%'}}
-                    javaScriptEnabled={true}
-                /> */}
+                </Markdown> */}
+                <HTMLView
+                    value={HTMLSpecialCharsDecode(Bodys)}
+                    //value = '<a href="http://www.divcss5.com/" target="_blank" title="转到DIVCSS5主页">DIVCSS5</a>'
+                />
                 <Text style = {{fontSize: 10, textAlign: 'right', color: 'gray'}}>{'评论于: '+DateAdded.split('T')[0]+' '+DateAdded.split('T')[1].substring(0,8)}</Text>
               </Body>
             </ListItem>

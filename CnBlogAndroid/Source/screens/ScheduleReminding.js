@@ -56,7 +56,7 @@ export default class App extends Component {
         //     return;
         // }
         // global.timeTouch = time;
-        var memberId;
+        
         this._isMounted = true;
         this.state.myMarkedDates={};
         var unfinishedHomework = [];
@@ -78,46 +78,63 @@ export default class App extends Component {
             for (let i in this.state.classes) {
                 let classId = this.state.classes[i].schoolClassId;
                 url = Config.BlogInClassId + global.user_information.BlogId + '/'+ classId;               
-                Service.Get(url).
-                then((jsonData)=>{
-                    memberId = jsonData.memberId;
+                Service.Get(url).then((jsonData)=>{
+                    let memberId = jsonData.memberId;
                     this.state.membership = jsonData.membership;
-                })
-                url = Config.apiDomain + api.ClassGet.homeworkList + "/false/" + classId + "/1-12";
-                Service.Get(url).then((jsonData) => {
-                    if (jsonData !== 'rejected') {
-                        this.setState({
-                            isRequestSuccess: true,
-                        })
-                        if (this._isMounted) {
-                            this.setState({
-                                counts: jsonData.totalCount,
-                            });
-                        }
-                    }
-                }).then(() => {
-                    url = Config.apiDomain + api.ClassGet.homeworkList + "/false/"+classId+"/"+1+"-"+this.state.counts;
+                    return memberId;
+                }).then((memberId)=>{
+                    url = Config.apiDomain + api.ClassGet.homeworkList + "/false/" + classId + "/1-12";
                     Service.Get(url).then((jsonData) => {
-                        let homeworks = jsonData.homeworks;                            
-                        if (this._isMounted && this.state.isRequestSuccess){
-                            for (let j in homeworks) {
-                                if(homeworks[j].isFinished === false && homeworks[j].deadline !== null){
-                                    url = Config.SubmitJudge + memberId + '/'+ homeworks[j].homeworkId;
-                                    Service.Get(url).then((data)=>{
-                                        if(data === false){ 
-                                            homeworks[j].membership = this.state.membership;
-                                            homeworks[j].schoolClassId = classId;
-                                            global.unsubmitted.push(homeworks[j]);
-                                            this.setState({
-                                                unsubmitHomeworks: global.unsubmitted
-                                            })                  
-                                        }
-                                    })
-                                }
-                            }         
-                        }    
+                        if (jsonData !== 'rejected') {
+                            this.setState({
+                                isRequestSuccess: true,
+                            })
+                            if (this._isMounted) {
+                                this.setState({
+                                    counts: jsonData.totalCount,
+                                });
+                            }
+                        }
+                        return memberId;
+                    }).then((memberId) => {
+                        url = Config.apiDomain + api.ClassGet.homeworkList + "/false/"+classId+"/"+1+"-"+this.state.counts;
+                        Service.Get(url).then((jsonData) => {
+                            let homeworks = jsonData.homeworks;                            
+                            if (this._isMounted && this.state.isRequestSuccess){
+                                // for (let j in homeworks) {
+                                //     if(homeworks[j].isFinished === false && homeworks[j].deadline !== null){
+                                //         url = Config.SubmitJudge + memberId + '/'+ homeworks[j].homeworkId;
+                                //         Service.Get(url).then((data)=>{
+                                //             if(data == false){ 
+                                //                 homeworks[j].membership = this.state.membership;
+                                //                 homeworks[j].schoolClassId = classId;
+                                //                 global.unsubmitted.push(homeworks[j]);
+                                //                 this.setState({
+                                //                     unsubmitHomeworks: global.unsubmitted
+                                //                 })                  
+                                //             }
+                                //         })
+                                //     }
+                                // }  
+                                homeworks.map((homework)=> {
+                                    if(homework.isFinished === false && homework.deadline !== null){
+                                        url = Config.SubmitJudge + memberId + '/'+ homework.homeworkId;
+                                        Service.Get(url).then((data)=>{
+                                            if(data == false){ 
+                                                homework.membership = this.state.membership;
+                                                homework.schoolClassId = classId;
+                                                global.unsubmitted.push(homework);
+                                                this.setState({
+                                                    unsubmitHomeworks: global.unsubmitted
+                                                })                  
+                                            }
+                                        })
+                                    }
+                                })     
+                            }    
+                        })
                     })
-                })  
+                }) 
             }        
         }).catch((error)=>{ToastAndroid.show("网络请求失败，请检查连接状态！",ToastAndroid.SHORT)})    
     }  

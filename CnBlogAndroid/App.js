@@ -567,7 +567,7 @@ const SimpleNavigation = StackNavigator({
     VoteAdd: {
         screen: VoteAdd,
         navigationOptions: {
-            headerTitle: '投票列表',
+            headerTitle: '添加投票',
         }
     },
 

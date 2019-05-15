@@ -325,7 +325,7 @@ class UrlLogin extends Component{
                     flexDirection: 'row', 
                     justifyContent: 'flex-start', 
                     alignItems: 'center',
-                    backgroundColor: '#EDEDED', 
+                    backgroundColor: '#FDFDFD', 
                     height: 80, 
                 }}>
                     <Image source={require('./Source/images/login.png')}

@@ -40,43 +40,47 @@ export default class BlogDetail extends Component{
         }
     }
     _isMounted;
+
+    saveHistory(){
+        storageData = [];
+        global.storage.load({key: StorageKey.BLOG_LIST})
+        .then((ret)=>{
+            storageData = ret;
+        })
+        .catch((err)=>{
+            storageData = [];
+        })
+        .then(()=>{
+            var thisData = [{
+                title: this.props.navigation.state.params.Title,
+                url: this.props.navigation.state.params.Url,
+                id: this.props.navigation.state.params.Id,
+                blogApp: this.props.navigation.state.params.blogApp,
+                commentCount: this.props.navigation.state.params.CommentCount,
+                summaryContent: this.props.navigation.state.params.Description,
+                addTime: '',
+            }];
+            // 合并结果并去重
+            thisData = thisData.concat(storageData);
+            temp = {};      //用于id判断重复
+            result = [];    //最后的新数组
+            //遍历 thisData数组，将每个item.id在temp中是否存在值做判断，
+            thisData.map((item,index)=>{
+                if(!temp[item.id]){
+                    result.push(item);
+                    temp[item.id] = true;
+                }
+            })
+            // 取出前N个结果储存
+            storageData = result.slice(0, this.state.maxHistory);
+            global.storage.save({key: StorageKey.BLOG_LIST, data: storageData});
+        })
+    }
+
     componentWillMount = ()=>{
         this._isMounted=true;
         if(!this.state.incognitoMode){
-            storageData = [];
-            global.storage.load({key: StorageKey.BLOG_LIST})
-            .then((ret)=>{
-                storageData = ret;
-            })
-            .catch((err)=>{
-                storageData = [];
-            })
-            .then(()=>{
-                var thisData = [{
-                    title: this.props.navigation.state.params.Title,
-                    url: this.props.navigation.state.params.Url,
-                    id: this.props.navigation.state.params.Id,
-                    blogApp: this.props.navigation.state.params.blogApp,
-                    commentCount: this.props.navigation.state.params.CommentCount,
-                    summaryContent: this.props.navigation.state.params.Description,
-                    addTime: '',
-                }];
-                // 合并结果并去重
-                thisData = thisData.concat(storageData),//合并成一个数组
-                temp = {}; //用于id判断重复
-                result = []; //最后的新数组
-                //遍历thisData数组，将每个item.id在temp中是否存在值做判断，
-                thisData.map((item,index)=>{
-                    if(!temp[item.id]){
-                        result.push(item);
-                        temp[item.id] = true
-                    }
-                })
-                // 取出前N个结果储存
-                storageData = result.slice(0, this.state.maxHistory);
-                // console.log('存储：' + JSON.stringify(storageData));
-                global.storage.save({key: StorageKey.BLOG_LIST, data: storageData});
-            })
+            this.saveHistory();
         }
 
 		let contenturl = Config.BlogDetail+this.props.navigation.state.params.Id+'/body';
@@ -161,8 +165,8 @@ export default class BlogDetail extends Component{
             //2. 需要修复某些小地方
             let code_highlight = `
             <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/default.min.css">
-            <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>          
-            <script src="https://cdn.bootcss.com/jquery/3.4.0/jquery.min.js"></script>            
+            <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>
+            <script src="https://cdn.bootcss.com/jquery/3.4.0/jquery.min.js"></script>
             <script>hljs.initHighlightingOnLoad();</script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" type="text/javascript">
                 $(document).ready(function() {

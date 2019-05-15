@@ -24,6 +24,7 @@ import {
     Alert
 } from 'react-native';
 import Toast from 'teaset/components/Toast/Toast';
+const HTMLSpecialCharsDecode = require('../DataHandler/HTMLSpecialCharsDecode');
 
 const screenWidth= MyAdapter.screenWidth;
 const screenHeight= MyAdapter.screenHeight;
@@ -45,6 +46,8 @@ export default class HomeworkLists extends Component {
     }
     _renderItem = (item)=>{
         let item1 = item;
+        var membership = item1.item.membership;
+        var blogId = item1.item.blogId;
         var title = item1.item.title;//作业标题
         var description = item1.item.description;//作业描述
         var deadline = (item1.item.deadline != null ? item1.item.deadline :"Tundefine");//作业截止日期
@@ -55,15 +58,22 @@ export default class HomeworkLists extends Component {
         return (
             <View>
                 <TouchableOpacity
-                    onPress = {()=>this.props.navigation.navigate('HomeworkDetail',{url: url, Id: Id,
-                                            classId: classId, isFinished: isFinished})}
+                    onPress = {()=>this.props.navigation.navigate('HomeworkDetail',{
+                        url: url,
+                        Id: Id,
+                        classId: classId, 
+                        isFinished: isFinished,
+                        membership:1,
+                        callback:()=>{},
+                        blogId:blogId,
+                    })}
                     style = {HomeworkStyles.container}
                 >
                     <Text style= {HomeworkStyles.titleTextStyle}>
                         {title}
                     </Text>
                     <Text numberOfLines={3} style= {HomeworkStyles.abstractTextStyle}>
-                        {description}
+                        {HTMLSpecialCharsDecode(description)}
                     </Text>
                     <Text style= {HomeworkStyles.informationTextStyle}>
                         截止于:{deadline.split('T')[0]+' '+deadline.split('T')[1].substring(0,8)}

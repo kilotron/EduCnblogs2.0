@@ -160,7 +160,9 @@ export function openPush(){
 //         else return(code);
 //     })
 // }
-
+export function initHandler(){
+    PushUtil.initClickHandler(()=>{});
+}
 export function addClassTag(classId){
     return PushUtil.addTag(classId + '',()=>{});
 }
@@ -173,11 +175,11 @@ export function deleteHomeworkTag(classId,homeworkId){
     return PushUtil.deleteTag(classId + "_" + homeworkId,()=>{});
 }
 
-export function deleteAllTags(){
-    PushUtil.listTag((code,result)=>{
+export async function deleteAllTags(){
+    PushUtil.listTag(async (code,result)=>{
         if(code == 200){
             for(var i = 0; i < result.length; i++){
-                PushUtil.deleteTag(result[i],()=>{});
+                await PushUtil.deleteTag(result[i],()=>{});
             }
         }
     })
@@ -185,6 +187,12 @@ export function deleteAllTags(){
 
 export async function testPush(){
     //单播测试
+    // PushUtil.getDeviceToken((deviceToken)=>{
+    //     return deviceToken;
+    // })
+    await PushUtil.getDeviceToken((result) =>{
+        alert(result);
+    })
     sendUnicast({ticker:"ticker",title:"title" + (new Date()).getTime(),text:"text"}); 
     // sendUnicast({title:"title" + (new Date()).getTime(),text:"text"});
 
@@ -218,6 +226,7 @@ export async function testPush(){
     // PushUtil.disablePush((ret)=>{
     //     console.log(ret);
     // });
+    PushUtil.test(()=>{});
 }
 
 
@@ -260,6 +269,7 @@ function sendCast(postBody){
         Service.RawUserAction(url,JSON.stringify(postBody),'POST').then((result)=>{
             result.json().then((jsonData)=>{
                 if(jsonData.ret == "SUCCESS"){
+                    // alert('发送成功'+JSON.stringify(postBody));
                     let id = postBody.type == 'unicast' ? jsonData.data.msg_id : jsonData.data.task_id;
                     console.log(id)
                     return id;
@@ -297,7 +307,7 @@ async function unicastBody(params){
     let postBody = {
         "appkey":umengConfig.appkey,
         "type":umengConfig.messageType.unicast,
-        "production_mode":"false",
+        "production_mode":true,
         "payload":payload,
         "description":"单播"
     }
@@ -324,7 +334,7 @@ async function groupcastBody(params, filter){
     let postBody = {
         "appkey":umengConfig.appkey,
         "type":umengConfig.messageType.groupcast,
-        "production_mode":"false",
+        "production_mode":true,
         "payload":payload,
         "description":"组播",
         "filter":filter

@@ -9,8 +9,7 @@ function extractData(voteContent) {
         } else if (voteContent[i].voteMode == 2) {
             vote.type = 'Multiple';
         } else {
-            alert('未实现的投票模式');
-            return result;
+            continue; // 未知的投票模式，跳过
         }
         vote.title = voteContent[i].title;
         vote.imageSource = voteContent[i].picture;

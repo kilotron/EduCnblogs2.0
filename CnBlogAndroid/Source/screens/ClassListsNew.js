@@ -33,6 +33,7 @@ import HomeworkLists from './HomeworkLists';
 import ClassBlogPostsList from '../component/ClassBlogPostsList'
 import VoteHome from './VoteList';
 import ModalDropdown from 'react-native-modal-dropdown';
+import { navigationHeaderHeight, homeTabHeaderHeight } from '../styles/theme-context';
 
 const screenWidth = MyAdapter.screenWidth;
 const screenHeight = MyAdapter.screenHeight;
@@ -103,11 +104,10 @@ export default class ClassListsNew extends Component {
 	}
 
 	render() {
-		//let classId = this.props.navigation.state.params.classId;
 		return (
 			<View style={styles.pageViewStyle}>
 				{/* 班级名称，点击可以切换班级 */}
-				<View style={styles.topBarViewStyle}>
+				<View style={[styles.topBarViewStyle, {backgroundColor: global.theme.headerBackgroundColor}]}>
 					{/* 弹出选择班级列表 */}
 					<TouchableOpacity onPress={() => {
 						this.props.navigation.navigate('ClassSelect', {
@@ -115,7 +115,7 @@ export default class ClassListsNew extends Component {
 							 classSelected: this.setState.classSelected 
 						});
 					}}>
-						<Text style={styles.classNameStyle}>
+						<Text style={[styles.classNameStyle, {color: global.theme.textColor}]}>
 							{this.state.className}
 						</Text>
 					</TouchableOpacity>
@@ -128,16 +128,19 @@ export default class ClassListsNew extends Component {
 						showsVerticalScrollIndicator={false}
 						onSelect={this.optionNavi}
 					>
-
 						<Image style={styles.optionsImgstyle} source={require('../images/options.png')} />
 					</ModalDropdown>
 				</View>
+				<View style={{ height: 0.75, backgroundColor: global.theme.seperatorColor}}/>
 				{/* 从这里开始滚动 */}
 				<View style={styles.tabViewStyle}>
 					{<ScrollableTabView
 						style={tabViewStyles.ScrollableTabView}
 						initialPage={0}
 						renderTabBar={() => <ScrollableTabBar />}
+						tabBarActiveTextColor={global.theme.tabBarActiveTintColor}
+						tabBarInactiveTextColor={global.theme.tabBarInactiveTintColor}
+						tabBarUnderlineStyle={{backgroundColor: global.theme.tabBarActiveTintColor}}
 					>
 						<View tabLabel='公告' style={{ flex: 1, alignItems: 'stretch' }} >
 							<Bulletin schoolClassId={this.state.schoolClassId}
@@ -174,7 +177,7 @@ const styles = StyleSheet.create({
 	},
 	classNameStyle: {
 		fontSize: 18,
-		fontWeight: 'bold',
+		fontWeight: 'normal',
 		color: 'white'
 	},
 	pageViewStyle: {
@@ -187,7 +190,7 @@ const styles = StyleSheet.create({
 		justifyContent: 'space-between',
 		alignItems: 'center',
 		backgroundColor: UI.TOP_COLOR,
-		height: screenHeight / 12,
+		height: homeTabHeaderHeight,
 		paddingLeft: 0.05 * screenWidth,
 	},
 	optionsImgstyle: { //下拉菜单
@@ -288,6 +291,7 @@ const styles = StyleSheet.create({
 	buttonStyle:{
 		height: (screenHeight) / 16,
 		width:(screenHeight) / 10,
+		marginRight: 5,
 		justifyContent:'center',
 		alignItems:'center',
 	},

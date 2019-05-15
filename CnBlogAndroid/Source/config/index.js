@@ -1,5 +1,6 @@
 import Storage from 'react-native-storage';
 import {AsyncStorage} from 'react-native';
+import {themes} from '../styles/theme-context';
 
 export const umengConfig = {
 	appkey:'5cb692ac570df31b8d000cd7',
@@ -36,6 +37,7 @@ export default{
 	VoteIsCommited: 'https://api.cnblogs.com/api/edu/vote/iscommitted/', // {memberId}/{voteId}
 	VoteCommittedOptions: 'https://api.cnblogs.com/api/edu/vote/committed/options/', //{memberId}/{voteId}
 	VoteCommittedMembers: 'https://api.cnblogs.com/api/edu/vote/committed/members/', //{schoolClassId}/{voteId}
+	VoteAdd: 'https://api.cnblogs.com/api/edu/vote/publish',
 }
 
 export const authData = {
@@ -103,6 +105,8 @@ global.internet = true;
 
 global.unsummitted = [];
 global.timeTouch = null;
+
+global.theme = themes.light;
 
 /**全局的设置选项，可用于个性化定制 */
 global.settings = {

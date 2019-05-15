@@ -44,7 +44,7 @@ const btnFontSize= MyAdapter.btnFontSize;
 export default class ClassSelect extends Component {
     // 用于处理按返回键的时选择默认的班级
     _didFocusSubscription;
-    _willBlurSubscription;  
+    _willBlurSubscription;
 
     constructor(props){
         super(props);

@@ -8,6 +8,7 @@ import React, { Component} from 'react';
 import CookieManager from 'react-native-cookies'
 import * as storage from '../Storage/storage.js'
 import * as umengPush from '../umeng/umengPush'
+import * as Push from '../DataHandler/Push/PushHandler'; 
 import {
     StyleSheet,
     Text,
@@ -24,6 +25,7 @@ import {
     TabNavigator,
     NavigationActions
 } from 'react-navigation';
+import { homeTabHeaderHeight } from '../styles/theme-context';
 
 const screenWidth= MyAdapter.screenWidth;
 const screenHeight= MyAdapter.screenHeight;
@@ -73,6 +75,8 @@ export default class UserInformation extends Component{
     }
 
     _logout=()=>{
+        // 简单的清空浏览记录
+        global.storage.save({key: StorageKey.BLOG_LIST, data: []});
         storage.removeItem(StorageKey.RECEIVE_PUSH).then(
             storage.removeItem(StorageKey.USER_TOKEN).then((res)=>{
                 CookieManager.clearAll()
@@ -174,15 +178,16 @@ export default class UserInformation extends Component{
         >
             <View style= {{
                 flexDirection: 'row',
-                justifyContent:'flex-start',
+                justifyContent:'center',
                 alignItems: 'center',
-                marginBottom: 0.02*screenHeight,
-                backgroundColor: UI.TOP_COLOR,
-                height: screenHeight/12,
-                paddingLeft: 0.05*screenWidth,
+                backgroundColor: global.theme.headerBackgroundColor,
+                height: homeTabHeaderHeight,
             }}>
-                <Text style = {{fontSize: 18, fontWeight: 'bold', color:'white'}}>个人信息</Text>
+                <Text style = {{fontSize: 18, fontWeight: 'normal', color:global.theme.headerTintColor}}>
+                    个人信息
+                </Text>
             </View>
+            <View style={{ height: 0.75, backgroundColor: global.theme.seperatorColor}}/>
             <View style= {{
                 flexDirection: 'row',
                 justifyContent:'flex-start',
@@ -338,6 +343,7 @@ export default class UserInformation extends Component{
                     }
                     else{
                         this.openReceive().then(()=>{
+                            Push.initPush();
                             this.setState({
                                 receive_push:true
                             })
@@ -347,7 +353,7 @@ export default class UserInformation extends Component{
             />
             </View>
 
-            <TouchableHighlight
+            {/* <TouchableHighlight
                 underlayColor="white"
                 activeOpacity={0.5}
                 onPress={()=>{
@@ -362,7 +368,7 @@ export default class UserInformation extends Component{
                     paddingLeft: 0.05*screenWidth,
             }}>
             <Text style = {{fontSize: 18, fontWeight: 'bold', color:'rgb(51,51,51)'}}>测试按钮</Text>
-            </TouchableHighlight>
+            </TouchableHighlight> */}
             <TouchableOpacity style = {{
                 justifyContent:'center',
                 alignItems: 'flex-start',

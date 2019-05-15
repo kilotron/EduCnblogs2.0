@@ -22,6 +22,7 @@ import Vote from '../component/Vote';
 import VoteCommit from '../component/VoteCommit';
 import FoldText from "react-native-fold-text";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import {ThemeContext} from '../styles/theme-context';
 const HTMLSpecialCharsDecode = require('../DataHandler/HTMLSpecialCharsDecode');
 const extractVoteContentData = require('../DataHandler/VoteContent');
 
@@ -32,15 +33,7 @@ const screenHeight = MyAdapter.screenHeight;
 export default class VoteDetail extends Component {
     /**navigationOptions放在此处，可以在标题栏放一个按钮跳转到另一个页面。 */
     static navigationOptions = ({ navigation }) => ({
-        headerTintColor: 'white',
         headerTitle: '投票详情',
-        headerStyle: {
-            height: 40,
-            backgroundColor: UI.TOP_COLOR,
-        },
-        headerTitleStyle: {
-            fontSize: 18,
-        },
         headerRight: (
             <TouchableOpacity onPress={() => {
                 if (typeof(navigation.state.params.voteContent) == 'undefined') {
@@ -103,6 +96,7 @@ export default class VoteDetail extends Component {
     _isMounted;
 
     componentWillMount = () => {
+        //this.props.navigation.setParams({theme: this.context});
         this._isMounted = true;
         let contenturl = Config.VoteDetail + this.state.voteId;
         let voteContentURL = Config.VoteContent + this.state.voteId;
@@ -145,10 +139,10 @@ export default class VoteDetail extends Component {
                 this._getVoteState(); // 获取用户是否已经投票。
             })
             .catch((err) => {
-                alert('error');
+                // 无网络连接
             })
         })
-        .catch((err)=>{alert('error')});
+    .catch((err)=>{/* 无网络连接*/});
     }
 
     componentWillUnmount = () => {
@@ -335,7 +329,6 @@ export default class VoteDetail extends Component {
                             {this.state.privacy == 1 ? '公开投票' : '匿名投票'}
                         </Text>
                     </View>
-
                     {/** content组件 */}
                 </View>
                 <Vote
@@ -351,8 +344,8 @@ export default class VoteDetail extends Component {
             </View>
         )
     }
-
 }
+
 
 const buttonWidthRatio = 0.2;
 const buttonHeightRatio = 0.1;

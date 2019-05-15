@@ -21,6 +21,8 @@ import {
     Alert,
 } from 'react-native';
 
+import Swipeout from 'react-native-swipeout';
+
 const HTMLSpecialCharsDecode = require('../DataHandler/HTMLSpecialCharsDecode');
 
 const screenWidth= MyAdapter.screenWidth;
@@ -41,6 +43,8 @@ export default class HistoryList extends Component {
             theblogCount: 0,
             loadStatus: 'not loading',
             currentPageIndex: 1,
+            rowID: null,
+            sectionID: null,
         }
         this._isMounted=true;
     }
@@ -118,32 +122,26 @@ export default class HistoryList extends Component {
         var SummaryContent = item1.item.summaryContent;
         var DateAdded = item1.item.dateAdded;
 
-        /* 绑定左右滑动等参数 */
-        let _panResponder = PanResponder.create({
-          //onStartShouldSetPanResponder: (evt, gestureState) => true,
-          onMoveShouldSetPanResponder: (evt, gestureState) => {
-              if(gestureState.dx < -screenWidth*0.1 || gestureState.dx > screenWidth*0.1){
-                  return true;
-              }
-              else{
-                  return false;
-              }
-          },
-          //onPanResponderGrant: this._handlePanResponderGrant,
-          //onPanResponderMove: this._handlePanResponderMove,
-          onPanResponderRelease: (evt, gestureState)=>{
-              if(gestureState.dx < 0 ){
-                  this._onPressDelHistory(Id);
-              }
-              else{
-                  this._onPressDelAll();
-              }
-          },
-          onPanResponderTerminate: (evt, gestureState)=>{;},
-        });
+        var BtnsLeft = [{ text: '清空', type: 'delete',  onPress: ()=> this._onPressDelAll()},];
+        var BtnsRight = [{ text: '删除', type: 'delete', onPress: ()=>this._onPressDelHistory(Id)},];
 
         return(
-            <View {..._panResponder.panHandlers} style={flatStylesWithAvatar.cell}
+            <Swipeout
+                close={!(this.state.sectionID === 'historylist' && this.state.rowID === Id)}
+                right={BtnsRight}
+                left={BtnsLeft}
+                rowID={Id}
+                sectionID='historylist'
+                autoClose={true}
+                backgroundColor='white'
+                onOpen={(sectionId, rowId, direction: string) => {
+                    this.setState({
+                        rowID: rowId,
+                        sectionID: sectionId
+                    });
+                }}
+              >
+            <View style={flatStylesWithAvatar.cell}
             >
                 <TouchableOpacity
                     style = {flatStylesWithAvatar.listcontainer}
@@ -190,6 +188,7 @@ export default class HistoryList extends Component {
                     </View>
                 </TouchableOpacity>
             </View>
+            </Swipeout>
         )
     };
 
@@ -290,7 +289,6 @@ export default class HistoryList extends Component {
         global.storage.load({key: StorageKey.BLOG_LIST})
         .then((ret)=>{
             var storageData=ret;
-            console.log('解析：' + JSON.stringify( storageData));
             //Alert.alert('长度：' + ret.length);
             this.setState({
                 theblogs: ret,

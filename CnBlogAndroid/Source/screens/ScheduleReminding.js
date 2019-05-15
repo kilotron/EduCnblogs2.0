@@ -43,18 +43,19 @@ export default class App extends Component {
             unsubmitHomeworks: [],
             counts: 0,
             isRequestSuccess: false,  
-            answers: {}      
+            answers: {},
+            membership:1,     
         };                
     }
     componentWillMount = () => {
         time = new Date();
-        if(global.timeTouch != null && (time.getTime() - global.timeTouch.getTime() < 1800000)){
-            this.setState({
-                unsubmitHomeworks: global.unsubmitted
-            })
-            return;
-        }
-        global.timeTouch = time;
+        // if(global.timeTouch != null && (time.getTime() - global.timeTouch.getTime() < 1800000)){
+        //     this.setState({
+        //         unsubmitHomeworks: global.unsubmitted
+        //     })
+        //     return;
+        // }
+        // global.timeTouch = time;
         var memberId;
         this._isMounted = true;
         this.state.myMarkedDates={};
@@ -80,6 +81,7 @@ export default class App extends Component {
                 Service.Get(url).
                 then((jsonData)=>{
                     memberId = jsonData.memberId;
+                    this.state.membership = jsonData.membership;
                 })
                 url = Config.apiDomain + api.ClassGet.homeworkList + "/false/" + classId + "/1-12";
                 Service.Get(url).then((jsonData) => {
@@ -103,6 +105,8 @@ export default class App extends Component {
                                     url = Config.SubmitJudge + memberId + '/'+ homeworks[j].homeworkId;
                                     Service.Get(url).then((data)=>{
                                         if(data === false){ 
+                                            homeworks[j].membership = this.state.membership;
+                                            homeworks[j].schoolClassId = classId;
                                             global.unsubmitted.push(homeworks[j]);
                                             this.setState({
                                                 unsubmitHomeworks: global.unsubmitted
@@ -163,7 +167,9 @@ export default class App extends Component {
                                     description: this.state.unsubmitHomeworks[i].description,//作业描述
                                     deadline: this.state.unsubmitHomeworks[i].deadline,//作业截止日期
                                     isFinished: this.state.unsubmitHomeworks[i].isFinished,// 作业是否结束
-                                    classId: this.state.unsubmitHomeworks[i].schoolClassId//班级Id
+                                    classId: this.state.unsubmitHomeworks[i].schoolClassId,//班级Id
+                                    membership:this.state.unsubmitHomeworks[i].membership,
+                                    blogId:global.user_information.BlogId,
                                 })
                             }
                         }

@@ -66,6 +66,16 @@ export default class VoteList extends Component {
         return url;
     }
 
+    /* 将网站返回的时间字符串改成预期 */
+    String2Date = (day)=>{
+        //console.log(day);
+        if(day == null)
+            return '  ';
+        let s1 = day.split('T')[0];
+        let s2 = day.split('T')[1];
+        return s1 + '  ' + s2.split('.')[0];
+    }
+
     /** 解析this.state.votes的数据，返回一个数组。 */
     makeVotesList() {
         var data = [];
@@ -75,7 +85,7 @@ export default class VoteList extends Component {
                 name: this.state.votes[i].name,
                 url: this.state.votes[i].url,
                 description: this.state.votes[i].description,
-                dateAdded: this.state.votes[i].dateAdded,
+                dateAdded: this.String2Date(this.state.votes[i].dateAdded),
                 voteCount: this.state.votes[i].voteCount,
             })
         }
@@ -89,13 +99,13 @@ export default class VoteList extends Component {
         }
     }
 
-    updateData() {
+    updateData = ()=>{
         this.setState({
             votes: [],
             loadStatus: 'not loading',  // 用于上拉加载的动画
             totalCount: 0,
             currentPageIndex: 1,        // 已加载的页数/序号，从1开始
-        }, () => { this.fetchPage(this.state.currentPageIndex) });
+        }, () => { this.fetchPage(this.state.currentPageIndex)});
     }
 
     fetchPage(pageIndex) {
@@ -164,8 +174,7 @@ export default class VoteList extends Component {
                             }
                         </Text>
                         <Text style={styles.postDate}>
-                            {'发布于: ' + item.dateAdded.split('T')[0] + ' '
-                                + item.dateAdded.split('T')[1]}
+                            {'发布于: ' + item.dateAdded.split('T')[0] }
                         </Text>
                     </View>
                 </TouchableOpacity>
@@ -215,23 +224,22 @@ export default class VoteList extends Component {
     onPress2AddVote() {
         this.props.navigation.navigate('VoteAdd', {
             classId: this.state.classId,
+            callback: this.updateData,
         });
     }
 
     GetAddButton() {
-        if(this.state.membership == 2 || this.state.membership == 3){
-            return (
-                <TouchableHighlight
-                    underlayColor="#3b50ce"
-                    activeOpacity={0.5}
-                    style={styles.addButton}
-                    onPress={this.onPress2AddVote.bind(this)} >
-                    <Text style={styles.buttonContent}>
-                        +
-                    </Text>
-                </TouchableHighlight>
-            );
-        }
+        return (
+            <TouchableHighlight
+                underlayColor={global.theme.addUnderlayColor}
+                activeOpacity={0.5}
+                style={[styles.addButton, {backgroundColor: global.theme.addBackgroundColor}]}
+                onPress={this.onPress2AddVote.bind(this)} >
+                <Text style={[styles.buttonContent, {color: global.theme.addTextColor}]}>
+                    +
+                </Text>
+            </TouchableHighlight>
+        );
     }
 
     render() {
@@ -255,7 +263,7 @@ export default class VoteList extends Component {
                         renderItem={this._renderItem}
                         data={this.makeVotesList()}
                         keyExtractor={(item, index) => index.toString()}
-                        onRefresh={this.updateData.bind(this)}
+                        onRefresh={this.updateData}
                         refreshing={false}
                         onEndReached={this._onEndReached.bind(this)}
                         onEndReachedThreshold={0.5}

@@ -35,6 +35,7 @@ export default class HomeWorkDetail extends Component{
             membership: this.props.navigation.state.params.membership,
             Id:0,
             classId:0,
+            isFinished:false,
             isShowInHome:false,
             originContent:'',
             isClosed:false,
@@ -65,6 +66,7 @@ export default class HomeWorkDetail extends Component{
                     deadline:jsonData.deadline,
                     isShowInHome:jsonData.isShowInHome,
                     isClosed:jsonData.isClosed,
+                    isFinished:jsonData.isFinished,
                 })
             }
         })
@@ -182,13 +184,21 @@ export default class HomeWorkDetail extends Component{
         let currentTime = (new Date()).getTime();
         //十分钟内发送一条
         if(currentTime - this.state.sendTime < 60*60*1000){
-            ToastAndroid.show("提醒发送的间隔为至少1小时，请稍后再试！",ToastAndroid.LONG);
+            ToastAndroid.show("发送过于频繁，请稍后再试！",ToastAndroid.LONG);
             return;
         }
         let params = {
             ticker:"作业《" + this.state.title +"》截止提醒",
             title:"作业《" + this.state.title +"》截止提醒",
-            text:'老师/助教提醒您提交作业，请及时关注！（已提交请忽略）'
+            text:'老师/助教提醒您提交作业，请及时关注！（已提交请忽略）',
+            after_open:"go_custom",
+            custom:{
+                screen:'HomeworkDetail',
+                classId:this.state.classId,
+                homeworkId:this.state.Id,
+                membership:1,//发给学生
+                isFinished:this.state.isFinished,
+            }
         }
         castId = this.state.classId + '_' + this.state.Id;
         let filter = {
@@ -209,7 +219,7 @@ export default class HomeWorkDetail extends Component{
     }
     renderBottomBar(Id,isFinished,classId,answerCount){
         isClosed = this.state.isClosed;
-        if(this.state.membership === 1){
+        if(this.state.membership !== 2 && this.state.membership !== 3){
             return(
                 <View style = {styles.bottom}>
                     <TouchableOpacity

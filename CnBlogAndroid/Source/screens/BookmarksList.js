@@ -26,6 +26,10 @@ import {
     NavigationActions,
 } from 'react-navigation';
 
+
+import Swipeout from 'react-native-swipeout';
+
+
 const screenWidth= MyAdapter.screenWidth;
 const screenHeight= MyAdapter.screenHeight;
 const titleFontSize= MyAdapter.titleFontSize;
@@ -45,6 +49,8 @@ export default class BookmarksList extends Component {
             loadStatus: 'not loading',
             currentPageIndex: 1,
             shouldRefresh: false,
+            sectionID: null,
+            rowID: null,
         }
         this._isMounted=true;
     }
@@ -108,14 +114,8 @@ export default class BookmarksList extends Component {
         var DetailId = item1.item.detailId;
         let BlogApp = GetBlogApp(LinkUrl);
 
+        /*
         let _panResponder = PanResponder.create({
-            /*
-            onStartShouldSetPanResponder: (evt, gestureState) => true,
-            //onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
-            onMoveShouldSetPanResponder: (evt, gestureState) => true,
-            //onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
-            onPanResponderTerminationRequest: (evt, gestureState) => true,
-            */
             onMoveShouldSetPanResponder: (evt, gestureState) => {
                 if(gestureState.dx < -screenWidth*0.1 || gestureState.dx > screenWidth*0.1){
                     return true;
@@ -126,66 +126,87 @@ export default class BookmarksList extends Component {
             },
             onPanResponderRelease: (evt, gestureState)=>{
                 if(gestureState.dx < 0) {
-                    //Alert.alert('位移为 '+ gestureState.dx + '\n删除 '+ WzLinkId);
                     this._onPressDelBookmarks(WzLinkId);
                 }
                 else{
-                  //Alert.alert('位移为 '+ gestureState.dx + '\n编辑 '+ WzLinkId);
                   this.props.navigation.navigate('BookmarksEdit',{Url: LinkUrl,
                       Title: Title, Id: WzLinkId, Description: Summary, callback: this._FlatListRefresh});
                 }
             },
             onPanResponderTerminate: (evt, gestureState)=>{;},
         });
+        */
+
+        var BtnsTypes = [
+            { text: '修改',    type: 'primary',  onPress: ()=>this.props.navigation.navigate('BookmarksEdit',{Url: LinkUrl,
+              Title: Title, Id: WzLinkId, Description: Summary, callback: this._FlatListRefresh})},
+            //{ text: '修改',  type: 'secondary', },
+            { text: '删除', type: 'delete', onPress: ()=>this._onPressDelBookmarks(WzLinkId)}
+        ];
 
         return(
-            <View style={flatStylesWithAvatar.cell} {..._panResponder.panHandlers}>
-                <TouchableOpacity style = {flatStylesWithAvatar.listcontainer}
-                 onPress={()=>{
-                    this.props.navigation.navigate('BlogDetail',{Url: LinkUrl, Id: DetailId,
-                        blogApp: BlogApp, CommentCount: 0, Title: Title, Description: Summary});
-                    }}
-                    >
-                    <View style = {nameImageStyles.nameContainer}>
-                        <Text style = {nameImageStyles.nameText}>
-                            {BlogApp.slice(0, 2)}
-                        </Text>
-                    </View>
-                    <View style = {{flex:1}}>
-                        <Text style = {{
-                            fontSize: 18,
-                            fontWeight: 'bold',
-                            marginTop: 6,
-                            marginBottom: 2,
-                            textAlign: 'left',
-                            color: 'black',
-                            fontFamily : 'serif',
-                        }} >
-                            {Title}
-                        </Text>
-                        <Text  numberOfLines={2} style = {{
-                            lineHeight: 25,
-                            fontSize: 12,
-                            marginBottom: 2,
-                            textAlign: 'left',
-                            color: 'rgb(70,70,70)',
-                        }}>
-                            {Summary + '...'}
-                        </Text>
-                        <View style = {{
-                            flexDirection: 'row',
-                            marginBottom: 4,
-                            justifyContent: 'space-around',
-                            alignItems: 'flex-start',
-                        }}>
-                            <Text style = {{fontSize: 10, textAlign: 'right', color: 'black', flex: 1}}>
-                                {BlogApp+'\n添加于 '+DateAdded}
-                            </Text>
-                        </View>
-                    </View>
+            <Swipeout
+                close={!(this.state.sectionID === 'bookmarkslist' && this.state.rowID === WzLinkId)}
+                right={BtnsTypes}
+                rowID={WzLinkId}
+                sectionID='bookmarkslist'
+                autoClose={true}
+                backgroundColor='white'
+                onOpen={(sectionId, rowId, direction: string) => {
+                    this.setState({
+                        rowID: rowId,
+                        sectionID: sectionId
+                    });
+                }}
+              >
+                  <View style={flatStylesWithAvatar.cell} >
+                      <TouchableOpacity style = {flatStylesWithAvatar.listcontainer}
+                       onPress={()=>{
+                          this.props.navigation.navigate('BlogDetail',{Url: LinkUrl, Id: DetailId,
+                              blogApp: BlogApp, CommentCount: 0, Title: Title, Description: Summary});
+                          }}
+                          >
+                          <View style = {nameImageStyles.nameContainer}>
+                              <Text style = {nameImageStyles.nameText}>
+                                  {BlogApp.slice(0, 2)}
+                              </Text>
+                          </View>
+                          <View style = {{flex:1}}>
+                              <Text style = {{
+                                  fontSize: 18,
+                                  fontWeight: 'bold',
+                                  marginTop: 6,
+                                  marginBottom: 2,
+                                  textAlign: 'left',
+                                  color: 'black',
+                                  fontFamily : 'serif',
+                              }} >
+                                  {Title}
+                              </Text>
+                              <Text  numberOfLines={2} style = {{
+                                  lineHeight: 25,
+                                  fontSize: 12,
+                                  marginBottom: 2,
+                                  textAlign: 'left',
+                                  color: 'rgb(70,70,70)',
+                              }}>
+                                  {Summary + '...'}
+                              </Text>
+                              <View style = {{
+                                  flexDirection: 'row',
+                                  marginBottom: 4,
+                                  justifyContent: 'space-around',
+                                  alignItems: 'flex-start',
+                              }}>
+                                  <Text style = {{fontSize: 10, textAlign: 'right', color: 'black', flex: 1}}>
+                                      {BlogApp+'\n添加于 '+DateAdded}
+                                  </Text>
+                              </View>
+                          </View>
 
-                </TouchableOpacity>
-            </View>
+                      </TouchableOpacity>
+                  </View>
+              </Swipeout>
         )
     };
 
@@ -404,3 +425,25 @@ const styles = StyleSheet.create({
         alignSelf:'stretch',
     },
 });
+
+/*
+分页获取收藏列表
+请求方式：GET
+请求地址：https://api.cnblogs.com/api/Bookmarks?pageIndex={pageIndex}&pageSize={pageSize}
+
+
+Body参数名	类型	必需	描述	示例 e.g.
+pageIndex	number	是	页码	1
+pageSize	number	是	页容量	10
+
+
+Body参数名	描述	类型
+WzLinkId	收藏编号	string
+Title	标题	string
+LinkUrl	收藏链接	string
+Summary	收藏标题	string
+Tags	标签	string
+DateAdded	添加时间	string
+FromCNBlogs	是否来自博客园	string
+
+*/

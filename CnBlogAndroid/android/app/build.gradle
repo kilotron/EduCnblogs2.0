@@ -98,11 +98,11 @@ android {
     buildToolsVersion "23.0.1"
 
     defaultConfig {
-        applicationId "com.cnblogandroid"
+        applicationId "com.pureman"
         minSdkVersion 16
         targetSdkVersion 22
         versionCode 7
-        versionName "2.3.0.190507_release"
+        versionName "2.3.0.190514_alpha"
         ndk {
             abiFilters "armeabi-v7a", "x86"
         }
@@ -131,7 +131,7 @@ android {
     buildTypes {
         release {
             signingConfig signingConfigs.release
-            minifyEnabled enableProguardInReleaseBuilds
+            minifyEnabled false
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }

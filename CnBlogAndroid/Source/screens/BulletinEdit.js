@@ -108,9 +108,12 @@ export default class BulletinEdit extends Component {
             text:content,
             after_open:"go_custom",
             custom:{
-                screen:'BulletinEdition',
-            } /* 这里可能需要修改，公告编辑页面名字是BulletinEdit,公告显示页面名字是BulletinDisplay
-                修改后可删掉这个注释。*/
+                screen:'BulletinDisplay',
+                schoolClassId: this.props.navigation.state.params.schoolClassId,
+                bulletinId:this.props.navigation.state.params.bulletinId,
+                bulletinText:this.props.navigation.state.params.bulletinText,
+                className:this.props.navigation.state.params.className,
+            } 
         }
         castId = classId;
         let filter = {
@@ -171,7 +174,6 @@ export default class BulletinEdit extends Component {
                 ToastAndroid.show('发生错误，请稍后重试！',ToastAndroid.SHORT);
             }
         }).catch((error) => {
-            alert(error)
             console.log(error);
             ToastAndroid.show(err_info.NO_INTERNET ,ToastAndroid.SHORT);
             this.props.navigation.state.params.callback(this.state.bulletinText);

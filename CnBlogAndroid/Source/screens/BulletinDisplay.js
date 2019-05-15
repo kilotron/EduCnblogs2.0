@@ -47,7 +47,7 @@ export default class BulletinEdition extends Component {
                 }}>
                     <Text style={{color: global.theme.headerTintColor, fontSize: 18}}>编辑</Text>
                 </TouchableOpacity>)
-            : (null)),
+            : (<View></View>)),
     })
 
     constructor(props){

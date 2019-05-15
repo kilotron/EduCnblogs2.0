@@ -74,7 +74,8 @@ import VoteDetail from './Source/screens/VoteDetail'
 import VoteAdd from './Source/screens/VoteAdd'
 import VoteMemberList from './Source/screens/VoteMemberList'
 import VoteMemberCommit from './Source/screens/VoteMemberCommit'
-import { themes, ThemeContext } from './Source/styles/theme-context';
+import { themes, ThemeContext, getHeaderStyle } from './Source/styles/theme-context';
+//import { globalAgent } from 'https';
 const { height, width } = Dimensions.get('window');
 
 const CODE_URL = [
@@ -117,39 +118,6 @@ class Welcome extends Component{
             </View>
         )
     }
-
-    toPersonalBlog()
-    {
-        this.reset();
-        this.props.navigation.navigate('PersonalBlog');
-    }
-
-    toHome()
-    {
-        this.props.navigation.navigate('Loginer');
-    }
-    reset = ()=>{
-        // 重置路由：使得无法返回登录界面
-        const resetAction = NavigationActions.reset({
-            index: 0,
-            actions: [
-                NavigationActions.navigate({ routeName: 'AfterloginTab'}),
-            ]
-        });
-        this.props.navigation.dispatch(resetAction);
-    }
-
-    async setPush(){
-        var receivePush = await storage.getItem(StorageKey.RECEIVE_PUSH);
-        if(receivePush === null){
-            storage.setItem(StorageKey.RECEIVE_PUSH,'true');
-        }
-    }
-
-    componentWillUnmount(){
-        // DeviceEventEmitter.removeListener('notification',this.notification);
-    }
-
     notification = (paramString) =>{
         console.log(paramString);
         console.log('success');
@@ -176,9 +144,50 @@ class Welcome extends Component{
                 })
                 console.log('跳转后');
             }
-           
+            else if(screen == 'BulletinDisplay'){
+                let {schoolClassId,bulletinId,bulletinText,className} = params.body.custom;
+                var callback = ()=>{
+                    toPersonalBlog();
+                }
+                console.log('跳转前');
+                this.props.navigation.navigate('BulltinDisplay',{
+                    schoolClassId: schoolClassId,
+                    bulletinId:bulletinId,
+                    bulletinText:bulletinText,
+                    className:className,
+                    membership:1,
+                    callback:callback,
+                })
+            }
         }catch(err){
             console.log(err);
+        }
+    };
+    toPersonalBlog()
+    {
+        this.reset();
+        this.props.navigation.navigate('PersonalBlog');
+    }
+
+    toHome()
+    {
+        this.props.navigation.navigate('Loginer');
+    }
+    reset = ()=>{
+        // 重置路由：使得无法返回登录界面
+        const resetAction = NavigationActions.reset({
+            index: 0,
+            actions: [
+                NavigationActions.navigate({ routeName: 'AfterloginTab'}),
+            ]
+        });
+        this.props.navigation.dispatch(resetAction);
+    }
+
+    async setPush(){
+        var receivePush = await storage.getItem(StorageKey.RECEIVE_PUSH);
+        if(receivePush === null){
+            storage.setItem(StorageKey.RECEIVE_PUSH,'true');
         }
     }
 
@@ -280,7 +289,51 @@ class UrlLogin extends Component{
             code : '',
         };
     }
-
+    notification = (paramString) =>{
+        console.log(paramString);
+        console.log('success');
+        // alert(params);
+        // this.props.navigation.navigate('HomeworkDetail');
+        try{
+            let params = JSON.parse(paramString);
+            let screen = params.body.custom.screen;
+            console.log(screen);
+            if(screen == 'HomeworkDetail'){
+                let {classId,homeworkId,membership,isFinished} = params.body.custom;
+                var callback = ()=>{
+                    toPersonalBlog();
+                }
+                console.log('跳转前');
+                this.props.navigation.navigate('HomeworkDetail',{
+                    Id: homeworkId,
+                    classId: classId, 
+                    isFinished: isFinished,
+                    membership:membership,
+                    callback:callback,
+                    //编辑作业所需参数,学生收到提醒不需要编辑。
+                    blogId:0,
+                })
+                console.log('跳转后');
+            }
+            else if(screen == 'BulletinDisplay'){
+                let {schoolClassId,bulletinId,bulletinText,className} = params.body.custom;
+                var callback = ()=>{
+                    toPersonalBlog();
+                }
+                console.log('跳转前');
+                this.props.navigation.navigate('BulltinDisplay',{
+                    schoolClassId: schoolClassId,
+                    bulletinId:bulletinId,
+                    bulletinText:bulletinText,
+                    className:className,
+                    membership:1,
+                    callback:callback,
+                })
+            }
+        }catch(err){
+            console.log(err);
+        }
+    };
     toPerson()
     {
         // 这里重置路由，阻止用户返回登录界面
@@ -325,7 +378,7 @@ class UrlLogin extends Component{
                     flexDirection: 'row', 
                     justifyContent: 'flex-start', 
                     alignItems: 'center',
-                    backgroundColor: '#EDEDED', 
+                    backgroundColor: '#FDFDFD', 
                     height: 80, 
                 }}>
                     <Image source={require('./Source/images/login.png')}
@@ -419,11 +472,11 @@ const HomeTab = TabNavigator({
         screen: PersonalBlog,
         navigationOptions: {
             tabBarLabel: '我的博客',
-            tabBarIcon: ({ tintColor, focused }) => (
+            tabBarIcon: ({focused, tintColor}) => (
                 <Image
                     resizeMode='contain'
                     source={require('./Source/images/nav_blog.png')}
-                    style={{height: 20}}
+                    style={{height: 20, tintColor: tintColor}}
                 ></Image>
             )
         }
@@ -436,7 +489,7 @@ const HomeTab = TabNavigator({
                 <Image
                     resizeMode='contain'
                     source={require('./Source/images/nav_class.png')}
-                    style={{height: 20}}
+                    style={{height: 20, tintColor: tintColor}}
                 ></Image>
             )
         }
@@ -449,10 +502,10 @@ const HomeTab = TabNavigator({
                 <Image
                     resizeMode='contain'
                     source={require('./Source/images/nav_i.png')}
-                    style={{height: 20}}
+                    style={{height: 20, tintColor: tintColor}}
                 ></Image>
-            )
-        }
+            ),
+        },
     },
 },{
     tabBarPosition: 'bottom',
@@ -462,20 +515,23 @@ const HomeTab = TabNavigator({
     tabBarOptions: {
         showIcon: true,
         showLabel: true,
-        style: {
-//            height: 30,
-
-        },
+        activeTintColor: global.theme.tabBarActiveTintColor,
+        inactiveTintColor: global.theme.tabBarInactiveTintColor,
         labelStyle: {
             marginTop: 0,
-            fontSize: 8
+            fontSize: 10,
         },
         iconStyle: {
             marginTop: 10,
         },
+        style: {
+            backgroundColor: global.theme.headerBackgroundColor,
+        },
         tabStyle: {
-            backgroundColor: UI.BOTTOM_COLOR,
             height: height/13,
+        },
+        indicatorStyle: {
+            height: 0, // 去掉指示线
         },
     },
 })
@@ -743,12 +799,8 @@ const SimpleNavigation = StackNavigator({
     initialRouteName: 'Welcome',
     // 默认的navigationOptions
     navigationOptions: {
-        headerTintColor: 'white', // 标题栏文字颜色
-        headerStyle: {
-            height: 40,
-            backgroundColor: UI.TOP_COLOR,
-            elevation: 1,
-        },
+        headerTintColor: global.theme.headerTintColor, // 标题栏文字颜色
+        headerStyle: getHeaderStyle(),
         headerTitleStyle: {
             flex: 1,
             textAlign: 'center', // 标题居中

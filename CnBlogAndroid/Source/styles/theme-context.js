@@ -9,7 +9,14 @@ export const themes = {
         buttonColor: '#FBFBFB',
         buttonBorderColor: '#0077FF',
         selectionColor: '#DDF1FF',
+        seperatorColor: '#DADADA',
+        tabBarActiveTintColor: '#0077FF',
+        tabBarInactiveTintColor: '#333',
+        addBackgroundColor: '#777',
+        addUnderlayColor: '#0077FF',
+        addTextColor: '#FFF',
     },
+    // 下面的配色未完成
     dark: {
         headerBackgroundColor: '#363636',
         headerTintColor: '#FFCC00',
@@ -19,10 +26,17 @@ export const themes = {
         buttonColor: '#3A3A3A',
         buttonBorderColor: '#FFCC00',
         selectionColor: '#555555',
+        seperatorColor: '#DADADA',
+        tabBarActiveTintColor: '#FFCC00',
+        tabBarInactiveTintColor: '#DDD', // 需要调整
+        addBackgroundColor: '#FFCC00',
+        addUnderlayColor: '#0077FF',
+        addTextColor: '#444',
     },
 };
 
-const navigationHeaderHeight = 45;
+export const navigationHeaderHeight = 45;
+export const homeTabHeaderHeight = 50;
 
 export function getHeaderStyle() {
     return {

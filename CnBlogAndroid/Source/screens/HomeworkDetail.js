@@ -184,7 +184,7 @@ export default class HomeWorkDetail extends Component{
         let currentTime = (new Date()).getTime();
         //十分钟内发送一条
         if(currentTime - this.state.sendTime < 60*60*1000){
-            ToastAndroid.show("提醒发送的间隔为至少1小时，请稍后再试！",ToastAndroid.LONG);
+            ToastAndroid.show("发送过于频繁，请稍后再试！",ToastAndroid.LONG);
             return;
         }
         let params = {

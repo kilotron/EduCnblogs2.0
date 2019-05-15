@@ -338,13 +338,13 @@ export default class HomeworkLists extends Component {
         if(this.state.membership == 2 || this.state.membership == 3){
             return(
                 <TouchableHighlight 
-                    underlayColor="#3b50ce"
+                    underlayColor={global.theme.addUnderlayColor}
                     activeOpacity={0.5}
                     style={{
                         position:'absolute',
                         bottom:20,
                         right:10, 
-                        backgroundColor: "#3b50ce",
+                        backgroundColor: global.theme.addBackgroundColor,
                         width: 52, 
                         height: 52, 
                         borderRadius: 26,
@@ -356,7 +356,7 @@ export default class HomeworkLists extends Component {
                     <Text
                         style= {{
                             fontSize: 30,
-                            color: '#ffffff',
+                            color: global.theme.addTextColor,
                             textAlign: 'center',
                             fontWeight: '100',
                         }}
@@ -441,13 +441,6 @@ export default class HomeworkLists extends Component {
                     flex:1,
                 }}
             >
-                {/* <FlatList
-                    data={data}
-                    ItemSeparatorComponent = {this._separator}
-                    renderItem={this._renderItem}
-                    onRefresh = {this.UpdateData}
-                    refreshing= {false}
-                /> */}
                 <SectionList
                     extraData={this.state}
                     sections={[

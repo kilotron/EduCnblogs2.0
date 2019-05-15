@@ -5,6 +5,7 @@ import java.util.List;
 
 import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
@@ -78,6 +79,17 @@ public class PushModule extends ReactContextBaseJavaModule {
     public void initClickHandler(Callback callback){
         UmengNotificationClickHandler notificationClickHandler = new UmengNotificationClickHandler() {
 
+            public boolean isApplicationInBackground(Context context) {
+                ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+                List<ActivityManager.RunningTaskInfo> taskList = am.getRunningTasks(1);
+                if (taskList != null && !taskList.isEmpty()) {
+                    ComponentName topActivity = taskList.get(0).topActivity;
+                    if (topActivity != null && !topActivity.getPackageName().equals(context.getPackageName())) {
+                        return true;
+                    }
+                }
+                return false;
+            }
             private boolean _isApplicationRunning(Context context) {
                 ActivityManager activityManager = (ActivityManager) context.getApplicationContext().getSystemService(context.ACTIVITY_SERVICE);
                 List<ActivityManager.RunningAppProcessInfo> processInfos = activityManager.getRunningAppProcesses();
@@ -96,11 +108,19 @@ public class PushModule extends ReactContextBaseJavaModule {
             public void dealWithCustomAction(Context context, UMessage msg) {
 
                 Log.i("my_dealWithCustomAction","dealWithCustomAction执行");
+                boolean backgroundFlag = isApplicationInBackground(context);
                 //应用是否运行
                 if(!_isApplicationRunning(context)){
                     Intent in = new Intent(context, MainActivity.class);
-                    in.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    in.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                     context.startActivity(in);
+                    if(backgroundFlag){ 
+                        Intent intent =new Intent();
+                        intent.setAction("puremanNotification");
+                        intent.putExtra("params",msg.getRaw().toString());
+                        Activity currentActivity = MainActivity.getCurrentActivity();
+                        currentActivity.sendBroadcast(intent);
+                    }
                 }
                 else {
 //                    Toast.makeText(context, "测试跳转", Toast.LENGTH_LONG).show();

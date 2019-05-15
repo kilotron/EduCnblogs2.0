@@ -110,6 +110,6 @@ global.theme = themes.light;
 
 /**全局的设置选项，可用于个性化定制 */
 global.settings = {
-	showSettings: true,
+	showSettings: false,
 	displayDetailTime: true,
 };

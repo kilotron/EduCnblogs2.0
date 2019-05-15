@@ -22,11 +22,7 @@ import {
     FlatList,
 } from 'react-native';
 
-import {
-    StackNavigator,
-    TabNavigator,
-    NavigationActions,
-} from 'react-navigation';
+import {navigationHeaderHeight, homeTabHeaderHeight} from '../styles/theme-context';
 
 const screenWidth= MyAdapter.screenWidth;
 const screenHeight= MyAdapter.screenHeight;
@@ -238,9 +234,12 @@ export default class PersonalBlog extends Component{
         }
         return(
             <View style = {styles.container}>
-                <View style = {styles.header}>
-                    <Text style = {styles.headertext}>{this.state.blogTitle}</Text>
+                <View style = {[styles.header, {backgroundColor: global.theme.headerBackgroundColor}]}>
+                    <Text style = {[styles.headertext, {color: global.theme.headerTintColor}]}>
+                        {this.state.blogTitle}
+                    </Text>
                 </View>
+                <View style={{ height: 0.75, backgroundColor: global.theme.seperatorColor}}/>
                 <View style = {styles.content}>
                     <FlatList
                         renderItem={this._renderItem}
@@ -257,24 +256,24 @@ export default class PersonalBlog extends Component{
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
+        //justifyContent: 'center',
+        //alignItems: 'center',
         backgroundColor: 'white',
     },
     header:{
         flexDirection: 'row',
-        justifyContent:'flex-start',
+        justifyContent:'center',
         alignItems: 'center',
         backgroundColor: UI.TOP_COLOR,
-        height: screenHeight/12,
-        paddingLeft: 0.03*screenWidth,
+        height: homeTabHeaderHeight,
         alignSelf: 'stretch',
     },
     headertext: {
-        fontSize: 22,
+        fontSize: 20,
         color: 'white',
-        fontWeight:'bold',
+        fontWeight:'normal',
         fontFamily : 'serif',
+        // letterSpacing: 20, // not working on android
     },
     content: {
         flex: 11,

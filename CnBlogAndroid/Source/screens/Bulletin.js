@@ -263,44 +263,79 @@ export default class Bulletin extends Component {
         {
             return ;
         }
-        let url = Config.BulletinList + this.props.schoolClassId + '/'+ pageIndex + '-'+ pageSize;
-        Service.Get(url).then((jsonData)=>{
-            let pageCount = Math.ceil(jsonData.totalCount / pageSize);
-            if(jsonData!=='rejected')
-            {
-                if(pageIndex===1)
-                {
-                    this.setState({
-                        bulletinCount: jsonData.totalCount,
-                        bulletins: jsonData.bulletins,
-                        loadStatus: this.state.currentPageIndex>=pageCount ? 'all loaded' : 'not loading',
-                        changedSchoolClassId: false,
-                    });
+        var membership = 1;
+        let url1 = Config.apiDomain + api.user.info;
+        Service.Get(url1).then((jsonData)=>{
+            let url2= Config.apiDomain+"api/edu/member/"+jsonData.BlogId+"/"+this.props.schoolClassId;
+            Service.Get(url2).then((jsonData)=>{
+                if(this._isMounted && jsonData!=='rejected'){
+                    membership = jsonData.membership;
                 }
-                else
-                {
-                    this.setState({
-                        bulletinCount: jsonData.totalCount,
-                        bulletins: this.state.bulletins.concat(jsonData.bulletins),
-                        loadStatus: this.state.currentPageIndex>=pageCount ? 'all loaded' : 'not loading',
-                        changedSchoolClassId: false,
-                    });
-                }
-            }
-            else
-            {
-                if(pageIndex==1)
-                {
-                    this.setState({
-                        loadStatus: 'none',
-                    });
-                }
+            }).then(()=>{
+                let url = Config.BulletinList + this.props.schoolClassId + '/'+ pageIndex + '-'+ pageSize;
+                Service.Get(url).then((jsonData)=>{
+                    let pageCount = Math.ceil(jsonData.totalCount / pageSize);
+                    if(jsonData!=='rejected')
+                    {
+                        if(pageIndex===1)
+                        {
+                            this.setState({
+                                bulletinCount: jsonData.totalCount,
+                                bulletins: jsonData.bulletins,
+                                loadStatus: this.state.currentPageIndex>=pageCount ? 'all loaded' : 'not loading',
+                                changedSchoolClassId: false,
+                                membership: membership,
+                            });
+                        }
+                        else
+                        {
+                            this.setState({
+                                bulletinCount: jsonData.totalCount,
+                                bulletins: this.state.bulletins.concat(jsonData.bulletins),
+                                loadStatus: this.state.currentPageIndex>=pageCount ? 'all loaded' : 'not loading',
+                                changedSchoolClassId: false,
+                                membership: membership,
+                            });
+                        }
+                    }
+                    else
+                    {
+                        if(pageIndex==1)
+                        {
+                            this.setState({
+                                loadStatus: 'none',
+                            });
+                        }
 
-            }
-        }).then(()=>{;
-        }).catch((error) => {
+                    }
+                }).then(()=>{;
+                }).catch((error) => {
+                    ToastAndroid.show(err_info.TIME_OUT,ToastAndroid.SHORT);
+                });
+            }).catch((err)=>{
+                ToastAndroid.show(err_info.TIME_OUT,ToastAndroid.SHORT);
+                this.setState({
+                    changedSchoolClassId: true,
+                    membership: membership,
+                    bulletins: [],
+                    bulletinCount: 0,
+                    loadStatus: 'not loading',
+                    currentPageIndex: 1,
+                });
+            });
+        }).catch((err)=>{
             ToastAndroid.show(err_info.TIME_OUT,ToastAndroid.SHORT);
+            this.setState({
+                changedSchoolClassId: true,
+                membership: membership,
+                bulletins: [],
+                bulletinCount: 0,
+                loadStatus: 'not loading',
+                currentPageIndex: 1,
+            });
         });
+
+
     }
 
     componentWillUnmount() {
@@ -375,7 +410,6 @@ export default class Bulletin extends Component {
                 currentPageIndex: 1,
             });
         });
-
     }
 
     /* 将网站返回的时间字符串改成预期 */
@@ -413,13 +447,13 @@ export default class Bulletin extends Component {
                         (this.state.membership==2||this.state.membership==3)?
                         (
                             <TouchableHighlight
-                                underlayColor="#3b50ce"
+                                underlayColor={global.theme.addUnderlaydColor}
                                 activeOpacity={0.5}
                                 style={{
                                     position:'absolute',
                                     bottom:20,
                                     right:10,
-                                    backgroundColor: "#3b50ce",
+                                    backgroundColor: global.theme.addBackgroundColor,
                                     width: 52,
                                     height: 52,
                                     borderRadius: 26,
@@ -431,7 +465,7 @@ export default class Bulletin extends Component {
                                 <Text
                                     style= {{
                                         fontSize: 30,
-                                        color: '#ffffff',
+                                        color: global.theme.addTextColor,
                                         textAlign: 'center',
                                         fontWeight: '100',
                                     }}

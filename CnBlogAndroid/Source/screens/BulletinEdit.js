@@ -174,7 +174,6 @@ export default class BulletinEdit extends Component {
                 ToastAndroid.show('发生错误，请稍后重试！',ToastAndroid.SHORT);
             }
         }).catch((error) => {
-            alert(error)
             console.log(error);
             ToastAndroid.show(err_info.NO_INTERNET ,ToastAndroid.SHORT);
             this.props.navigation.state.params.callback(this.state.bulletinText);

@@ -28,6 +28,7 @@ function HTMLSpecialCharsDecode(str){
     }
     return $result;  
     // return str;
+    
 }
 
 module.exports = HTMLSpecialCharsDecode;

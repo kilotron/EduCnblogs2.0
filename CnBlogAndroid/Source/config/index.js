@@ -1,5 +1,6 @@
 import Storage from 'react-native-storage';
 import {AsyncStorage} from 'react-native';
+import {themes} from '../styles/theme-context';
 
 export const umengConfig = {
 	appkey:'5cb692ac570df31b8d000cd7',
@@ -104,6 +105,8 @@ global.internet = true;
 
 global.unsummitted = [];
 global.timeTouch = null;
+
+global.theme = themes.light;
 
 /**全局的设置选项，可用于个性化定制 */
 global.settings = {

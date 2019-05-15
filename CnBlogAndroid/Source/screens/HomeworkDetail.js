@@ -184,7 +184,7 @@ export default class HomeWorkDetail extends Component{
         let currentTime = (new Date()).getTime();
         //十分钟内发送一条
         if(currentTime - this.state.sendTime < 60*60*1000){
-            ToastAndroid.show("提醒发送的间隔为至少1小时，请稍后再试！",ToastAndroid.LONG);
+            ToastAndroid.show("发送过于频繁，请稍后再试！",ToastAndroid.LONG);
             return;
         }
         let params = {
@@ -196,7 +196,7 @@ export default class HomeWorkDetail extends Component{
                 screen:'HomeworkDetail',
                 classId:this.state.classId,
                 homeworkId:this.state.Id,
-                membership:this.state.membership,
+                membership:1,//发给学生
                 isFinished:this.state.isFinished,
             }
         }
@@ -219,7 +219,7 @@ export default class HomeWorkDetail extends Component{
     }
     renderBottomBar(Id,isFinished,classId,answerCount){
         isClosed = this.state.isClosed;
-        if(this.state.membership === 1){
+        if(this.state.membership !== 2 && this.state.membership !== 3){
             return(
                 <View style = {styles.bottom}>
                     <TouchableOpacity

@@ -160,7 +160,9 @@ export function openPush(){
 //         else return(code);
 //     })
 // }
-
+export function initHandler(){
+    PushUtil.initClickHandler(()=>{});
+}
 export function addClassTag(classId){
     return PushUtil.addTag(classId + '',()=>{});
 }

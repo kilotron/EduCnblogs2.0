@@ -11,6 +11,7 @@ import React, { Component,} from 'react';
 import CookieManager from 'react-native-cookies'
 import { Icon } from 'native-base';
 import * as umengAnalysis from './Source/umeng/umengAnalysis'
+import * as umengPush from './Source/umeng/umengPush'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import {
@@ -63,8 +64,8 @@ import HomeworkSubmit from './Source/screens/HomeworkSubmit'
 import UnfinishedHomeworkList from './Source/screens/UnfinishedHomeworkList'
 import BlogEdition from './Source/screens/BlogEdition'
 import Bulletin from './Source/screens/Bulletin'
-import BulletinAdd from './Source/screens/BulletinAdd'
-import BulletinEdition from './Source/screens/BulletinEdition'
+import BulletinDisplay from './Source/screens/BulletinDisplay'
+import BulletinEdit from './Source/screens/BulletinEdit'
 import HistoryList from './Source/screens/HistoryList'
 import ClassSelect from './Source/screens/ClassSelect'
 import VoteList from './Source/screens/VoteList'
@@ -73,6 +74,8 @@ import VoteDetail from './Source/screens/VoteDetail'
 import VoteAdd from './Source/screens/VoteAdd'
 import VoteMemberList from './Source/screens/VoteMemberList'
 import VoteMemberCommit from './Source/screens/VoteMemberCommit'
+import { themes, ThemeContext, getHeaderStyle } from './Source/styles/theme-context';
+//import { globalAgent } from 'https';
 const { height, width } = Dimensions.get('window');
 
 const CODE_URL = [
@@ -88,6 +91,10 @@ const CODE_URL = [
 //首先使用上次的token来获取用户信息，如果失败那么重新登陆
 //用户退出之后一定要清空token
 class App extends Component {
+    constructor(props) {
+        super(props);
+    }
+
     render() {
         //这里一定要测试一下，如果是刚刚下载的软件，一开始打开是不是会显示登陆界面
         const {navigate} = this.props.navigation;
@@ -98,7 +105,7 @@ class App extends Component {
                 <Welcome/>
             </View>
         );
-    }
+    } 
 }
 
 // 在App中调用的登录界面组件
@@ -111,7 +118,51 @@ class Welcome extends Component{
             </View>
         )
     }
-
+    notification = (paramString) =>{
+        console.log(paramString);
+        console.log('success');
+        // alert(params);
+        // this.props.navigation.navigate('HomeworkDetail');
+        try{
+            let params = JSON.parse(paramString);
+            let screen = params.body.custom.screen;
+            console.log(screen);
+            if(screen == 'HomeworkDetail'){
+                let {classId,homeworkId,membership,isFinished} = params.body.custom;
+                var callback = ()=>{
+                    toPersonalBlog();
+                }
+                console.log('跳转前');
+                this.props.navigation.navigate('HomeworkDetail',{
+                    Id: homeworkId,
+                    classId: classId, 
+                    isFinished: isFinished,
+                    membership:membership,
+                    callback:callback,
+                    //编辑作业所需参数,学生收到提醒不需要编辑。
+                    blogId:0,
+                })
+                console.log('跳转后');
+            }
+            else if(screen == 'BulletinDisplay'){
+                let {schoolClassId,bulletinId,bulletinText,className} = params.body.custom;
+                var callback = ()=>{
+                    toPersonalBlog();
+                }
+                console.log('跳转前');
+                this.props.navigation.navigate('BulltinDisplay',{
+                    schoolClassId: schoolClassId,
+                    bulletinId:bulletinId,
+                    bulletinText:bulletinText,
+                    className:className,
+                    membership:1,
+                    callback:callback,
+                })
+            }
+        }catch(err){
+            console.log(err);
+        }
+    };
     toPersonalBlog()
     {
         this.reset();
@@ -140,18 +191,10 @@ class Welcome extends Component{
         }
     }
 
-    componentWillUnmount(){
-        // DeviceEventEmitter.removeListener('notification',this.notification);
+    componentWillMount(){
+        umengPush.initHandler();
     }
-
-    notification = (params) =>{
-        console.log(params);
-        console.log('success');
-        this.props.navigation.navigate('HomeworkDetail');
-    }
-
-    componentDidMount(){
-        DeviceEventEmitter.addListener('openNotification',this.notification);
+    componentDidMount(){       
         // this.subscription = DeviceEventEmitter.addListener('xxxName', Function);//监听通知
         this.timer = setTimeout(
             ()=>{
@@ -169,6 +212,8 @@ class Welcome extends Component{
                                 .then((jsonData)=>{
                                     if(jsonData !== "rejected")
                                     {
+                                        DeviceEventEmitter.addListener('notification',this.notification);
+                                        console.log('开始监听通知');
                                         this.toPersonalBlog();
                                     }
                                     else
@@ -213,6 +258,7 @@ class Loginer extends Component{
         );
     }
     componentWillMount() {
+
       if (Platform.OS === 'android') {
         BackHandler.addEventListener('hardwareBackPress', this.onBackAndroid);
       }
@@ -243,7 +289,51 @@ class UrlLogin extends Component{
             code : '',
         };
     }
-
+    notification = (paramString) =>{
+        console.log(paramString);
+        console.log('success');
+        // alert(params);
+        // this.props.navigation.navigate('HomeworkDetail');
+        try{
+            let params = JSON.parse(paramString);
+            let screen = params.body.custom.screen;
+            console.log(screen);
+            if(screen == 'HomeworkDetail'){
+                let {classId,homeworkId,membership,isFinished} = params.body.custom;
+                var callback = ()=>{
+                    toPersonalBlog();
+                }
+                console.log('跳转前');
+                this.props.navigation.navigate('HomeworkDetail',{
+                    Id: homeworkId,
+                    classId: classId, 
+                    isFinished: isFinished,
+                    membership:membership,
+                    callback:callback,
+                    //编辑作业所需参数,学生收到提醒不需要编辑。
+                    blogId:0,
+                })
+                console.log('跳转后');
+            }
+            else if(screen == 'BulletinDisplay'){
+                let {schoolClassId,bulletinId,bulletinText,className} = params.body.custom;
+                var callback = ()=>{
+                    toPersonalBlog();
+                }
+                console.log('跳转前');
+                this.props.navigation.navigate('BulltinDisplay',{
+                    schoolClassId: schoolClassId,
+                    bulletinId:bulletinId,
+                    bulletinText:bulletinText,
+                    className:className,
+                    membership:1,
+                    callback:callback,
+                })
+            }
+        }catch(err){
+            console.log(err);
+        }
+    };
     toPerson()
     {
         // 这里重置路由，阻止用户返回登录界面
@@ -254,6 +344,8 @@ class UrlLogin extends Component{
             ]
         });
         this.props.navigation.dispatch(resetAction);
+        DeviceEventEmitter.addListener('notification',this.notification);
+        console.log('开始监听通知');
         this.props.navigation.navigate('PersonalBlog');
     }
     getTokenFromApi(Code)
@@ -286,7 +378,7 @@ class UrlLogin extends Component{
                     flexDirection: 'row', 
                     justifyContent: 'flex-start', 
                     alignItems: 'center',
-                    backgroundColor: '#EDEDED', 
+                    backgroundColor: '#FDFDFD', 
                     height: 80, 
                 }}>
                     <Image source={require('./Source/images/login.png')}
@@ -380,11 +472,11 @@ const HomeTab = TabNavigator({
         screen: PersonalBlog,
         navigationOptions: {
             tabBarLabel: '我的博客',
-            tabBarIcon: ({ tintColor, focused }) => (
+            tabBarIcon: ({focused, tintColor}) => (
                 <Image
                     resizeMode='contain'
                     source={require('./Source/images/nav_blog.png')}
-                    style={{height: 20}}
+                    style={{height: 20, tintColor: tintColor}}
                 ></Image>
             )
         }
@@ -397,7 +489,7 @@ const HomeTab = TabNavigator({
                 <Image
                     resizeMode='contain'
                     source={require('./Source/images/nav_class.png')}
-                    style={{height: 20}}
+                    style={{height: 20, tintColor: tintColor}}
                 ></Image>
             )
         }
@@ -410,10 +502,10 @@ const HomeTab = TabNavigator({
                 <Image
                     resizeMode='contain'
                     source={require('./Source/images/nav_i.png')}
-                    style={{height: 20}}
+                    style={{height: 20, tintColor: tintColor}}
                 ></Image>
-            )
-        }
+            ),
+        },
     },
 },{
     tabBarPosition: 'bottom',
@@ -423,20 +515,23 @@ const HomeTab = TabNavigator({
     tabBarOptions: {
         showIcon: true,
         showLabel: true,
-        style: {
-//            height: 30,
-
-        },
+        activeTintColor: global.theme.tabBarActiveTintColor,
+        inactiveTintColor: global.theme.tabBarInactiveTintColor,
         labelStyle: {
             marginTop: 0,
-            fontSize: 8
+            fontSize: 10,
         },
         iconStyle: {
             marginTop: 10,
         },
+        style: {
+            backgroundColor: global.theme.headerBackgroundColor,
+        },
         tabStyle: {
-            backgroundColor: UI.BOTTOM_COLOR,
             height: height/13,
+        },
+        indicatorStyle: {
+            height: 0, // 去掉指示线
         },
     },
 })
@@ -679,17 +774,14 @@ const SimpleNavigation = StackNavigator({
             headerTitle: '浏览记录',
         }
     },
-    BulletinAdd: {
-        screen: BulletinAdd,
+    BulletinDisplay: {
+        screen: BulletinDisplay,
         navigationOptions:{
-            headerTitle: '添加公告',
+            headerTitle: '公告',
         }
     },
-    BulletinEdition: {
-        screen: BulletinEdition,
-        navigationOptions:{
-            headerTitle: '编辑公告',
-        }
+    BulletinEdit: {
+        screen: BulletinEdit,
     },
     ClassSelect: {
         screen: ClassSelect,
@@ -707,11 +799,8 @@ const SimpleNavigation = StackNavigator({
     initialRouteName: 'Welcome',
     // 默认的navigationOptions
     navigationOptions: {
-        headerTintColor: 'white', // 标题栏文字颜色
-        headerStyle: {
-            height: 40,
-            backgroundColor: UI.TOP_COLOR,
-        },
+        headerTintColor: global.theme.headerTintColor, // 标题栏文字颜色
+        headerStyle: getHeaderStyle(),
         headerTitleStyle: {
             flex: 1,
             textAlign: 'center', // 标题居中

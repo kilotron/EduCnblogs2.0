@@ -107,12 +107,13 @@ class Triangle extends React.Component {
 }
 
 /*
-渲染选择项的每一个项目
+渲染下拉菜单按钮
 */
 const TopMenuItem = (props) => {
     const onPress = () => {
-        props.onSelect(props.index);
-    }
+        props.onClickDropDownMenu(props.index);
+    };
+    //console.log("topmenuitem: ", props.label, ' , ', props.index);
     return (
         <TouchableWithoutFeedback onPress={onPress}>
             <View style={styles.item}>
@@ -131,7 +132,7 @@ const Subtitle = (props) => {
     let rightTextStyle = props.selected ? [styles.tableItemText, styles.highlight] : styles.tableItemText;
 
     let onPress = () => {
-        props.onSelectMenu(props.index, props.subindex, props.data);
+        props.onSelectItem(props.index, props.subindex, props.data);
     }
 
     return (
@@ -180,7 +181,6 @@ export default class ClassBlogPostsList extends Component {
         //最大高度
         var max = parseInt((height - 80) * 0.8 / 43);
 
-
         for (let i = 0, c = array.length; i < c; ++i) {
             let item = array[i];
             top[i] = item.data[item.selectedIndex].title;
@@ -189,15 +189,14 @@ export default class ClassBlogPostsList extends Component {
             height[i] = new Animated.Value(0);
         };
 
-
-        //分析数据
         this.state = {
-            top: top,
-            maxHeight: maxHeight,
+            top: top,                   // 下拉菜单使用的变量列表
+            maxHeight: maxHeight,       // 下拉菜单使用的变量列表
             subselected: subselected,
-            height: height,
-            fadeInOpacity: new Animated.Value(0),
-            selectedIndex: null,
+            height: height,             // 下拉菜单使用的变量列表
+            fadeInOpacity: new Animated.Value(0),  // 下拉菜单使用的变量
+            selectedIndex: null,        // 下拉菜单使用的变量
+            current: null,              // 下拉菜单使用的变量
 
             blogs: [],	                // 班级博客列表
             postCount: 0,               //班级博客总数
@@ -256,7 +255,6 @@ export default class ClassBlogPostsList extends Component {
     componentWillUpdate() {
     }
 
-
     createAnimation = (index, height) => {
         return Animated.timing(
             this.state.height[index],
@@ -277,18 +275,22 @@ export default class ClassBlogPostsList extends Component {
         );
     }
 
-
+    /* 单击选择框时执行 */
     onSelect = (index) => {
         if (index === this.state.selectedIndex) {
             //消失
+            //console.log("onSelect \n to hide func");
             this.hide(index);
-        } else {
+        }
+        else {
+            //console.log("onSelect \n to onshow func");
             this.setState({selectedIndex: index, current: index});
             this.onShow(index);
         }
     }
 
     hide = (index, subselected) => {
+        //console.log("hide func");
         let opts = {selectedIndex: null, current: index};
         if (subselected !== undefined) {
             this.state.subselected[index] = subselected;
@@ -303,7 +305,6 @@ export default class ClassBlogPostsList extends Component {
         Animated.parallel([this.createAnimation(index, this.state.maxHeight[index]), this.createFade(1)]).start();
     }
 
-
     onHide = (index) => {
         //其他的设置为0
         for (let i = 0, c = this.state.height.length; i < c; ++i) {
@@ -314,21 +315,18 @@ export default class ClassBlogPostsList extends Component {
         Animated.parallel([this.createAnimation(index, 0), this.createFade(0)]).start();
     }
 
-    onSelectMenu = (index, subindex, data) => {
+    /* 单击下拉菜单中元素时执行 */
+    onClickMenuItem = (index, subindex, data) => {
         this.hide(index, subindex);
-        var TheVal = data.value;
-        console.log("index: ", index);
-        console.log("subindex: ", subindex);
-        console.log("data2: ", TheVal);
-        this.onChangedSelectMenu(TheVal);
+        /* 更改选中的博文类型 */
+        this.onChangedSelectType(data.value);
     }
 
-    renderList = (d, index) => {
+    /* 渲染下拉菜单中的一列 */
+    renderDropDownItem = (d, index) => {
         let subselected = this.state.subselected[index];
         let Comp = null;
-
         Comp = Subtitle;
-
         let enabled = this.state.selectedIndex == index || this.state.current == index;
 
         return (
@@ -337,7 +335,7 @@ export default class ClassBlogPostsList extends Component {
                 <ScrollView style={styles.scroll}>
                     {d.data.map((data, subindex) => {
                         return <Comp
-                            onSelectMenu={this.onSelectMenu}
+                            onSelectItem={this.onClickMenuItem}
                             index={index}
                             subindex={subindex}
                             data={data}
@@ -421,23 +419,10 @@ export default class ClassBlogPostsList extends Component {
         }, () => {this.fetchPage(this.state.currentPageIndex)});
     }
 
-    onChangedSelectMenu=(itemValue)=>{
-        this.setState({filter: itemValue},this.updateData());
+    /* 改变选中博文类型后执行的函数 */
+    onChangedSelectType=(itemValue)=>{
+        this.setState({filter: itemValue}, this.updateData());
     }
-
-    addlog(){
-        console.log('执行渲染列表');
-    }
-
-    renderContent(){
-        this.addlog();
-        return (
-            <View >
-                <Text style={styles.text}>index</Text>
-            </View>
-        );
-        // alert(this.state.data.title)
-    };
 
     render() {
         return (
@@ -451,7 +436,7 @@ export default class ClassBlogPostsList extends Component {
                         return <TopMenuItem
                             key={index}
                             index={index}
-                            onSelect={this.onSelect}
+                            onClickDropDownMenu={this.onSelect}
                             label={t}
                             selected={this.state.selectedIndex === index}/>
                     })}
@@ -472,7 +457,7 @@ export default class ClassBlogPostsList extends Component {
                 <View style={styles.bgContainer} pointerEvents={this.state.selectedIndex !== null ? "auto" : "none"}>
                     <Animated.View style={[styles.bg, {opacity: this.state.fadeInOpacity}]}/>
                     {CONFIG.map((d, index) => {
-                        return this.renderList(d, index);
+                        return this.renderDropDownItem(d, index);
                     })}
                 </View>
             </View>

@@ -53,6 +53,7 @@ export default class VoteDetail extends Component {
                         width: 22,
                         marginRight: 12
                     }}
+                    tintColor={global.theme.headerTintColor}
                 />
             </TouchableOpacity>
         ),

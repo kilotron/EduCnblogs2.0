@@ -130,6 +130,7 @@ export default class HistoryList extends Component {
                 close={!(this.state.sectionID === 'historylist' && this.state.rowID === Id)}
                 right={BtnsRight}
                 left={BtnsLeft}
+                sensitivity={20}
                 rowID={Id}
                 sectionID='historylist'
                 autoClose={true}

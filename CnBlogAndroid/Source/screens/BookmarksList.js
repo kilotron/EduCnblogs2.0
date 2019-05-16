@@ -60,6 +60,10 @@ export default class BookmarksList extends Component {
         this.fetchPage(this.state.currentPageIndex);
     }
 
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
+
     /* 弹出选择框询问是否删除 */
     _onPressDelBookmarks(wzLinkId) {
         if(!this._isMounted){
@@ -114,29 +118,6 @@ export default class BookmarksList extends Component {
         var DetailId = item1.item.detailId;
         let BlogApp = GetBlogApp(LinkUrl);
 
-        /*
-        let _panResponder = PanResponder.create({
-            onMoveShouldSetPanResponder: (evt, gestureState) => {
-                if(gestureState.dx < -screenWidth*0.1 || gestureState.dx > screenWidth*0.1){
-                    return true;
-                }
-                else{
-                    return false;
-                }
-            },
-            onPanResponderRelease: (evt, gestureState)=>{
-                if(gestureState.dx < 0) {
-                    this._onPressDelBookmarks(WzLinkId);
-                }
-                else{
-                  this.props.navigation.navigate('BookmarksEdit',{Url: LinkUrl,
-                      Title: Title, Id: WzLinkId, Description: Summary, callback: this._FlatListRefresh});
-                }
-            },
-            onPanResponderTerminate: (evt, gestureState)=>{;},
-        });
-        */
-
         var BtnsTypes = [
             { text: '修改',    type: 'primary',  onPress: ()=>this.props.navigation.navigate('BookmarksEdit',{Url: LinkUrl,
               Title: Title, Id: WzLinkId, Description: Summary, callback: this._FlatListRefresh})},
@@ -148,6 +129,7 @@ export default class BookmarksList extends Component {
             <Swipeout
                 close={!(this.state.sectionID === 'bookmarkslist' && this.state.rowID === WzLinkId)}
                 right={BtnsTypes}
+                sensitivity={20}
                 rowID={WzLinkId}
                 sectionID='bookmarkslist'
                 autoClose={true}
@@ -328,7 +310,6 @@ export default class BookmarksList extends Component {
         Service.Get(Config.Bookmarks).then((jsonData)=>
         {
             bookmarksCount = jsonData.length;
-            //console.log('bookmarksCount: ' + bookmarksCount);
             if(bookmarksCount <= 0)
             {
                 this.setState({
@@ -381,13 +362,8 @@ export default class BookmarksList extends Component {
         });
     }
 
-    componentWillUnmount() {
-        this._isMounted = false;
-    }
-
     /* 将网站返回的时间字符串改成预期 */
     String2Date = (dateStr)=>{
-        //console.log(dateStr);
         if(dateStr == null)
             return '  ';
         let s1 = dateStr.split('T')[0];

@@ -31,7 +31,7 @@ const screenHeight = MyAdapter.screenHeight;
  */
 export default class BulletinEdit extends Component {
     static navigationOptions = ({ navigation }) => ({
-        headerStyle: getHeaderStyle(), 
+        headerStyle: getHeaderStyle(),
         headerTitle: navigation.state.params.createNew ? '创建新公告' : '编辑公告',
         headerTintColor: global.theme.headerTintColor,
         headerLeft: (<HeaderBackButton tintColor={global.theme.headerTintColor} onPress={()=>{
@@ -69,7 +69,7 @@ export default class BulletinEdit extends Component {
             BackHandler.addEventListener('hardwareBackPress', this.onBackButtonPressAndroid)
         ); //按返回键时调用this.onBackButtonPressAndroid
         this.bulletinTextModified = false;
-        this.prevBulletinText = this.props.navigation.state.params.createNew 
+        this.prevBulletinText = this.props.navigation.state.params.createNew
             ? ''
             : this.props.navigation.state.params.bulletinText;
     }
@@ -113,7 +113,7 @@ export default class BulletinEdit extends Component {
                 bulletinId:this.props.navigation.state.params.bulletinId,
                 bulletinText:this.props.navigation.state.params.bulletinText,
                 className:this.props.navigation.state.params.className,
-            } 
+            }
         }
         castId = classId;
         let filter = {
@@ -140,7 +140,7 @@ export default class BulletinEdit extends Component {
             schoolClassId: this.state.schoolClassId,
             content: this.state.bulletinText,
         });
-        let url = createNew ? Config.BulletinPublish : Config.BulletinEdit + this.state.bulletinId; 
+        let url = createNew ? Config.BulletinPublish : Config.BulletinEdit + this.state.bulletinId;
 
         Service.UserAction(url, body, createNew ? 'POST' : 'PATCH').then((response)=>{
             if(response.status!==200)
@@ -174,7 +174,7 @@ export default class BulletinEdit extends Component {
                 ToastAndroid.show('发生错误，请稍后重试！',ToastAndroid.SHORT);
             }
         }).catch((error) => {
-            console.log(error);
+            //console.log(error);
             ToastAndroid.show(err_info.NO_INTERNET ,ToastAndroid.SHORT);
             this.props.navigation.state.params.callback(this.state.bulletinText);
             this.props.navigation.goBack();
@@ -184,7 +184,7 @@ export default class BulletinEdit extends Component {
     render() {
         return (
             <View style = {[styles.container,{backgroundColor:global.theme.backgroundColor}]}>
-                <TextInput style={[styles.bulletinDetail,{color:global.theme.textColor}]} 
+                <TextInput style={[styles.bulletinDetail,{color:global.theme.textColor}]}
                     multiline={true}
                     onChangeText= {(text)=> {
                         this.bulletinTextModified = true;

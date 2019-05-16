@@ -81,8 +81,7 @@ export default class Bulletin extends Component {
                         };
                         let body = JSON.stringify(postBody);
                         let url = Config.BulletinDel + this.props.schoolClassId + '/' + id;
-                        //console.log(url);
-                        //console.log(body);
+                        
                         Service.UserAction(url, body, 'DELETE').then((response)=>{
                             if(response.status!==200)
                             {
@@ -414,7 +413,6 @@ export default class Bulletin extends Component {
 
     /* 将网站返回的时间字符串改成预期 */
     String2Date = (day)=>{
-        //console.log(day);
         if(day == null)
             return '  ';
         let s1 = day.split('T')[0];

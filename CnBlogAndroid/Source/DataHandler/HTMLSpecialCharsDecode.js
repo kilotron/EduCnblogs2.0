@@ -4,7 +4,8 @@ function HTMLSpecialCharsDecode(str){
     str = str.replace(/&lt;/g, '<');
     str = str.replace(/&gt;/g, '>');
     str = str.replace(/&quot;/g, "''");  
-    str = str.replace(/&#39;/g, "'");  
+    str = str.replace(/&#39;/g, "'");   // 单引号
+    str = str.replace(/&#160;/g, " ");  // 空格
     //转义为Markdown格式
     // str = str.replace(/<br\/>/g,"\n\n");
     // str = str.replace(/<b>/g,"**");

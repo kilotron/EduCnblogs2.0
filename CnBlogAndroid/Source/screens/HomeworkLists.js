@@ -304,7 +304,7 @@ export default class HomeworkLists extends Component {
                     style = {HomeworkStyles.container}
                 >
                     <Text style= {isClosed ? HomeworkStyles.greyTitleTextStyle : HomeworkStyles.titleTextStyle}>
-                        {title}
+                        {HTMLSpecialCharsDecode(title)}
                     </Text>
                     <Text numberOfLines={3} style= {HomeworkStyles.abstractTextStyle}>
                         {HTMLSpecialCharsDecode(description)}

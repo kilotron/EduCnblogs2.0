@@ -44,7 +44,7 @@ const {width, height} = Dimensions.get('window');
 const T_WIDTH = 7;
 const T_HEIGHT = 4;
 
-const COLOR_HIGH = '#00bea9';
+const COLOR_HIGH = '#3C50D7';
 const COLOR_NORMAL = '#6c6c6c';
 
 const LINE = 1 / PixelRatio.get();

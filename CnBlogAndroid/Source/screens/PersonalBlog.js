@@ -180,15 +180,18 @@ export default class PersonalBlog extends Component{
                     onPress = {Url!=='' ? ()=>this.props.navigation.navigate('BlogDetail',
                     {Id:Id, blogApp: global.user_information.BlogApp, CommentCount: CommentCount, Url: Url, Title: Title, Description: Description,}) : ()=>{}}
                 >
-                    <Text style = {{
-                        fontSize: 18,
-                        fontWeight: 'bold',
-                        marginTop: 10,
-                        marginBottom: 2,
-                        textAlign: 'left',
-                        color: 'black',
-                        fontFamily : 'serif',
-                    }} accessibilityLabel = {Url}>
+                    <Text 
+                        style = {{
+                            fontSize: 18,
+                            fontWeight: '400',
+                            marginTop: 10,
+                            marginBottom: 2,
+                            textAlign: 'left',
+                            color: '#484848',
+                            lineHeight: 30,
+                            fontFamily: 'sans-serif',
+                        }}
+                        accessibilityLabel = {Url}>
                         {Title}
                     </Text>
                     <Text  numberOfLines={3} style = {{
@@ -196,7 +199,7 @@ export default class PersonalBlog extends Component{
                         fontSize: 14,
                         marginBottom: 8,
                         textAlign: 'left',
-                        color: 'rgb(70,70,70)',
+                        color: '#666',
                     }}>
                         {Description}
                     </Text>

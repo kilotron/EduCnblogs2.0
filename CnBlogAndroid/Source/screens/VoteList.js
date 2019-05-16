@@ -155,6 +155,8 @@ export default class VoteList extends Component {
                         this.props.navigation.navigate('VoteDetail', //获取详细信息
                             {
                                 voteId: item.voteId,
+                                // 在没有人投票的情况下不弹出已投票成员页面
+                                voteCount: item.voteCount,  
                             });
                     }}
                 >

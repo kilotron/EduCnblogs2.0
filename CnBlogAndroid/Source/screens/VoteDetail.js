@@ -28,14 +28,23 @@ const extractVoteContentData = require('../DataHandler/VoteContent');
 
 const screenWidth = MyAdapter.screenWidth;
 const screenHeight = MyAdapter.screenHeight;
+// 投票隐私
+const Public = 1;
+const Anonymous = 2;
 
 // 传入voteID作为参数
 export default class VoteDetail extends Component {
     /**navigationOptions放在此处，可以在标题栏放一个按钮跳转到另一个页面。 */
     static navigationOptions = ({ navigation }) => ({
         headerTitle: '投票详情',
-        headerRight: (
+        headerRight: navigation.state.params.privacy === Public ? (
             <TouchableOpacity onPress={() => {
+                if (navigation.state.params.voteCount == 0) {
+                    Alert.alert('提示', '目前还没有人投票~', [
+                        {text: '确定',},
+                    ]);
+                    return;
+                }
                 if (typeof(navigation.state.params.voteContent) == 'undefined') {
                     ToastAndroid.show('请等待1秒', ToastAndroid.SHORT);
                     return; // voteContent还没有获取到
@@ -56,7 +65,7 @@ export default class VoteDetail extends Component {
                     tintColor={global.theme.headerTintColor}
                 />
             </TouchableOpacity>
-        ),
+        ) : (<View></View>),
     })
 
     constructor(props) {
@@ -97,7 +106,6 @@ export default class VoteDetail extends Component {
     _isMounted;
 
     componentWillMount = () => {
-        //this.props.navigation.setParams({theme: this.context});
         this._isMounted = true;
         let contenturl = Config.VoteDetail + this.state.voteId;
         let voteContentURL = Config.VoteContent + this.state.voteId;
@@ -121,7 +129,10 @@ export default class VoteDetail extends Component {
                     })
                 }
                 // 为显示投票成员设置
-                this.props.navigation.setParams({ schoolClassId: jsonData.schoolClassId });
+                this.props.navigation.setParams({ 
+                    schoolClassId: jsonData.schoolClassId,
+                    privacy: jsonData.privacy,
+                });
             }
         })
         .then(() => {

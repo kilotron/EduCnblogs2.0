@@ -51,8 +51,8 @@ export default class VoteAdd extends Component {
             content: "", //投票说明
             privacy: 1, //（1.公开、2.匿名）
             deadline: "", //"2017-09-10 17:00"
-            voteContents: [],  
-            voteQuestions : [],//投票问题列表
+            voteContents: [],
+            voteQuestions: [],//投票问题列表
 
             ModalVisible: false, //是否可见日历
             hour: "00",
@@ -247,58 +247,109 @@ export default class VoteAdd extends Component {
         );
     }
 
+    shouldComponentUpdate(nextProps, nextState) {
+        if (this.state.questionNum != nextState.questionNum) return true;
+        if (this.state.name != nextState.name) return true;
+        if (this.state.content != nextState.content) return true;
+        if (this.state.deadline != nextState.deadline) return true;
+        if (this.state.hour != nextState.hour) return true;
+        if (this.state.minute != nextState.minute) return true;
+        if (this.state.ModalVisible != nextState.ModalVisible) return true;
+        if (this.state.voteQuestions != nextState.voteQuestions) return true;
+        if (this.state.voteContents != nextState.voteContents) return true;
+        if (this.state.privacy != nextState.privacy) return true;
+        return false;
+    }
 
-    // componentWillUpdate(nextProps, nextState) {
-    //     var array = this.state.voteQuestions;
-    //     var varQuestionNum = this.state.questionNum;
-    //     if (nextState.questionNum > array.length) {
-    //         varQuestionNum++;
-    //         array.push(
-    //             <Question
-    //                 myThis={this}
-    //                 titleNum={varQuestionNum}
-    //                 isVisible={true}
-    //             />
-    //         )
-    //     }
-    //     this.setState({ voteQuestions : array });
-    // }
+    componentWillUpdate(nextProps, nextState) {
+        var array = this.state.voteQuestions;
+        var arrayContents = this.state.voteContents;
+        var varQuestionNum = this.state.questionNum;
+        if (nextState.questionNum > array.length) {
+            varQuestionNum++;
+            array.push(
+                <Question
+                    myThis={this}
+                    titleNum={varQuestionNum}
+                    isVisible={true}
+                />
+            )
+            arrayContents.push(
+                {}
+            )
+        }
+        this.setState({ voteQuestions: array });
+        this.setState({ voteContents: arrayContents });
+    }
 
     /** 增加一个投票问题，暂时未实现 */
     addQuestion() {
         var varQuestionNum = this.state.questionNum;
-        this.setState({ questionNum : varQuestionNum + 1 });
+        this.setState({ questionNum: varQuestionNum + 1 });
     }
-
 
     /** 投票添加问题按钮 */
     getQuestionAddButton() {
         return (
-            <Button
-                title='添加问题'
+            <TouchableOpacity style={{
+                justifyContent: 'center',
+                backgroundColor: 'white',
+                alignItems: 'flex-start',
+                alignSelf: 'flex-start',
+                marginRight: screenWidth / 5,
+                width: screenWidth / 6,
+                height: screenHeight / 14,
+            }}
                 onPress={() => { this.addQuestion() }}
             >
-            </Button>
+                <Text style={styles.textAddOption}
+
+                >
+                    {'添加问题'}
+                </Text>
+            </TouchableOpacity>
         )
+    }
+
+    editVoteContents(propsTitleNum, propsArray) {
+        var array = this.state.voteContents;
+        var num;
+        // if (array.length < propsTitleNum) { //该投票未添加到voteContents
+        //     array[length] = propsArray;
+        // }
+        // else 
+        {
+            for (num = 1; num <= array.length; num++) {
+                if (num == propsTitleNum) {
+                    array[num - 1] = propsArray;
+                }
+            }
+        }
+        this.setState({ voteContents: array });
     }
 
     componentWillMount() {
         var array = [];
+        var arrayContents = [];
         /** 生成一个初始问题 */
         var num = 0;
         for (num = 1; num <= this.state.questionNum; num++) {
             if (num <= this.state.questionInitial) { //如果小于等于初始值，则不设定删除按钮
-                array.push (
+                array.push(
                     <Question
                         myThis={this}
                         titleNum={num}
                         isVisible={true}
                     />
                 );
+                arrayContents.push(
+                    { 'title': 'hhh' }
+                );
             }
         }
-        this.setState({voteQuestions : array});
 
+        this.setState({ voteQuestions: array });
+        this.setState({ voteContents: arrayContents });
     }
 
     /** 获得整个投票内容 */
@@ -320,6 +371,8 @@ export default class VoteAdd extends Component {
                 onPress={() => { this._onpress2AddVote() }}
             >
             </Button>
+
+            
         )
     }
 
@@ -349,9 +402,18 @@ export default class VoteAdd extends Component {
                 {/** 投票隐私 */}
                 {this.getPrivacy()}
 
-                {/** 添加问题按钮 */}
-                {/* {this.getQuestionAddButton()} */}
+            </View>
+        )
+    }
 
+    getButton() {
+        return (
+            <View style={styles.titleAndContent}>
+                {/** 添加问题按钮 */}
+                {this.getQuestionAddButton()}
+
+                {/** 投票发布按钮 */}
+                {this.getVoteAddButton()}
             </View>
         )
     }
@@ -367,8 +429,8 @@ export default class VoteAdd extends Component {
                     {/** 整个投票内容 */}
                     {this.getAllVoteContent()}
 
-                    {/** 投票发布按钮 */}
-                    {this.getVoteAddButton()}
+                    {/** 按钮部分 */}
+                    {this.getButton()}
                 </KeyboardAwareScrollView>
             </View>
         );
@@ -386,6 +448,13 @@ const styles = StyleSheet.create({
         color: 'blue',
     },
 
+    buttons: {
+        marginHorizontal: constBorderMarginWidth,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+
     titleAndContent: {
         marginHorizontal: constBorderMarginWidth,
         flexDirection: 'row',
@@ -397,7 +466,7 @@ const styles = StyleSheet.create({
 
     },
 
-    titleAndContentButtom: {
+    titleAndContentBottom: {
         //marginRight: constBorderMarginWidth,
         flexDirection: 'row',
         justifyContent: 'flex-start',
@@ -407,6 +476,7 @@ const styles = StyleSheet.create({
     },
 
     questionPart: { //问题部分
+        marginBottom : constBorderDistance*2,
         marginHorizontal: constBorderMarginWidth,
         justifyContent: 'flex-start',
         alignItems: 'stretch',
@@ -548,7 +618,7 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-end',
         marginRight: constBorderMarginWidth,
         flex: 1,
-        // width: height/14,
+        width: screenWidth / 8,
         height: screenHeight / 14,
     },
 });
@@ -771,7 +841,10 @@ class Question extends Component {
     }
 
     editQuestion() {
-        this.props.myThis.setState({ voteContents: [{ 'title': this.state.voteTitle, 'voteMode': this.state.voteMode, 'picture': this.state.picture, 'voteOptions': this.state.voteOptionsText }] });
+        var array = { 'title': this.state.voteTitle, 'voteMode': this.state.voteMode, 'picture': this.state.picture, 'voteOptions': this.state.voteOptionsText };
+        //this.props.myThis.setState({ voteContents: [{ 'title': this.state.voteTitle, 'voteMode': this.state.voteMode, 'picture': this.state.picture, 'voteOptions': this.state.voteOptionsText }] });
+        this.props.myThis.editVoteContents(this.props.titleNum, array);
+
     }
 
 
@@ -873,7 +946,7 @@ class Question extends Component {
         return (
             <View style={styles.questionPart}>
                 <View
-                    style={styles.titleAndContentButtom}
+                    style={styles.titleAndContentBottom}
                 >
                     {/** 问题标号 */}
                     <Text style={{

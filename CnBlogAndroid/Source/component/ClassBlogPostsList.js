@@ -23,9 +23,6 @@ import {
 	Picker,
     ActivityIndicator,
     Animated,
-
-    AppRegistry,
-    Dimensions,
     PixelRatio,
     TouchableWithoutFeedback,
     ART,
@@ -39,17 +36,13 @@ import Config, { err_info } from '../config';
 import * as Service from '../request/request.js';
 import MyAdapter from '../screens/MyAdapter';
 
-const {width, height} = Dimensions.get('window');
-
 const T_WIDTH = 7;
 const T_HEIGHT = 4;
 
-const COLOR_HIGH = '#3C50D7';
-const COLOR_NORMAL = '#6c6c6c';
+const COLOR_HIGH = global.theme.headerTintColor;
+const COLOR_NORMAL = 'gray';
 
 const LINE = 1 / PixelRatio.get();
-
-
 
 // 获取博文一页的容量
 const pageSize = 10;
@@ -83,12 +76,11 @@ const CONFIG = [
     }
 ];
 
-
-
+/*
+渲染选择框的三角形
+*/
 class Triangle extends React.Component {
-
     render() {
-
         var path;
         var fill;
         if (this.props.selected) {
@@ -106,7 +98,6 @@ class Triangle extends React.Component {
                 .lineTo(T_WIDTH / 2, T_HEIGHT)
                 .close();
         }
-
         return (
             <Surface width={T_WIDTH} height={T_HEIGHT}>
                 <Shape d={path} stroke="#00000000" fill={fill} strokeWidth={0}/>
@@ -115,6 +106,9 @@ class Triangle extends React.Component {
     }
 }
 
+/*
+渲染选择项的每一个项目
+*/
 const TopMenuItem = (props) => {
     const onPress = () => {
         props.onSelect(props.index);
@@ -634,11 +628,11 @@ const screenHeight= MyAdapter.screenHeight;
 
 const styles = StyleSheet.create({
     scroll: {flex: 1, backgroundColor: '#fff'},
-    bgContainer: {position: 'absolute', top: 40, width: width, height: height},
+    bgContainer: {position: 'absolute', top: 40, width: screenWidth, height: screenHeight},
     bg: {flex: 1, backgroundColor: 'rgba(50,50,50,0.2)'},
     content: {
         position: 'absolute',
-        width: width
+        width: screenWidth,
     },
     highlight: {
         color: COLOR_HIGH

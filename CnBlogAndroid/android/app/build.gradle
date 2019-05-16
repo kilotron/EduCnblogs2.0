@@ -101,8 +101,8 @@ android {
         applicationId "com.pureman"
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 8
-        versionName "2.3.1.190516_alpha"
+        versionCode 9
+        versionName "2.3.3.190516_alpha"
         ndk {
             abiFilters "armeabi-v7a", "x86"
         }

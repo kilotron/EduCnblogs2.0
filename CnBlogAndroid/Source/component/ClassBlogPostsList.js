@@ -497,15 +497,15 @@ export default class ClassBlogPostsList extends Component {
                         </Text>
                     </View>
                     <View style={{flex: 1,}}>
-                        <Text style={styles.postTitle} accessibilityLabel={item.url}>
+                        <Text style={blogListStyles.blogTitleText} accessibilityLabel={item.url}>
                             {item.title}
                         </Text>
 
-                        <Text numberOfLines={2} style={styles.postDescription}>
+                        <Text numberOfLines={2} style={blogListStyles.blogSummaryText}>
                             {HTMLSpecialCharsDecode(item.description)}
                         </Text>
 
-                        <View style={styles.postMetadataView}>
+                        <View style={blogListStyles.blogAppAndTimeContainer}>
                             <Text style={styles.viewCountAndCommentCount}>
                                 {item.viewCount + ' 阅读' + '  '
                                  + item.commentCount + ' 评论'}
@@ -670,54 +670,6 @@ const styles = StyleSheet.create({
         borderTopColor: '#bdbdbd',
         borderBottomWidth: 1,
         borderBottomColor: '#f2f2f2'
-    },
-    container: {
-        flex: 1,
-    },
-    header: {
-        flexDirection:'row',
-        height: 40,
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: screenWidth,
-    },
-    picker: {
-        height: 40,
-        width: screenWidth *0.9,
-        backgroundColor: 'white',
-    },
-    imgView:{
-        width:screenWidth*0.1,
-        height:screenWidth*0.1,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    img:{
-        width:screenWidth *0.05,
-        height:screenWidth *0.05,
-        resizeMode:'stretch',
-    },
-    postTitle: {
-		fontSize: 18,
-		fontWeight: 'bold',
-		marginTop: 10,
-		marginBottom: 2,
-		textAlign: 'left',
-		color: 'black',
-		fontFamily : 'serif',
-    },
-    postDescription: {
-		lineHeight: 25,
-		fontSize: 14,
-		marginBottom: 8,
-		textAlign: 'left',
-		color: 'rgb(70,70,70)',
-	},
-	postMetadataView: {
-		flexDirection: 'row',
-		marginBottom: 8,
-		justifyContent: 'space-around',
-		alignItems: 'flex-start',
     },
     viewCountAndCommentCount: {
         fontSize: 10,

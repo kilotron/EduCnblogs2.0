@@ -29,8 +29,8 @@ export const flatStyles = StyleSheet.create({
     cell:{
         flex: 1,
         backgroundColor: 'white',
-        padding: 10,
-        paddingVertical:10,
+        padding: 2,
+        paddingVertical:5,
         marginLeft: 5,
         marginRight: 5,
         marginVertical: 3,
@@ -44,6 +44,7 @@ export const flatStylesWithAvatar = StyleSheet.create({
     cell:{
         flex: 1,
         backgroundColor: 'white',
+        paddingVertical: 5,
         marginLeft: 5,
         marginRight: 5,
         borderColor: '#dddddd',

@@ -9,6 +9,7 @@ import {StorageKey} from '../config'
 import {UI} from '../config'
 import {err_info} from '../config'
 import {flatStyles} from '../styles/styles'
+import {blogListStyles} from '../styles/blogList';
 import * as Push from '../DataHandler/Push/PushHandler';
 import {
     StyleSheet,
@@ -181,34 +182,14 @@ export default class PersonalBlog extends Component{
                     {Id:Id, blogApp: global.user_information.BlogApp, CommentCount: CommentCount, Url: Url, Title: Title, Description: Description,}) : ()=>{}}
                 >
                     <Text
-                        style = {{
-                            fontSize: 18,
-                            fontWeight: '400',
-                            marginTop: 0,
-                            marginBottom: 2,
-                            textAlign: 'left',
-                            color: '#484848',
-                            lineHeight: 30,
-                            fontFamily: 'sans-serif',
-                        }}
+                        style={blogListStyles.blogTitleText}
                         accessibilityLabel = {Url}>
                         {Title}
                     </Text>
-                    <Text  numberOfLines={2} style = {{
-                        lineHeight: 25,
-                        fontSize: 14,
-                        marginBottom: 8,
-                        textAlign: 'left',
-                        color: '#666',
-                    }}>
+                    <Text  numberOfLines={2} style = {blogListStyles.blogSummaryText}>
                         {Description}
                     </Text>
-                    <View style = {{
-                        flexDirection: 'row',
-                        marginBottom: 0,
-                        justifyContent: 'space-around',
-                        alignItems: 'flex-start',
-                    }}>
+                    <View style = {blogListStyles.blogAppAndTimeContainer}>
                         <Text style = {{fontSize: 10, textAlign: 'left', color: 'black', flex: 1}}>
                             {ViewCount+' 阅读'+'  '+CommentCount+' 评论'}
                         </Text>

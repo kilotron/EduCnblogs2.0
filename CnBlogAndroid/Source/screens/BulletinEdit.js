@@ -111,7 +111,7 @@ export default class BulletinEdit extends Component {
                 screen:'BulletinDisplay',
                 schoolClassId: this.props.navigation.state.params.schoolClassId,
                 bulletinId:this.props.navigation.state.params.bulletinId,
-                bulletinText:this.props.navigation.state.params.bulletinText,
+                bulletinText:content,
                 className:this.props.navigation.state.params.className,
             }
         }
@@ -136,7 +136,7 @@ export default class BulletinEdit extends Component {
             ToastAndroid.show('公告内容不可为空',ToastAndroid.SHORT);
             return ;
         }
-        let body = JSON.stringify({
+        var body = JSON.stringify({
             schoolClassId: this.state.schoolClassId,
             content: this.state.bulletinText,
         });

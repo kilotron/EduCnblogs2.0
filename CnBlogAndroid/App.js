@@ -144,13 +144,13 @@ class Welcome extends Component{
                 })
                 console.log('跳转后');
             }
-            else if(screen == 'BulletinDisplay'){
+            else if(screen == 'BulletinDisplay'){ 
                 let {schoolClassId,bulletinId,bulletinText,className} = params.body.custom;
                 var callback = ()=>{
                     toPersonalBlog();
                 }
                 console.log('跳转前');
-                this.props.navigation.navigate('BulltinDisplay',{
+                this.props.navigation.navigate('BulletinDisplay',{
                     schoolClassId: schoolClassId,
                     bulletinId:bulletinId,
                     bulletinText:bulletinText,
@@ -321,7 +321,7 @@ class UrlLogin extends Component{
                     toPersonalBlog();
                 }
                 console.log('跳转前');
-                this.props.navigation.navigate('BulltinDisplay',{
+                this.props.navigation.navigate('BulletinDisplay',{
                     schoolClassId: schoolClassId,
                     bulletinId:bulletinId,
                     bulletinText:bulletinText,

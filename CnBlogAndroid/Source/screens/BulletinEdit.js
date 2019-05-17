@@ -101,8 +101,8 @@ export default class BulletinEdit extends Component {
     }
 
     sendBulletinCast(classId,content){
-        let className = this.props.navigation.state.params.className;
-        let params = {
+        const className = this.props.navigation.state.params.className;
+        const params = {
             ticker:"班级公告修改《"+ className +"》",
             title:"班级公告修改《"+ className +"》",
             text:content,
@@ -116,7 +116,7 @@ export default class BulletinEdit extends Component {
             }
         }
         castId = classId;
-        let filter = {
+        const filter = {
             "where":
             {
                 "and":
@@ -130,17 +130,17 @@ export default class BulletinEdit extends Component {
 
     /* 提交公告函数 */
     _onPress = ()=>{
-        let createNew = this.props.navigation.state.params.createNew;
+        const createNew = this.props.navigation.state.params.createNew;
         if (this.state.bulletinText === '')
         {
             ToastAndroid.show('公告内容不可为空',ToastAndroid.SHORT);
             return ;
         }
-        let body = JSON.stringify({
+        const body = JSON.stringify({
             schoolClassId: this.state.schoolClassId,
             content: this.state.bulletinText,
         });
-        let url = createNew ? Config.BulletinPublish : Config.BulletinEdit + this.state.bulletinId;
+        const url = createNew ? Config.BulletinPublish : Config.BulletinEdit + this.state.bulletinId;
 
         Service.UserAction(url, body, createNew ? 'POST' : 'PATCH').then((response)=>{
             if(response.status!==200)

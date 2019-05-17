@@ -113,17 +113,17 @@ export default class HistoryList extends Component {
 
     /* 渲染一个历史记录数据 */
     _renderItem = (item) => {
-        let item1 = item;
-        var Id = item1.item.id;
-        var Title = item1.item.title;
-        var Url = item1.item.url;
-        var BlogApp = item1.item.blogApp;
-        var CommentCount = item1.item.commentCount;
-        var SummaryContent = item1.item.summaryContent;
-        var DateAdded = item1.item.dateAdded;
+        const item1 = item;
+        const Id = item1.item.id;
+        const Title = item1.item.title;
+        const Url = item1.item.url;
+        const BlogApp = item1.item.blogApp;
+        const CommentCount = item1.item.commentCount;
+        const SummaryContent = item1.item.summaryContent;
+        const DateAdded = item1.item.dateAdded;
 
-        var BtnsLeft = [{ text: '清空', type: 'delete',  onPress: ()=> this._onPressDelAll()},];
-        var BtnsRight = [{ text: '删除', type: 'delete', onPress: ()=>this._onPressDelHistory(Id)},];
+        const BtnsLeft = [{ text: '清空', type: 'delete',  onPress: ()=> this._onPressDelAll()},];
+        const BtnsRight = [{ text: '删除', type: 'delete', onPress: ()=>this._onPressDelHistory(Id)},];
 
         return(
             <Swipeout
@@ -202,8 +202,8 @@ export default class HistoryList extends Component {
 
     /* 渲染历史记录列表 */
     _renderHistoryList() {
-        var data = [];
-        for(var i in this.state.theblogs)
+        let data = [];
+        for(let i in this.state.theblogs)
         {
         data.push({
             key: this.state.theblogs[i].id,
@@ -272,7 +272,7 @@ export default class HistoryList extends Component {
         if (this.state.loadStatus != 'not loading') {
 			return;
 		}
-		let pageCount = Math.ceil(this.state.theblogCount / pageSize);
+		const pageCount = Math.ceil(this.state.theblogCount / pageSize);
 		if (this.state.currentPageIndex >= pageCount) {
 			return;
 		}
@@ -289,7 +289,6 @@ export default class HistoryList extends Component {
         }
         global.storage.load({key: StorageKey.BLOG_LIST})
         .then((ret)=>{
-            var storageData=ret;
             //Alert.alert('长度：' + ret.length);
             this.setState({
                 theblogs: ret,

@@ -81,8 +81,8 @@ const CONFIG = [
 */
 class Triangle extends React.Component {
     render() {
-        var path;
-        var fill;
+        let path;
+        let fill;
         if (this.props.selected) {
             fill = COLOR_HIGH;
             path = new Path()
@@ -179,12 +179,12 @@ export default class ClassBlogPostsList extends Component {
         let subselected = [];
         let height = [];
         //最大高度
-        var max = parseInt((height - 80) * 0.8 / 43);
+        const itemMaxHeight = parseInt((height - 80) * 0.8 / 43);
 
         for (let i = 0, c = array.length; i < c; ++i) {
             let item = array[i];
             top[i] = item.data[item.selectedIndex].title;
-            maxHeight[i] = Math.min(item.data.length, max) * 43;
+            maxHeight[i] = Math.min(item.data.length, itemMaxHeight) * 43;
             subselected[i] = item.selectedIndex;
             height[i] = new Animated.Value(0);
         };
@@ -383,8 +383,8 @@ export default class ClassBlogPostsList extends Component {
 
     /** 解析this.state.blogs的数据，返回一个数组。 */
     makeBlogPostsList() {
-        var data = [];
-        for (var i in this.state.blogs) {
+        let data = [];
+        for (let i in this.state.blogs) {
             data.push({
                 blogId: this.state.blogs[i].url.match( /p\/([^%]+).html/)[1],//博文的编号
                 title: this.state.blogs[i].title,
@@ -472,7 +472,7 @@ export default class ClassBlogPostsList extends Component {
 
     /**FlatList的renderItem */
     _renderItem = ({item}) => {
-        var BlogApp = GetBlogApp(item.url);
+        const BlogApp = GetBlogApp(item.url);
 		return(
             <View style={flatStylesWithAvatar.cell}>
 

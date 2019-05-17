@@ -74,14 +74,14 @@ export default class Bulletin extends Component {
                 [
                     {text: '取消'},
                     {text: '确认删除', onPress: ()=>{
-                        let postBody = {
+                        const postBody = {
                             bulletinId: id,
                             schoolClassId: this.props.schoolClassId,
                             blogId: global.user_information.BlogId,
                         };
-                        let body = JSON.stringify(postBody);
-                        let url = Config.BulletinDel + this.props.schoolClassId + '/' + id;
-                        
+                        const body = JSON.stringify(postBody);
+                        const url = Config.BulletinDel + this.props.schoolClassId + '/' + id;
+
                         Service.UserAction(url, body, 'DELETE').then((response)=>{
                             if(response.status!==200)
                             {
@@ -132,12 +132,12 @@ export default class Bulletin extends Component {
 
     /* 渲染一个公告数据 */
     _renderItem = (item) => {
-        let item1 = item;
-        var Id = item1.item.key;
-        var Content = item1.item.Content;
-        var Publisher = item1.item.Publisher;
-        var BlogUrl = item1.item.BlogUrl;
-        var DateAdded = item1.item.DateAdded;
+        const item1 = item;
+        const Id = item1.item.key;
+        const Content = item1.item.Content;
+        const Publisher = item1.item.Publisher;
+        const BlogUrl = item1.item.BlogUrl;
+        const DateAdded = item1.item.DateAdded;
         return(
             <TouchableOpacity onPress={()=>{
                 this.props.navigation.navigate('BulletinDisplay',{
@@ -183,8 +183,8 @@ export default class Bulletin extends Component {
 
     /* 渲染公告列表 */
     _renderBulletinList() {
-        var data = [];
-        for(var i in this.state.bulletins)
+        let data = [];
+        for(let i in this.state.bulletins)
         {
         data.push({
             key: this.state.bulletins[i].bulletinId,
@@ -248,7 +248,7 @@ export default class Bulletin extends Component {
         if (this.state.loadStatus != 'not loading') {
 			return;
 		}
-		let pageCount = Math.ceil(this.state.bulletinCount / pageSize);
+		const pageCount = Math.ceil(this.state.bulletinCount / pageSize);
 		if (this.state.currentPageIndex >= pageCount) {
 			return;
 		}
@@ -262,18 +262,19 @@ export default class Bulletin extends Component {
         {
             return ;
         }
-        var membership = 1;
-        let url1 = Config.apiDomain + api.user.info;
+        let membership = 1;
+        /* 这里先获取用户在班级中的身份 */
+        const url1 = Config.apiDomain + api.user.info;
         Service.Get(url1).then((jsonData)=>{
-            let url2= Config.apiDomain+"api/edu/member/"+jsonData.BlogId+"/"+this.props.schoolClassId;
+            const url2= Config.apiDomain+"api/edu/member/"+jsonData.BlogId+"/"+this.props.schoolClassId;
             Service.Get(url2).then((jsonData)=>{
                 if(this._isMounted && jsonData!=='rejected'){
                     membership = jsonData.membership;
                 }
             }).then(()=>{
-                let url = Config.BulletinList + this.props.schoolClassId + '/'+ pageIndex + '-'+ pageSize;
+                const url = Config.BulletinList + this.props.schoolClassId + '/'+ pageIndex + '-'+ pageSize;
                 Service.Get(url).then((jsonData)=>{
-                    let pageCount = Math.ceil(jsonData.totalCount / pageSize);
+                    const pageCount = Math.ceil(jsonData.totalCount / pageSize);
                     if(jsonData!=='rejected')
                     {
                         if(pageIndex===1)
@@ -369,10 +370,10 @@ export default class Bulletin extends Component {
             bulletinCount: 0,
         });
         /* 当传入的参数改变时首先获取用户在班级中的身份  */
-        var membership = 1;
-        let url1 = Config.apiDomain + api.user.info;
+        let membership = 1;
+        const url1 = Config.apiDomain + api.user.info;
         Service.Get(url1).then((jsonData)=>{
-            let url2= Config.apiDomain+"api/edu/member/"+jsonData.BlogId+"/"+this.props.schoolClassId;
+            const url2= Config.apiDomain+"api/edu/member/"+jsonData.BlogId+"/"+this.props.schoolClassId;
             Service.Get(url2).then((jsonData)=>{
                 if(this._isMounted && jsonData!=='rejected'){
                     membership = jsonData.membership;

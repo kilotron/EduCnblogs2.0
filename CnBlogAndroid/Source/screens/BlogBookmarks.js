@@ -50,15 +50,15 @@ export default class BlogBookmarks extends Component{
         while(tagsContent.indexOf(',,')>-1){
             tagsContent = tagsContent.replace(/,,/g, ',');
         }
-        let postBody = {
+        const postBody = {
             WzLinkId: 1,
             Title: this.state.blogTitle,
             LinkUrl: this.state.blogUrl ,
             Summary: this.state.summary,
             Tags: tagsContent.split(','),
         };
-        let body = JSON.stringify(postBody);
-        let url = Config.Bookmarks + '/';
+        const body = JSON.stringify(postBody);
+        const url = Config.Bookmarks + '/';
         Service.UserAction(url, body, 'POST').then((jsonData)=>{
             if(jsonData===null)
             {

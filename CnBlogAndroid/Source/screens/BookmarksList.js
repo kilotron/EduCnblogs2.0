@@ -106,19 +106,19 @@ export default class BookmarksList extends Component {
 
     /* 渲染一个收藏项数据 */
     _renderItem = (item) => {
-        let item1 = item;
-        var Id = item1.item.key;
-        var WzLinkId = item1.item.wzLinkId;
-        var Title = item1.item.title;
-        var LinkUrl = item1.item.linkUrl;
-        var Summary = item1.item.summary;
-        var Tags = item1.item.tags;
-        var DateAdded = item1.item.dateAdded;
-        var FromCnBlogs = item1.item.fromCnBlogs;
-        var DetailId = item1.item.detailId;
-        let BlogApp = GetBlogApp(LinkUrl);
+        const item1 = item;
+        const Id = item1.item.key;
+        const WzLinkId = item1.item.wzLinkId;
+        const Title = item1.item.title;
+        const LinkUrl = item1.item.linkUrl;
+        const Summary = item1.item.summary;
+        const Tags = item1.item.tags;
+        const DateAdded = item1.item.dateAdded;
+        const FromCnBlogs = item1.item.fromCnBlogs;
+        const DetailId = item1.item.detailId;
+        const BlogApp = GetBlogApp(LinkUrl);
 
-        var BtnsTypes = [
+        const BtnsTypes = [
             { text: '修改',    type: 'primary',  onPress: ()=>this.props.navigation.navigate('BookmarksEdit',{Url: LinkUrl,
               Title: Title, Id: WzLinkId, Description: Summary, callback: this._FlatListRefresh})},
             //{ text: '修改',  type: 'secondary', },
@@ -205,8 +205,8 @@ export default class BookmarksList extends Component {
 
     /* 渲染收藏列表 */
     _renderBookmarksList() {
-        var data = [];
-        for(var i in this.state.bookmarks)
+        let data = [];
+        for(let i in this.state.bookmarks)
         {
             if(this.state.bookmarks[i].FromCNBlogs)
             {

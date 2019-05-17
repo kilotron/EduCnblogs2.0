@@ -11,16 +11,16 @@ export const blogListStyles = StyleSheet.create({
     blogTitleText:{
         fontSize: 18,
         fontWeight: 'bold',
-        marginTop: 10,
+        marginTop: 6,
         marginBottom: 2,
         textAlign: 'left',
         color: 'black',
         fontFamily : 'serif',
     },
     blogSummaryText:{
-        lineHeight: 25,
+        lineHeight: 20,
         fontSize: 14,
-        marginBottom: 8,
+        marginBottom: 2,
         textAlign: 'left',
         color: 'rgb(70,70,70)',
     },
@@ -32,7 +32,7 @@ export const blogListStyles = StyleSheet.create({
     },
     blogAppAndTimeContainer:{
         flexDirection: 'row',
-        marginBottom: 8,
+        marginBottom: 4,
         justifyContent: 'space-around',
         alignItems: 'flex-start',
     },

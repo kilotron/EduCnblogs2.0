@@ -111,7 +111,7 @@ export default class BulletinEdit extends Component {
                 screen:'BulletinDisplay',
                 schoolClassId: this.props.navigation.state.params.schoolClassId,
                 bulletinId:this.props.navigation.state.params.bulletinId,
-                bulletinText:this.props.navigation.state.params.bulletinText,
+                bulletinText:content,
                 className:this.props.navigation.state.params.className,
             }
         }

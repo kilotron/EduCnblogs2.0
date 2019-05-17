@@ -116,7 +116,7 @@ export default class MemberBlog extends Component{
                     <Text style = {{
                         fontSize: 18,
                         fontWeight: 'bold',
-                        marginTop: 10,
+                        marginTop: 0,
                         marginBottom: 2,
                         textAlign: 'left',
                         color: 'black',
@@ -124,12 +124,12 @@ export default class MemberBlog extends Component{
                     }}>
                         {Title}
                     </Text>
-                    <Text  numberOfLines={3} style = {{lineHeight: 25,fontSize: 14, marginBottom: 8, textAlign: 'left', color:'rgb(70,70,70)'}}>
+                    <Text  numberOfLines={2} style = {{lineHeight: 25,fontSize: 14, marginBottom: 8, textAlign: 'left', color:'rgb(70,70,70)'}}>
                         {Description+'...'}
                     </Text>
                     <View style = {{
                         flexDirection: 'row',
-                        marginBottom: 8,
+                        marginBottom: 0,
                         justifyContent: 'space-around',
                         alignItems: 'flex-start'
                     }}>

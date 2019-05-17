@@ -9,7 +9,7 @@ import {StorageKey} from '../config'
 import {UI} from '../config'
 import {err_info} from '../config'
 import {flatStyles} from '../styles/styles'
-import * as Push from '../DataHandler/Push/PushHandler'; 
+import * as Push from '../DataHandler/Push/PushHandler';
 import {
     StyleSheet,
     Text,
@@ -180,11 +180,11 @@ export default class PersonalBlog extends Component{
                     onPress = {Url!=='' ? ()=>this.props.navigation.navigate('BlogDetail',
                     {Id:Id, blogApp: global.user_information.BlogApp, CommentCount: CommentCount, Url: Url, Title: Title, Description: Description,}) : ()=>{}}
                 >
-                    <Text 
+                    <Text
                         style = {{
                             fontSize: 18,
                             fontWeight: '400',
-                            marginTop: 10,
+                            marginTop: 0,
                             marginBottom: 2,
                             textAlign: 'left',
                             color: '#484848',
@@ -194,7 +194,7 @@ export default class PersonalBlog extends Component{
                         accessibilityLabel = {Url}>
                         {Title}
                     </Text>
-                    <Text  numberOfLines={3} style = {{
+                    <Text  numberOfLines={2} style = {{
                         lineHeight: 25,
                         fontSize: 14,
                         marginBottom: 8,
@@ -205,7 +205,7 @@ export default class PersonalBlog extends Component{
                     </Text>
                     <View style = {{
                         flexDirection: 'row',
-                        marginBottom: 8,
+                        marginBottom: 0,
                         justifyContent: 'space-around',
                         alignItems: 'flex-start',
                     }}>

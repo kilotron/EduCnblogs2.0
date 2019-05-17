@@ -29,8 +29,8 @@ export const flatStyles = StyleSheet.create({
     cell:{
         flex: 1,
         backgroundColor: 'white',
-        padding: 2,
-        paddingVertical:5,
+        padding: 4,
+        paddingBottom:5,
         marginLeft: 5,
         marginRight: 5,
         marginVertical: 3,

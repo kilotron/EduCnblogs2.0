@@ -29,7 +29,7 @@ export const blogListStyles = StyleSheet.create({
         fontSize: 10,
         lineHeight: 12,
         textAlign: 'right',
-        color: 'black',
+        color: '#48494A',
         flex: 1,
     },
     blogAppAndTimeContainer:{

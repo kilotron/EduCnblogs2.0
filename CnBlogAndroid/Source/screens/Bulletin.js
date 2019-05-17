@@ -513,10 +513,10 @@ const styles = StyleSheet.create({
         left: 4,
     },
     bulletinDateAdded: {
-        fontSize: 14,
+        fontSize: 12,
     },
     bulletinPublisher: {
-        fontSize: 12,
+        fontSize: 10,
     },
 });
 

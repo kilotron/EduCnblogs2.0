@@ -511,7 +511,7 @@ export default class ClassBlogPostsList extends Component {
                                  + item.commentCount + ' 评论'}
                             </Text>
                             <Text style={styles.postDate}>
-                                {item.author + ' 发布于: ' + this.parsePostDate(item.postDate)}
+                                {item.author + ' 发布于 ' + this.parsePostDate(item.postDate)}
                             </Text>
                         </View>
                     </View>

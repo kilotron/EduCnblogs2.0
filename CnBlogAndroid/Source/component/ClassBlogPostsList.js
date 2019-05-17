@@ -31,6 +31,7 @@ import {
 const {Surface, Shape, Path, Group} = ART;
 
 import {flatStylesWithAvatar, nameImageStyles} from '../styles/styles';
+import {blogListStyles} from '../styles/blogList'
 
 import Config, { err_info } from '../config';
 import * as Service from '../request/request.js';
@@ -496,7 +497,6 @@ export default class ClassBlogPostsList extends Component {
                         </Text>
                     </View>
                     <View style={{flex: 1,}}>
-
                         <Text style={styles.postTitle} accessibilityLabel={item.url}>
                             {item.title}
                         </Text>

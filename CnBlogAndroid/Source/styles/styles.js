@@ -52,6 +52,7 @@ export const flatStylesWithAvatar = StyleSheet.create({
         flex:1,
         flexDirection: 'row',
         marginRight: 5,
+        maxHeight: screenHeight*0.25,
     },
     separatorStyle:{
         width: screenWidth,

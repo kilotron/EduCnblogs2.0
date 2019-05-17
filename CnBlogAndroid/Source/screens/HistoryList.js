@@ -6,6 +6,7 @@ import MyAdapter from './MyAdapter.js';
 import React, { Component} from 'react';
 import {UI} from '../config'
 import {nameImageStyles, flatStylesWithAvatar} from '../styles/styles'
+import {blogListStyles} from '../styles/blogList'
 import * as storage from '../Storage/storage.js'
 import {
     StyleSheet,
@@ -156,33 +157,14 @@ export default class HistoryList extends Component {
                         </Text>
                     </View>
                     <View style = {{flex:1}}>
-                        <Text style = {{
-                            fontSize: 18,
-                            fontWeight: 'bold',
-                            marginTop: 10,
-                            marginBottom: 2,
-                            textAlign: 'left',
-                            color: 'black',
-                            fontFamily : 'serif',
-                        }} >
+                        <Text numberOfLines={1} style = {blogListStyles.blogTitleText} >
                             {Title}
                         </Text>
-                        <Text  numberOfLines={2} style = {{
-                            lineHeight: 25,
-                            fontSize: 14,
-                            marginBottom: 8,
-                            textAlign: 'left',
-                            color: 'rgb(70,70,70)',
-                        }}>
+                        <Text numberOfLines={2} style = {blogListStyles.blogSummaryText}>
                             {SummaryContent + '...'}
                         </Text>
-                        <View style = {{
-                            flexDirection: 'row',
-                            marginBottom: 8,
-                            justifyContent: 'space-around',
-                            alignItems: 'flex-start',
-                        }}>
-                            <Text style = {{fontSize: 10, textAlign: 'right', color: 'black', flex: 1}}>
+                        <View style = {blogListStyles.blogAppAndTimeContainer}>
+                            <Text style = {blogListStyles.blogAppText}>
                                 {BlogApp}
                             </Text>
                         </View>

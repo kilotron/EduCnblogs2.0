@@ -7,6 +7,7 @@ import React, { Component} from 'react';
 import {UI} from '../config'
 import {err_info} from '../config'
 import {nameImageStyles, flatStylesWithAvatar} from '../styles/styles'
+import {blogListStyles} from '../styles/blogList'
 import {
     StyleSheet,
     Text,
@@ -154,33 +155,14 @@ export default class BookmarksList extends Component {
                               </Text>
                           </View>
                           <View style = {{flex:1}}>
-                              <Text style = {{
-                                  fontSize: 18,
-                                  fontWeight: 'bold',
-                                  marginTop: 6,
-                                  marginBottom: 2,
-                                  textAlign: 'left',
-                                  color: 'black',
-                                  fontFamily : 'serif',
-                              }} >
+                              <Text numberOfLines={1} style = {blogListStyles.blogTitleText} >
                                   {Title}
                               </Text>
-                              <Text  numberOfLines={2} style = {{
-                                  lineHeight: 25,
-                                  fontSize: 12,
-                                  marginBottom: 2,
-                                  textAlign: 'left',
-                                  color: 'rgb(70,70,70)',
-                              }}>
+                              <Text  numberOfLines={2} style = {blogListStyles.blogSummaryText}>
                                   {Summary + '...'}
                               </Text>
-                              <View style = {{
-                                  flexDirection: 'row',
-                                  marginBottom: 4,
-                                  justifyContent: 'space-around',
-                                  alignItems: 'flex-start',
-                              }}>
-                                  <Text style = {{fontSize: 10, textAlign: 'right', color: 'black', flex: 1}}>
+                              <View style = {blogListStyles.blogAppAndTimeContainer}>
+                                  <Text style = {blogListStyles.blogAppText}>
                                       {BlogApp+'\n添加于 '+DateAdded}
                                   </Text>
                               </View>

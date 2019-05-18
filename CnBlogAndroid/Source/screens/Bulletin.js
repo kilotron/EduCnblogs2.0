@@ -98,6 +98,7 @@ export default class Bulletin extends Component {
                             else if(jsonData.isSuccess)
                             {
                                 ToastAndroid.show('删除成功！',ToastAndroid.SHORT);
+                                this._FlatListRefresh();
                             }
                             else if(jsonData.isWarning)
                             {
@@ -107,22 +108,8 @@ export default class Bulletin extends Component {
                             {
                                 ToastAndroid.show('发生错误，请稍后重试！',ToastAndroid.SHORT);
                             }
-                            this.setState({
-                                changedSchoolClassId: true,
-                                bulletins: [],
-                                bulletinCount: 0,
-                                loadStatus: 'not loading',
-                                currentPageIndex: 1,
-                            });
                         }).catch((error) => {
                             ToastAndroid.show(err_info.NO_INTERNET ,ToastAndroid.SHORT);
-                            this.setState({
-                                changedSchoolClassId: true,
-                                bulletins: [],
-                                bulletinCount: 0,
-                                loadStatus: 'not loading',
-                                currentPageIndex: 1,
-                            });
                         });
                     }},
                 ]
@@ -262,6 +249,7 @@ export default class Bulletin extends Component {
         {
             return ;
         }
+        console.log('fetchPage func: ', pageIndex);
         let membership = 1;
         /* 这里先获取用户在班级中的身份 */
         const url1 = Config.apiDomain + api.user.info;

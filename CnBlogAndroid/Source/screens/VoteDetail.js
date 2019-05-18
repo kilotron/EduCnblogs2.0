@@ -40,7 +40,7 @@ export default class VoteDetail extends Component {
         headerRight: navigation.state.params.privacy === Public ? (
             <TouchableOpacity onPress={() => {
                 if (navigation.state.params.voteCount == 0) {
-                    Alert.alert('提示', '目前还没有人投票~', [
+                    Alert.alert('提示', '尚无成员参与投票 (lll￢ω￢) wow~', [
                         { text: '确定', },
                     ]);
                     return;

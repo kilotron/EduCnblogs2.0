@@ -238,7 +238,7 @@ export default class HistoryList extends Component {
             return (
                 <View style={flatStylesWithAvatar.promptTextContainer}>
                     <Text style={flatStylesWithAvatar.promptText}>
-                    没有更多数据了
+                    再往下拉也没有了呢 ~
                     </Text>
                 </View>
             );

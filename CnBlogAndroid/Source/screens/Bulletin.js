@@ -208,7 +208,7 @@ export default class Bulletin extends Component {
             return (
                 <View style={{height:30,alignItems:'center',justifyContent:'flex-start',}}>
                     <Text style={{color:'#999999',fontSize:14,marginTop:5,marginBottom:5,}}>
-                    没有更多数据了
+                    再往下拉也没有了呢 ~
                     </Text>
                 </View>
             );

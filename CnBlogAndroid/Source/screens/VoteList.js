@@ -161,7 +161,7 @@ export default class VoteList extends Component {
                             {
                                 voteId: item.voteId,
                                 // 在没有人投票的情况下不弹出已投票成员页面
-                                voteCount: item.voteCount,  
+                                voteCount: item.voteCount,
                             });
                     }}
                 >
@@ -209,7 +209,7 @@ export default class VoteList extends Component {
             return (
                 <View style={styles.allLoadedView}>
                     <Text style={styles.allLoadedText}>
-                        没有更多数据了
+                        再往下拉也没有了呢 ~
                 </Text>
                 </View>
             );

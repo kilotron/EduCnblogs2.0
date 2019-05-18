@@ -77,9 +77,9 @@ export default class VoteAdd extends Component {
 
 
     /** 自定义alert函数 */
-    myAlert(propsText){
+    myAlert(propsText) {
         Alert.alert('提示', propsText, [
-            {text: '确定',},
+            { text: '确定', },
         ]);
     }
 
@@ -375,12 +375,14 @@ export default class VoteAdd extends Component {
     /** 投票按钮 */
     getVoteAddButton() {
         return (
-            <Button
-                title='投票发布'
+            <TouchableOpacity
+                style={styles.submitButton}
                 onPress={() => { this._onpress2AddVote() }}
             >
-            </Button>
-
+                <Text style={styles.submitText}>
+                    投票发布
+            </Text>
+            </TouchableOpacity>
 
         )
     }
@@ -446,7 +448,28 @@ export default class VoteAdd extends Component {
     }
 }
 
+const buttonWidthRatio = 0.2;
+const buttonHeightRatio = 0.1;
+
 const styles = StyleSheet.create({
+    submitText: {
+        fontSize: 16,
+        color: '#0077FF',
+    },
+    submitButton: {
+        //flex: 1,
+        height: buttonHeightRatio * screenWidth,
+        width: buttonWidthRatio * screenWidth,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 10,
+        marginBottom: 20,
+        //marginLeft: (1 - buttonWidthRatio) / 2 * screenWidth, //居中
+        backgroundColor: 'white',
+        borderColor: '#0077FF',
+        borderWidth: 0.5,
+        borderRadius: 4,
+    },
 
     nullLine: {
         marginTop: 5,
@@ -729,7 +752,7 @@ class Option extends Component {
                 <View>
                     <View style={styles.titleAndContent}>
                         <Text style={styles.questionText}>
-                            {'选项 '+this.state.titleNum}
+                            {'选项 ' + this.state.titleNum}
                         </Text>
 
                         <TextInput
@@ -748,7 +771,7 @@ class Option extends Component {
                                 style={{
                                     height: 22,
                                     width: 22,
-                                    marginLeft  : 12
+                                    marginLeft: 12
                                 }}
                                 tintColor={global.theme.headerTintColor}
                             />
@@ -763,7 +786,7 @@ class Option extends Component {
             <View>
                 <View style={styles.titleAndContent}>
                     <Text style={styles.questionText}>
-                        {"选项 "+this.state.titleNum}
+                        {"选项 " + this.state.titleNum}
                     </Text>
 
                     <TextInput
@@ -1022,7 +1045,7 @@ class Question extends Component {
                     textAlign: 'left',
                     marginLeft: constBorderMarginWidth,
                 }}>
-                    {'问题 '+this.state.titleNum}
+                    {'问题 ' + this.state.titleNum}
                 </Text>
 
                 {/* 添加选项*/}

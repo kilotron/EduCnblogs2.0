@@ -38,6 +38,8 @@ export default{
 	VoteCommittedOptions: 'https://api.cnblogs.com/api/edu/vote/committed/options/', //{memberId}/{voteId}
 	VoteCommittedMembers: 'https://api.cnblogs.com/api/edu/vote/committed/members/', //{schoolClassId}/{voteId}
 	VoteAdd: 'https://api.cnblogs.com/api/edu/vote/publish',
+	VoteDelete : 'https://api.cnblogs.com/api/edu/vote/commit',
+	UsersInfo : 'https://api.cnblogs.com/api/users',
 }
 
 export const authData = {

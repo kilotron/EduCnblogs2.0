@@ -146,11 +146,16 @@ export default class VoteList extends Component {
     }
 
 
+    deleteVote(propsVoteId){
+        alert('删除功能尚未实现');
+    }
+
     _renderItem = ({ item }) => {
         return (
             <View style={flatStyles.cell}>
                 <TouchableOpacity
                     style={flatStyles.listContainer}
+                    onLongPress = {()=> {this.deleteVote(item.voteId)}}
                     onPress={() => {
                         this.props.navigation.navigate('VoteDetail', //获取详细信息
                             {

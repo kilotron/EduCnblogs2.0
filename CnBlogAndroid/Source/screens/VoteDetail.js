@@ -88,6 +88,8 @@ export default class VoteDetail extends Component {
             dateAdded: null,
             isFinished: "",
 
+            deleteButton : false, //deleteButton 是否可见，只有发起投票者才能看见
+
             /**是否已经投票 */
             hasVoted: undefined,
 
@@ -109,10 +111,21 @@ export default class VoteDetail extends Component {
         this._isMounted = true;
         let contenturl = Config.VoteDetail + this.state.voteId;
         let voteContentURL = Config.VoteContent + this.state.voteId;
-
+        let voteDeleteURL = Config.VoteDelete + this.state.voteId;
+        let usersURL = Config.UsersInfo;
+        var isPublisher = false;
+        var varUserId = 0;
+        var varPublisherId = '';
+        Service.Get(usersURL).then((jsonData) => {
+            varUserId = jsonData.BlogId;
+        });
+ 
         Service.Get(contenturl).then((jsonData) => {
             if (jsonData !== 'rejected') {
                 if (this._isMounted) {
+                    varPublisherId = jsonData.publisherId;
+                    //alert('publisherId'+varPublisherId+'    userId'+varUserId);
+                    //alert(varPublisherId==varUserId?'是发起人':'不是发起人');
                     this.setState({
                         name: jsonData.name, //测试
                         content: jsonData.content,
@@ -154,6 +167,7 @@ export default class VoteDetail extends Component {
                 // 无网络连接
             })
         })
+        
     .catch((err)=>{/* 无网络连接*/});
     }
 

@@ -97,7 +97,7 @@ export default class HomeWorkDetail extends Component{
                 schoolClassId:this.state.classId
             });
         Alert.alert(
-            '关闭作业'+this.state.title,
+            '关闭作业《'+this.state.title + '》',
             '确定要关闭吗？',
             [
                 {text: '取消'},
@@ -143,7 +143,7 @@ export default class HomeWorkDetail extends Component{
                 schoolClassId:this.state.classId
             });
         Alert.alert(
-            '删除作业'+this.state.title,
+            '删除作业《'+this.state.title + '》',
             '确定要删除吗？',
             [
                 {text: '取消'},

@@ -729,7 +729,7 @@ class Option extends Component {
                 <View>
                     <View style={styles.titleAndContent}>
                         <Text style={styles.questionText}>
-                            选项{this.state.titleNum}
+                            {'选项 '+this.state.titleNum}
                         </Text>
 
                         <TextInput
@@ -763,7 +763,7 @@ class Option extends Component {
             <View>
                 <View style={styles.titleAndContent}>
                     <Text style={styles.questionText}>
-                        选项{this.state.titleNum}
+                        {"选项 "+this.state.titleNum}
                     </Text>
 
                     <TextInput
@@ -1022,7 +1022,7 @@ class Question extends Component {
                     textAlign: 'left',
                     marginLeft: constBorderMarginWidth,
                 }}>
-                    问题{this.state.titleNum}
+                    {'问题 '+this.state.titleNum}
                 </Text>
 
                 {/* 添加选项*/}

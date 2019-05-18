@@ -249,7 +249,7 @@ export default class Bulletin extends Component {
         {
             return ;
         }
-        console.log('fetchPage func: ', pageIndex);
+        //console.log('fetchPage func: ', pageIndex);
         let membership = 1;
         /* 这里先获取用户在班级中的身份 */
         const url1 = Config.apiDomain + api.user.info;
@@ -292,6 +292,8 @@ export default class Bulletin extends Component {
                         {
                             this.setState({
                                 loadStatus: 'none',
+                                bulletinCount: 0,
+                                bulletins: [],
                             });
                         }
 

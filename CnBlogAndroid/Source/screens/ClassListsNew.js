@@ -112,7 +112,7 @@ export default class ClassListsNew extends Component {
 					<TouchableOpacity onPress={() => {
 						this.props.navigation.navigate('ClassSelect', {
 							 callback: this._classSelectGoBack,
-							 classSelected: this.setState.classSelected 
+							 classSelected: this.state.classSelected 
 						});
 					}}>
 						<Text style={[styles.classNameStyle, {color: global.theme.textColor}]}>

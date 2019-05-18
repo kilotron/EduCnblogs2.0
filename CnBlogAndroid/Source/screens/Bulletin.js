@@ -415,9 +415,7 @@ export default class Bulletin extends Component {
         }
         return (
             <View style = {styles.container}>
-
                 <View>
-                    <View style={{ height: 1, backgroundColor: 'rgb(225,225,225)',  marginTop: 0.005*screenHeight, alignSelf:'stretch'}}/>
                     {
                         this._renderBulletinList()
                     }

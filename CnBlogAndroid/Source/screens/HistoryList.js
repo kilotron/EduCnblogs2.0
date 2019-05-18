@@ -301,7 +301,7 @@ export default class HistoryList extends Component {
     render() {
         return (
             <View style = {styles.container}>
-                <View style={styles.strangeView}/>
+                <View style={flatStylesWithAvatar.separatorStyle}/>
                 {
                     this._renderHistoryList()
                 }

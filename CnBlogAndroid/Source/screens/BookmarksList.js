@@ -360,7 +360,7 @@ export default class BookmarksList extends Component {
         }
         return (
             <View style = {styles.container}>
-                <View style={styles.strangeView}/>
+                <View style={flatStylesWithAvatar.separatorStyle}/>
                 {
                     this._renderBookmarksList()
                 }

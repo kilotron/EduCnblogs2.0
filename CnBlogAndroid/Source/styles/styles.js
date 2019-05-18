@@ -43,7 +43,8 @@ export const flatStylesWithAvatar = StyleSheet.create({
     cell:{
         flex: 1,
         backgroundColor: 'white',
-        paddingVertical: 5,
+        paddingTop: 5,
+        paddingBottom: 8,
         marginLeft: 5,
         marginRight: 5,
         borderColor: '#dddddd',

@@ -427,7 +427,7 @@ export default class ClassBlogPostsList extends Component {
 
     render() {
         return (
-            <View>{/* 需要使用View，不然FlatList无法显示 */}
+            <View style={{flex: 1,}}>{/* 需要使用View，不然FlatList无法显示 */}
                 {/* 使用keyExtractor为每个item生成独有的key，就不必再data数组的每一个元素中添加key键。
                     refreshing设置为false在列表更新时不显示转圈*/}
                 {/*item设置了立体的样式，这里去掉ItemSeparatorComponent={this._separator}*/}

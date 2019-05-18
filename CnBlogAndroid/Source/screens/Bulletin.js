@@ -98,7 +98,7 @@ export default class Bulletin extends Component {
                             else if(jsonData.isSuccess)
                             {
                                 ToastAndroid.show('删除成功！',ToastAndroid.SHORT);
-                                this._FlatListRefresh();
+                                this.fetchPage(1);
                             }
                             else if(jsonData.isWarning)
                             {
@@ -160,11 +160,7 @@ export default class Bulletin extends Component {
     /* 刷新公告页面的函数，在改变班级、修改和发布公告后都应调用 */
     _FlatListRefresh = ()=>{
         if (this._isMounted){
-            this.setState({
-                changedSchoolClassId: true,
-                loadStatus: 'not loading',
-                currentPageIndex: 1,
-            });
+            this.fetchPage(1);
         }
     };
 
@@ -270,9 +266,10 @@ export default class Bulletin extends Component {
                             this.setState({
                                 bulletinCount: jsonData.totalCount,
                                 bulletins: jsonData.bulletins,
-                                loadStatus: this.state.currentPageIndex>=pageCount ? 'all loaded' : 'not loading',
+                                loadStatus: pageCount<=1 ? 'all loaded' : 'not loading',
                                 changedSchoolClassId: false,
                                 membership: membership,
+                                currentPageIndex: 1,
                             });
                         }
                         else
@@ -294,6 +291,7 @@ export default class Bulletin extends Component {
                                 loadStatus: 'none',
                                 bulletinCount: 0,
                                 bulletins: [],
+                                currentPageIndex: 1,
                             });
                         }
 

@@ -29,8 +29,7 @@ export const flatStyles = StyleSheet.create({
     cell:{
         flex: 1,
         backgroundColor: 'white',
-        padding: 4,
-        paddingBottom:5,
+        padding: 8,
         marginLeft: 5,
         marginRight: 5,
         marginVertical: 3,
@@ -87,7 +86,7 @@ export const nameImageStyles = StyleSheet.create({
         borderRadius : 40,
         left : 2,
         marginTop: 5,
-        marginRight: 5,
+        marginRight: 10,
         backgroundColor: '#F5F5FF',
         alignItems: 'center',
         justifyContent: 'center',

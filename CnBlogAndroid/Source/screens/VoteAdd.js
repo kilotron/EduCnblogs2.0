@@ -67,6 +67,8 @@ export default class VoteAdd extends Component {
         }
     }
 
+    hasVoted = false;
+
     //判断函数
     judgeAddEmpty(test) {
         //如果test为空或者全空格，返回true
@@ -116,6 +118,9 @@ export default class VoteAdd extends Component {
         //设定各个部分不为空
         if (!this.judgeAddOk()) return;
 
+        //一个页面智能点击一次发布（发布成功后修改值）
+        if(this.hasVoted) return ;
+
         let postBody = {
             schoolClassId: this.state.schoolClassId,
             name: this.state.name, //投票名称
@@ -139,6 +144,7 @@ export default class VoteAdd extends Component {
             }
             else if (jsonData.isSuccess) {
                 ToastAndroid.show('添加成功！', ToastAndroid.SHORT);
+                this.hasVoted = true;
                 this.props.navigation.state.params.callback();
                 this.props.navigation.goBack();
             }
@@ -186,7 +192,7 @@ export default class VoteAdd extends Component {
             <View style={styles.titleAndContent}>
                 <View>
                     <Text style={styles.text}>
-                        投票详情：
+                        投票说明：
                     </Text>
                 </View>
 

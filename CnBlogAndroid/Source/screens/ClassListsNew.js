@@ -112,7 +112,7 @@ export default class ClassListsNew extends Component {
 					<TouchableOpacity onPress={() => {
 						this.props.navigation.navigate('ClassSelect', {
 							 callback: this._classSelectGoBack,
-							 classSelected: this.setState.classSelected 
+							 classSelected: this.state.classSelected 
 						});
 					}}>
 						<Text style={[styles.classNameStyle, {color: global.theme.textColor}]}>
@@ -128,7 +128,11 @@ export default class ClassListsNew extends Component {
 						showsVerticalScrollIndicator={false}
 						onSelect={this.optionNavi}
 					>
-						<Image style={styles.optionsImgstyle} source={require('../images/options.png')} />
+						<Image style={styles.optionsImgstyle} 
+							source={require('../images/options.png')}
+							tintColor={global.theme.headerTintColor}
+							resizeMode='contain'
+						/>
 					</ModalDropdown>
 				</View>
 				<View style={{ height: 0.75, backgroundColor: global.theme.seperatorColor}}/>
@@ -194,7 +198,7 @@ const styles = StyleSheet.create({
 		paddingLeft: 0.05 * screenWidth,
 	},
 	optionsImgstyle: { //下拉菜单
-		height: screenHeight / 12 * 0.4,
+		height: screenHeight / 12 * 0.36,
 		width: screenHeight / 12 * 0.5,
 		margin: screenHeight / 12 * 0.2,
 		flexDirection: 'row',

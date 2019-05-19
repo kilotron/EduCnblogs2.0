@@ -6,6 +6,7 @@ import MyAdapter from './MyAdapter.js';
 import React, { Component} from 'react';
 import {UI} from '../config'
 import {nameImageStyles, flatStylesWithAvatar} from '../styles/styles'
+import {blogListStyles} from '../styles/blogList'
 import * as storage from '../Storage/storage.js'
 import {
     StyleSheet,
@@ -113,23 +114,24 @@ export default class HistoryList extends Component {
 
     /* 渲染一个历史记录数据 */
     _renderItem = (item) => {
-        let item1 = item;
-        var Id = item1.item.id;
-        var Title = item1.item.title;
-        var Url = item1.item.url;
-        var BlogApp = item1.item.blogApp;
-        var CommentCount = item1.item.commentCount;
-        var SummaryContent = item1.item.summaryContent;
-        var DateAdded = item1.item.dateAdded;
+        const item1 = item;
+        const Id = item1.item.id;
+        const Title = item1.item.title;
+        const Url = item1.item.url;
+        const BlogApp = item1.item.blogApp;
+        const CommentCount = item1.item.commentCount;
+        const SummaryContent = item1.item.summaryContent;
+        const DateAdded = item1.item.dateAdded;
 
-        var BtnsLeft = [{ text: '清空', type: 'delete',  onPress: ()=> this._onPressDelAll()},];
-        var BtnsRight = [{ text: '删除', type: 'delete', onPress: ()=>this._onPressDelHistory(Id)},];
+        const BtnsLeft = [{ text: '清空', type: 'delete',  onPress: ()=> this._onPressDelAll()},];
+        const BtnsRight = [{ text: '删除', type: 'delete', onPress: ()=>this._onPressDelHistory(Id)},];
 
         return(
             <Swipeout
                 close={!(this.state.sectionID === 'historylist' && this.state.rowID === Id)}
                 right={BtnsRight}
                 left={BtnsLeft}
+                sensitivity={20}
                 rowID={Id}
                 sectionID='historylist'
                 autoClose={true}
@@ -155,33 +157,14 @@ export default class HistoryList extends Component {
                         </Text>
                     </View>
                     <View style = {{flex:1}}>
-                        <Text style = {{
-                            fontSize: 18,
-                            fontWeight: 'bold',
-                            marginTop: 10,
-                            marginBottom: 2,
-                            textAlign: 'left',
-                            color: 'black',
-                            fontFamily : 'serif',
-                        }} >
+                        <Text numberOfLines={1} style = {blogListStyles.blogTitleText} >
                             {Title}
                         </Text>
-                        <Text  numberOfLines={2} style = {{
-                            lineHeight: 25,
-                            fontSize: 14,
-                            marginBottom: 8,
-                            textAlign: 'left',
-                            color: 'rgb(70,70,70)',
-                        }}>
+                        <Text numberOfLines={2} style = {blogListStyles.blogSummaryText}>
                             {SummaryContent + '...'}
                         </Text>
-                        <View style = {{
-                            flexDirection: 'row',
-                            marginBottom: 8,
-                            justifyContent: 'space-around',
-                            alignItems: 'flex-start',
-                        }}>
-                            <Text style = {{fontSize: 10, textAlign: 'right', color: 'black', flex: 1}}>
+                        <View style = {blogListStyles.blogAppAndTimeContainer}>
+                            <Text style = {blogListStyles.blogAppText}>
                                 {BlogApp}
                             </Text>
                         </View>
@@ -201,8 +184,8 @@ export default class HistoryList extends Component {
 
     /* 渲染历史记录列表 */
     _renderHistoryList() {
-        var data = [];
-        for(var i in this.state.theblogs)
+        let data = [];
+        for(let i in this.state.theblogs)
         {
         data.push({
             key: this.state.theblogs[i].id,
@@ -255,7 +238,7 @@ export default class HistoryList extends Component {
             return (
                 <View style={flatStylesWithAvatar.promptTextContainer}>
                     <Text style={flatStylesWithAvatar.promptText}>
-                    没有更多数据了
+                    再往下拉也没有了呢 ~
                     </Text>
                 </View>
             );
@@ -271,7 +254,7 @@ export default class HistoryList extends Component {
         if (this.state.loadStatus != 'not loading') {
 			return;
 		}
-		let pageCount = Math.ceil(this.state.theblogCount / pageSize);
+		const pageCount = Math.ceil(this.state.theblogCount / pageSize);
 		if (this.state.currentPageIndex >= pageCount) {
 			return;
 		}
@@ -288,7 +271,6 @@ export default class HistoryList extends Component {
         }
         global.storage.load({key: StorageKey.BLOG_LIST})
         .then((ret)=>{
-            var storageData=ret;
             //Alert.alert('长度：' + ret.length);
             this.setState({
                 theblogs: ret,
@@ -319,7 +301,7 @@ export default class HistoryList extends Component {
     render() {
         return (
             <View style = {styles.container}>
-                <View style={styles.strangeView}/>
+                <View style={flatStylesWithAvatar.separatorStyle}/>
                 {
                     this._renderHistoryList()
                 }

@@ -22,21 +22,30 @@ import Vote from '../component/Vote';
 import VoteCommit from '../component/VoteCommit';
 import FoldText from "react-native-fold-text";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import {ThemeContext} from '../styles/theme-context';
+import { ThemeContext } from '../styles/theme-context';
 const HTMLSpecialCharsDecode = require('../DataHandler/HTMLSpecialCharsDecode');
 const extractVoteContentData = require('../DataHandler/VoteContent');
 
 const screenWidth = MyAdapter.screenWidth;
 const screenHeight = MyAdapter.screenHeight;
+// 投票隐私
+const Public = 1;
+const Anonymous = 2;
 
 // 传入voteID作为参数
 export default class VoteDetail extends Component {
     /**navigationOptions放在此处，可以在标题栏放一个按钮跳转到另一个页面。 */
     static navigationOptions = ({ navigation }) => ({
         headerTitle: '投票详情',
-        headerRight: (
+        headerRight: navigation.state.params.privacy === Public ? (
             <TouchableOpacity onPress={() => {
-                if (typeof(navigation.state.params.voteContent) == 'undefined') {
+                if (navigation.state.params.voteCount == 0) {
+                    Alert.alert('提示', '尚无成员参与投票 (lll￢ω￢) wow~', [
+                        { text: '确定', },
+                    ]);
+                    return;
+                }
+                if (typeof (navigation.state.params.voteContent) == 'undefined') {
                     ToastAndroid.show('请等待1秒', ToastAndroid.SHORT);
                     return; // voteContent还没有获取到
                 }
@@ -53,9 +62,10 @@ export default class VoteDetail extends Component {
                         width: 22,
                         marginRight: 12
                     }}
+                    tintColor={global.theme.headerTintColor}
                 />
             </TouchableOpacity>
-        ),
+        ) : (<View></View>),
     })
 
     constructor(props) {
@@ -78,6 +88,8 @@ export default class VoteDetail extends Component {
             dateAdded: null,
             isFinished: "",
 
+            deleteButton: false, //deleteButton 是否可见，只有发起投票者才能看见
+
             /**是否已经投票 */
             hasVoted: undefined,
 
@@ -87,7 +99,7 @@ export default class VoteDetail extends Component {
             voteData: [],   // 传递给Vote组件的数据
         }
         this.selectedIds = [],
-        this.info = {};
+            this.info = {};
         this.info.complete = false;
         this.info.unselectedNumbers = '所有';
         this.info.selectedNumbers = '';
@@ -96,14 +108,24 @@ export default class VoteDetail extends Component {
     _isMounted;
 
     componentWillMount = () => {
-        //this.props.navigation.setParams({theme: this.context});
         this._isMounted = true;
         let contenturl = Config.VoteDetail + this.state.voteId;
         let voteContentURL = Config.VoteContent + this.state.voteId;
+        let voteDeleteURL = Config.VoteDelete + this.state.voteId;
+        let usersURL = Config.UsersInfo;
+        var isPublisher = false;
+        var varUserId = 0;
+        var varPublisherId = '';
+        Service.Get(usersURL).then((jsonData) => {
+            varUserId = jsonData.BlogId;
+        });
 
         Service.Get(contenturl).then((jsonData) => {
             if (jsonData !== 'rejected') {
                 if (this._isMounted) {
+                    varPublisherId = jsonData.publisherId;
+                    //alert('publisherId'+varPublisherId+'    userId'+varUserId);
+                    //alert(varPublisherId==varUserId?'是发起人':'不是发起人');
                     this.setState({
                         name: jsonData.name, //测试
                         content: jsonData.content,
@@ -120,29 +142,33 @@ export default class VoteDetail extends Component {
                     })
                 }
                 // 为显示投票成员设置
-                this.props.navigation.setParams({ schoolClassId: jsonData.schoolClassId });
+                this.props.navigation.setParams({
+                    schoolClassId: jsonData.schoolClassId,
+                    privacy: jsonData.privacy,
+                });
             }
         })
-        .then(() => {
-            Service.Get(voteContentURL)
-            .then((jsonData) => {
-                if (jsonData !== 'rejected') {
-                    if (this._isMounted) {
-                        this.setState({voteContent: jsonData});
-                        this.setState({voteData: extractVoteContentData(jsonData)});
-                    }
-                    // 传递votenContent到显示投票成员页面
-                    this.props.navigation.setParams({voteContent: jsonData});
-                }
-            })
             .then(() => {
-                this._getVoteState(); // 获取用户是否已经投票。
+                Service.Get(voteContentURL)
+                    .then((jsonData) => {
+                        if (jsonData !== 'rejected') {
+                            if (this._isMounted) {
+                                this.setState({ voteContent: jsonData });
+                                this.setState({ voteData: extractVoteContentData(jsonData) });
+                            }
+                            // 传递votenContent到显示投票成员页面
+                            this.props.navigation.setParams({ voteContent: jsonData });
+                        }
+                    })
+                    .then(() => {
+                        this._getVoteState(); // 获取用户是否已经投票。
+                    })
+                    .catch((err) => {
+                        // 无网络连接
+                    })
             })
-            .catch((err) => {
-                // 无网络连接
-            })
-        })
-    .catch((err)=>{/* 无网络连接*/});
+
+            .catch((err) => {/* 无网络连接*/ });
     }
 
     componentWillUnmount = () => {
@@ -219,26 +245,26 @@ export default class VoteDetail extends Component {
         let user_url = Config.apiDomain + api.user.info;
         let data = extractVoteContentData(this.state.voteContent);
         Service.Get(user_url)
-        .then((jsonData) => {
-            var memberIdURL = Config.apiDomain + api.ClassGet.blogID2Mem + 
-            jsonData.BlogId + '/' + this.state.schoolClassId;
-            return Service.Get(memberIdURL)
-        })
-        .then((jsonData) => {
-            this.memberId = jsonData.memberId;
-            let voteIsCommitedURL = Config.VoteIsCommited + this.memberId +
+            .then((jsonData) => {
+                var memberIdURL = Config.apiDomain + api.ClassGet.blogID2Mem +
+                    jsonData.BlogId + '/' + this.state.schoolClassId;
+                return Service.Get(memberIdURL)
+            })
+            .then((jsonData) => {
+                this.memberId = jsonData.memberId;
+                let voteIsCommitedURL = Config.VoteIsCommited + this.memberId +
                     '/' + this.state.voteId;
-             return Service.Get(voteIsCommitedURL)
-        })
-        .then((_hasVoted) => {
-            if (this._isMounted) {
-                this.setState({
-                    hasVoted: _hasVoted,
-                })
-            }
-        })
-        .catch(error => {});
-        
+                return Service.Get(voteIsCommitedURL)
+            })
+            .then((_hasVoted) => {
+                if (this._isMounted) {
+                    this.setState({
+                        hasVoted: _hasVoted,
+                    })
+                }
+            })
+            .catch(error => { });
+
         return data;
     }
 
@@ -251,62 +277,62 @@ export default class VoteDetail extends Component {
     }
 
     render() {
-        if(this.state.content!="")
-        return (
-            <View style={{ flex: 1, backgroundColor: 'white' }}>
-                <KeyboardAwareScrollView>
-                    {/** header组件 */}
-                    <View style={styles.header}>
-                        <Text style={styles.headerText}>
-                            {this.state.name}
-                        </Text>
-                    </View>
+        if (this.state.content != "")
+            return (
+                <View style={{ flex: 1, backgroundColor: 'white' }}>
+                    <KeyboardAwareScrollView>
+                        {/** header组件 */}
+                        <View style={styles.header}>
+                            <Text style={styles.headerText}>
+                                {this.state.name}
+                            </Text>
+                        </View>
 
-                    {/** detail组件 */}
-                    {/** 用于存放如publisher和privacy等信息 */}
-                    <View style={styles.detail}>
-                        <Text style={styles.publisherText} >
-                            {this.state.publisher + '\n'}
-                        </Text>
-                        <Text style={styles.detailText} >
-                            {'发布于: ' + this.DateFormat(this.state.dateAdded) + '\n'}
-                            {'结束于: ' + this.DateFormat(this.state.deadline) + '\n'}
-                            {this.state.privacy == 1 ? '公开投票' : '匿名投票'}
-                        </Text>
-                    </View>
+                        {/** detail组件 */}
+                        {/** 用于存放如publisher和privacy等信息 */}
+                        <View style={styles.detail}>
+                            <Text style={styles.publisherText} >
+                                {this.state.publisher + '\n'}
+                            </Text>
+                            <Text style={styles.detailText} >
+                                {'发布于: ' + this.DateFormat(this.state.dateAdded) + '\n'}
+                                {'结束于: ' + this.DateFormat(this.state.deadline) + '\n'}
+                                {this.state.privacy == 1 ? '公开投票' : '匿名投票'}
+                            </Text>
+                        </View>
 
-                    {/** content组件 */}
+                        {/** content组件 */}
 
-                    <View style={styles.content}>
+                        <View style={styles.content}>
                             <FoldText
                                 maxLines={5} //
                                 text={HTMLSpecialCharsDecode(this.state.content)}
                             />
-                    </View>
-                    {
-                        this.state.hasVoted ? (
-                            <VoteCommit
-                                memberId={this.memberId}
-                                voteId={this.state.voteId}
-                                voteContent={this.state.voteContent}
-                                headerComponent={this._renderHasVotedBanner.bind(this)}
-                            />
-                        ) : (
-                            <Vote
-                                data={this.state.voteData}
-                                recvSelectedIds={(ids, info) => {
-                                    this.selectedIds = ids;
-                                    this.info = info;
-                                }}
-                                headerComponent={this._renderHasVotedBanner.bind(this)}
-                                footerComponent={this._renderSubmitButton.bind(this)}
-                                disabled={this.state.hasVoted}
-                            />
-                        )
-                    }
-                </KeyboardAwareScrollView>
-            </View>
-        )
+                        </View>
+                        {
+                            this.state.hasVoted ? (
+                                <VoteCommit
+                                    memberId={this.memberId}
+                                    voteId={this.state.voteId}
+                                    voteContent={this.state.voteContent}
+                                    headerComponent={this._renderHasVotedBanner.bind(this)}
+                                />
+                            ) : (
+                                    <Vote
+                                        data={this.state.voteData}
+                                        recvSelectedIds={(ids, info) => {
+                                            this.selectedIds = ids;
+                                            this.info = info;
+                                        }}
+                                        headerComponent={this._renderHasVotedBanner.bind(this)}
+                                        footerComponent={this._renderSubmitButton.bind(this)}
+                                        disabled={this.state.hasVoted}
+                                    />
+                                )
+                        }
+                    </KeyboardAwareScrollView>
+                </View>
+            )
         return (
             <View style={{ flex: 1, backgroundColor: 'white' }}>
                 <View>
@@ -359,10 +385,12 @@ const styles = StyleSheet.create({
         color: '#2c2c2c',
     },
     content: {
-        justifyContent: 'flex-start',
-        borderColor: UI.TOP_COLOR,
+        //alignItems : 'center',
+        justifyContent: 'center',
+        borderColor: 'grey',
         borderStyle: null,
         borderWidth: 0.5,
+        //marginVertical: 20,
         marginTop: 20,
     },
     detail: {

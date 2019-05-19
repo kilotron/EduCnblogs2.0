@@ -98,11 +98,11 @@ export default class AppInformation extends Component {
         var fills=[
             {
                 title:"当前版本",
-                description: "alpha"
+                description: "v2.3.3"
             },
             {
                 title: "意见反馈",
-                description: "https://www.wjx.cn/jq/37858110.aspx"
+                description: "https://www.wjx.cn/jq/39668286.aspx"
             },
             {
                 title: "项目地址",

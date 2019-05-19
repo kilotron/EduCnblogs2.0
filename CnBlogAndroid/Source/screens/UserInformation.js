@@ -320,12 +320,13 @@ export default class UserInformation extends Component{
                 //     umengPush.testPush();
                 // }}//关联函数
                 style = {{
-                    justifyContent:'center',
-                    alignItems: 'flex-start',
+                    justifyContent:'space-between',
+                    alignItems: 'center',
                     height: 0.07*screenHeight,
                     marginBottom: 0.01*screenHeight,
                     backgroundColor: 'white',
                     paddingLeft: 0.05*screenWidth,
+                    flexDirection:'row'
             }}>
             <Text style = {{fontSize: 18, fontWeight: 'bold', color:'rgb(51,51,51)'}}>接收推送</Text>
             <Switch
@@ -353,22 +354,6 @@ export default class UserInformation extends Component{
             />
             </View>
 
-            {/* <TouchableHighlight
-                underlayColor="white"
-                activeOpacity={0.5}
-                onPress={()=>{
-                    umengPush.testPush();
-                }}//关联函数
-                style = {{
-                    justifyContent:'center',
-                    alignItems: 'flex-start',
-                    height: 0.07*screenHeight,
-                    marginBottom: 0.03*screenHeight,
-                    backgroundColor: 'white',
-                    paddingLeft: 0.05*screenWidth,
-            }}>
-            <Text style = {{fontSize: 18, fontWeight: 'bold', color:'rgb(51,51,51)'}}>测试按钮</Text>
-            </TouchableHighlight> */}
             <TouchableOpacity style = {{
                 justifyContent:'center',
                 alignItems: 'flex-start',

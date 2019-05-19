@@ -74,15 +74,14 @@ export default class Bulletin extends Component {
                 [
                     {text: '取消'},
                     {text: '确认删除', onPress: ()=>{
-                        let postBody = {
+                        const postBody = {
                             bulletinId: id,
                             schoolClassId: this.props.schoolClassId,
                             blogId: global.user_information.BlogId,
                         };
-                        let body = JSON.stringify(postBody);
-                        let url = Config.BulletinDel + this.props.schoolClassId + '/' + id;
-                        //console.log(url);
-                        //console.log(body);
+                        const body = JSON.stringify(postBody);
+                        const url = Config.BulletinDel + this.props.schoolClassId + '/' + id;
+
                         Service.UserAction(url, body, 'DELETE').then((response)=>{
                             if(response.status!==200)
                             {
@@ -99,6 +98,7 @@ export default class Bulletin extends Component {
                             else if(jsonData.isSuccess)
                             {
                                 ToastAndroid.show('删除成功！',ToastAndroid.SHORT);
+                                this.fetchPage(1);
                             }
                             else if(jsonData.isWarning)
                             {
@@ -108,22 +108,8 @@ export default class Bulletin extends Component {
                             {
                                 ToastAndroid.show('发生错误，请稍后重试！',ToastAndroid.SHORT);
                             }
-                            this.setState({
-                                changedSchoolClassId: true,
-                                bulletins: [],
-                                bulletinCount: 0,
-                                loadStatus: 'not loading',
-                                currentPageIndex: 1,
-                            });
                         }).catch((error) => {
                             ToastAndroid.show(err_info.NO_INTERNET ,ToastAndroid.SHORT);
-                            this.setState({
-                                changedSchoolClassId: true,
-                                bulletins: [],
-                                bulletinCount: 0,
-                                loadStatus: 'not loading',
-                                currentPageIndex: 1,
-                            });
                         });
                     }},
                 ]
@@ -133,12 +119,12 @@ export default class Bulletin extends Component {
 
     /* 渲染一个公告数据 */
     _renderItem = (item) => {
-        let item1 = item;
-        var Id = item1.item.key;
-        var Content = item1.item.Content;
-        var Publisher = item1.item.Publisher;
-        var BlogUrl = item1.item.BlogUrl;
-        var DateAdded = item1.item.DateAdded;
+        const item1 = item;
+        const Id = item1.item.key;
+        const Content = item1.item.Content;
+        const Publisher = item1.item.Publisher;
+        const BlogUrl = item1.item.BlogUrl;
+        const DateAdded = item1.item.DateAdded;
         return(
             <TouchableOpacity onPress={()=>{
                 this.props.navigation.navigate('BulletinDisplay',{
@@ -174,18 +160,14 @@ export default class Bulletin extends Component {
     /* 刷新公告页面的函数，在改变班级、修改和发布公告后都应调用 */
     _FlatListRefresh = ()=>{
         if (this._isMounted){
-            this.setState({
-                changedSchoolClassId: true,
-                loadStatus: 'not loading',
-                currentPageIndex: 1,
-            });
+            this.fetchPage(1);
         }
     };
 
     /* 渲染公告列表 */
     _renderBulletinList() {
-        var data = [];
-        for(var i in this.state.bulletins)
+        let data = [];
+        for(let i in this.state.bulletins)
         {
         data.push({
             key: this.state.bulletins[i].bulletinId,
@@ -226,7 +208,7 @@ export default class Bulletin extends Component {
             return (
                 <View style={{height:30,alignItems:'center',justifyContent:'flex-start',}}>
                     <Text style={{color:'#999999',fontSize:14,marginTop:5,marginBottom:5,}}>
-                    没有更多数据了
+                    再往下拉也没有了呢 ~
                     </Text>
                 </View>
             );
@@ -249,7 +231,7 @@ export default class Bulletin extends Component {
         if (this.state.loadStatus != 'not loading') {
 			return;
 		}
-		let pageCount = Math.ceil(this.state.bulletinCount / pageSize);
+		const pageCount = Math.ceil(this.state.bulletinCount / pageSize);
 		if (this.state.currentPageIndex >= pageCount) {
 			return;
 		}
@@ -263,18 +245,20 @@ export default class Bulletin extends Component {
         {
             return ;
         }
-        var membership = 1;
-        let url1 = Config.apiDomain + api.user.info;
+        //console.log('fetchPage func: ', pageIndex);
+        let membership = 1;
+        /* 这里先获取用户在班级中的身份 */
+        const url1 = Config.apiDomain + api.user.info;
         Service.Get(url1).then((jsonData)=>{
-            let url2= Config.apiDomain+"api/edu/member/"+jsonData.BlogId+"/"+this.props.schoolClassId;
+            const url2= Config.apiDomain+"api/edu/member/"+jsonData.BlogId+"/"+this.props.schoolClassId;
             Service.Get(url2).then((jsonData)=>{
                 if(this._isMounted && jsonData!=='rejected'){
                     membership = jsonData.membership;
                 }
             }).then(()=>{
-                let url = Config.BulletinList + this.props.schoolClassId + '/'+ pageIndex + '-'+ pageSize;
+                const url = Config.BulletinList + this.props.schoolClassId + '/'+ pageIndex + '-'+ pageSize;
                 Service.Get(url).then((jsonData)=>{
-                    let pageCount = Math.ceil(jsonData.totalCount / pageSize);
+                    const pageCount = Math.ceil(jsonData.totalCount / pageSize);
                     if(jsonData!=='rejected')
                     {
                         if(pageIndex===1)
@@ -282,9 +266,10 @@ export default class Bulletin extends Component {
                             this.setState({
                                 bulletinCount: jsonData.totalCount,
                                 bulletins: jsonData.bulletins,
-                                loadStatus: this.state.currentPageIndex>=pageCount ? 'all loaded' : 'not loading',
+                                loadStatus: pageCount<=1 ? 'all loaded' : 'not loading',
                                 changedSchoolClassId: false,
                                 membership: membership,
+                                currentPageIndex: 1,
                             });
                         }
                         else
@@ -304,6 +289,9 @@ export default class Bulletin extends Component {
                         {
                             this.setState({
                                 loadStatus: 'none',
+                                bulletinCount: 0,
+                                bulletins: [],
+                                currentPageIndex: 1,
                             });
                         }
 
@@ -370,10 +358,10 @@ export default class Bulletin extends Component {
             bulletinCount: 0,
         });
         /* 当传入的参数改变时首先获取用户在班级中的身份  */
-        var membership = 1;
-        let url1 = Config.apiDomain + api.user.info;
+        let membership = 1;
+        const url1 = Config.apiDomain + api.user.info;
         Service.Get(url1).then((jsonData)=>{
-            let url2= Config.apiDomain+"api/edu/member/"+jsonData.BlogId+"/"+this.props.schoolClassId;
+            const url2= Config.apiDomain+"api/edu/member/"+jsonData.BlogId+"/"+this.props.schoolClassId;
             Service.Get(url2).then((jsonData)=>{
                 if(this._isMounted && jsonData!=='rejected'){
                     membership = jsonData.membership;
@@ -414,7 +402,6 @@ export default class Bulletin extends Component {
 
     /* 将网站返回的时间字符串改成预期 */
     String2Date = (day)=>{
-        //console.log(day);
         if(day == null)
             return '  ';
         let s1 = day.split('T')[0];
@@ -428,9 +415,7 @@ export default class Bulletin extends Component {
         }
         return (
             <View style = {styles.container}>
-
                 <View>
-                    <View style={{ height: 1, backgroundColor: 'rgb(225,225,225)',  marginTop: 0.005*screenHeight, alignSelf:'stretch'}}/>
                     {
                         this._renderBulletinList()
                     }
@@ -514,10 +499,10 @@ const styles = StyleSheet.create({
         left: 4,
     },
     bulletinDateAdded: {
-        fontSize: 14,
+        fontSize: 12,
     },
     bulletinPublisher: {
-        fontSize: 12,
+        fontSize: 10,
     },
 });
 

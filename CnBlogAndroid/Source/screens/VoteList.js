@@ -146,15 +146,22 @@ export default class VoteList extends Component {
     }
 
 
+    deleteVote(propsVoteId){
+        alert('删除功能尚未实现');
+    }
+
     _renderItem = ({ item }) => {
         return (
-            <View style={styles.cellStyle}>
+            <View style={flatStyles.cell}>
                 <TouchableOpacity
                     style={flatStyles.listContainer}
+                    onLongPress = {()=> {this.deleteVote(item.voteId)}}
                     onPress={() => {
                         this.props.navigation.navigate('VoteDetail', //获取详细信息
                             {
                                 voteId: item.voteId,
+                                // 在没有人投票的情况下不弹出已投票成员页面
+                                voteCount: item.voteCount,
                             });
                     }}
                 >
@@ -202,7 +209,7 @@ export default class VoteList extends Component {
             return (
                 <View style={styles.allLoadedView}>
                     <Text style={styles.allLoadedText}>
-                        没有更多数据了
+                        再往下拉也没有了呢 ~
                 </Text>
                 </View>
             );
@@ -306,24 +313,6 @@ const styles = StyleSheet.create({
         height: 40,
         alignItems: 'center',
         justifyContent: 'center'
-    },
-    cellStyle: {
-        flex: 1,
-        backgroundColor: 'white',
-        padding: 10,
-        paddingVertical: 10,
-        marginLeft: 5,
-        marginRight: 5,
-        marginVertical: 3,
-        borderColor: '#dddddd',
-        borderStyle: null,
-        borderWidth: 0.5,
-        borderRadius: 2,
-        shadowColor: 'gray',    // 设置阴影
-        shadowOffset: { width: 0.5, height: 0.5 },
-        shadowOpacity: 0.4,   // 透明度
-        shadowRadius: 1,
-        elevation: 3   //   高度，设置Z轴，可以产生立体效果
     },
     picker: {
         height: 40,

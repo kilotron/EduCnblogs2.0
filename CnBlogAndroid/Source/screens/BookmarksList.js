@@ -7,6 +7,7 @@ import React, { Component} from 'react';
 import {UI} from '../config'
 import {err_info} from '../config'
 import {nameImageStyles, flatStylesWithAvatar} from '../styles/styles'
+import {blogListStyles} from '../styles/blogList'
 import {
     StyleSheet,
     Text,
@@ -60,6 +61,10 @@ export default class BookmarksList extends Component {
         this.fetchPage(this.state.currentPageIndex);
     }
 
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
+
     /* 弹出选择框询问是否删除 */
     _onPressDelBookmarks(wzLinkId) {
         if(!this._isMounted){
@@ -102,42 +107,19 @@ export default class BookmarksList extends Component {
 
     /* 渲染一个收藏项数据 */
     _renderItem = (item) => {
-        let item1 = item;
-        var Id = item1.item.key;
-        var WzLinkId = item1.item.wzLinkId;
-        var Title = item1.item.title;
-        var LinkUrl = item1.item.linkUrl;
-        var Summary = item1.item.summary;
-        var Tags = item1.item.tags;
-        var DateAdded = item1.item.dateAdded;
-        var FromCnBlogs = item1.item.fromCnBlogs;
-        var DetailId = item1.item.detailId;
-        let BlogApp = GetBlogApp(LinkUrl);
+        const item1 = item;
+        const Id = item1.item.key;
+        const WzLinkId = item1.item.wzLinkId;
+        const Title = item1.item.title;
+        const LinkUrl = item1.item.linkUrl;
+        const Summary = item1.item.summary;
+        const Tags = item1.item.tags;
+        const DateAdded = item1.item.dateAdded;
+        const FromCnBlogs = item1.item.fromCnBlogs;
+        const DetailId = item1.item.detailId;
+        const BlogApp = GetBlogApp(LinkUrl);
 
-        /*
-        let _panResponder = PanResponder.create({
-            onMoveShouldSetPanResponder: (evt, gestureState) => {
-                if(gestureState.dx < -screenWidth*0.1 || gestureState.dx > screenWidth*0.1){
-                    return true;
-                }
-                else{
-                    return false;
-                }
-            },
-            onPanResponderRelease: (evt, gestureState)=>{
-                if(gestureState.dx < 0) {
-                    this._onPressDelBookmarks(WzLinkId);
-                }
-                else{
-                  this.props.navigation.navigate('BookmarksEdit',{Url: LinkUrl,
-                      Title: Title, Id: WzLinkId, Description: Summary, callback: this._FlatListRefresh});
-                }
-            },
-            onPanResponderTerminate: (evt, gestureState)=>{;},
-        });
-        */
-
-        var BtnsTypes = [
+        const BtnsTypes = [
             { text: '修改',    type: 'primary',  onPress: ()=>this.props.navigation.navigate('BookmarksEdit',{Url: LinkUrl,
               Title: Title, Id: WzLinkId, Description: Summary, callback: this._FlatListRefresh})},
             //{ text: '修改',  type: 'secondary', },
@@ -148,6 +130,7 @@ export default class BookmarksList extends Component {
             <Swipeout
                 close={!(this.state.sectionID === 'bookmarkslist' && this.state.rowID === WzLinkId)}
                 right={BtnsTypes}
+                sensitivity={20}
                 rowID={WzLinkId}
                 sectionID='bookmarkslist'
                 autoClose={true}
@@ -172,33 +155,14 @@ export default class BookmarksList extends Component {
                               </Text>
                           </View>
                           <View style = {{flex:1}}>
-                              <Text style = {{
-                                  fontSize: 18,
-                                  fontWeight: 'bold',
-                                  marginTop: 6,
-                                  marginBottom: 2,
-                                  textAlign: 'left',
-                                  color: 'black',
-                                  fontFamily : 'serif',
-                              }} >
+                              <Text numberOfLines={1} style = {blogListStyles.blogTitleText} >
                                   {Title}
                               </Text>
-                              <Text  numberOfLines={2} style = {{
-                                  lineHeight: 25,
-                                  fontSize: 12,
-                                  marginBottom: 2,
-                                  textAlign: 'left',
-                                  color: 'rgb(70,70,70)',
-                              }}>
+                              <Text  numberOfLines={2} style = {blogListStyles.blogSummaryText}>
                                   {Summary + '...'}
                               </Text>
-                              <View style = {{
-                                  flexDirection: 'row',
-                                  marginBottom: 4,
-                                  justifyContent: 'space-around',
-                                  alignItems: 'flex-start',
-                              }}>
-                                  <Text style = {{fontSize: 10, textAlign: 'right', color: 'black', flex: 1}}>
+                              <View style = {blogListStyles.blogAppAndTimeContainer}>
+                                  <Text style = {blogListStyles.blogAppText}>
                                       {BlogApp+'\n添加于 '+DateAdded}
                                   </Text>
                               </View>
@@ -223,8 +187,8 @@ export default class BookmarksList extends Component {
 
     /* 渲染收藏列表 */
     _renderBookmarksList() {
-        var data = [];
-        for(var i in this.state.bookmarks)
+        let data = [];
+        for(let i in this.state.bookmarks)
         {
             if(this.state.bookmarks[i].FromCNBlogs)
             {
@@ -284,7 +248,7 @@ export default class BookmarksList extends Component {
             return (
                 <View style={flatStylesWithAvatar.promptTextContainer}>
                     <Text style={flatStylesWithAvatar.promptText}>
-                    没有更多数据了
+                    再往下拉也没有了呢 ~
                     </Text>
                 </View>
             );
@@ -328,7 +292,6 @@ export default class BookmarksList extends Component {
         Service.Get(Config.Bookmarks).then((jsonData)=>
         {
             bookmarksCount = jsonData.length;
-            //console.log('bookmarksCount: ' + bookmarksCount);
             if(bookmarksCount <= 0)
             {
                 this.setState({
@@ -381,13 +344,8 @@ export default class BookmarksList extends Component {
         });
     }
 
-    componentWillUnmount() {
-        this._isMounted = false;
-    }
-
     /* 将网站返回的时间字符串改成预期 */
     String2Date = (dateStr)=>{
-        //console.log(dateStr);
         if(dateStr == null)
             return '  ';
         let s1 = dateStr.split('T')[0];
@@ -402,7 +360,7 @@ export default class BookmarksList extends Component {
         }
         return (
             <View style = {styles.container}>
-                <View style={styles.strangeView}/>
+                <View style={flatStylesWithAvatar.separatorStyle}/>
                 {
                     this._renderBookmarksList()
                 }

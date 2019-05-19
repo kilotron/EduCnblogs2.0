@@ -42,7 +42,7 @@ export default class BlogDetail extends Component{
     _isMounted;
 
     saveHistory(){
-        storageData = [];
+        let storageData = [];
         global.storage.load({key: StorageKey.BLOG_LIST})
         .then((ret)=>{
             storageData = ret;
@@ -83,7 +83,7 @@ export default class BlogDetail extends Component{
             this.saveHistory();
         }
 
-		let contenturl = Config.BlogDetail+this.props.navigation.state.params.Id+'/body';
+		const contenturl = Config.BlogDetail+this.props.navigation.state.params.Id+'/body';
         Service.Get(contenturl).then((jsonData)=>{
             if(jsonData!=='rejected'){
                 this.setState({

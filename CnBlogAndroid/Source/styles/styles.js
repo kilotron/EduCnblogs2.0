@@ -29,8 +29,7 @@ export const flatStyles = StyleSheet.create({
     cell:{
         flex: 1,
         backgroundColor: 'white',
-        padding: 10,
-        paddingVertical:10,
+        padding: 8,
         marginLeft: 5,
         marginRight: 5,
         marginVertical: 3,
@@ -38,17 +37,14 @@ export const flatStyles = StyleSheet.create({
         borderStyle: null,
         borderWidth: 0.5,
         borderRadius: 2,
-        shadowColor: 'gray',    // 设置阴影
-        shadowOffset: {width:0.5, height: 0.5},
-        shadowOpacity: 0.4,   // 透明度
-        shadowRadius: 1,
-        elevation:3   //   高度，设置Z轴，可以产生立体效果
     },
 })
 export const flatStylesWithAvatar = StyleSheet.create({
     cell:{
         flex: 1,
         backgroundColor: 'white',
+        paddingTop: 5,
+        paddingBottom: 8,
         marginLeft: 5,
         marginRight: 5,
         borderColor: '#dddddd',
@@ -57,6 +53,7 @@ export const flatStylesWithAvatar = StyleSheet.create({
         flex:1,
         flexDirection: 'row',
         marginRight: 5,
+        maxHeight: screenHeight*0.25,
     },
     separatorStyle:{
         width: screenWidth,
@@ -90,7 +87,7 @@ export const nameImageStyles = StyleSheet.create({
         borderRadius : 40,
         left : 2,
         marginTop: 5,
-        marginRight: 5,
+        marginRight: 10,
         backgroundColor: '#F5F5FF',
         alignItems: 'center',
         justifyContent: 'center',

@@ -20,6 +20,7 @@ import {
     StackNavigator,
 } from 'react-navigation';
 import {flatStyles} from '../styles/styles';
+import {blogListStyles} from '../styles/blogList';
 
 const screenWidth= MyAdapter.screenWidth;
 const screenHeight= MyAdapter.screenHeight;
@@ -113,26 +114,13 @@ export default class MemberBlog extends Component{
                             blogApp: blogApp, CommentCount: CommentCount, Title: Title, Description:Description,})}
                     }
                 >
-                    <Text style = {{
-                        fontSize: 18,
-                        fontWeight: 'bold',
-                        marginTop: 10,
-                        marginBottom: 2,
-                        textAlign: 'left',
-                        color: 'black',
-                        fontFamily : 'serif',
-                    }}>
+                    <Text style = {blogListStyles.blogTitleText}>
                         {Title}
                     </Text>
-                    <Text  numberOfLines={3} style = {{lineHeight: 25,fontSize: 14, marginBottom: 8, textAlign: 'left', color:'rgb(70,70,70)'}}>
+                    <Text  numberOfLines={2} style = {blogListStyles.blogSummaryText}>
                         {Description+'...'}
                     </Text>
-                    <View style = {{
-                        flexDirection: 'row',
-                        marginBottom: 8,
-                        justifyContent: 'space-around',
-                        alignItems: 'flex-start'
-                    }}>
+                    <View style = {blogListStyles.blogAppAndTimeContainer}>
                         <Text style = {{fontSize: 10, textAlign: 'left', color: 'black', flex: 1}}>
                             {ViewCount+' 阅读'+'  '+CommentCount+' 评论'}
                         </Text>

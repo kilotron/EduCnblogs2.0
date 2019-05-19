@@ -33,6 +33,7 @@ const abstractFontSize= MyAdapter.abstractFontSize;
 const informationFontSize= MyAdapter.informationFontSize;
 const btnFontSize= MyAdapter.btnFontSize;
 const pageSize = 10;
+const minMoveDistance = (15<0.1*screenWidth)?15:0.1*screenWidth;
 
 const HtmlDecode = require('../DataHandler/HomeworkDetails/HtmlDecode');
 
@@ -131,7 +132,7 @@ export default class HistoryList extends Component {
                 close={!(this.state.sectionID === 'historylist' && this.state.rowID === Id)}
                 right={BtnsRight}
                 left={BtnsLeft}
-                sensitivity={20}
+                sensitivity={minMoveDistance}
                 rowID={Id}
                 sectionID='historylist'
                 autoClose={true}

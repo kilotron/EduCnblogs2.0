@@ -558,7 +558,7 @@ export default class ClassBlogPostsList extends Component {
             return (
                 <View style={styles.allLoadedView}>
                     <Text style={styles.allLoadedText}>
-                        再往下拉也没有了呢
+                        再往下拉也没有了呢 ~
                     </Text>
                 </View>
             );

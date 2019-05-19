@@ -40,6 +40,7 @@ const btnFontSize= MyAdapter.btnFontSize;
 const pageSize = 10;
 const GetDetailId = require('../DataHandler/BlogDetail/GetDetailId');
 const GetBlogApp = require('../DataHandler/BlogDetail/GetBlogApp');
+const minMoveDistance = (15<0.1*screenWidth)?15:0.1*screenWidth;
 
 export default class BookmarksList extends Component {
     constructor(props){
@@ -130,7 +131,7 @@ export default class BookmarksList extends Component {
             <Swipeout
                 close={!(this.state.sectionID === 'bookmarkslist' && this.state.rowID === WzLinkId)}
                 right={BtnsTypes}
-                sensitivity={20}
+                sensitivity={minMoveDistance}
                 rowID={WzLinkId}
                 sectionID='bookmarkslist'
                 autoClose={true}

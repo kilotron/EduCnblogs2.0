@@ -729,13 +729,14 @@ class Option extends Component {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        //if (nextProps.rank != this.props.rank) return false;
+        if (nextProps.rank != this.props.rank) return true; //只有重新赋值才会进行更新
         return true;
         return false;
     }
 
     componentWillUpdate(nextProps, nextState) {
-        if (nextProps.text != this.state.optionText) {
+        //if (nextProps.text != this.props.optionText) {
+        if (nextProps.rank != this.props.rank) {
             this.setState({ optionText: nextProps.text });
         }
     }

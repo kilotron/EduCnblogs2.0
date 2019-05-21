@@ -93,7 +93,7 @@ def enableSeparateBuildPerCPUArchitecture = false
  */
 def enableProguardInReleaseBuilds = true
 
-android {
+android { 
     compileSdkVersion 26
     buildToolsVersion "26.0.0"
 

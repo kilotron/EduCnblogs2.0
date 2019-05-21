@@ -1,5 +1,6 @@
 package com.umeng;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import java.util.List;
 
@@ -104,6 +105,7 @@ public class PushModule extends ReactContextBaseJavaModule {
                 }
                 return false;
             }
+            @SuppressLint("WrongConstant")
             @Override
             public void dealWithCustomAction(Context context, UMessage msg) {
 
@@ -117,6 +119,7 @@ public class PushModule extends ReactContextBaseJavaModule {
                     if(backgroundFlag){ 
                         Intent intent =new Intent();
                         intent.setAction("puremanNotification");
+                        intent.addFlags(0x01000000);
                         intent.putExtra("params",msg.getRaw().toString());
                         Activity currentActivity = MainActivity.getCurrentActivity();
                         currentActivity.sendBroadcast(intent);
@@ -126,6 +129,7 @@ public class PushModule extends ReactContextBaseJavaModule {
 //                    Toast.makeText(context, "测试跳转", Toast.LENGTH_LONG).show();
                     Intent intent =new Intent();
                     intent.setAction("puremanNotification");
+                    intent.addFlags(0x01000000);
                     intent.putExtra("params",msg.getRaw().toString());
                     Activity currentActivity = MainActivity.getCurrentActivity();
                     currentActivity.sendBroadcast(intent);

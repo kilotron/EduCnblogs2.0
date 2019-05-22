@@ -11,8 +11,8 @@ import {
     TouchableOpacity,
 } from 'react-native';
 
-const upIcon = require('./image/up.png');
-const downIcon = require('./image/dowm.png');
+const upIcon = require('../images/up.png');
+const downIcon = require('../images/dowm.png');
 export default class Index extends Component {
 
     static defaultProps = {

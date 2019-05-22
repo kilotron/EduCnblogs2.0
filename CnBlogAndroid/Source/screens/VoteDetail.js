@@ -20,7 +20,7 @@ import {
 
 import Vote from '../component/Vote';
 import VoteCommit from '../component/VoteCommit';
-import FoldText from "react-native-fold-text";
+import FoldText from "../component/FoldText";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { ThemeContext } from '../styles/theme-context';
 const HTMLSpecialCharsDecode = require('../DataHandler/HTMLSpecialCharsDecode');
@@ -118,57 +118,58 @@ export default class VoteDetail extends Component {
         var varPublisherId = '';
         Service.Get(usersURL).then((jsonData) => {
             varUserId = jsonData.BlogId;
-        });
-
-        Service.Get(contenturl).then((jsonData) => {
-            if (jsonData !== 'rejected') {
-                if (this._isMounted) {
-                    varPublisherId = jsonData.publisherId;
-                    //alert('publisherId'+varPublisherId+'    userId'+varUserId);
-                    //alert(varPublisherId==varUserId?'是发起人':'不是发起人');
-                    this.setState({
-                        name: jsonData.name, //测试
-                        content: jsonData.content,
-                        descriptio: jsonData.descriptio,
-                        privacy: jsonData.privacy,
-                        voteCount: jsonData.voteCount,
-                        blogUrl: jsonData.blogUrl, //发布者的blog
-                        publisher: jsonData.publisher,
-                        publisherId: jsonData.publisherId,
+        }).then(() => {
+            Service.Get(contenturl).then((jsonData) => {
+                if (jsonData !== 'rejected') {
+                    if (this._isMounted) {
+                        varPublisherId = jsonData.publisherId;
+                        //alert('publisherId'+varPublisherId+'    userId'+varUserId);
+                        //alert(varPublisherId==varUserId?'是发起人':'不是发起人');
+                        this.setState({
+                            name: jsonData.name, //测试
+                            content: jsonData.content,
+                            descriptio: jsonData.descriptio,
+                            privacy: jsonData.privacy,
+                            voteCount: jsonData.voteCount,
+                            blogUrl: jsonData.blogUrl, //发布者的blog
+                            publisher: jsonData.publisher,
+                            publisherId: jsonData.publisherId,
+                            schoolClassId: jsonData.schoolClassId,
+                            deadline: jsonData.deadline,
+                            dateAdded: jsonData.dateAdded,
+                            isFinished: jsonData.isFinished,
+                        })
+                    }
+                    // 为显示投票成员设置
+                    this.props.navigation.setParams({
                         schoolClassId: jsonData.schoolClassId,
-                        deadline: jsonData.deadline,
-                        dateAdded: jsonData.dateAdded,
-                        isFinished: jsonData.isFinished,
-                    })
+                        privacy: jsonData.privacy,
+                    });
                 }
-                // 为显示投票成员设置
-                this.props.navigation.setParams({
-                    schoolClassId: jsonData.schoolClassId,
-                    privacy: jsonData.privacy,
-                });
-            }
-        })
-            .then(() => {
-                Service.Get(voteContentURL)
-                    .then((jsonData) => {
-                        if (jsonData !== 'rejected') {
-                            if (this._isMounted) {
-                                this.setState({ voteContent: jsonData });
-                                this.setState({ voteData: extractVoteContentData(jsonData) });
-                            }
-                            // 传递votenContent到显示投票成员页面
-                            this.props.navigation.setParams({ voteContent: jsonData });
-                        }
-                    })
-                    .then(() => {
-                        this._getVoteState(); // 获取用户是否已经投票。
-                    })
-                    .catch((err) => {
-                        // 无网络连接
-                    })
             })
-
-            .catch((err) => {/* 无网络连接*/ });
+                .then(() => {
+                    Service.Get(voteContentURL)
+                        .then((jsonData) => {
+                            if (jsonData !== 'rejected') {
+                                if (this._isMounted) {
+                                    this.setState({ voteContent: jsonData });
+                                    this.setState({ voteData: extractVoteContentData(jsonData) });
+                                }
+                                // 传递votenContent到显示投票成员页面
+                                this.props.navigation.setParams({ voteContent: jsonData });
+                            }
+                        })
+                        .then(() => {
+                            this._getVoteState(); // 获取用户是否已经投票。
+                        })
+                        .catch((err) => {
+                            // 无网络连接
+                        })
+                })
+    
+                .catch((err) => {/* 无网络连接*/ });
+        })
+        
     }
 
     componentWillUnmount = () => {

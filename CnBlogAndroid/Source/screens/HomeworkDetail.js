@@ -310,7 +310,7 @@ export default class HomeWorkDetail extends Component{
                         onPress = {this.remind}
                         >
                         <Image source =
-                        {require('../images/dinosaur.jpg')}
+                        {require('../images/inform.png')}
                         style = {styles.imagestyle}/>
                     </TouchableOpacity>
                 </View>

@@ -182,8 +182,8 @@ export async function getHomeWorkList(){
             });
             if(jsonIsEmpty(homeworks)) continue;
             //获取用户所在班级的权限
-            let uesrUrl = Config.apiDomain + api.user.info;
-            var memberUrl = await Service.Get(uesrUrl).then((jsonData)=>{
+            let userUrl = Config.apiDomain + api.user.info;
+            var memberUrl = await Service.Get(userUrl).then((jsonData)=>{
                 if(jsonData == 'rejected') return null;
                 let memberUrl= Config.apiDomain+"api/edu/member/"+jsonData.BlogId+"/"+schoolClassId;
                 return memberUrl;

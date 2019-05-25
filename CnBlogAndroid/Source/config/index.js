@@ -8,6 +8,7 @@ export const umengConfig = {
 }
 export default{
 	apiDomain : 'https://api.cnblogs.com/',
+	Edu : 'https://api.cnblogs.com/api/edu/',
 	AccessToken : 'https://oauth.cnblogs.com/connect/token',
 	AuthCode : 'https://oauth.cnblogs.com/connect/authorize',
 	CallBack : 'https://oauth.cnblogs.com/auth/callback',

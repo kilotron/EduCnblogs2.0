@@ -28,7 +28,7 @@ export default class HomeworkSubmit extends Component {
             pageSize: 0,
             postCount: 0,
             blogs: [],
-            isSubmitted: 0,
+            isSubmitted: false,
             memberId:-1,
             currentSubmit:null,
         }
@@ -67,7 +67,7 @@ export default class HomeworkSubmit extends Component {
         //获取是否提交的信息
         let submitUrl = Config.SubmitJudge + memberId + '/' + homeworkId;
         let isSubmitted = await Service.Get(submitUrl).then((bool)=>{
-                                    if(jsonData == 'rejected') return false;
+                                    if(bool == 'rejected') return false;
                                     return bool;
                                 }).catch(()=>{return null;});
         if(isSubmitted == null) {isSubmitted = false};
@@ -84,10 +84,10 @@ export default class HomeworkSubmit extends Component {
         }
         */
         if(isSubmitted){
-            let submitContentUrl = Config.Edu + memberId + '/' + homeworkId;
-            var submitContent = await Service.Get(submitContentUrl).then((JsonData)=>{
+            let submitContentUrl = Config.Edu + 'answer/' + memberId + '/' + homeworkId;
+            var submitContent = await Service.Get(submitContentUrl).then((jsonData)=>{
                                         if(jsonData == 'rejected') return {}
-                                        return JsonData;
+                                        return jsonData;
                                     }).catch(()=>{return null;});
         }
         if(submitContent == null || this.jsonIsEmpty(submitContent)) {
@@ -158,36 +158,77 @@ export default class HomeworkSubmit extends Component {
             remark: '',
         };
         let body = JSON.stringify(postBody);
-        Alert.alert(
-            '请确认您要提交的博文为：',
-            title,
-            [
-                {text: '取消'},
-                {text: '确认提交', onPress: ()=>{
-                    Service.UserAction(submitUrl, body, 'POST')
-                    .then((response)=>{
-                        if(response.status !== 200)
-                            return null;
-                        else
-                            return response.json();
-                    })
-                    .then((jsonData)=>{
-                        if(jsonData==null)
-                            ToastAndroid.show("请求失败，您的身份可能不对！",ToastAndroid.SHORT);
-                        else if(jsonData.isSuccess)
-                        {
-                            umengPush.deleteHomeworkTag(postBody.schoolClassId,postBody.homeworkId);
-                            ToastAndroid.show('添加成功，请刷新查看！',ToastAndroid.SHORT);
-                            this.props.navigation.goBack();
-                        }
-                        else if(jsonData.isWarning)
-                            ToastAndroid.show(jsonData.message,ToastAndroid.SHORT);
-                        else
-                            ToastAndroid.show('发生错误，请稍后重试！',ToastAndroid.SHORT);
-                    }).catch((error)=>{ToastAndroid.show("网络请求失败，请检查连接状态！",ToastAndroid.SHORT)})
-                }},
-            ]
-        )
+        if(!this.state.isSubmitted){
+            Alert.alert(
+                '提交博文：',
+                title,
+                [
+                    {text: '取消'},
+                    {text: '确认提交', onPress: ()=>{
+                        Service.UserAction(submitUrl, body, 'POST')
+                        .then((response)=>{
+                            if(response.status !== 200)
+                                return null;
+                            else
+                                return response.json();
+                        })
+                        .then((jsonData)=>{
+                            if(jsonData==null)
+                                ToastAndroid.show("请求失败，您的身份可能不对！",ToastAndroid.SHORT);
+                            else if(jsonData.isSuccess)
+                            {
+                                umengPush.deleteHomeworkTag(postBody.schoolClassId,postBody.homeworkId);
+                                ToastAndroid.show('提交成功，请刷新查看！',ToastAndroid.SHORT);
+                                this.props.navigation.goBack();
+                            }
+                            else if(jsonData.isWarning)
+                                ToastAndroid.show(jsonData.message,ToastAndroid.SHORT);
+                            else
+                                ToastAndroid.show('发生错误，请稍后重试！',ToastAndroid.SHORT);
+                        }).catch((error)=>{ToastAndroid.show("网络请求失败，请检查连接状态！",ToastAndroid.SHORT)})
+                    }},
+                ]
+            )
+        }
+        else{
+            if(this.state.currentSubmit == null){
+                ToastAndroid.show("获取已提交作业失败，无法修改作业，抱歉");
+                return;
+            }
+            let answerId = this.state.currentSubmit.answerId;
+            let modifyUrl = 'https://api.cnblogs.com/api/edu/answer/modify/' + answerId;
+            body.answerId = answerId;
+            Alert.alert(
+                '修改提交：',
+                title,
+                [
+                    {text: '取消'},
+                    {text: '确认修改', onPress: ()=>{
+                        Service.UserAction(modifyUrl, body, 'PATCH')
+                        .then((response)=>{
+                            if(response.status !== 200)
+                                return null;
+                            else
+                                return response.json();
+                        })
+                        .then((jsonData)=>{
+                            if(jsonData==null)
+                                ToastAndroid.show("请求失败，您的身份可能不对！",ToastAndroid.SHORT);
+                            else if(jsonData.isSuccess)
+                            {
+                                umengPush.deleteHomeworkTag(postBody.schoolClassId,postBody.homeworkId);
+                                ToastAndroid.show('修改成功，请刷新查看！',ToastAndroid.SHORT);
+                                this.props.navigation.goBack();
+                            }
+                            else if(jsonData.isWarning)
+                                ToastAndroid.show(jsonData.message,ToastAndroid.SHORT);
+                            else
+                                ToastAndroid.show('发生错误，请稍后重试！',ToastAndroid.SHORT);
+                        }).catch((error)=>{ToastAndroid.show("网络请求失败，请检查连接状态！",ToastAndroid.SHORT)})
+                    }},
+                ]
+            )
+        }
     }
     _renderItem = (item) => {
         let {postId, title, url} = item.item;

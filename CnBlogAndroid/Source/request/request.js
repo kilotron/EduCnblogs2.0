@@ -23,6 +23,8 @@ export function GetInfo(url, token){
         .then((response)=>{
             if(response.status!=200)
             {
+                console.log(url);
+                console.log(response);
                 resolve("rejected");
             }
             else{

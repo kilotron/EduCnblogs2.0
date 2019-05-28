@@ -239,6 +239,7 @@ export default class VoteDetail extends Component {
                 if (jsonData.isSuccess) {
                     Alert.alert('提示', '投票成功');
                     this._getVoteState();   // 刷新界面
+                    this.props.navigation.setParams({voteCount: 1});
                 } else if (jsonData.isWarning) {
                     Alert.alert('提示', jsonData.message);
                 } else { // if (jsonData.isError)

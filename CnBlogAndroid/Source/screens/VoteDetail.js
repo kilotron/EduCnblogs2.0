@@ -97,7 +97,7 @@ export default class VoteDetail extends Component {
             voteData: [],   // 传递给Vote组件的数据
         }
         this.selectedIds = [],
-        this.info = {};
+            this.info = {};
         this.info.complete = false;
         this.info.unselectedNumbers = '所有';
         this.info.selectedNumbers = '';
@@ -112,7 +112,7 @@ export default class VoteDetail extends Component {
         let usersURL = Config.UsersInfo;
         var varUserId = 0;
         Service.Get(usersURL).then((jsonData) => {
-            varUserId = jsonData.BlogId;
+            varUserId = jsonData.BlogId; //先获取当前登录用户的信息
         }).then(() => {
             Service.Get(contenturl).then((jsonData) => {
                 if (jsonData !== 'rejected') {
@@ -159,10 +159,10 @@ export default class VoteDetail extends Component {
                             // 无网络连接
                         })
                 })
-    
+
                 .catch((err) => {/* 无网络连接*/ });
         })
-        
+
     }
 
     componentWillUnmount = () => {
@@ -179,8 +179,8 @@ export default class VoteDetail extends Component {
                     style={styles.deleteButton}
                     onPress={() => {
                         Alert.alert('提示', '确定要删除投票吗？', [
-                            {text: '取消', onPress: ()=>{}},
-                            {text: '确定删除', onPress: ()=>{this._delete()}},
+                            { text: '取消', onPress: () => { } },
+                            { text: '确定删除', onPress: () => { this._delete() } },
                         ])
                     }}
                 >
@@ -188,8 +188,8 @@ export default class VoteDetail extends Component {
                 </TouchableOpacity>
             )
         }
-        if (this.state.isFinished === false && this.state.hasVoted === false 
-                && this.state.isPublisher === false) {
+        if (this.state.isFinished === false && this.state.hasVoted === false
+            && this.state.isPublisher === false) {
             return (
                 <TouchableOpacity
                     style={styles.submitButton}
@@ -204,8 +204,8 @@ export default class VoteDetail extends Component {
     }
 
     _renderVoteHeader() {
-        if (typeof(this.state.isFinished) == "undefined" || typeof(this.state.hasVoted) == "undefined"
-                || typeof(this.state.isPublisher) == "undefined") {
+        if (typeof (this.state.isFinished) == "undefined" || typeof (this.state.hasVoted) == "undefined"
+            || typeof (this.state.isPublisher) == "undefined") {
             // 等待3个状态都获取后再显示，不然可能显示的文字会从'已经截止了！'变成'已经投过票了'。
             return null;
         }
@@ -227,29 +227,28 @@ export default class VoteDetail extends Component {
         return null;
     }
 
-    /**点击删除按钮调用此函数删除问卷。 */
+    /** 点击删除按钮调用此函数删除投票。 */
     _delete() {
         let voteDeleteURL = Config.VoteDelete + this.state.schoolClassId + '/' + this.state.voteId;
         Service.UserAction(voteDeleteURL, '', 'DELETE')
-        .then((response)=>{
-            if(response.status!==200)
-            {
-                return null;
-            }
-            else{
-                return response.json();
-            }
-        }).then((jsonData)=>{
-            if (jsonData.isSuccess) {
-                ToastAndroid.show('删除成功！', ToastAndroid.SHORT);
-                this.props.navigation.state.params.callback();
-                this.props.navigation.goBack();
-            } else if (jsonData.isWarning) {
-                Alert.alert('提示', jsonData.message);
-            } else { //jsonData.isError
-                ToastAndroid.show('删除失败，请重试');
-            }
-        })
+            .then((response) => {
+                if (response.status !== 200) {
+                    return null;
+                }
+                else {
+                    return response.json();
+                }
+            }).then((jsonData) => {
+                if (jsonData.isSuccess) {
+                    ToastAndroid.show('删除成功！', ToastAndroid.SHORT);
+                    this.props.navigation.state.params.callback();
+                    this.props.navigation.goBack();
+                } else if (jsonData.isWarning) {
+                    Alert.alert('提示', jsonData.message);
+                } else { //jsonData.isError
+                    ToastAndroid.show('删除失败，请重试');
+                }
+            })
     }
 
     /**点击提交按钮调用此函数提交问卷。 */
@@ -278,7 +277,7 @@ export default class VoteDetail extends Component {
                 if (jsonData.isSuccess) {
                     Alert.alert('提示', '投票成功');
                     this._getVoteState();   // 刷新界面
-                    this.props.navigation.setParams({voteCount: 1});
+                    this.props.navigation.setParams({ voteCount: 1 });
                 } else if (jsonData.isWarning) {
                     Alert.alert('提示', jsonData.message);
                 } else { // if (jsonData.isError)
@@ -327,22 +326,23 @@ export default class VoteDetail extends Component {
     }
 
     render() {
-        let voteDisabled =  this.state.hasVoted || this.state.isFinished || this.state.isPublisher;
+        let voteDisabled = this.state.hasVoted || this.state.isFinished || this.state.isPublisher;
         if (this.state.content != "")
             return (
                 <View style={{ flex: 1, backgroundColor: 'white' }}>
                     <KeyboardAwareScrollView>
                         {/** header组件 */}
                         <View style={styles.header}>
+                            
                             <Text style={styles.headerText}>
                                 {this.state.name}
-                            </Text>
+                            </Text> 
                         </View>
 
                         {/** detail组件 */}
                         {/** 用于存放如publisher和privacy等信息 */}
                         <View style={styles.detail}>
-                            <Text style={[styles.publisherText, {color: global.theme.headerTintColor}]} >
+                            <Text style={[styles.publisherText, { color: global.theme.headerTintColor }]} >
                                 {this.state.publisher + '\n'}
                             </Text>
                             <Text style={styles.detailText} >
@@ -432,14 +432,14 @@ const styles = StyleSheet.create({
         color: '#2c2c2c',
     },
     header: {
-        height: 40,
+        flex: 1,
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'flex-start',
     },
     submitButton: {
         flex: 1,
-        height: buttonHeightRatio * screenWidth,
-        width: buttonWidthRatio * screenWidth,
+        height: (buttonHeightRatio * screenWidth),
+        width: buttonWidthRatio*screenWidth,
         justifyContent: 'center',
         alignItems: 'center',
         marginTop: 10,
@@ -630,7 +630,7 @@ Body参数名	描述	类型
 
 详细说明：
 返回值“isWarning”为true时，则对应“message”字段中的内容
-返回示例：                  
+返回示例：
 {
     "isSuccess": true,
     "isWarning": false,

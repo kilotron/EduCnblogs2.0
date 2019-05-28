@@ -155,7 +155,7 @@ export default class VoteList extends Component {
             <View style={flatStyles.cell}>
                 <TouchableOpacity
                     style={flatStyles.listContainer}
-                    onLongPress = {()=> {this.deleteVote(item.voteId)}}
+                    //onLongPress = {()=> {this.deleteVote(item.voteId)}}
                     onPress={() => {
                         this.props.navigation.navigate('VoteDetail', //获取详细信息
                             {

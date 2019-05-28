@@ -179,8 +179,8 @@ export default class VoteDetail extends Component {
                     style={styles.deleteButton}
                     onPress={() => {
                         Alert.alert('提示', '确定要删除投票吗？', [
-                            {text: '确定', onPress: ()=>{this._delete()}},
-                            {text: '取消', onPress: ()=>{}}
+                            {text: '取消', onPress: ()=>{}},
+                            {text: '确定删除', onPress: ()=>{this._delete()}},
                         ])
                     }}
                 >

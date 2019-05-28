@@ -22,6 +22,7 @@ import VoteCommit from '../component/VoteCommit';
 import FoldText from "../component/FoldText";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { ThemeContext } from '../styles/theme-context';
+import { Toast } from 'native-base';
 const HTMLSpecialCharsDecode = require('../DataHandler/HTMLSpecialCharsDecode');
 const extractVoteContentData = require('../DataHandler/VoteContent');
 
@@ -31,7 +32,11 @@ const screenHeight = MyAdapter.screenHeight;
 const Public = 1;
 const Anonymous = 2;
 
-// 传入voteID作为参数
+/**navigation参数：
+ * voteId：投票Id
+ * voteCount: 已投票人数
+ * callback：删除投票后调用的函数
+ */
 export default class VoteDetail extends Component {
     /**navigationOptions放在此处，可以在标题栏放一个按钮跳转到另一个页面。 */
     static navigationOptions = ({ navigation }) => ({
@@ -87,16 +92,12 @@ export default class VoteDetail extends Component {
             dateAdded: null,
             isFinished: undefined,   // 初始时不显示提交按钮
             isPublisher: undefined,  // 是否发起者
-            hasVoted: undefined, // 是否已经投票
-            deleteButton: false, //deleteButton 是否可见，只有发起投票者才能看见
-
-            /* 每一个投票的题目和选项、图片等信息。*/
-            voteContent: [],
-
+            hasVoted: undefined, // 是否已经投票          
+            voteContent: [],/* 每一个投票的题目和选项、图片等信息。*/
             voteData: [],   // 传递给Vote组件的数据
         }
         this.selectedIds = [],
-            this.info = {};
+        this.info = {};
         this.info.complete = false;
         this.info.unselectedNumbers = '所有';
         this.info.selectedNumbers = '';
@@ -108,7 +109,6 @@ export default class VoteDetail extends Component {
         this._isMounted = true;
         let contenturl = Config.VoteDetail + this.state.voteId;
         let voteContentURL = Config.VoteContent + this.state.voteId;
-        let voteDeleteURL = Config.VoteDelete + this.state.voteId;
         let usersURL = Config.UsersInfo;
         var varUserId = 0;
         Service.Get(usersURL).then((jsonData) => {
@@ -169,9 +169,25 @@ export default class VoteDetail extends Component {
         this._isMounted = false;
     }
 
-    _renderSubmitButton() {
+    _renderVoteFooter() {
         /* 1)投票未完成，2)还未投票，且3)不是自己发起的投票的情况下显示提交按钮
-            isFinished, hasVoted, isPublisher初始值是undefined，这里需要与false相比较*/
+         * 如果是自己发起的投票，则显示删除按钮。
+         * isFinished, hasVoted, isPublisher初始值是undefined，这里需要与false相比较*/
+        if (this.state.isPublisher) {
+            return (
+                <TouchableOpacity
+                    style={styles.deleteButton}
+                    onPress={() => {
+                        Alert.alert('提示', '确定要删除投票吗？', [
+                            {text: '确定', onPress: ()=>{this._delete()}},
+                            {text: '取消', onPress: ()=>{}}
+                        ])
+                    }}
+                >
+                    <Text style={styles.deleteText}>删除</Text>
+                </TouchableOpacity>
+            )
+        }
         if (this.state.isFinished === false && this.state.hasVoted === false 
                 && this.state.isPublisher === false) {
             return (
@@ -179,9 +195,7 @@ export default class VoteDetail extends Component {
                     style={styles.submitButton}
                     onPress={this._submit.bind(this)}
                 >
-                    <Text style={styles.submitText}>
-                        提交
-                    </Text>
+                    <Text style={styles.submitText}>提交</Text>
                 </TouchableOpacity>
             )
         } else {
@@ -211,6 +225,31 @@ export default class VoteDetail extends Component {
             )
         }
         return null;
+    }
+
+    /**点击删除按钮调用此函数删除问卷。 */
+    _delete() {
+        let voteDeleteURL = Config.VoteDelete + this.state.schoolClassId + '/' + this.state.voteId;
+        Service.UserAction(voteDeleteURL, '', 'DELETE')
+        .then((response)=>{
+            if(response.status!==200)
+            {
+                return null;
+            }
+            else{
+                return response.json();
+            }
+        }).then((jsonData)=>{
+            if (jsonData.isSuccess) {
+                ToastAndroid.show('删除成功！', ToastAndroid.SHORT);
+                this.props.navigation.state.params.callback();
+                this.props.navigation.goBack();
+            } else if (jsonData.isWarning) {
+                Alert.alert('提示', jsonData.message);
+            } else { //jsonData.isError
+                ToastAndroid.show('删除失败，请重试');
+            }
+        })
     }
 
     /**点击提交按钮调用此函数提交问卷。 */
@@ -303,7 +342,7 @@ export default class VoteDetail extends Component {
                         {/** detail组件 */}
                         {/** 用于存放如publisher和privacy等信息 */}
                         <View style={styles.detail}>
-                            <Text style={styles.publisherText} >
+                            <Text style={[styles.publisherText, {color: global.theme.headerTintColor}]} >
                                 {this.state.publisher + '\n'}
                             </Text>
                             <Text style={styles.detailText} >
@@ -337,7 +376,7 @@ export default class VoteDetail extends Component {
                                             this.info = info;
                                         }}
                                         headerComponent={this._renderVoteHeader.bind(this)}
-                                        footerComponent={this._renderSubmitButton.bind(this)}
+                                        footerComponent={this._renderVoteFooter.bind(this)}
                                         disabled={voteDisabled}
                                     />
                                 )
@@ -345,42 +384,7 @@ export default class VoteDetail extends Component {
                     </KeyboardAwareScrollView>
                 </View>
             )
-        return (
-            <View style={{ flex: 1, backgroundColor: 'white' }}>
-                <View>
-                    {/** header组件 */}
-                    <View style={styles.header}>
-                        <Text style={styles.headerText}>
-                            {this.state.name}
-                        </Text>
-                    </View>
-
-                    {/** detail组件 */}
-                    {/** 用于存放如publisher和privacy等信息 */}
-                    <View style={styles.detail}>
-                        <Text style={styles.publisherText} >
-                            {this.state.publisher + '\n'}
-                        </Text>
-                        <Text style={styles.detailText} >
-                            {'发布于: ' + this.DateFormat(this.state.dateAdded) + '\n'}
-                            {'结束于: ' + this.DateFormat(this.state.deadline) + '\n'}
-                            {this.state.privacy == 1 ? '公开投票' : '匿名投票'}
-                        </Text>
-                    </View>
-                    {/** content组件 */}
-                </View>
-                <Vote
-                    data={this.state.voteData}
-                    recvSelectedIds={(ids, info) => {
-                        this.selectedIds = ids;
-                        this.info = info;
-                    }}
-                    headerComponent={this._renderVoteHeader.bind(this)}
-                    footerComponent={this._renderSubmitButton.bind(this)}
-                    disabled={voteDisabled}
-                />
-            </View>
-        )
+        return null;
     }
 }
 
@@ -443,12 +447,30 @@ const styles = StyleSheet.create({
         marginLeft: (1 - buttonWidthRatio) / 2 * screenWidth, //居中
         backgroundColor: 'white',
         borderColor: '#0077FF',
-        borderWidth: 0.5,
+        borderWidth: 1,
         borderRadius: 4,
     },
     submitText: {
         fontSize: 16,
         color: '#0077FF',
+    },
+    deleteButton: {
+        flex: 1,
+        height: buttonHeightRatio * screenWidth,
+        width: buttonWidthRatio * screenWidth,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 10,
+        marginBottom: 20,
+        marginLeft: (1 - buttonWidthRatio) / 2 * screenWidth, //居中
+        backgroundColor: 'white',
+        borderColor: '#FD3B2F',
+        borderWidth: 1,
+        borderRadius: 4,
+    },
+    deleteText: {
+        fontSize: 16,
+        color: '#FD3B2F',
     },
     hasVotedView: {
         flex: 1,
@@ -599,5 +621,21 @@ voteId	number	是	投票Id	1
 
 Body参数名	描述	类型
 1	投票内容Id	array
+
+7.删除投票
+
+请求方式：DELETE
+
+请求地址：https://api.cnblogs.com/api/edu/vote/remove/{schoolClassId}/{voteId}
+
+详细说明：
+返回值“isWarning”为true时，则对应“message”字段中的内容
+返回示例：                  
+{
+    "isSuccess": true,
+    "isWarning": false,
+    "isError": false,
+    "message": null
+}
 
 */

@@ -23,7 +23,7 @@ VoteProps = {
     data: PropTypes.array.isRequired,
     headerComponent: PropTypes.func,
     footerComponent: PropTypes.func,
-    /**disabled=true，不能修改选项。 */
+    /**如果disabled=true，不能修改选项。 */
     disabled: PropTypes.bool,
     recvSelectedIds: PropTypes.func,
 }
@@ -71,7 +71,7 @@ export default class Vote extends Component {
                 <FlatList
                     renderItem={this.renderVoteItem}
                     data={this.props.data}
-                    extraData={this.props.disabled}
+                    extraData={[]} // 强制重新渲染
                     keyExtractor={(item, index) => index.toString()}
                     ListHeaderComponent={this.headerComponent}
                     ListFooterComponent={this.footerComponent}

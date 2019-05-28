@@ -17,7 +17,7 @@ import {
     Image,
     Alert
 } from 'react-native';
-
+import {requireTime} from '../request/requireTime.js';
 import Vote from '../component/Vote';
 import VoteCommit from '../component/VoteCommit';
 import FoldText from "../component/FoldText";
@@ -86,7 +86,7 @@ export default class VoteDetail extends Component {
             schoolClassId: "",
             deadline: null,
             dateAdded: null,
-            isFinished: "",
+            isFinished: undefined,   // 初始时不显示提交按钮
 
             deleteButton: false, //deleteButton 是否可见，只有发起投票者才能看见
 
@@ -177,7 +177,8 @@ export default class VoteDetail extends Component {
     }
 
     _renderSubmitButton() {
-        if (this.state.hasVoted == false) {
+        // 1)投票未完成且2)还未投票的情况下显示提交按钮
+        if (this.state.isFinished === false && this.state.hasVoted === false) {
             return (
                 <TouchableOpacity
                     style={styles.submitButton}
@@ -193,11 +194,21 @@ export default class VoteDetail extends Component {
         }
     }
 
-    _renderHasVotedBanner() {
-        if (this.state.hasVoted) {
+    _renderVoteHeader() {
+        if (typeof(this.state.isFinished) == "undefined" || typeof(this.state.hasVoted) == "undefined") {
+            // 等待两个状态都获取后再显示，不然可能显示的文字会从'已经截止了！'变成'已经投过票了'。
+            return null;
+        }
+        let text = '';
+        if (this.state.isFinished && !this.state.hasVoted) {
+            text = '已经截止了！';
+        } else if (this.state.hasVoted) {
+            text = '已经投过票了';
+        }
+        if (this.state.isFinished || this.state.hasVoted) {
             return (
                 <View style={styles.hasVotedView}>
-                    <Text style={styles.hasVotedText}>已经投过票了</Text>
+                    <Text style={styles.hasVotedText}>{text}</Text>
                 </View>
             )
         }
@@ -278,6 +289,7 @@ export default class VoteDetail extends Component {
     }
 
     render() {
+        let voteDisabled =  this.state.hasVoted || this.state.isFinished;
         if (this.state.content != "")
             return (
                 <View style={{ flex: 1, backgroundColor: 'white' }}>
@@ -316,7 +328,7 @@ export default class VoteDetail extends Component {
                                     memberId={this.memberId}
                                     voteId={this.state.voteId}
                                     voteContent={this.state.voteContent}
-                                    headerComponent={this._renderHasVotedBanner.bind(this)}
+                                    headerComponent={this._renderVoteHeader.bind(this)}
                                 />
                             ) : (
                                     <Vote
@@ -325,9 +337,9 @@ export default class VoteDetail extends Component {
                                             this.selectedIds = ids;
                                             this.info = info;
                                         }}
-                                        headerComponent={this._renderHasVotedBanner.bind(this)}
+                                        headerComponent={this._renderVoteHeader.bind(this)}
                                         footerComponent={this._renderSubmitButton.bind(this)}
-                                        disabled={this.state.hasVoted}
+                                        disabled={voteDisabled}
                                     />
                                 )
                         }
@@ -364,9 +376,9 @@ export default class VoteDetail extends Component {
                         this.selectedIds = ids;
                         this.info = info;
                     }}
-                    headerComponent={this._renderHasVotedBanner.bind(this)}
+                    headerComponent={this._renderVoteHeader.bind(this)}
                     footerComponent={this._renderSubmitButton.bind(this)}
-                    disabled={this.state.hasVoted}
+                    disabled={voteDisabled}
                 />
             </View>
         )

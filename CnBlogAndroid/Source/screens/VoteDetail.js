@@ -17,7 +17,6 @@ import {
     Image,
     Alert
 } from 'react-native';
-import {requireTime} from '../request/requireTime.js';
 import Vote from '../component/Vote';
 import VoteCommit from '../component/VoteCommit';
 import FoldText from "../component/FoldText";
@@ -87,11 +86,9 @@ export default class VoteDetail extends Component {
             deadline: null,
             dateAdded: null,
             isFinished: undefined,   // 初始时不显示提交按钮
-
+            isPublisher: undefined,  // 是否发起者
+            hasVoted: undefined, // 是否已经投票
             deleteButton: false, //deleteButton 是否可见，只有发起投票者才能看见
-
-            /**是否已经投票 */
-            hasVoted: undefined,
 
             /* 每一个投票的题目和选项、图片等信息。*/
             voteContent: [],
@@ -113,18 +110,13 @@ export default class VoteDetail extends Component {
         let voteContentURL = Config.VoteContent + this.state.voteId;
         let voteDeleteURL = Config.VoteDelete + this.state.voteId;
         let usersURL = Config.UsersInfo;
-        var isPublisher = false;
         var varUserId = 0;
-        var varPublisherId = '';
         Service.Get(usersURL).then((jsonData) => {
             varUserId = jsonData.BlogId;
         }).then(() => {
             Service.Get(contenturl).then((jsonData) => {
                 if (jsonData !== 'rejected') {
                     if (this._isMounted) {
-                        varPublisherId = jsonData.publisherId;
-                        //alert('publisherId'+varPublisherId+'    userId'+varUserId);
-                        //alert(varPublisherId==varUserId?'是发起人':'不是发起人');
                         this.setState({
                             name: jsonData.name, //测试
                             content: jsonData.content,
@@ -133,11 +125,12 @@ export default class VoteDetail extends Component {
                             voteCount: jsonData.voteCount,
                             blogUrl: jsonData.blogUrl, //发布者的blog
                             publisher: jsonData.publisher,
-                            publisherId: jsonData.publisherId,
+                            publisherId: jsonData.publisherId,// 发布者博客ID
                             schoolClassId: jsonData.schoolClassId,
                             deadline: jsonData.deadline,
                             dateAdded: jsonData.dateAdded,
                             isFinished: jsonData.isFinished,
+                            isPublisher: jsonData.publisherId == varUserId,
                         })
                     }
                     // 为显示投票成员设置
@@ -177,8 +170,10 @@ export default class VoteDetail extends Component {
     }
 
     _renderSubmitButton() {
-        // 1)投票未完成且2)还未投票的情况下显示提交按钮
-        if (this.state.isFinished === false && this.state.hasVoted === false) {
+        /* 1)投票未完成，2)还未投票，且3)不是自己发起的投票的情况下显示提交按钮
+            isFinished, hasVoted, isPublisher初始值是undefined，这里需要与false相比较*/
+        if (this.state.isFinished === false && this.state.hasVoted === false 
+                && this.state.isPublisher === false) {
             return (
                 <TouchableOpacity
                     style={styles.submitButton}
@@ -195,17 +190,20 @@ export default class VoteDetail extends Component {
     }
 
     _renderVoteHeader() {
-        if (typeof(this.state.isFinished) == "undefined" || typeof(this.state.hasVoted) == "undefined") {
-            // 等待两个状态都获取后再显示，不然可能显示的文字会从'已经截止了！'变成'已经投过票了'。
+        if (typeof(this.state.isFinished) == "undefined" || typeof(this.state.hasVoted) == "undefined"
+                || typeof(this.state.isPublisher) == "undefined") {
+            // 等待3个状态都获取后再显示，不然可能显示的文字会从'已经截止了！'变成'已经投过票了'。
             return null;
         }
         let text = '';
         if (this.state.isFinished && !this.state.hasVoted) {
             text = '已经截止了！';
         } else if (this.state.hasVoted) {
-            text = '已经投过票了';
+            text = '已经投过票了！';
+        } else if (this.state.isPublisher) {
+            text = '这是你发起的投票哦~'
         }
-        if (this.state.isFinished || this.state.hasVoted) {
+        if (this.state.isFinished || this.state.hasVoted || this.state.isPublisher) {
             return (
                 <View style={styles.hasVotedView}>
                     <Text style={styles.hasVotedText}>{text}</Text>
@@ -289,7 +287,7 @@ export default class VoteDetail extends Component {
     }
 
     render() {
-        let voteDisabled =  this.state.hasVoted || this.state.isFinished;
+        let voteDisabled =  this.state.hasVoted || this.state.isFinished || this.state.isPublisher;
         if (this.state.content != "")
             return (
                 <View style={{ flex: 1, backgroundColor: 'white' }}>

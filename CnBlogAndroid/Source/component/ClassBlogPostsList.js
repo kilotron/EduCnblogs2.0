@@ -56,6 +56,7 @@ const ClassBlogPostsListProps = {
 
 const GetBlogApp = require('../DataHandler/BlogDetail/GetBlogApp');
 const HTMLSpecialCharsDecode = require('../DataHandler/HTMLSpecialCharsDecode');
+const relativeDate = require('../DataHandler/DateHandler');
 
 const CONFIG = [
     {
@@ -386,6 +387,10 @@ export default class ClassBlogPostsList extends Component {
     makeBlogPostsList() {
         let data = [];
         for (let i in this.state.blogs) {
+            let d = new Date(this.state.blogs[i].dateAdded);
+            d = this.state.blogs[i].dateAdded;
+            //alert(d);
+            //break
             data.push({
                 blogId: this.state.blogs[i].url.match( /p\/([^%]+).html/)[1],//博文的编号
                 title: this.state.blogs[i].title,
@@ -511,7 +516,7 @@ export default class ClassBlogPostsList extends Component {
                                  + item.commentCount + ' 评论'}
                             </Text>
                             <Text style={styles.postDate}>
-                                {item.author + ' 发布于 ' + this.parsePostDate(item.postDate)}
+                                {item.author + ' 发布于 ' + relativeDate(item.postDate)}
                             </Text>
                         </View>
                     </View>
@@ -519,24 +524,6 @@ export default class ClassBlogPostsList extends Component {
             </View>
 		)
     };
-
-    /**根据设置返回要显示的时间 */
-    parsePostDate(postDate) {
-        if (global.settings.displayDetailTime) {
-            return this.YMDInPostDate(postDate) + ' ' + this.timeInPostDate(postDate);
-        } else {
-            return this.YMDInPostDate(postDate);
-        }
-    }
-
-    /**参数为‘2019-04-09T17:05:00+08:00’，返回字符串年月日 */
-    YMDInPostDate(postDate) {
-        return postDate.match(/\d{4}-\d{2}-\d{2}/)[0];
-    }
-
-    timeInPostDate(postDate) {
-        return postDate.match(/(\d{2}:\d{2}):\d{2}/)[1];
-    }
 
     /**FlatList滚动到到底部时调用此函数，获取新的一页。 */
     _onEndReached() {

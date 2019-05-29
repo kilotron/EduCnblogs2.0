@@ -21,6 +21,7 @@ import {
 } from 'react-native';
 
 const HTMLSpecialCharsDecode = require('../DataHandler/HTMLSpecialCharsDecode');
+const relativeTime = require('../DataHandler/DateHandler');
 
 const screenWidth= MyAdapter.screenWidth;
 const screenHeight= MyAdapter.screenHeight;
@@ -174,7 +175,7 @@ export default class Bulletin extends Component {
             Content: HtmlDecode(this.state.bulletins[i].content),
             Publisher: this.state.bulletins[i].publisher,
             BlogUrl: this.state.bulletins[i].blogUrl,
-            DateAdded: this.String2Date(this.state.bulletins[i].dateAdded),
+            DateAdded: relativeTime(this.state.bulletins[i].dateAdded),
         })
         }
         return(

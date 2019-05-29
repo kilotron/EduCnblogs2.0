@@ -29,6 +29,7 @@ const abstractFontSize= MyAdapter.abstractFontSize;
 const informationFontSize= MyAdapter.informationFontSize;
 const btnFontSize= MyAdapter.btnFontSize;
 const HTMLSpecialCharsDecode = require('../DataHandler/HTMLSpecialCharsDecode');
+const relativeTime = require('../DataHandler/DateHandler');
 
 export default class HomeworkLists extends Component {
     constructor(props){
@@ -310,7 +311,7 @@ export default class HomeworkLists extends Component {
                         {HTMLSpecialCharsDecode(description)}
                     </Text>
                     <Text style= {isClosed ? HomeworkStyles.closedInformationTextStyle : (isFinished ? HomeworkStyles.outdateInformationTextStyle : HomeworkStyles.informationTextStyle)}>
-                        截止于:{deadline.split('T')[0]+' '+deadline.split('T')[1].substring(0,8)}
+                        {'截止于: ' + relativeTime(deadline)}
                     </Text>
                 </TouchableOpacity>
             </View>

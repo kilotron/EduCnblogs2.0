@@ -24,6 +24,7 @@ import {
 } from 'react-native';
 
 const HTMLSpecialCharsDecode = require('../DataHandler/HTMLSpecialCharsDecode');
+const relativeTime = require('../DataHandler/DateHandler');
 
 const screenWidth = MyAdapter.screenWidth;
 const screenHeight = MyAdapter.screenHeight;
@@ -66,16 +67,6 @@ export default class VoteList extends Component {
         return url;
     }
 
-    /* 将网站返回的时间字符串改成预期 */
-    String2Date = (day)=>{
-        //console.log(day);
-        if(day == null)
-            return '  ';
-        let s1 = day.split('T')[0];
-        let s2 = day.split('T')[1];
-        return s1 + '  ' + s2.split('.')[0];
-    }
-
     /** 解析this.state.votes的数据，返回一个数组。 */
     makeVotesList() {
         var data = [];
@@ -85,7 +76,7 @@ export default class VoteList extends Component {
                 name: this.state.votes[i].name,
                 url: this.state.votes[i].url,
                 description: this.state.votes[i].description,
-                dateAdded: this.String2Date(this.state.votes[i].dateAdded),
+                dateAdded: this.state.votes[i].dateAdded,
                 voteCount: this.state.votes[i].voteCount,
             })
         }
@@ -182,7 +173,7 @@ export default class VoteList extends Component {
                             }
                         </Text>
                         <Text style={styles.postDate}>
-                            {'发布于: ' + item.dateAdded.split('T')[0] }
+                            {'发布于: ' + relativeTime(item.dateAdded) }
                         </Text>
                     </View>
                 </TouchableOpacity>

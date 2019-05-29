@@ -27,6 +27,8 @@ import {navigationHeaderHeight, homeTabHeaderHeight} from '../styles/theme-conte
 
 const screenWidth= MyAdapter.screenWidth;
 const screenHeight= MyAdapter.screenHeight;
+const relativeTime = require('../DataHandler/DateHandler');
+
 // 此页面传入的参数为blogApp(即个人博客名)
 export default class PersonalBlog extends Component{
     constructor(props){
@@ -194,7 +196,7 @@ export default class PersonalBlog extends Component{
                             {ViewCount+' 阅读'+'  '+CommentCount+' 评论'}
                         </Text>
                         <Text style = {{fontSize: 10, textAlign: 'right', color: 'black', flex: 1}}>
-                            {'发布于: '+PostDate.split('T')[0]+' '+PostDate.split('T')[1]}
+                            {'发布于: '+relativeTime(PostDate)}
                         </Text>
                     </View>
                 </TouchableOpacity>

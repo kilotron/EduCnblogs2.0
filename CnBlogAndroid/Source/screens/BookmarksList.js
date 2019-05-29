@@ -21,15 +21,7 @@ import {
     Alert,
 } from 'react-native';
 
-import {
-    StackNavigator,
-    TabNavigator,
-    NavigationActions,
-} from 'react-navigation';
-
-
 import Swipeout from 'react-native-swipeout';
-
 
 const screenWidth= MyAdapter.screenWidth;
 const screenHeight= MyAdapter.screenHeight;
@@ -41,6 +33,7 @@ const pageSize = 10;
 const GetDetailId = require('../DataHandler/BlogDetail/GetDetailId');
 const GetBlogApp = require('../DataHandler/BlogDetail/GetBlogApp');
 const minMoveDistance = (15<0.1*screenWidth)?15:0.1*screenWidth;
+const relativeTime = require('../DataHandler/DateHandler');
 
 export default class BookmarksList extends Component {
     constructor(props){
@@ -201,7 +194,7 @@ export default class BookmarksList extends Component {
                         linkUrl: this.state.bookmarks[i].LinkUrl,
                         summary: this.state.bookmarks[i].Summary,
                         tags: this.state.bookmarks[i].Tags,/* list数据 */
-                        dateAdded: this.String2Date(this.state.bookmarks[i].DateAdded),
+                        dateAdded: relativeTime(this.state.bookmarks[i].DateAdded),
                         fromCnBlogs: this.state.bookmarks[i].FromCNBlogs,
                         detailId: GetDetailId(this.state.bookmarks[i].LinkUrl),
                         //this.state.bookmarks[i].LinkUrl.match( /p\/([^%]+).html/)[1],
@@ -343,15 +336,6 @@ export default class BookmarksList extends Component {
         {
             ToastAndroid.show(err_info.TIME_OUT,ToastAndroid.SHORT);
         });
-    }
-
-    /* 将网站返回的时间字符串改成预期 */
-    String2Date = (dateStr)=>{
-        if(dateStr == null)
-            return '  ';
-        let s1 = dateStr.split('T')[0];
-        let s2 = dateStr.split('T')[1];
-        return s1 + '  ' + s2.split('.')[0];
     }
 
     render() {

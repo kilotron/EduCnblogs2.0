@@ -3,9 +3,15 @@ import {
     View, 
     Text,
     TouchableOpacity,
+    Switch,
 } from 'react-native';
 import { themes } from '../styles/theme-context';
 import PropTypes from 'prop-types';
+import { StorageKey } from '../config';
+import MyAdapter from './MyAdapter.js';
+
+const screenWidth= MyAdapter.screenWidth;
+const screenHeight= MyAdapter.screenHeight;
 
 class ThemeTogglerButton extends Component {
     render() {
@@ -13,7 +19,7 @@ class ThemeTogglerButton extends Component {
             <TouchableOpacity style={{justifyContent: 'center', alignItems: 'center', marginTop: 20}}
                 onPress={this.context.toggleTheme}
             >
-                <Text style={{color: this.context.theme.textColor, fontSize: 20}}>toggle</Text>
+                <Text style={{color: this.context.theme.textColor, fontSize: 20}}>切换主题</Text>
             </TouchableOpacity>
         )
     }
@@ -50,9 +56,21 @@ export default class Settings extends Component {
         this.state = {
             theme: global.theme,
             toggleTheme: this.toggleTheme,
+            isDarkMode: false,
         }
         this.props.navigation.setParams({theme: this.state.theme});
-    }    
+    }
+
+    componentWillMount() {
+        global.storage.load({key: StorageKey.IS_DARK_MODE})
+        .then((isDarkMode) => {
+            this.setState({isDarkMode: isDarkMode});
+        })
+        .catch((error) => {
+            global.storage.save({key: StorageKey.IS_DARK_MODE, data: this.state.isDarkMode});
+        })
+        
+    }
 
     getChildContext() {
         return {theme: this.state.theme, toggleTheme: this.toggleTheme};
@@ -61,16 +79,29 @@ export default class Settings extends Component {
     render() {
         return (
             <View style={{backgroundColor: this.state.theme.backgroundColor, flex: 1}}>
-                <Text 
+                <View
                     style={{
-                        fontSize: 30,
-                        textAlign: 'center',
-                        marginTop: 280,
-                        color: this.state.theme.textColor,
-                        fontStyle: 'italic',
+                        justifyContent: "space-between",
+                        alignItems: 'center',
+                        flexDirection: 'row',
+                        height: 0.09*screenHeight,
+                        marginBottom: 0.01*screenHeight,
+                        backgroundColor: this.state.theme.backgroundColor,
+                        paddingLeft: 0.05*screenWidth,
+                        paddingRight: 0.05*screenWidth,
                     }}
-                >COMING SOON!!!</Text>
-                <ThemeTogglerButton/>
+                >
+                    <Text style={{fontSize: 18, color: global.theme.textColor}}>黑暗模式</Text>
+                    <Switch
+                        style={{alignItems: 'flex-end'}}
+                        value={this.state.isDarkMode}
+                        onValueChange={(value) => {
+                            this.toggleTheme();
+                            this.setState({isDarkMode: value});
+                            global.storage.save({key: StorageKey.IS_DARK_MODE, data: value});
+                        }}
+                    />
+                </View>
             </View>
         )
     }

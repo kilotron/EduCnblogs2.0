@@ -34,7 +34,8 @@ import {
 import {
     StackNavigator,
     TabNavigator,
-    NavigationActions
+    NavigationActions,
+    TabBarBottom,
 } from 'react-navigation';
 
 import ClassFunction from './Source/screens/ClassFunction'
@@ -467,6 +468,33 @@ const styles = StyleSheet.create({
     }
 });
 
+const TabBar = (props) => {
+    const { navigationState } = props;
+    let newProps = props;
+
+    newProps = Object.assign(
+        {},
+        props,
+        {
+            /*style: {
+                // get value from redux store and set it here 
+                backgroundColor: 'rgba(0,0,0,0.1)',
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                right: 0
+            },*/
+            style: {
+                backgroundColor: global.theme.headerBackgroundColor,
+            },
+            activeTintColor: global.theme.tabBarActiveTintColor,
+            inactiveTintColor: global.theme.tabBarInactiveTintColor,
+        },
+    );
+
+    return <TabBarBottom {...newProps} />;
+};
+
 const HomeTab = TabNavigator({
     PersonalBlog: {
         screen: PersonalBlog,
@@ -534,7 +562,9 @@ const HomeTab = TabNavigator({
             height: 0, // 去掉指示线
         },
     },
+    tabBarComponent: TabBar,
 })
+
 
 const SimpleNavigation = StackNavigator({
 

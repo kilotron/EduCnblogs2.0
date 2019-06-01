@@ -67,7 +67,8 @@ export const StorageKey = {
 	BLOGDETAIL : "BLOGDETAIL",
 	HOMEWORKDETAIL : "HOMEWORKDETAIL",
 	BLOG_LIST: "BLOGLIST",
-	RECEIVE_PUSH:"RECEIVEPUSH"
+	RECEIVE_PUSH:"RECEIVEPUSH",
+	IS_DARK_MODE: "ISDARKMODE",
 }
 
 export const ActionType = {
@@ -113,6 +114,6 @@ global.theme = themes.light;
 
 /**全局的设置选项，可用于个性化定制 */
 global.settings = {
-	showSettings: false,
+	showSettings: true,
 	displayDetailTime: true,
 };

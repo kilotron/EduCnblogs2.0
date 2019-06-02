@@ -4,17 +4,17 @@ import {authData,err_info} from '../config';
 import * as Service from '../request/request.js';
 import MyAdapter from './MyAdapter.js';
 import React, { Component} from 'react';
+import ModalExample from '../screens/ModalExample';
 import {
     Platform,
     StyleSheet,
     Text,
     View,
-    Image,
-    ToastAndroid,
     TouchableHighlight,
     TextInput,
     FlatList,
     TouchableOpacity,
+    Modal,
     Dimensions,
     PixelRatio,
     Alert
@@ -26,6 +26,7 @@ const titleFontSize= MyAdapter.titleFontSize;
 const abstractFontSize= MyAdapter.abstractFontSize;
 const informationFontSize= MyAdapter.informationFontSize;
 const btnFontSize= MyAdapter.btnFontSize;
+let dialogWidth = screenWidth-80;
 GetBlogApp = (url)=>{
     let ret = '';
     for(var i = 23; i < url.length; i++)
@@ -40,7 +41,8 @@ export default class Submitted extends Component {
     constructor(props){
         super(props);
         this.state = {
-            Answers:[]
+            Answers:[],
+            modalVisible:false
         }
     }
     _isMounted;
@@ -62,6 +64,12 @@ export default class Submitted extends Component {
             }
         })
     }
+    setModalVisible(visible) {
+        this.setState({modalVisible: visible});
+    }
+    onClose() {
+        this.setState({modalVisible: false});
+    }
     _renderItem = (item) => {
         let item1 = item;
         let {key, url, title, answerer, realName, blogUrl, dateAdded} = item1.item;
@@ -73,6 +81,9 @@ export default class Submitted extends Component {
                     onPress = {()=>{
                         this.props.navigation.navigate('BlogDetail',
                         {Id:key, blogApp: blogApp, CommentCount: 0, Url: url, Title: title})
+                    }}
+                    onLongPress = {()=>{
+                        this.setModalVisible(true)
                     }}
                 >
                     <Text style = {{
@@ -133,6 +144,36 @@ export default class Submitted extends Component {
         }
         return(
             <View style = {styles.container}>
+                <Modal
+                    animationType={"slide"}
+                    transparent={true}
+                    visible={this.state.modalVisible}
+                    onRequestClose={() => {this.setModalVisible(false)}}
+                >
+                    <TouchableOpacity style={{flex:1}} onPress={this.onClose.bind(this)}>
+                    <View style={styles.containerM}>
+                        <View style={styles.innerContainerM}>
+                            <Text>作业评分</Text>
+                            <TextInput
+                                style={styles.inputtext}
+                                placeholder="分值1~100"
+                            />
+                            <View style={styles.btnContainer}>
+                                <TouchableHighlight onPress={() => {
+                                    this.setModalVisible(!this.state.modalVisible)
+                                }}>
+                                    <Text  style={styles.hidemodalTxt}>提交</Text>
+                                </TouchableHighlight>
+                                <TouchableHighlight onPress={() => {
+                                    this.setModalVisible(!this.state.modalVisible)
+                                }}>
+                                    <Text  style={styles.hidemodalTxt}>关闭</Text>
+                                </TouchableHighlight>
+                            </View>
+                        </View>
+                    </View>
+                    </TouchableOpacity>
+                </Modal>
                 <View style = {styles.content}>
                     <FlatList
                         ItemSeparatorComponent={this._separator}
@@ -147,6 +188,34 @@ export default class Submitted extends Component {
     }
 }
 const styles = StyleSheet.create({
+    containerM: {
+        flex: 1,
+        justifyContent: 'center',
+        padding: 40,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)'
+    },
+    innerContainerM: {
+        borderRadius: 10,
+        alignItems: 'center',
+        backgroundColor: '#fff',
+        padding: 20
+
+    },
+    btnContainer:{
+        flexDirection:'row',
+        justifyContent:'space-around',
+        width:dialogWidth,
+        borderTopWidth:1,
+        borderTopColor:'#777',
+        alignItems:'center'
+    },
+    inputtext:{
+        width:dialogWidth-20,
+        margin:10,
+    },
+    hidemodalTxt: {
+        marginTop:10,
+    },
     container: {
         flex: 1,
         justifyContent: 'center',

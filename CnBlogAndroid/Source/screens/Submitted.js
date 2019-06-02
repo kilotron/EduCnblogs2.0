@@ -4,7 +4,6 @@ import {authData,err_info} from '../config';
 import * as Service from '../request/request.js';
 import MyAdapter from './MyAdapter.js';
 import React, { Component} from 'react';
-import ModalExample from '../screens/ModalExample';
 import {
     Platform,
     StyleSheet,

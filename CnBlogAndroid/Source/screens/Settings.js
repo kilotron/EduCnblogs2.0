@@ -4,6 +4,7 @@ import {
     Text,
     TouchableOpacity,
     Switch,
+    Image,
 } from 'react-native';
 import { themes } from '../styles/theme-context';
 import PropTypes from 'prop-types';
@@ -81,26 +82,57 @@ export default class Settings extends Component {
             <View style={{backgroundColor: this.state.theme.backgroundColor, flex: 1}}>
                 <View
                     style={{
-                        justifyContent: "space-between",
                         alignItems: 'center',
                         flexDirection: 'row',
-                        height: 0.09*screenHeight,
+                        height: 0.08*screenHeight,
                         marginBottom: 0.01*screenHeight,
                         backgroundColor: this.state.theme.backgroundColor,
                         paddingLeft: 0.05*screenWidth,
                         paddingRight: 0.05*screenWidth,
                     }}
                 >
-                    <Text style={{fontSize: 18, color: global.theme.textColor}}>黑暗模式</Text>
-                    <Switch
-                        style={{alignItems: 'flex-end'}}
-                        value={this.state.isDarkMode}
-                        onValueChange={(value) => {
-                            this.toggleTheme();
-                            this.setState({isDarkMode: value});
-                            global.storage.save({key: StorageKey.IS_DARK_MODE, data: value});
-                        }}
-                    />
+                    {/* 文字旁边的图标 */}
+                    <View style={{
+                        borderRadius: 4, 
+                        backgroundColor: global.theme.darkModeIconBackgroundColor,
+                        height: 26,
+                        width: 26,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}>
+                        <Image 
+                            source={require('../images/moon.png')}
+                            style={{height: 15, width: 15}}
+                            resizeMode='contain'
+                            tintColor={global.theme.darkModeIconTintColor}
+                        />
+                    </View>
+
+                    <View style={{
+                        flexGrow: 1, 
+                        paddingLeft: 0.06*screenWidth,
+                    }}>
+                        {/* 文字'黑暗模式'和右边的开关 */}
+                        <View style={{
+                            flexGrow: 1,
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                        }}>
+                            <Text style={{fontSize: 18, color: global.theme.textColor}}>黑暗模式</Text>
+                            <Switch
+                                style={{alignItems: 'flex-end'}}
+                                value={this.state.isDarkMode}
+                                onValueChange={(value) => {
+                                    this.toggleTheme();
+                                    this.setState({isDarkMode: value});
+                                    global.storage.save({key: StorageKey.IS_DARK_MODE, data: value});
+                                }}
+                            />
+                        </View>
+                        {/* 分隔线 */}
+                        <View style={{height: 1, backgroundColor: global.theme.settingsSeperatorColor, }}></View>
+                    </View>
                 </View>
             </View>
         )

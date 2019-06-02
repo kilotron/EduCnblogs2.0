@@ -15,6 +15,11 @@ export const themes = {
         addBackgroundColor: '#777',
         addUnderlayColor: '#0077FF',
         addTextColor: '#FFF',
+
+        // 设置页面
+        darkModeIconBackgroundColor: '#0079FF',
+        darkModeIconTintColor: 'white',
+        settingsSeperatorColor: '#DDD',
     },
     // 下面的配色未完成
     dark: {
@@ -32,6 +37,10 @@ export const themes = {
         addBackgroundColor: '#FFCC00',
         addUnderlayColor: '#0077FF',
         addTextColor: '#444',
+
+        darkModeIconBackgroundColor: '#CC9900',
+        darkModeIconTintColor: '#DADADA',
+        settingsSeperatorColor: '#666',
     },
 };
 

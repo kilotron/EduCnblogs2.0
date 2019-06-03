@@ -78,8 +78,9 @@ export default class Settings extends Component {
                     }}
                     initialValue={async () => {
                         let isDarkMode = await storage.getItem(StorageKey.IS_DARK_MODE);
-                        if (isDarkMode == null) {
-                            isDarkMode = false;
+                        if (typeof(isDarkMode) != 'boolean') {  // 没有初值时
+                            isDarkMode = false; // 默认关闭黑暗模式
+                            this.toggleTheme(isDarkMode);
                             storage.setItem(StorageKey.IS_DARK_MODE, isDarkMode);
                         }
                         return isDarkMode;
@@ -102,13 +103,16 @@ export default class Settings extends Component {
                     }}
                     initialValue={async () => {
                         let recvPush = await storage.getItem(StorageKey.RECEIVE_PUSH);
-                        if (recvPush == null) {
-                            recvPush = false;
+                        if (typeof(recvPush) != 'boolean') {
+                            recvPush = true;    // 默认打开推送
                             storage.setItem(StorageKey.RECEIVE_PUSH, recvPush);
+                            umengPush.openPush();
+                            Push.initPush();
                         }
                         return recvPush;
                     }}
                 />
+                
             </View>
         )
     }

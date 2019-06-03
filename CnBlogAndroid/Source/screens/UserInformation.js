@@ -42,36 +42,7 @@ export default class UserInformation extends Component{
             DisplayName: '',
             BlogApp: '',
             Seniority: '',
-            receive_push : false
         }
-    }
-
-    async _getReceivePush(){
-        var receive_push = await storage.getItem(StorageKey.RECEIVE_PUSH);
-        if(receive_push === null){
-            storage.setItem(StorageKey.RECEIVE_PUSH,'true');
-            this.setState({
-                receive_push:true
-            })
-        }
-        else{
-            let bool = receive_push == 'true';
-            this.setState({
-                receive_push:bool
-            })
-        }
-    }
-
-    async openReceive(){
-        umengPush.openPush();
-        var ret = await storage.setItem(StorageKey.RECEIVE_PUSH,'true');
-        return ret;
-    }
-
-    async closeReceive(){
-        umengPush.closePush();
-        var ret = await storage.setItem(StorageKey.RECEIVE_PUSH,'false');
-        return ret;
     }
 
     _logout=()=>{
@@ -102,63 +73,61 @@ export default class UserInformation extends Component{
     componentWillMount=()=>{
         this._isMounted=true;
         let user_url = Config.apiDomain + api.user.info;
-        this._getReceivePush().then(
-            Service.Get(user_url)
-            .then((jsonData)=>{
-                global.user_information = {
-                    userId : jsonData.UserId,
-                    SpaceUserId : jsonData.SpaceUserId,
-                    BlogId : jsonData.BlogId,
-                    DisplayName : jsonData.DisplayName,
-                    face : jsonData.Face,
-                    Seniority : jsonData.Seniority,  //园龄
-                    BlogApp : jsonData.BlogApp
-                }
-            })
-            .then(()=>{
-                if(this._isMounted){
+        Service.Get(user_url)
+        .then((jsonData)=>{
+            global.user_information = {
+                userId : jsonData.UserId,
+                SpaceUserId : jsonData.SpaceUserId,
+                BlogId : jsonData.BlogId,
+                DisplayName : jsonData.DisplayName,
+                face : jsonData.Face,
+                Seniority : jsonData.Seniority,  //园龄
+                BlogApp : jsonData.BlogApp
+            }
+        })
+        .then(()=>{
+            if(this._isMounted){
+            this.setState({
+                faceurl: global.user_information.face,
+                DisplayName: global.user_information.DisplayName,
+                BlogApp: global.user_information.BlogApp,
+                Seniority: global.user_information.Seniority,
+            })}
+        }).then(()=>{
+            global.storage.save({key:StorageKey.DISPLAYNAME,data:this.state.DisplayName});
+        }).then(()=>{
+            global.storage.save({key:StorageKey.BLOGAPP,data:this.state.BlogApp});
+        }).then(()=>{
+            global.storage.save({key:StorageKey.SENIORITY,data:this.state.Seniority});
+        })
+        .catch((error)=>{
+            ToastAndroid.show(err_info.NO_INTERNET,ToastAndroid.SHORT)
+            global.storage.load({key:StorageKey.DISPLAYNAME})
+            .then((ret)=>{
                 this.setState({
-                    faceurl: global.user_information.face,
-                    DisplayName: global.user_information.DisplayName,
-                    BlogApp: global.user_information.BlogApp,
-                    Seniority: global.user_information.Seniority,
-                })}
+                    DisplayName : ret,
+                })
             }).then(()=>{
-                global.storage.save({key:StorageKey.DISPLAYNAME,data:this.state.DisplayName});
-            }).then(()=>{
-                global.storage.save({key:StorageKey.BLOGAPP,data:this.state.BlogApp});
-            }).then(()=>{
-                global.storage.save({key:StorageKey.SENIORITY,data:this.state.Seniority});
-            })
-            .catch((error)=>{
-                ToastAndroid.show(err_info.NO_INTERNET,ToastAndroid.SHORT)
-                global.storage.load({key:StorageKey.DISPLAYNAME})
+                global.storage.load({key:StorageKey.BLOGAPP})
                 .then((ret)=>{
                     this.setState({
-                        DisplayName : ret,
-                    })
-                }).then(()=>{
-                    global.storage.load({key:StorageKey.BLOGAPP})
-                    .then((ret)=>{
-                        this.setState({
-                            BlogApp : ret,
-                        })
-                    })
-                }).then(()=>{
-                    global.storage.load({key:StorageKey.SENIORITY})
-                    .then((ret)=>{
-                        this.setState({
-                            Seniority : ret,
-                            faceurl : '',
-                        })
+                        BlogApp : ret,
                     })
                 })
-                .catch((err)=>{
-                    ToastAndroid.show(err_info.TIME_OUT,ToastAndroid.SHORT);
-                    this.props.navigation.navigate('Loginer');
+            }).then(()=>{
+                global.storage.load({key:StorageKey.SENIORITY})
+                .then((ret)=>{
+                    this.setState({
+                        Seniority : ret,
+                        faceurl : '',
+                    })
                 })
             })
-        )
+            .catch((err)=>{
+                ToastAndroid.show(err_info.TIME_OUT,ToastAndroid.SHORT);
+                this.props.navigation.navigate('Loginer');
+            })
+        })
     }
 
     /**从版本号中启动设置功能，需要调用此函数重新render */
@@ -312,47 +281,6 @@ export default class UserInformation extends Component{
             }}>
                 <Text style = {{fontSize: 18, fontWeight: 'bold', color:'rgb(51,51,51)'}}>关于App</Text>
             </TouchableHighlight>
-
-            <View
-                underlayColor="white"
-                // activeOpacity={0.5}
-                // onPress={()=>{
-                //     umengPush.testPush();
-                // }}//关联函数
-                style = {{
-                    justifyContent:'space-between',
-                    alignItems: 'center',
-                    height: 0.07*screenHeight,
-                    marginBottom: 0.01*screenHeight,
-                    backgroundColor: 'white',
-                    paddingLeft: 0.05*screenWidth,
-                    flexDirection:'row'
-            }}>
-            <Text style = {{fontSize: 18, fontWeight: 'bold', color:'rgb(51,51,51)'}}>接收推送</Text>
-            <Switch
-                onTintColor='#aadfd9'  //开关打开时的背景颜色
-                thumbTintColor='#ececec' //开关上按钮的颜色
-                tintColor='#abb0b4' //关闭时背景颜色
-                value={this.state.receive_push}
-                onValueChange={(value) =>{
-                    if(value == false){
-                        this.closeReceive().then(()=>{
-                            this.setState({
-                                receive_push:false
-                            })
-                        }).then(storage.getItem(StorageKey.RECEIVE_PUSH).then((ret)=>{console.log(ret);}));
-                    }
-                    else{
-                        this.openReceive().then(()=>{
-                            Push.initPush();
-                            this.setState({
-                                receive_push:true
-                            })
-                        }).then(storage.getItem(StorageKey.RECEIVE_PUSH).then((ret)=>{console.log(ret);}));
-                    }
-                } }
-            />
-            </View>
 
             <TouchableOpacity style = {{
                 justifyContent:'center',

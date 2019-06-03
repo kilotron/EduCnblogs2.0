@@ -12,7 +12,8 @@ import { StorageKey } from '../config';
 import MyAdapter from './MyAdapter.js';
 import * as storage from '../Storage/storage';
 import * as umengPush from '../umeng/umengPush';
-import * as Push from '../DataHandler/Push/PushHandler'; 
+import * as Push from '../DataHandler/Push/PushHandler';
+import SettingItemSwitch from '../component/SettingItemSwitch';
 
 const screenWidth= MyAdapter.screenWidth;
 const screenHeight= MyAdapter.screenHeight;
@@ -46,33 +47,17 @@ export default class Settings extends Component {
 
     constructor(props) {
         super(props);
-        this.toggleTheme = () => {
+        this.toggleTheme = (isDarkMode) => {
             this.setState(state => ({
-                theme:
-                    state.theme === themes.dark
-                    ? themes.light
-                    : themes.dark,
+                theme: isDarkMode ? themes.dark : themes.light,
             }), ()=>{this.props.navigation.setParams({theme: this.state.theme});});
-            global.theme = global.theme === themes.dark
-                ? themes.light
-                : themes.dark;
+            global.theme = isDarkMode ? themes.dark : themes.light;
         };
         this.state = {
             theme: global.theme,
             toggleTheme: this.toggleTheme,
-            isDarkMode: false,
         }
         this.props.navigation.setParams({theme: this.state.theme});
-    }
-
-    componentWillMount() {
-        storage.getItem(StorageKey.IS_DARK_MODE)
-        .then((isDarkMode) => {
-            this.setState({isDarkMode: isDarkMode});
-        })
-        .catch((error) => {
-            storage.setItem(StorageKey.IS_DARK_MODE, this.state.isDarkMode);
-        })
     }
 
     getChildContext() {
@@ -82,60 +67,48 @@ export default class Settings extends Component {
     render() {
         return (
             <View style={{backgroundColor: this.state.theme.backgroundColor, flex: 1}}>
-                <View
-                    style={{
-                        alignItems: 'center',
-                        flexDirection: 'row',
-                        height: 0.08*screenHeight,
-                        marginBottom: 0.01*screenHeight,
-                        backgroundColor: this.state.theme.backgroundColor,
-                        paddingLeft: 0.05*screenWidth,
-                        paddingRight: 0.05*screenWidth,
+                <SettingItemSwitch
+                    text='黑暗模式'
+                    imageSource={require('../images/moon.png')}
+                    imageBackgroundColor={global.theme.darkModeIconBackgroundColor}
+                    imageTintColor={global.theme.darkModeIconTintColor}
+                    onValueChange={(value) => {
+                        this.toggleTheme(value);
+                        storage.setItem(StorageKey.IS_DARK_MODE, value)
                     }}
-                >
-                    {/* 文字旁边的图标 */}
-                    <View style={{
-                        borderRadius: 4, 
-                        backgroundColor: global.theme.darkModeIconBackgroundColor,
-                        height: 26,
-                        width: 26,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                    }}>
-                        <Image 
-                            source={require('../images/moon.png')}
-                            style={{height: 15, width: 15}}
-                            resizeMode='contain'
-                            tintColor={global.theme.darkModeIconTintColor}
-                        />
-                    </View>
-
-                    <View style={{
-                        flexGrow: 1, 
-                        paddingLeft: 0.06*screenWidth,
-                    }}>
-                        {/* 文字'黑暗模式'和右边的开关 */}
-                        <View style={{
-                            flexGrow: 1,
-                            flexDirection: 'row',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                        }}>
-                            <Text style={{fontSize: 18, color: global.theme.textColor}}>黑暗模式</Text>
-                            <Switch
-                                style={{alignItems: 'flex-end'}}
-                                value={this.state.isDarkMode}
-                                onValueChange={(value) => {
-                                    this.toggleTheme();
-                                    this.setState({isDarkMode: value});
-                                    storage.setItem(StorageKey.IS_DARK_MODE, value)
-                                }}
-                            />
-                        </View>
-                        {/* 分隔线 */}
-                        <View style={{height: 1, backgroundColor: global.theme.settingsSeperatorColor, }}></View>
-                    </View>
-                </View>
+                    initialValue={async () => {
+                        let isDarkMode = await storage.getItem(StorageKey.IS_DARK_MODE);
+                        if (isDarkMode == null) {
+                            isDarkMode = false;
+                            storage.setItem(StorageKey.IS_DARK_MODE, isDarkMode);
+                        }
+                        return isDarkMode;
+                    }}
+                />
+                <SettingItemSwitch
+                    text='接收推送'
+                    imageSource={require('../images/paper_plane.png')}
+                    imageBackgroundColor={global.theme.recvPushIconBackgroundColor}
+                    imageTintColor={global.theme.recvPushIconTintColor}
+                    onValueChange={(value) => {
+                        storage.setItem(StorageKey.RECEIVE_PUSH, value);
+                        if(value == false){
+                            umengPush.closePush();
+                        }
+                        else{
+                            umengPush.openPush();
+                            Push.initPush();
+                        }
+                    }}
+                    initialValue={async () => {
+                        let recvPush = await storage.getItem(StorageKey.RECEIVE_PUSH);
+                        if (recvPush == null) {
+                            recvPush = false;
+                            storage.setItem(StorageKey.RECEIVE_PUSH, recvPush);
+                        }
+                        return recvPush;
+                    }}
+                />
             </View>
         )
     }

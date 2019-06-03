@@ -16,11 +16,17 @@ export const themes = {
         addUnderlayColor: '#0077FF',
         addTextColor: '#FFF',
 
-        // 设置页面
+        settingsSeperatorColor: '#DDD',
+        
+        // 设置页面的黑暗模式
         darkModeIconBackgroundColor: '#0079FF',
         darkModeIconTintColor: 'white',
-        settingsSeperatorColor: '#DDD',
+
+        // 设置页面的接收推送图标
+        recvPushIconBackgroundColor: '#4BD864', // 绿色
+        recvPushIconTintColor: 'white',
     },
+
     // 下面的配色未完成
     dark: {
         headerBackgroundColor: '#363636',
@@ -38,9 +44,11 @@ export const themes = {
         addUnderlayColor: '#0077FF',
         addTextColor: '#444',
 
+        settingsSeperatorColor: '#666',
         darkModeIconBackgroundColor: '#CC9900',
         darkModeIconTintColor: '#DADADA',
-        settingsSeperatorColor: '#666',
+        recvPushIconBackgroundColor: '#0B8A8C',
+        recvPushIconTintColor: '#DDD',
     },
 };
 

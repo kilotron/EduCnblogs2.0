@@ -14,6 +14,7 @@ import {
     FlatList,
     TouchableOpacity,
     Modal,
+    ToastAndroid,
     Dimensions,
     PixelRatio,
     Alert
@@ -41,7 +42,9 @@ export default class Submitted extends Component {
         super(props);
         this.state = {
             Answers:[],
-            modalVisible:false
+            modalVisible:false,
+            showValue:null,
+            answerId:-1,
         }
     }
     _isMounted;
@@ -71,53 +74,102 @@ export default class Submitted extends Component {
     }
     _renderItem = (item) => {
         let item1 = item;
-        let {key, url, title, answerer, realName, blogUrl, dateAdded} = item1.item;
+        let {answerId, key, url, title, answerer, realName, blogUrl, dateAdded} = item1.item;
         let blogApp = GetBlogApp(blogUrl);
-        return (
-            <View>
-                <TouchableOpacity
-                    style = {styles.listcontainer}
-                    onPress = {()=>{
-                        this.props.navigation.navigate('BlogDetail',
-                        {Id:key, blogApp: blogApp, CommentCount: 0, Url: url, Title: title})
-                    }}
-                    onLongPress = {()=>{
-                        this.setModalVisible(true)
-                    }}
-                >
-                    <Text style = {{
-                        fontSize: 18,
-                        fontWeight: 'bold',
-                        marginTop: 8,
-                        marginBottom: 3,
-                        textAlign: 'left',
-                        color: 'black',
-                        fontFamily : 'serif',
-                    }}>
-                        {realName}
-                    </Text>
-                    <Text style = {{
-                        fontSize: 16,
-                        marginBottom: 3,
-                        textAlign: 'left',
-                        color: 'black',
-                        fontFamily : 'serif',
-                    }}>
-                        {title}
-                    </Text>
-                    <View style = {{
-                        flexDirection: 'row',
-                        marginBottom: 8,
-                        justifyContent: 'flex-end',
-                        alignItems: 'flex-end',
-                    }}>
-                        <Text style = {{fontSize: 13, textAlign: 'right', color: 'black', flex: 1}}>
-                            提交于:{' '+dateAdded.split('T')[0]+' '+dateAdded.split('T')[1].substring(0,8)}
+        if(this.props.navigation.state.params.permission == 1){
+            return (
+                <View>
+                    <TouchableOpacity
+                        style = {styles.listcontainer}
+                        onPress = {()=>{
+                            this.props.navigation.navigate('BlogDetail',
+                            {Id:key, blogApp: blogApp, CommentCount: 0, Url: url, Title: title})
+                        }}
+                        onLongPress = {()=>{
+                            this.setModalVisible(true);
+                            this.setState({
+                                answerId:answerId,
+                            })
+                        }}
+                    >
+                        <Text style = {{
+                            fontSize: 18,
+                            fontWeight: 'bold',
+                            marginTop: 8,
+                            marginBottom: 3,
+                            textAlign: 'left',
+                            color: 'black',
+                            fontFamily : 'serif',
+                        }}>
+                            {realName}
                         </Text>
-                    </View>
-                </TouchableOpacity>
-            </View>
-        )
+                        <Text style = {{
+                            fontSize: 16,
+                            marginBottom: 3,
+                            textAlign: 'left',
+                            color: 'black',
+                            fontFamily : 'serif',
+                        }}>
+                            {title}
+                        </Text>
+                        <View style = {{
+                            flexDirection: 'row',
+                            marginBottom: 8,
+                            justifyContent: 'flex-end',
+                            alignItems: 'flex-end',
+                        }}>
+                            <Text style = {{fontSize: 13, textAlign: 'right', color: 'black', flex: 1}}>
+                                提交于:{' '+dateAdded.split('T')[0]+' '+dateAdded.split('T')[1].substring(0,8)}
+                            </Text>
+                        </View>
+                    </TouchableOpacity>
+                </View>
+            )
+        }
+        else{
+            return (
+                <View>
+                    <TouchableOpacity
+                        style = {styles.listcontainer}
+                        onPress = {()=>{
+                            this.props.navigation.navigate('BlogDetail',
+                            {Id:key, blogApp: blogApp, CommentCount: 0, Url: url, Title: title})
+                        }}
+                    >
+                        <Text style = {{
+                            fontSize: 18,
+                            fontWeight: 'bold',
+                            marginTop: 8,
+                            marginBottom: 3,
+                            textAlign: 'left',
+                            color: 'black',
+                            fontFamily : 'serif',
+                        }}>
+                            {realName}
+                        </Text>
+                        <Text style = {{
+                            fontSize: 16,
+                            marginBottom: 3,
+                            textAlign: 'left',
+                            color: 'black',
+                            fontFamily : 'serif',
+                        }}>
+                            {title}
+                        </Text>
+                        <View style = {{
+                            flexDirection: 'row',
+                            marginBottom: 8,
+                            justifyContent: 'flex-end',
+                            alignItems: 'flex-end',
+                        }}>
+                            <Text style = {{fontSize: 13, textAlign: 'right', color: 'black', flex: 1}}>
+                                提交于:{' '+dateAdded.split('T')[0]+' '+dateAdded.split('T')[1].substring(0,8)}
+                            </Text>
+                        </View>
+                    </TouchableOpacity>
+                </View>
+            )
+        }
     }
     _separator = () => {
         return (
@@ -127,11 +179,64 @@ export default class Submitted extends Component {
             </View>
         );
     }
+    _onChangeText = (inputData) => {
+        this.setState({showValue:inputData});
+    }
+    _renderModal(){
+        if(this.props.navigation.state.params.permission == 1){
+            return(
+                <View>
+                    <Modal
+                        animationType={"slide"}
+                        transparent={true}
+                        visible={this.state.modalVisible}
+                        onRequestClose={() => {this.setModalVisible(false)}}
+                    >
+                        <TouchableOpacity style={{flex:1}} onPress={this.onClose.bind(this)}>
+                        <View style={styles.containerM}>
+                            <View style={styles.innerContainerM}>
+                                <Text>答案打分</Text>
+                                <TextInput
+                                    style={styles.inputtext}
+                                    placeholder="分值1~100"
+                                    onChangeText={this._onChangeText}
+                                />
+                                <View style={styles.btnContainer}>
+                                    <TouchableHighlight onPress={() => {
+                                        if(this.state.showValue > 100 || this.state.showValue < 0){
+                                            ToastAndroid.show('请输入0~100之间的分数', ToastAndroid.LONG);
+                                            return;
+                                        }
+                                        else{
+                                            _giveMark(this.state.answerId,this.props.navigation.state.params.schoolClassId,this.state.showValue)
+                                        }
+                                        this.setModalVisible(!this.state.modalVisible)
+                                    }}>
+                                        <Text  style={styles.hidemodalTxt}>提交</Text>
+                                    </TouchableHighlight>
+                                    <TouchableHighlight onPress={() => {
+                                        this.setModalVisible(!this.state.modalVisible)
+                                    }}>
+                                        <Text  style={styles.hidemodalTxt}>关闭</Text>
+                                    </TouchableHighlight>
+                                </View>
+                            </View>
+                        </View>
+                        </TouchableOpacity>
+                    </Modal>
+                </View>
+            )
+        }
+        else{
+            return(<View></View>)
+        }
+    }
     render(){
         let data = [];
         for(var i in this.state.Answers)
         {
             data.push({
+                answerId:this.state.Answers[i].answerId,
                 key: this.state.Answers[i].entryId,
                 url: this.state.Answers[i].url,
                 title: this.state.Answers[i].title,
@@ -143,36 +248,7 @@ export default class Submitted extends Component {
         }
         return(
             <View style = {styles.container}>
-                <Modal
-                    animationType={"slide"}
-                    transparent={true}
-                    visible={this.state.modalVisible}
-                    onRequestClose={() => {this.setModalVisible(false)}}
-                >
-                    <TouchableOpacity style={{flex:1}} onPress={this.onClose.bind(this)}>
-                    <View style={styles.containerM}>
-                        <View style={styles.innerContainerM}>
-                            <Text>作业评分</Text>
-                            <TextInput
-                                style={styles.inputtext}
-                                placeholder="分值1~100"
-                            />
-                            <View style={styles.btnContainer}>
-                                <TouchableHighlight onPress={() => {
-                                    this.setModalVisible(!this.state.modalVisible)
-                                }}>
-                                    <Text  style={styles.hidemodalTxt}>提交</Text>
-                                </TouchableHighlight>
-                                <TouchableHighlight onPress={() => {
-                                    this.setModalVisible(!this.state.modalVisible)
-                                }}>
-                                    <Text  style={styles.hidemodalTxt}>关闭</Text>
-                                </TouchableHighlight>
-                            </View>
-                        </View>
-                    </View>
-                    </TouchableOpacity>
-                </Modal>
+                {this._renderModal()}
                 <View style = {styles.content}>
                     <FlatList
                         ItemSeparatorComponent={this._separator}
@@ -185,6 +261,36 @@ export default class Submitted extends Component {
             </View>
         )
     }
+    
+}
+function _giveMark(answerId, schoolClassId, score){
+    let url = 'https://api.cnblogs.com/api/edu/answer/marking/' + answerId;
+    let body= JSON.stringify({
+        answerId:answerId,
+        schoolClassId:schoolClassId,
+        score:score,
+    });
+    Service.UserAction(url,body, 'PATCH').then((response)=>{
+        if(response.status!==200)
+        {
+            return null;
+        }
+        else{
+            return response.json();
+        }
+    }).then((jsonData)=>{
+        if(jsonData != 'rejected'){
+            if(jsonData.isSuccess == true){
+                ToastAndroid.show("打分成功~",ToastAndroid.SHORT);
+            }
+            else if(jsonData.isWarning == true){
+                ToastAndroid.show(jsonData.message,ToastAndroid.SHORT);
+            }
+        }
+        else{
+            ToastAndroid.show("请求错误，请稍后再试",ToastAndroid.SHORT);
+        }
+    })
 }
 const styles = StyleSheet.create({
     containerM: {

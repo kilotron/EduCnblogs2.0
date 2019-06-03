@@ -223,7 +223,7 @@ export default class HomeWorkDetail extends Component{
             return(
                 <View style = {styles.bottom}>
                     <TouchableOpacity
-                        onPress = {()=>this.props.navigation.navigate('Submitted',{Id: Id})}
+                        onPress = {()=>this.props.navigation.navigate('Submitted',{Id: Id,permission:0})}
                         style = {styles.touchbutton}
                         >
                         <View style={styles.subListIconStyle}>
@@ -250,7 +250,7 @@ export default class HomeWorkDetail extends Component{
             return(
                 <View style = {styles.bottom}>
                     <TouchableOpacity
-                        onPress = {()=>this.props.navigation.navigate('Submitted',{Id: Id})}
+                        onPress = {()=>this.props.navigation.navigate('Submitted',{Id: Id,schoolClassId:classId,permission:1})}
                         style = {styles.touchbutton}
                         >
                         <View style={styles.subListIconStyle}>

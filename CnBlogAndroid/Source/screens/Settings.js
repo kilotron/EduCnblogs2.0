@@ -10,6 +10,9 @@ import { themes } from '../styles/theme-context';
 import PropTypes from 'prop-types';
 import { StorageKey } from '../config';
 import MyAdapter from './MyAdapter.js';
+import * as storage from '../Storage/storage';
+import * as umengPush from '../umeng/umengPush';
+import * as Push from '../DataHandler/Push/PushHandler'; 
 
 const screenWidth= MyAdapter.screenWidth;
 const screenHeight= MyAdapter.screenHeight;
@@ -63,14 +66,13 @@ export default class Settings extends Component {
     }
 
     componentWillMount() {
-        global.storage.load({key: StorageKey.IS_DARK_MODE})
+        storage.getItem(StorageKey.IS_DARK_MODE)
         .then((isDarkMode) => {
             this.setState({isDarkMode: isDarkMode});
         })
         .catch((error) => {
-            global.storage.save({key: StorageKey.IS_DARK_MODE, data: this.state.isDarkMode});
+            storage.setItem(StorageKey.IS_DARK_MODE, this.state.isDarkMode);
         })
-        
     }
 
     getChildContext() {
@@ -126,7 +128,7 @@ export default class Settings extends Component {
                                 onValueChange={(value) => {
                                     this.toggleTheme();
                                     this.setState({isDarkMode: value});
-                                    global.storage.save({key: StorageKey.IS_DARK_MODE, data: value});
+                                    storage.setItem(StorageKey.IS_DARK_MODE, value)
                                 }}
                             />
                         </View>

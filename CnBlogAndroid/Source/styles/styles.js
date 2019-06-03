@@ -22,20 +22,21 @@ export const flatStyles = StyleSheet.create({
     separatorStyle:{
         height:1,
         justifyContent:'center',
-        backgroundColor:'#dcdcdc'
+        marginLeft: 15,
+        marginRight: 0,
+        backgroundColor:'#dcdcdc',
     },
     /* 列表项的样式。公告、博文等列表可使用此样式。具体的使用方法：
        对每个列表项，例如_renderItem()函数中的最顶层View应用此样式。*/
     cell:{
         flex: 1,
-        backgroundColor: 'white',
         padding: 8,
         marginLeft: 5,
         marginRight: 5,
         marginVertical: 3,
         borderColor: '#dddddd',
         borderStyle: null,
-        borderWidth: 0.5,
+        //borderWidth: 0.5,
         borderRadius: 2,
     },
 })

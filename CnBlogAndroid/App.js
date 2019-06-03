@@ -489,6 +489,19 @@ const TabBar = (props) => {
             },
             activeTintColor: global.theme.tabBarActiveTintColor,
             inactiveTintColor: global.theme.tabBarInactiveTintColor,
+            labelStyle: {
+                marginTop: 0,
+                fontSize: 10,
+            },
+            iconStyle: {
+                marginTop: 10,
+            },
+            tabStyle: {
+                height: height/13,
+            },
+            indicatorStyle: {
+                height: 0, // 去掉指示线
+            },
         },
     );
 

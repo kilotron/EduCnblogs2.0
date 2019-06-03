@@ -17,6 +17,7 @@ export const themes = {
         addTextColor: '#FFF',
 
         settingsSeperatorColor: '#DDD',
+        flatListSeperatorColor: '#DDD',
         
         // 设置页面的黑暗模式
         darkModeIconBackgroundColor: '#0079FF',
@@ -37,7 +38,7 @@ export const themes = {
         buttonColor: '#3A3A3A',
         buttonBorderColor: '#FFCC00',
         selectionColor: '#555555',
-        seperatorColor: '#DADADA',
+        seperatorColor: '#262626',        // 与背景颜色相同，相当于隐藏分隔线
         tabBarActiveTintColor: '#FFCC00',
         tabBarInactiveTintColor: '#DDD', // 需要调整
         addBackgroundColor: '#FFCC00',
@@ -45,6 +46,7 @@ export const themes = {
         addTextColor: '#444',
 
         settingsSeperatorColor: '#666',
+        flatListSeperatorColor: '#666',
         darkModeIconBackgroundColor: '#CC9900',
         darkModeIconTintColor: '#DADADA',
         recvPushIconBackgroundColor: '#0B8A8C',

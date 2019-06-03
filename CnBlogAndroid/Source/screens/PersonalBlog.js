@@ -167,6 +167,12 @@ export default class PersonalBlog extends Component{
         this._isMounted=false;
     }
 
+    _seperator = () => {
+        return (
+            <View style={[flatStyles.separatorStyle, {backgroundColor: global.theme.flatListSeperatorColor}]}/>
+        )
+    }
+
     _renderItem = (item)=>{
         let item1 = item;
         var Title = item1.item.Title;
@@ -177,25 +183,25 @@ export default class PersonalBlog extends Component{
         var CommentCount = item1.item.CommentCount;
         var Id = item1.item.key;
         return(
-            <View style={flatStyles.cell}>
+            <View style={[flatStyles.cell, {backgroundColor: global.theme.backgroundColor}]}>
                 <TouchableOpacity
-                    style = {styles.listcontainer}
+                    style = {[styles.listcontainer, {backgroundColor: global.theme.backgroundColor}]}
                     onPress = {Url!=='' ? ()=>this.props.navigation.navigate('BlogDetail',
                     {Id:Id, blogApp: global.user_information.BlogApp, CommentCount: CommentCount, Url: Url, Title: Title, Description: Description,}) : ()=>{}}
                 >
                     <Text
-                        style={blogListStyles.blogTitleText}
+                        style={[blogListStyles.blogTitleText, {color: global.theme.textColor}]}
                         accessibilityLabel = {Url}>
                         {Title}
                     </Text>
-                    <Text  numberOfLines={2} style = {blogListStyles.blogSummaryText}>
+                    <Text  numberOfLines={2} style = {[blogListStyles.blogSummaryText, {color: global.theme.textColor}]}>
                         {Description}
                     </Text>
                     <View style = {blogListStyles.blogAppAndTimeContainer}>
-                        <Text style = {{fontSize: 10, textAlign: 'left', color: 'black', flex: 1}}>
+                        <Text style = {{fontSize: 10, textAlign: 'left', color: global.theme.textColor, flex: 1}}>
                             {ViewCount+' 阅读'+'  '+CommentCount+' 评论'}
                         </Text>
-                        <Text style = {{fontSize: 10, textAlign: 'right', color: 'black', flex: 1}}>
+                        <Text style = {{fontSize: 10, textAlign: 'right', color: global.theme.textColor, flex: 1}}>
                             {'发布于: '+relativeTime(PostDate)}
                         </Text>
                     </View>
@@ -219,19 +225,20 @@ export default class PersonalBlog extends Component{
             })
         }
         return(
-            <View style = {styles.container}>
+            <View style = {[styles.container, {backgroundColor: global.backgroundColor}]}>
                 <View style = {[styles.header, {backgroundColor: global.theme.headerBackgroundColor}]}>
                     <Text style = {[styles.headertext, {color: global.theme.headerTintColor}]}>
                         {this.state.blogTitle}
                     </Text>
                 </View>
                 <View style={{ height: 0.75, backgroundColor: global.theme.seperatorColor}}/>
-                <View style = {styles.content}>
+                <View style = {[styles.content, {backgroundColor: global.theme.backgroundColor}]}>
                     <FlatList
                         renderItem={this._renderItem}
 						data= {data}
                         onRefresh = {this.UpdateData}
                         refreshing= {false}
+                        ItemSeparatorComponent={this._seperator}
                     />
                 </View>
             </View>
@@ -242,9 +249,6 @@ export default class PersonalBlog extends Component{
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        //justifyContent: 'center',
-        //alignItems: 'center',
-        backgroundColor: 'white',
     },
     header:{
         flexDirection: 'row',
@@ -274,7 +278,6 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start',
         flex:1,
         alignSelf: 'stretch',
-        backgroundColor: 'white',
         paddingLeft: 0.03*screenWidth,
         paddingRight: 0.04*screenWidth,
     }

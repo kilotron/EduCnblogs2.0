@@ -425,7 +425,7 @@ export default class VoteDetail extends Component {
         return (
             <View>
                 <Echarts option={this.globalOptionStatic[num]} 
-                    height={300}
+                //height={300}
                  />
             </View>
         )

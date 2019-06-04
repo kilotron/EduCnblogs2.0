@@ -109,7 +109,7 @@ export default class VoteDetail extends Component {
     _isMounted;
     globalVoteContentId = [];
     globalVoteStatic = []; //所有问题的统计量
-    _hasStatic = false; //是否统计过
+    _hasStatic = false; //是否统计过，也就是每个问题的统计是否给出
     globalOptionStatic = [];
 
     /** 统计投票 */
@@ -384,9 +384,10 @@ export default class VoteDetail extends Component {
             var num_l = 0;
             var varData2Use = []; //放入y轴的数组
             for (num_l = 0; num_l<varLength; num_l++){
-                varData2Use.push('op'+num_l);
+                varData2Use.push('op'+ (num_l+1));
             }
             const option = {
+                //color : 'red',
                 title: {
                     text: '投票统计'
                 },
@@ -399,9 +400,11 @@ export default class VoteDetail extends Component {
                 },
                 xAxis: {},
                 series: [{
+                    color : ['#4169E1'],
                     name: '数量',
                     type: 'bar',
                     data: varArray,
+                    barWidth : 30,
                 }]
             };
             varOptions.push(option);
@@ -421,14 +424,16 @@ export default class VoteDetail extends Component {
     testReturnEchart(num){
         return (
             <View>
-                <Echarts option={this.globalOptionStatic[num]} height={300} />
+                <Echarts option={this.globalOptionStatic[num]} 
+                    height={300}
+                 />
             </View>
         )
     }
 
     render() {
         let voteDisabled = this.state.hasVoted || this.state.isFinished || this.state.isPublisher;
-        if (this.state.content == "" || this._hasStatic==false) {
+        if (this.state.content == "" || this._hasStatic==false) { 
             return null;
         }
         return (

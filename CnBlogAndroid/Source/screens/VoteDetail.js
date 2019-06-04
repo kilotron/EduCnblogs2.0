@@ -21,8 +21,10 @@ import Vote from '../component/Vote';
 import VoteCommit from '../component/VoteCommit';
 import FoldText from "../component/FoldText";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import Echarts from 'native-echarts'
 import { ThemeContext } from '../styles/theme-context';
 import { Toast } from 'native-base';
+//import { nodeInternals } from 'stack-utils';
 const HTMLSpecialCharsDecode = require('../DataHandler/HTMLSpecialCharsDecode');
 const extractVoteContentData = require('../DataHandler/VoteContent');
 
@@ -95,6 +97,7 @@ export default class VoteDetail extends Component {
             hasVoted: undefined, // 是否已经投票          
             voteContent: [],/* 每一个投票的题目和选项、图片等信息。*/
             voteData: [],   // 传递给Vote组件的数据
+            voteContentId: [], //存放该投票内的所有问题的Id
         }
         this.selectedIds = [],
             this.info = {};
@@ -104,6 +107,35 @@ export default class VoteDetail extends Component {
     }
 
     _isMounted;
+    globalVoteContentId = [];
+    globalVoteStatic = []; //所有问题的统计量
+    _hasStatic = false; //是否统计过
+    globalOptionStatic = [];
+
+    /** 统计投票 */
+    testVoteStatic(proArray) { //参数是需要用到的contentId
+        if (proArray==null)
+            proArray = this.globalVoteContentId;
+        var length = proArray.length;
+        let voteStaticURL = Config.VoteStatic + this.state.voteId;
+        var num = 0; //初始值设为零
+        var num_l = 0;
+        var varArray2Store = []; //将要返回的数组
+        Service.Get(voteStaticURL).then((jsonData) => {
+            for (num = 0; num < length; num++) {
+                var varContentId = proArray[num]; //取得每个对应的contentId
+                var varArray = []; //准备一个空数组
+                var useArray = jsonData[varContentId]; //取得该contentId的数组
+                for (num_l = 0; num_l<useArray.length; num_l++){
+                    varArray.push(useArray[num_l].recordCount); //将每个选项的投票值存入数组
+                }
+                varArray2Store.push(varArray); //将每个问题的数组存入
+            }
+            this.globalVoteStatic = varArray2Store;
+            this.testFunction();
+            this._hasStatic = true;
+        });
+    }
 
     componentWillMount = () => {
         this._isMounted = true;
@@ -111,6 +143,8 @@ export default class VoteDetail extends Component {
         let voteContentURL = Config.VoteContent + this.state.voteId;
         let usersURL = Config.UsersInfo;
         var varUserId = 0;
+        var varVoteContentId = []; //voteContentId的存放
+
         Service.Get(usersURL).then((jsonData) => {
             varUserId = jsonData.BlogId; //先获取当前登录用户的信息
         }).then(() => {
@@ -140,26 +174,34 @@ export default class VoteDetail extends Component {
                     });
                 }
             })
-            .then(() => {
-                Service.Get(voteContentURL)
-                    .then((jsonData) => {
-                        if (jsonData !== 'rejected') {
-                            if (this._isMounted) {
-                                this.setState({ voteContent: jsonData });
-                                this.setState({ voteData: extractVoteContentData(jsonData) });
+                .then(() => {
+                    Service.Get(voteContentURL)
+                        .then((jsonData) => {
+                            if (jsonData !== 'rejected') {
+                                if (this._isMounted) {
+
+                                    var num_x = 0;
+                                    for (num_x = 0; num_x < jsonData.length; num_x++) { //提取该问题中所有的contentId
+                                        varVoteContentId.push(jsonData[num_x].voteContentId);
+                                    }
+                                    this.globalVoteContentId = varVoteContentId;
+                                    this.setState({ voteContent: jsonData });
+                                    this.setState({ voteData: extractVoteContentData(jsonData) });
+                                }
+
+                                this.testVoteStatic();
+                                // 传递votenContent到显示投票成员页面
+                                this.props.navigation.setParams({ voteContent: jsonData });
                             }
-                            // 传递votenContent到显示投票成员页面
-                            this.props.navigation.setParams({ voteContent: jsonData });
-                        }
-                    })
-                    .then(() => {
-                        this._getVoteState(); // 获取用户是否已经投票。
-                    })
-                    .catch((err) => {
-                        // 无网络连接
-                    })
-            })
-            .catch((err) => {/* 无网络连接*/ });
+                        })
+                        .then(() => {
+                            this._getVoteState(); // 获取用户是否已经投票。
+                        })
+                        .catch((err) => {
+                            // 无网络连接
+                        })
+                })
+                .catch((err) => {/* 无网络连接*/ });
         })
 
     }
@@ -230,26 +272,26 @@ export default class VoteDetail extends Component {
     _delete() {
         let voteDeleteURL = Config.VoteDelete + this.state.schoolClassId + '/' + this.state.voteId;
         Service.UserAction(voteDeleteURL, '', 'DELETE')
-        .then((response) => {
-            if (response.status !== 200) {
-                return null;
-            }
-            else {
-                return response.json();
-            }
-        })
-        .then((jsonData) => {
-            if (jsonData.isSuccess) {
-                ToastAndroid.show('删除成功！', ToastAndroid.SHORT);
-                this.props.navigation.state.params.callback();
-                this.props.navigation.goBack();
-            } else if (jsonData.isWarning) {
-                Alert.alert('提示', jsonData.message);
-            } else { //jsonData.isError
-                ToastAndroid.show('删除失败，请重试');
-            }
-        })
-        .catch((error)=>{});
+            .then((response) => {
+                if (response.status !== 200) {
+                    return null;
+                }
+                else {
+                    return response.json();
+                }
+            })
+            .then((jsonData) => {
+                if (jsonData.isSuccess) {
+                    ToastAndroid.show('删除成功！', ToastAndroid.SHORT);
+                    this.props.navigation.state.params.callback();
+                    this.props.navigation.goBack();
+                } else if (jsonData.isWarning) {
+                    Alert.alert('提示', jsonData.message);
+                } else { //jsonData.isError
+                    ToastAndroid.show('删除失败，请重试');
+                }
+            })
+            .catch((error) => { });
     }
 
     /**点击提交按钮调用此函数提交问卷。 */
@@ -265,29 +307,29 @@ export default class VoteDetail extends Component {
         }
         postBody = JSON.stringify(postBody);
         Service.UserAction(commitURL, postBody, 'POST')
-        .then((response) => {
-            if (response === 'rejected') {
-                return null; // 提示信息由UserAction输出
-            }
-            if (response.status !== 200) {
-                return null;
-            }
-            return response.json(); // 返回的是Promise对象
-        })
-        .then((jsonData) => {
-            if (jsonData.isSuccess) {
-                Alert.alert('提示', '投票成功');
-                this._getVoteState();   // 刷新界面
-                this.props.navigation.setParams({ voteCount: 1 });
-            } else if (jsonData.isWarning) {
-                Alert.alert('提示', jsonData.message);
-            } else { // if (jsonData.isError)
-                Alert.alert('错误', '投票失败');
-            }
-        })
-        .catch((error) => {
-            ToastAndroid.show(err_info.NO_INTERNET, ToastAndroid.SHORT);
-        });
+            .then((response) => {
+                if (response === 'rejected') {
+                    return null; // 提示信息由UserAction输出
+                }
+                if (response.status !== 200) {
+                    return null;
+                }
+                return response.json(); // 返回的是Promise对象
+            })
+            .then((jsonData) => {
+                if (jsonData.isSuccess) {
+                    Alert.alert('提示', '投票成功');
+                    this._getVoteState();   // 刷新界面
+                    this.props.navigation.setParams({ voteCount: 1 });
+                } else if (jsonData.isWarning) {
+                    Alert.alert('提示', jsonData.message);
+                } else { // if (jsonData.isError)
+                    Alert.alert('错误', '投票失败');
+                }
+            })
+            .catch((error) => {
+                ToastAndroid.show(err_info.NO_INTERNET, ToastAndroid.SHORT);
+            });
     }
 
     /**判断用户是否已经投票过了。是则设置this.state.hasVoted=true */
@@ -295,25 +337,25 @@ export default class VoteDetail extends Component {
         let user_url = Config.apiDomain + api.user.info;
         let data = extractVoteContentData(this.state.voteContent);
         Service.Get(user_url)
-        .then((jsonData) => {
-            var memberIdURL = Config.apiDomain + api.ClassGet.blogID2Mem +
-                jsonData.BlogId + '/' + this.state.schoolClassId;
-            return Service.Get(memberIdURL)
-        })
-        .then((jsonData) => {
-            this.memberId = jsonData.memberId;
-            let voteIsCommitedURL = Config.VoteIsCommited + this.memberId +
-                '/' + this.state.voteId;
-            return Service.Get(voteIsCommitedURL)
-        })
-        .then((_hasVoted) => {
-            if (this._isMounted) {
-                this.setState({
-                    hasVoted: _hasVoted,
-                })
-            }
-        })
-        .catch(error => { });
+            .then((jsonData) => {
+                var memberIdURL = Config.apiDomain + api.ClassGet.blogID2Mem +
+                    jsonData.BlogId + '/' + this.state.schoolClassId;
+                return Service.Get(memberIdURL)
+            })
+            .then((jsonData) => {
+                this.memberId = jsonData.memberId;
+                let voteIsCommitedURL = Config.VoteIsCommited + this.memberId +
+                    '/' + this.state.voteId;
+                return Service.Get(voteIsCommitedURL)
+            })
+            .then((_hasVoted) => {
+                if (this._isMounted) {
+                    this.setState({
+                        hasVoted: _hasVoted,
+                    })
+                }
+            })
+            .catch(error => { });
 
         return data;
     }
@@ -326,20 +368,81 @@ export default class VoteDetail extends Component {
         return (s1 + '  ' + s2);
     }
 
+    /** 测试方法 */
+    /**
+     * 参数为一个数组Array，里面的参数是每个问题的投票数目数组
+     */
+    testFunction() {
+        var proArray = this.globalVoteStatic;
+        if (proArray==null || proArray.length==0) return;
+        var length = proArray.length; //先求出length的长度，代表有几个问题
+        var num = 0;
+        var varOptions = [];
+        for (num = 0; num < length; num++){
+            var varArray = proArray[num]; //对应下标的数组
+            var varLength = varArray.length; //其长度
+            var num_l = 0;
+            var varData2Use = []; //放入y轴的数组
+            for (num_l = 0; num_l<varLength; num_l++){
+                varData2Use.push('op'+num_l);
+            }
+            const option = {
+                title: {
+                    text: '投票统计'
+                },
+                tooltip: {},
+                legend: {
+                    data: ['票数']
+                },
+                yAxis: {
+                    data: varData2Use
+                },
+                xAxis: {},
+                series: [{
+                    name: '数量',
+                    type: 'bar',
+                    data: varArray,
+                }]
+            };
+            varOptions.push(option);
+        }
+        this.globalOptionStatic = varOptions; //赋值
+    }
+
+    /** 返回图表 */
+    /**
+     * 
+     * @param {*} num 
+     * 返回一个问题的统计图视图
+     * 
+     * num是具体问题在该投票中的序号，下标从0开始
+     * 
+     */
+    testReturnEchart(num){
+        return (
+            <View>
+                <Echarts option={this.globalOptionStatic[num]} height={300} />
+            </View>
+        )
+    }
+
     render() {
         let voteDisabled = this.state.hasVoted || this.state.isFinished || this.state.isPublisher;
-        if (this.state.content == "") {
+        if (this.state.content == "" || this._hasStatic==false) {
             return null;
         }
         return (
             <View style={{ flex: 1, backgroundColor: 'white' }}>
                 <KeyboardAwareScrollView>
+
+                    {this.testReturnEchart(0)}
+
                     {/** header组件 */}
                     <View style={styles.header}>
-                        
+
                         <Text style={styles.headerText}>
                             {this.state.name}
-                        </Text> 
+                        </Text>
                     </View>
 
                     {/** detail组件 */}
@@ -372,24 +475,23 @@ export default class VoteDetail extends Component {
                                 headerComponent={this._renderVoteHeader.bind(this)}
                             />
                         ) : (
-                            <Vote
-                                data={this.state.voteData}
-                                recvSelectedIds={(ids, info) => {
-                                    this.selectedIds = ids;
-                                    this.info = info;
-                                }}
-                                headerComponent={this._renderVoteHeader.bind(this)}
-                                footerComponent={this._renderVoteFooter.bind(this)}
-                                disabled={voteDisabled}
-                            />
-                        )
+                                <Vote
+                                    data={this.state.voteData}
+                                    recvSelectedIds={(ids, info) => {
+                                        this.selectedIds = ids;
+                                        this.info = info;
+                                    }}
+                                    headerComponent={this._renderVoteHeader.bind(this)}
+                                    footerComponent={this._renderVoteFooter.bind(this)}
+                                    disabled={voteDisabled}
+                                />
+                            )
                     }
                 </KeyboardAwareScrollView>
             </View>
         )
     }
 }
-
 
 const buttonWidthRatio = 0.2;
 const buttonHeightRatio = 0.1;
@@ -441,7 +543,7 @@ const styles = StyleSheet.create({
     submitButton: {
         flex: 1,
         height: (buttonHeightRatio * screenWidth),
-        width: buttonWidthRatio*screenWidth,
+        width: buttonWidthRatio * screenWidth,
         justifyContent: 'center',
         alignItems: 'center',
         marginTop: 10,
@@ -490,19 +592,19 @@ const styles = StyleSheet.create({
 1.获取投票内容：
 请求方式：GET
 请求地址：https://api.cnblogs.com/api/edu/vote/contents/{voteId}
-Body参数名	类型	必需	描述	示例 e.g.
-voteId	number	是	投票Id	1
+Body参数名 类型  必需  描述  示例 e.g.
+voteId  number  是   投票Id    1
 
 返回
-Body参数名	描述	类型
-voteContentId	投票内容Id	number
-title	内容标题	string
-voteMode	模式（1.单选、2.多选、3.排名）	number
-picture	图片链接	string
-voteId	投票Id	number
-voteOptions	投票选项列表	array
-voteOptions.voteOptionId	投票选项Id	number
-voteOptions.option	投票选项	string
+Body参数名 描述  类型
+voteContentId   投票内容Id  number
+title   内容标题    string
+voteMode    模式（1.单选、2.多选、3.排名）  number
+picture 图片链接    string
+voteId  投票Id    number
+voteOptions 投票选项列表  array
+voteOptions.voteOptionId    投票选项Id  number
+voteOptions.option  投票选项    string
 
 2.参与投票；
 请求方式：POST
@@ -514,10 +616,10 @@ Body示例：
     "voteOptionIds": [ 3,5 ]
 }
 
-Body参数名	类型	必需	描述	示例 e.g.
-voteId	number	是	投票Id
-schoolClassId	number	是	操作人班级Id
-voteOptionIds	array	是	投票选项Id列表
+Body参数名 类型  必需  描述  示例 e.g.
+voteId  number  是   投票Id
+schoolClassId   number  是   操作人班级Id
+voteOptionIds   array   是   投票选项Id列表
 
 详细说明：
 返回值“isWarning”为true时，则对应“message”字段中的内容
@@ -535,9 +637,9 @@ voteOptionIds	array	是	投票选项Id列表
 
 请求地址：https://api.cnblogs.com/api/edu/member/{blogId}/{schoolClassId}
 
-Body参数名	类型	必需	描述	示例 e.g.
-blogId	string	是	博客Id	10000
-schoolClassId	string	是	班级Id	1
+Body参数名 类型  必需  描述  示例 e.g.
+blogId  string  是   博客Id    10000
+schoolClassId   string  是   班级Id    1
 返回示例：
 
 {
@@ -549,13 +651,13 @@ schoolClassId	string	是	班级Id	1
     "dateAdded": "2017-08-31T17:35:11.9467634"
 }
 
-Body参数名	描述	类型
-memberId	成员Id	number
-studentNo	学号	string
-realName	真实姓名	string
-schoolClassId	班级Id	number
-membership	身份（1.学生、2.老师、3.助教）	number
-dateAdded	创建时间	datetime
+Body参数名 描述  类型
+memberId    成员Id    number
+studentNo   学号  string
+realName    真实姓名    string
+schoolClassId   班级Id    number
+membership  身份（1.学生、2.老师、3.助教）  number
+dateAdded   创建时间    datetime
 
 4.获取当前登录用户信息
 
@@ -563,8 +665,8 @@ dateAdded	创建时间	datetime
 
 请求地址：https://api.cnblogs.com/api/users
 
-Header参数名	类型	必需	描述	示例 e.g.
-Authorization	string	是		Bearer your access_token
+Header参数名   类型  必需  描述  示例 e.g.
+Authorization   string  是       Bearer your access_token
 详细说明：
 
 获取当前登录用户信息
@@ -581,15 +683,15 @@ Authorization	string	是		Bearer your access_token
   "BlogApp": "sample string 8"
 }
 
-Body参数名	描述	类型
-UserId	用户id	string
-SpaceUserId	用户显示名称id	number
-BlogId	博客id	number
-DisplayName	显示名称	string
-Face	头像url	string
-Avatar	头像url	string
-Seniority	园龄	string
-BlogApp	博客名	string
+Body参数名 描述  类型
+UserId  用户id    string
+SpaceUserId 用户显示名称id    number
+BlogId  博客id    number
+DisplayName 显示名称    string
+Face    头像url   string
+Avatar  头像url   string
+Seniority   园龄  string
+BlogApp 博客名 string
 
 5.判断是否参与投票
 
@@ -597,9 +699,9 @@ BlogApp	博客名	string
 
 请求地址：https://api.cnblogs.com/api/edu/vote/iscommitted/{memberId}/{voteId}
 
-Body参数名	类型	必需	描述	示例 e.g.
-memberId	number	是	成员Id	1
-voteId	number	是	投票Id	1
+Body参数名 类型  必需  描述  示例 e.g.
+memberId    number  是   成员Id    1
+voteId  number  是   投票Id    1
 返回示例：
 
 false
@@ -610,9 +712,9 @@ false
 
 请求地址：https://api.cnblogs.com/api/edu/vote/committed/options/{memberId}/{voteId}
 
-Body参数名	类型	必需	描述	示例 e.g.
-memberId	number	是	成员Id	1
-voteId	number	是	投票Id	1
+Body参数名 类型  必需  描述  示例 e.g.
+memberId    number  是   成员Id    1
+voteId  number  是   投票Id    1
 返回示例：
 
 {
@@ -621,8 +723,8 @@ voteId	number	是	投票Id	1
     ]
 }
 
-Body参数名	描述	类型
-1	投票内容Id	array
+Body参数名 描述  类型
+1   投票内容Id  array
 
 7.删除投票
 
@@ -641,3 +743,5 @@ Body参数名	描述	类型
 }
 
 */
+
+

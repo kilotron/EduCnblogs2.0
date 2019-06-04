@@ -41,6 +41,7 @@ export default{
 	VoteAdd: 'https://api.cnblogs.com/api/edu/vote/publish',
 	VoteDelete : 'https://api.cnblogs.com/api/edu/vote/remove/',//{schoolClassId}/{voteId},
 	UsersInfo : 'https://api.cnblogs.com/api/users',
+	VoteStatic : 'https://api.cnblogs.com/api/edu/vote/stats/', //投票统计
 }
 
 export const authData = {

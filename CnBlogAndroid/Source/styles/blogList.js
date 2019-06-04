@@ -34,7 +34,7 @@ export const blogListStyles = StyleSheet.create({
     },
     blogAppAndTimeContainer:{
         flexDirection: 'row',
-        marginBottom: 2,
+        marginBottom: 4,
         justifyContent: 'space-around',
         alignItems: 'flex-start',
     },

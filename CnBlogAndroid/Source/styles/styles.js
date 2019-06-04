@@ -59,7 +59,7 @@ export const flatStylesWithAvatar = StyleSheet.create({
     separatorStyle:{
         width: screenWidth,
         height:screenHeight*0.005,
-        backgroundColor: '#F5F5F5',
+        backgroundColor: '#EEEEF0',
     },
     avatarstyle: {
         width: 0.15*screenWidth,

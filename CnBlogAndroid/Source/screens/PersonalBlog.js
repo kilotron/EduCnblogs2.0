@@ -22,7 +22,7 @@ import {
     Dimensions,
     FlatList,
 } from 'react-native';
-
+import {withNavigationFocus} from 'react-navigation';   // 
 import {navigationHeaderHeight, homeTabHeaderHeight} from '../styles/theme-context';
 
 const screenWidth= MyAdapter.screenWidth;
@@ -30,7 +30,7 @@ const screenHeight= MyAdapter.screenHeight;
 const relativeTime = require('../DataHandler/DateHandler');
 
 // 此页面传入的参数为blogApp(即个人博客名)
-export default class PersonalBlog extends Component{
+class PersonalBlog extends Component{
     constructor(props){
         super(props);
         this.state = {
@@ -245,6 +245,11 @@ export default class PersonalBlog extends Component{
         )
     }
 }
+
+/* 用withNavigationFocus给PersonalBlog组件传递props.isFocused，
+ * 在切换到此页面后PersonalBlog会重新渲染，用来切换主题。
+ */
+export default withNavigationFocus(PersonalBlog);
 
 const styles = StyleSheet.create({
     container: {

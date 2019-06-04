@@ -9,6 +9,8 @@ import CookieManager from 'react-native-cookies'
 import * as storage from '../Storage/storage.js'
 import * as umengPush from '../umeng/umengPush'
 import * as Push from '../DataHandler/Push/PushHandler'; 
+import BlogURL from '../component/BlogURL';
+import TouchableTextWithIcon from '../component/TouchableTextWithIcon';
 import {
     StyleSheet,
     Text,
@@ -23,7 +25,8 @@ import {
 import {
     StackNavigator,
     TabNavigator,
-    NavigationActions
+    NavigationActions,
+    withNavigationFocus,
 } from 'react-navigation';
 import { homeTabHeaderHeight } from '../styles/theme-context';
 
@@ -34,7 +37,7 @@ const abstractFontSize= MyAdapter.abstractFontSize;
 const informationFontSize= MyAdapter.informationFontSize;
 const btnFontSize= MyAdapter.btnFontSize;
 
-export default class UserInformation extends Component{
+class UserInformation extends Component{
     constructor(props){
         super(props);
         this.state={
@@ -138,11 +141,12 @@ export default class UserInformation extends Component{
     render() {
     let blogUrl = this.state.BlogApp == null || this.state.BlogApp == '' ? '您尚未开通博客主页' : 'https://www.cnblogs.com/' + this.state.BlogApp;
     return (
-        <ScrollView>
+        <ScrollView contentContainerStyle={{flex: 1, backgroundColor: global.theme.backgroundColor,}}>
         <View
             style= {{
                 flexDirection: 'column',
                 flex: 1,
+                backgroundColor: global.theme.BackgroundColor,
             }}
         >
             <View style= {{
@@ -162,7 +166,7 @@ export default class UserInformation extends Component{
                 justifyContent:'flex-start',
                 alignItems: 'center',
                 marginBottom: 0.005*screenHeight,
-                backgroundColor: 'white',
+                backgroundColor: global.theme.backgroundColor,
                 height: 0.15*screenHeight,
                 paddingLeft: 0.05*screenWidth,
             }}
@@ -174,130 +178,95 @@ export default class UserInformation extends Component{
                     }}
                     source={{uri: this.state.faceurl?this.state.faceurl:'../images/defaultface.png'}}
                 />
-                <View style = {{justifyContent: 'center',paddingLeft: 0.05*screenWidth,}}>
-                <Text style = {{fontSize: 18, fontWeight: 'bold', color:'rgb(51,51,51)'}}>用户昵称:</Text>
-                <Text style = {{fontSize: 15}}>{this.state.DisplayName}</Text>
+                <View style = {{justifyContent: 'center',paddingLeft: 0.07*screenWidth,}}>
+                    <Text style = {{fontSize: 18, fontWeight: 'bold',color: global.theme.textColor}}>{this.state.DisplayName}</Text>
+                    <View style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        backgroundColor: global.theme.seniorityBackgroundColor, 
+                        borderRadius: 10, 
+                        padding: 5,
+                        paddingHorizontal: 10,
+                        marginTop: 5,}}
+                    >
+                        <View style={{
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            backgroundColor: global.theme.seniorityForegroundColor, 
+                            borderRadius: 8, 
+                            marginRight: 5,
+                            height: 16, 
+                            width: 16,
+                        }}
+                        >
+                        <Image source={require('../images/heart_solid.png')}
+                            resizeMode='contain'
+                            style={{height: 11, width: 11}}
+                            tintColor='#FFF'
+                        />
+                        </View>
+                        <Text style={{
+                            fontSize: 12,
+                            fontWeight: 'bold',
+                            color: global.theme.seniorityForegroundColor, 
+                        }}>{'园龄：' + this.state.Seniority}</Text>
+                    </View>
                 </View>
             </View>
-            <View style = {{
-                justifyContent:'center',
-                alignItems: 'flex-start',
-                height: 0.1*screenHeight,
-                marginBottom: 0.005*screenHeight,
-                backgroundColor: 'white',
-                paddingLeft: 0.05*screenWidth,
-            }}>
-                <Text style = {{fontSize: 18, fontWeight: 'bold', color:'rgb(51,51,51)'}}>博客地址:</Text>
-                <Text style = {{fontSize: 15}}>{blogUrl}</Text>
-            </View>
-            <View style = {{
-                justifyContent:'center',
-                alignItems: 'flex-start',
-                height: 0.1*screenHeight,
-                marginBottom: 0.005*screenHeight,
-                backgroundColor: 'white',
-                paddingLeft: 0.05*screenWidth,
-            }}>
-                <Text style = {{fontSize: 18, fontWeight: 'bold', color:'rgb(51,51,51)'}}>园龄:</Text>
-                <Text style = {{fontSize: 15}}>{this.state.Seniority}</Text>
-            </View>
-            <TouchableHighlight
-                underlayColor="white"
-                activeOpacity={0.5}
-                onPress={()=>{this.props.navigation.navigate('ScheduleReminding');}}//关联函数
-                style = {{
-                    justifyContent:'center',
-                    alignItems: 'flex-start',
-                    height: 0.07*screenHeight,
-                    marginBottom: 0.005*screenHeight,
-                    backgroundColor: 'white',
-                    paddingLeft: 0.05*screenWidth,
-            }}>
-                <Text style = {{fontSize: 18, fontWeight: 'bold', color:'rgb(51,51,51)'}}>日程提醒</Text>
-            </TouchableHighlight>
-            <TouchableHighlight
-                underlayColor="white"
-                activeOpacity={0.5}
-                onPress={()=>{this.props.navigation.navigate('BookmarksList');}}//关联函数
-                style = {{
-                    justifyContent:'center',
-                    alignItems: 'flex-start',
-                    height: 0.07*screenHeight,
-                    marginBottom: 0.005*screenHeight,
-                    backgroundColor: 'white',
-                    paddingLeft: 0.05*screenWidth,
-            }}>
-                <Text style = {{fontSize: 18, fontWeight: 'bold', color:'rgb(51,51,51)'}}>收藏列表</Text>
-            </TouchableHighlight>
-            <TouchableHighlight
-                underlayColor="white"
-                activeOpacity={0.5}
-                onPress={()=>{this.props.navigation.navigate('HistoryList');}}//关联函数
-                style = {{
-                    justifyContent:'center',
-                    alignItems: 'flex-start',
-                    height: 0.07*screenHeight,
-                    marginBottom: 0.005*screenHeight,
-                    backgroundColor: 'white',
-                    paddingLeft: 0.05*screenWidth,
-            }}>
-                <Text style = {{fontSize: 18, fontWeight: 'bold', color:'rgb(51,51,51)'}}>浏览记录</Text>
-            </TouchableHighlight>
-
-            {
-                global.settings.showSettings ? (
-                    <TouchableHighlight
-                        underlayColor="white"
-                        activeOpacity={0.5}
-                        onPress={()=>{this.props.navigation.navigate('Settings');}}//关联函数
-                        style = {{
-                            justifyContent:'center',
-                            alignItems: 'flex-start',
-                            height: 0.07*screenHeight,
-                            marginBottom: 0.02*screenHeight,
-                            backgroundColor: 'white',
-                            paddingLeft: 0.05*screenWidth,
-                    }}>
-                        <Text style = {{fontSize: 18, fontWeight: 'bold', color:'rgb(51,51,51)'}}>设置</Text>
-                    </TouchableHighlight>
-                ) : (null)
-            }
-
-            <TouchableHighlight
-                underlayColor="white"
-                activeOpacity={0.5}
-                onPress={()=>{
-                    this.props.navigation.navigate('AppInformation', {
+            <BlogURL blogURL={blogUrl}/>
+            <TouchableTextWithIcon
+                text='日程提醒'
+                imageSource={require('../images/calendar_transparent.png')}
+                imageBackgroundColor={global.theme.calendarIconBackgroundColor}
+                imageTintColor={global.theme.calendarIconTintColor}
+                onPress={() => {this.props.navigation.navigate('ScheduleReminding')}}
+            />
+            <TouchableTextWithIcon
+                text='收藏列表'
+                imageSource={require('../images/star.png')}
+                imageBackgroundColor={global.theme.bookmarkIconBackgroundColor}
+                imageTintColor={global.theme.bookmarkIconTintColor}
+                onPress={() => {this.props.navigation.navigate('BookmarksList')}}
+            />
+            <TouchableTextWithIcon
+                text='浏览记录'
+                imageSource={require('../images/clock.png')}
+                imageBackgroundColor={global.theme.historyIconBackgroundColor}
+                imageTintColor={global.theme.historyIconTintColor}
+                onPress={() => {this.props.navigation.navigate('HistoryList')}}
+            />
+            <TouchableTextWithIcon
+                text='设置'
+                imageSource={require('../images/setting_transparent.png')}
+                imageBackgroundColor={global.theme.settingIconBackgroundColor}
+                imageTintColor={global.theme.settingIconTintColor}
+                onPress={() => {this.props.navigation.navigate('Settings')}}
+            />
+            <TouchableTextWithIcon
+                text='关于App'
+                imageSource={require('../images/info.png')}
+                imageBackgroundColor={global.theme.aboutIconBackgroundColor}
+                imageTintColor={global.theme.aboutIconTintColor}
+                onPress={() => {this.props.navigation.navigate('AppInformation', {
                         callback: this.rerender,
                     }
-                )}}//关联函数
-                style = {{
-                    justifyContent:'center',
-                    alignItems: 'flex-start',
-                    height: 0.07*screenHeight,
-                    marginBottom: 0.01*screenHeight,
-                    backgroundColor: 'white',
-                    paddingLeft: 0.05*screenWidth,
-            }}>
-                <Text style = {{fontSize: 18, fontWeight: 'bold', color:'rgb(51,51,51)'}}>关于App</Text>
-            </TouchableHighlight>
-
-            <TouchableOpacity style = {{
-                justifyContent:'center',
-                alignItems: 'flex-start',
-                height: 0.07*screenHeight,
-                backgroundColor: 'rgb(204,255,255)',
-                paddingLeft: 0.05*screenWidth,
-            }}
-                onPress = {this._logout.bind(this)}
-            >
-                <Text style = {{fontSize: 18, fontWeight: 'bold', color:'rgb(51,51,51)'}}>退出登录</Text>
-            </TouchableOpacity>
+                )}}
+            />
+            <TouchableTextWithIcon
+                text='退出登录'
+                imageSource={require('../images/exit.png')}
+                imageBackgroundColor={global.theme.logoutIconBackgroundColor}
+                imageTintColor={global.theme.logoutIconTintColor}
+                onPress={this._logout.bind(this)}
+                textColor='#DD4242'
+            />
         </View>
         </ScrollView>
     );
   }
 }
+
+export default withNavigationFocus(UserInformation);
 
 const styles = StyleSheet.create({
     container: {

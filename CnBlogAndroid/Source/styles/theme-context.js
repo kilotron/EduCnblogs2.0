@@ -5,6 +5,7 @@ export const themes = {
         headerTintColor: '#0077FF',
         backgroundColor: '#FDFDFD',
         textColor: '#444',
+        grayTextColor: 'gray',
         buttonTextColor: '#0077FF',
         buttonColor: '#FBFBFB',
         buttonBorderColor: '#0077FF',
@@ -26,6 +27,38 @@ export const themes = {
         // 设置页面的接收推送图标
         recvPushIconBackgroundColor: '#4BD864', // 绿色
         recvPushIconTintColor: 'white',
+
+        // 个人信息页面的园龄
+        seniorityBackgroundColor: '#E4F2FF',
+        seniorityForegroundColor: '#0E97FF',
+
+        // 个人信息页面的博客地址图标
+        urlIconBackgroundColor: '#0079FF',
+        urlIconTintColor: 'white',
+
+        // 个人信息页面的日程提醒图标
+        calendarIconBackgroundColor: '#0079FF',
+        calendarIconTintColor: 'white',
+        
+        // 个人信息页面的收藏列表图标
+        bookmarkIconBackgroundColor: '#4BD864',
+        bookmarkIconTintColor: 'white',
+
+        // 个人信息页面的浏览记录图标
+        historyIconBackgroundColor: '#4BD864',
+        historyIconTintColor: 'white',
+
+        // 个人信息页面的设置图标
+        settingIconBackgroundColor: '#8E8E8E',
+        settingIconTintColor: 'white',
+
+        // 个人信息页面的关于图标
+        aboutIconBackgroundColor: '#34AADB',
+        aboutIconTintColor: 'white',
+
+        // 个人信息页面的退出登录图标
+        logoutIconBackgroundColor: '#FD3A2F',
+        logoutIconTintColor: 'white',
     },
 
     // 下面的配色未完成
@@ -34,6 +67,7 @@ export const themes = {
         headerTintColor: '#FFCC00',
         backgroundColor: '#262626',
         textColor: '#EEE',
+        grayTextColor: '#DDD',
         buttonTextColor: '#FFCC00',
         buttonColor: '#3A3A3A',
         buttonBorderColor: '#FFCC00',
@@ -51,6 +85,23 @@ export const themes = {
         darkModeIconTintColor: '#DADADA',
         recvPushIconBackgroundColor: '#0B8A8C',
         recvPushIconTintColor: '#DDD',
+
+        seniorityBackgroundColor: '#514E2D',
+        seniorityForegroundColor: '#D8AD00',
+        urlIconBackgroundColor: '#CC9900',
+        urlIconTintColor: '#DDD',
+        calendarIconBackgroundColor: '#CC9900',
+        calendarIconTintColor: '#DDD',
+        bookmarkIconBackgroundColor: '#0B8A8C',
+        bookmarkIconTintColor: '#DDD',
+        historyIconBackgroundColor: '#0B8A8C',
+        historyIconTintColor: '#DDD',
+        settingIconBackgroundColor: '#8E8E8E',
+        settingIconTintColor: '#DDD',
+        aboutIconBackgroundColor: '#34AADB',
+        aboutIconTintColor: '#EEE',
+        logoutIconBackgroundColor: '#FD3A2F',
+        logoutIconTintColor: '#DDD',
     },
 };
 

@@ -20,6 +20,9 @@ import {
     Alert
 } from 'react-native';
 
+import Swipeout from 'react-native-swipeout';
+
+
 const screenWidth= MyAdapter.screenWidth;
 const screenHeight= MyAdapter.screenHeight;
 const titleFontSize= MyAdapter.titleFontSize;
@@ -27,6 +30,8 @@ const abstractFontSize= MyAdapter.abstractFontSize;
 const informationFontSize= MyAdapter.informationFontSize;
 const btnFontSize= MyAdapter.btnFontSize;
 let dialogWidth = screenWidth-80;
+const minMoveDistance = (15<0.1*screenWidth)?15:0.1*screenWidth;
+
 GetBlogApp = (url)=>{
     let ret = '';
     for(var i = 23; i < url.length; i++)
@@ -45,6 +50,8 @@ export default class Submitted extends Component {
             modalVisible:false,
             showValue:null,
             answerId:-1,
+            rowID: null,
+            sectionID: null,
         }
     }
     _isMounted;
@@ -72,12 +79,42 @@ export default class Submitted extends Component {
     onClose() {
         this.setState({modalVisible: false});
     }
+
+    _onPressLeft(){
+        Alert.alert("单击了左侧按钮");
+    }
+
+    _onPressRight(){
+        Alert.alert("单击了右侧按钮");
+    }
+
     _renderItem = (item) => {
         let item1 = item;
         let {answerId, key, url, title, answerer, realName, blogUrl, dateAdded} = item1.item;
         let blogApp = GetBlogApp(blogUrl);
+
+        const BtnsLeft = [{ text: '清空', type: 'delete',  onPress: ()=> this._onPressLeft()},];
+        const BtnsRight = [{ text: '删除', type: 'delete', onPress: ()=>this._onPressRight()},];
+        let shouldClose = !(this.state.sectionID === 'submittedlist' && this.state.rowID === answerId);
+
         if(this.props.navigation.state.params.permission == 1){
             return (
+                <Swipeout
+                    close={shouldClose}
+                    right={BtnsRight}
+                    left={BtnsLeft}
+                    sensitivity={minMoveDistance}
+                    rowID={answerId}
+                    sectionID='submittedlist'
+                    autoClose={true}
+                    backgroundColor='white'
+                    onOpen={(sectionId, rowId, direction: string) => {
+                        this.setState({
+                            rowID: rowId,
+                            sectionID: sectionId
+                        });
+                    }}
+                  >
                 <View>
                     <TouchableOpacity
                         style = {styles.listcontainer}
@@ -124,10 +161,27 @@ export default class Submitted extends Component {
                         </View>
                     </TouchableOpacity>
                 </View>
+                </Swipeout>
             )
         }
         else{
             return (
+                <Swipeout
+                    close={shouldClose}
+                    right={BtnsRight}
+                    left={BtnsLeft}
+                    sensitivity={minMoveDistance}
+                    rowID={answerId}
+                    sectionID='submittedlist'
+                    autoClose={true}
+                    backgroundColor='white'
+                    onOpen={(sectionId, rowId, direction: string) => {
+                        this.setState({
+                            rowID: rowId,
+                            sectionID: sectionId
+                        });
+                    }}
+                  >
                 <View>
                     <TouchableOpacity
                         style = {styles.listcontainer}
@@ -168,6 +222,7 @@ export default class Submitted extends Component {
                         </View>
                     </TouchableOpacity>
                 </View>
+                </Swipeout>
             )
         }
     }
@@ -261,7 +316,7 @@ export default class Submitted extends Component {
             </View>
         )
     }
-    
+
 }
 function _giveMark(answerId, schoolClassId, score){
     let url = 'https://api.cnblogs.com/api/edu/answer/marking/' + answerId;

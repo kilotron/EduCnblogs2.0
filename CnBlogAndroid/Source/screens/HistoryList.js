@@ -22,6 +22,8 @@ import {
     Alert,
 } from 'react-native';
 
+import {getHeaderStyle} from '../styles/theme-context';
+
 import Swipeout from 'react-native-swipeout';
 
 const HTMLSpecialCharsDecode = require('../DataHandler/HTMLSpecialCharsDecode');
@@ -47,10 +49,69 @@ export default class HistoryList extends Component {
             currentPageIndex: 1,
             rowID: null,
             sectionID: null,
+            multSelection: false,
+            selectedItems: [],
         }
         this._isMounted=true;
     }
+    /*
+    static navigationOptions = ({ navigation }) => ({
+        headerStyle: getHeaderStyle(),
+        headerTintColor: global.theme.headerTintColor,
+        headerRight: (
+            this.state.multSelection
+            ? (
+                <TouchableOpacity style={{marginRight:18}} onPress={()=>{
+                    this._delSelected();
+                }}>
+                    <Text style={{color: global.theme.headerTintColor, fontSize: 18}}>删除</Text>
+                </TouchableOpacity>)
+            : (<View></View>)),
+    })
+    */
     _isMounted;
+
+    _delSelected(){
+        if(!this._isMounted){
+            return;
+        }
+        Alert.alert(
+            '删除已选中历史记录',
+            '确定要删除吗？',
+            [
+                {text: '取消'},
+                {text: '确认删除', onPress: ()=>{
+                    global.storage.load({key: StorageKey.BLOG_LIST})
+                    .then((ret)=>{
+                        result = [];
+                        blogCount = 0;
+                        ret.map((item,index)=>{
+                            if(this.state.selectedItems.indexOf(item.id)<0){
+                                result.push(item);
+                                blogCount++;
+                            }
+                        })
+                        global.storage.save({key: StorageKey.BLOG_LIST, data: result});
+                        this.setState({
+                            theblogs: result,
+                            theblogCount: blogCount,
+                            loadStatus:(blogCount>0)?'all loaded':'none',
+
+                            selectedItems:[],
+                            multSelection:false,
+                        });
+                    })
+                    .catch((err)=>{
+                        this.setState({
+                            selectedItems:[],
+                            multSelection:false,
+                        });
+                        ToastAndroid.show(err.name,ToastAndroid.SHORT);
+                    })
+                }},
+            ]
+        );
+    }
 
     // componentWillUpdate(){
     //     this._isMounted=true;
@@ -113,6 +174,20 @@ export default class HistoryList extends Component {
         );
     }
 
+    _onLongPressItem(Id){
+        if(this.state.multSelection){
+            // 代表已进入多选状态
+            this._delSelected();
+        }
+        else{
+            // 现在进入多选状态
+            this.setState({
+                selectedItems: [Id],
+                multSelection: true,
+            });
+        }
+    }
+
     /* 渲染一个历史记录数据 */
     _renderItem = (item) => {
         const item1 = item;
@@ -123,6 +198,11 @@ export default class HistoryList extends Component {
         const CommentCount = item1.item.commentCount;
         const SummaryContent = item1.item.summaryContent;
         const DateAdded = item1.item.dateAdded;
+        let ItemBgColor = '#FFFFFF';
+        let ItemIndex = this.state.selectedItems.indexOf(Id);
+        if (ItemIndex > -1){
+            ItemBgColor = '#EEEEF0';
+        }
 
         const BtnsLeft = [{ text: '清空', type: 'delete',  onPress: ()=> this._onPressDelAll()},];
         const BtnsRight = [{ text: '删除', type: 'delete', onPress: ()=>this._onPressDelHistory(Id)},];
@@ -143,14 +223,27 @@ export default class HistoryList extends Component {
                         sectionID: sectionId
                     });
                 }}
+                disabled={this.state.multSelection}
               >
-            <View style={flatStylesWithAvatar.cell}
+            <View style={flatStylesWithAvatar.cell, {backgroundColor:ItemBgColor}}
             >
                 <TouchableOpacity
                     style = {flatStylesWithAvatar.listcontainer}
-                    onLongPress = {()=> {this._onPressDelHistory(Id)}}
-                    onPress = {Url!=='' ? ()=>this.props.navigation.navigate('BlogDetail',
-                    {Id:Id, blogApp: BlogApp, CommentCount: CommentCount, Url: Url, Title: Title, Description:SummaryContent}) : ()=>{}}
+                    onLongPress = {()=> {this._onLongPressItem(Id)}}
+                    onPress = {this.state.multSelection?(
+                            ItemIndex>-1?()=>{
+                                selectedItems = this.state.selectedItems;
+                                selectedItems.splice(ItemIndex, 1);
+                                this.setState({selectedItems:selectedItems});
+                            }:()=>{
+                                selectedItems = this.state.selectedItems;
+                                selectedItems.push(Id);
+                                this.setState({selectedItems:selectedItems});
+                            }
+                    ):
+                        (Url!=='' ? ()=>this.props.navigation.navigate('BlogDetail',
+                    {Id:Id, blogApp: BlogApp, CommentCount: CommentCount, Url: Url, Title: Title, Description:SummaryContent}) : ()=>{})
+                }
                 >
                     <View style = {nameImageStyles.nameContainer}>
                         <Text style = {nameImageStyles.nameText}>
@@ -197,11 +290,11 @@ export default class HistoryList extends Component {
             commentCount: this.state.theblogs[i].commentCount,
             summaryContent: this.state.theblogs[i].summaryContent,
             dateAdded: this.state.theblogs[i].addTime,
+
         })
         }
         return(
             <View style={{width: screenWidth, }}>
-
                 <FlatList
                     renderItem={this._renderItem}
                     data= {data}

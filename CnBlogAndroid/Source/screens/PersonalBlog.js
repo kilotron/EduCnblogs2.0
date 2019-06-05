@@ -190,19 +190,20 @@ class PersonalBlog extends Component{
                     {Id:Id, blogApp: global.user_information.BlogApp, CommentCount: CommentCount, Url: Url, Title: Title, Description: Description,}) : ()=>{}}
                 >
                     <Text
+                        numberOfLines={1}
                         style={[blogListStyles.blogTitleText, {color: global.theme.textColor}]}
                         accessibilityLabel = {Url}>
                         {Title}
                     </Text>
-                    <Text  numberOfLines={2} style = {[blogListStyles.blogSummaryText, {color: global.theme.textColor}]}>
+                    <Text  numberOfLines={3} style = {[blogListStyles.blogSummaryText, {color: global.theme.textColor}]}>
                         {Description}
                     </Text>
                     <View style = {blogListStyles.blogAppAndTimeContainer}>
-                        <Text style = {{fontSize: 10, textAlign: 'left', color: global.theme.textColor, flex: 1}}>
+                        <Text style = {{fontSize: 10, textAlign: 'left', color: global.theme.grayTextColor, flex: 1}}>
                             {ViewCount+' 阅读'+'  '+CommentCount+' 评论'}
                         </Text>
-                        <Text style = {{fontSize: 10, textAlign: 'right', color: global.theme.textColor, flex: 1}}>
-                            {'发布于: '+relativeTime(PostDate)}
+                        <Text style = {{fontSize: 10, textAlign: 'right', color: global.theme.grayTextColor, flex: 1}}>
+                            {relativeTime(PostDate)}
                         </Text>
                     </View>
                 </TouchableOpacity>

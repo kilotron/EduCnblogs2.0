@@ -143,9 +143,9 @@ export default class VoteList extends Component {
 
     _renderItem = ({ item }) => {
         return (
-            <View style={flatStyles.cell}>
+            <View style={[flatStyles.cellWithBorder, {backgroundColor: global.theme.backgroundColor}]}>
                 <TouchableOpacity
-                    style={flatStyles.listContainer}
+                    style={[flatStyles.listContainer, {backgroundColor: global.theme.backgroundColor}]}
                     //onLongPress = {()=> {this.deleteVote(item.voteId)}}
                     onPress={() => {
                         this.props.navigation.navigate('VoteDetail', //获取详细信息
@@ -157,23 +157,23 @@ export default class VoteList extends Component {
                             });
                     }}
                 >
-                    <Text style={styles.postTitle}
-                        accessibilityLabel={item.url}>
+                    <Text style={[styles.postTitle, {color: global.theme.textColor}]}
+                        accessibilityLabel={item.url}
+                        numberOfLines={1}
+                    >
                         {item.name}
                     </Text>
 
-                    <Text numberOfLines={3} style={styles.postDescription}>
+                    <Text numberOfLines={3} style={[styles.postDescription, {color: global.theme.textColor}]}>
                         {HTMLSpecialCharsDecode(item.description)}
                     </Text>
 
-                    <View style={styles.postMetadataView}>
-                        <Text style={styles.viewCountAndCommentCount}>
-                            {item.voteCount + '投票人数' + '  '
-                                //+ item.commentCount + ' 评论'
-                            }
+                    <View style={[styles.postMetadataView, {backgroundColor: global.theme.backgroundColor}]}>
+                        <Text style={[styles.viewCountAndCommentCount, {color: global.theme.grayTextColor}]}>
+                            {item.voteCount + ' 投票人数'}
                         </Text>
-                        <Text style={styles.postDate}>
-                            {'发布于: ' + relativeTime(item.dateAdded) }
+                        <Text style={[styles.postDate, {color: global.theme.grayTextColor}]}>
+                            {relativeTime(item.dateAdded) }
                         </Text>
                     </View>
                 </TouchableOpacity>
@@ -200,7 +200,7 @@ export default class VoteList extends Component {
         if (this.state.loadStatus === 'all loaded') {
             return (
                 <View style={styles.allLoadedView}>
-                    <Text style={styles.allLoadedText}>
+                    <Text style={[styles.allLoadedText,{color: global.theme.promptTextColor}]}>
                         再往下拉也没有了呢 ~
                 </Text>
                 </View>
@@ -209,7 +209,7 @@ export default class VoteList extends Component {
             return (
                 <View style={styles.footer}>
                     <ActivityIndicator />
-                    <Text>正在加载...</Text>
+                    <Text style={{color: global.theme.promptTextColor}}>正在加载...</Text>
                 </View>
             );
         } //else 'not loading'
@@ -243,7 +243,7 @@ export default class VoteList extends Component {
 
     render() {
         return (
-            <View style={styles.container}>
+            <View style={[styles.container, {backgroundColor: global.theme.backgroundColor}]}>
 
                 <View>
                     {/* 需要使用View，不然FlatList无法显示 */}

@@ -25,6 +25,7 @@ import {
     Alert,
     Button,
 } from 'react-native';
+import { getHeaderStyle } from '../styles/theme-context';
 import { Calendar, CalendarList, Agenda } from 'react-native-calendars';
 import { RichTextEditor, RichTextToolbar } from 'react-native-zss-rich-text-editor';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -37,15 +38,31 @@ const abstractFontSize = MyAdapter.abstractFontSize;
 const informationFontSize = MyAdapter.informationFontSize;
 const btnFontSize = 16;
 const marginHorizontalNum = 16;
-const constBorderColor = 'gray';
+
 const constBorderDistance = screenHeight / 128;
 const constBorderMarginWidth = screenWidth / 32;
 const constBorderWidth = 0.5;
+const constBorderColor = global.theme.seperatorColor; //边框的颜色
+const constTextColor = global.theme.textColor; //字体颜色
+const constBackGroundColor = global.theme.backgroundColor; //背景颜色
+const constButtonBorderColor = global.theme.buttonBorderColor;
+const constButtonBGColor = global.theme.buttonColor;
+const constButtonTextColor = global.theme.buttonTextColor;
+
 
 const constQuestionInitial = 1; //每个投票初始一个问题
 const constOptionInitial = 2; //每个问题设置两个初始选项
 
 export default class VoteAdd extends Component {
+
+
+    static navigationOptions = ({ navigation }) => ({
+        /* 使用global.theme的地方需要单独在页面写static navigationOptions,
+            以便切换主题时及时更新。*/
+        headerStyle: getHeaderStyle(),
+        headerTintColor: global.theme.headerTintColor,
+    })
+
     constructor(props) {
         super(props);
         this.state = {
@@ -67,7 +84,7 @@ export default class VoteAdd extends Component {
         }
     }
 
-    hasVoted = false;
+    hasVoted = false; //判断当前页面是否点击发布按钮，避免多次点击之后投票重复发送
 
     //判断函数
     judgeAddEmpty(test) {
@@ -119,7 +136,7 @@ export default class VoteAdd extends Component {
         if (!this.judgeAddOk()) return;
 
         //一个页面智能点击一次发布（发布成功后修改值）
-        if(this.hasVoted) return ;
+        if (this.hasVoted) return;
 
         let postBody = {
             schoolClassId: this.state.schoolClassId,
@@ -164,16 +181,17 @@ export default class VoteAdd extends Component {
     /** 投票名称*/
     getTitle() {
         return (
-            <View style={styles.titleAndContent}>
+            <View style={[styles.titleAndContent, { backgroundColor: global.theme.backgroundColor }]}>
                 <View>
-                    <Text style={styles.text}>
+                    <Text style={[styles.text, { color: global.theme.textColor }]}>
                         投票名称：
                     </Text>
                 </View>
 
-                <View style={styles.title}>
-                    <TextInput style={styles.bulletinDetail} multiline={true}
+                <View style={[styles.title/*,{borderColor: global.theme.seperatorColor}*/]}>
+                    <TextInput style={[styles.bulletinDetail, { color: global.theme.textColor }]} multiline={true}
                         placeholder={'请在此输入投票名称'}
+                        placeholderTextColor={global.theme.textColor}
                         underlineColorAndroid="transparent"//设置下划线背景色透明 达到去掉下划线的效果
                         onChangeText={(text) =>
                             this.setState({ name: text })
@@ -189,16 +207,17 @@ export default class VoteAdd extends Component {
     /** 投票说明 */
     getContent() {
         return (
-            <View style={styles.titleAndContent}>
+            <View style={[styles.titleAndContent, { backgroundColor: global.theme.backgroundColor }]}>
                 <View>
-                    <Text style={styles.text}>
+                    <Text style={[styles.text, { color: global.theme.textColor }]}>
                         投票说明：
                     </Text>
                 </View>
 
                 <View style={styles.content}>
-                    <TextInput style={styles.bulletinDetail} multiline={true}
+                    <TextInput style={[styles.bulletinDetail, {color:global.theme.textColor}]} multiline={true}
                         placeholder={'请在此输入投票说明'}
+                        placeholderTextColor={global.theme.textColor}
                         underlineColorAndroid="transparent"//设置下划线背景色透明 达到去掉下划线的效果
                         onChangeText={(text) =>
                             this.setState({ content: text })
@@ -238,22 +257,24 @@ export default class VoteAdd extends Component {
 
     /** 投票隐私 */
     getPrivacy() {
+        //alert(global.theme.backgroundColor);
         return (
-            <View style={styles.titleAndContent}>
+            <View style={[styles.titleAndContent, { backgroundColor: global.theme.backgroundColor }]}>
                 <View>
-                    <Text style={styles.text}>
+                    <Text style={[styles.text, { color: global.theme.textColor }]}>
                         投票隐私：
                     </Text>
                 </View>
-                <View style={styles.buttonContainer}>
+                <View style={[styles.buttonContainer, { backgroundColor: global.theme.backgroundColor }]}>
                     <RadioModal
+                        txtColor={global.theme.textColor}
                         selectedValue={this.state.privacy}
                         onValueChange={(id, item) => this.setState({ privacy: id })}
                         style={{
                             flexDirection: 'row',
                             alignItems: 'center',
                             flex: 1,
-                            backgroundColor: '#ffffff'
+                            backgroundColor: global.theme.backgroundColor
                         }}
                     >
                         <Text value={1}>公开</Text>
@@ -311,7 +332,7 @@ export default class VoteAdd extends Component {
         return (
             <TouchableOpacity style={{
                 justifyContent: 'center',
-                backgroundColor: 'white',
+                backgroundColor: global.theme.backgroundColor,
                 alignItems: 'flex-start',
                 alignSelf: 'flex-start',
                 marginRight: screenWidth / 5,
@@ -320,7 +341,7 @@ export default class VoteAdd extends Component {
             }}
                 onPress={() => { this.addQuestion() }}
             >
-                <Text style={styles.textAddOption}
+                <Text style={[styles.textAddOption, { color: global.theme.buttonTextColor }]}
 
                 >
                     {'添加问题'}
@@ -369,10 +390,9 @@ export default class VoteAdd extends Component {
 
     /** 获得整个投票内容 */
     getAllVoteContent() {
-        /** 这个地方应该有投票添加按钮，每个投票都有唯一的标识符，是其在voteContent中的index */
         var array = this.state.voteQuestions;
         return (
-            <View style={styles.voteContentContainer}>
+            <View style={[styles.voteContentContainer, { backgroundColor: global.theme.backgroundColor }]}>
                 {array}
             </View>
         );
@@ -382,10 +402,10 @@ export default class VoteAdd extends Component {
     getVoteAddButton() {
         return (
             <TouchableOpacity
-                style={styles.submitButton}
+                style={[styles.submitButton, { backgroundColor: global.theme.buttonColor }, { borderColor: global.theme.buttonBorderColor }]}
                 onPress={() => { this._onpress2AddVote() }}
             >
-                <Text style={styles.submitText}>
+                <Text style={[styles.submitText, { color: global.theme.buttonTextColor }]}>
                     投票发布
             </Text>
             </TouchableOpacity>
@@ -398,7 +418,7 @@ export default class VoteAdd extends Component {
         /** 欠缺添加问题按钮 */
 
         return (
-            <View style={styles.titlePart}>
+            <View style={[styles.titlePart, { backgroundColor: global.theme.backgroundColor }]}>
                 {/**投票名称 */}
                 {this.getTitle()}
 
@@ -407,11 +427,12 @@ export default class VoteAdd extends Component {
 
                 {/**投票日期 */}
                 {this.getCalendar()}
-                <View style={styles.calendar}>
+                <View style={[styles.calendar, { backgroundColor: global.theme.backgroundColor }]}>
                     <MyBar
                         title="截止时间："
                         onPress={() => { this.setState({ ModalVisible: true }); }}
                         placeholder={this.state.deadline}
+                        color={global.theme.textColor}
                         myThis={this}
                     />
                 </View>
@@ -425,7 +446,7 @@ export default class VoteAdd extends Component {
 
     getButton() {
         return (
-            <View style={styles.titleAndContent}>
+            <View style={[styles.titleAndContent,{backgroundColor:global.theme.backgroundColor}]}>
                 {/** 添加问题按钮 */}
                 {this.getQuestionAddButton()}
 
@@ -436,8 +457,10 @@ export default class VoteAdd extends Component {
     }
 
     render() {
+        //alert(constBackGroundColor);
+        //alert(global.theme.backgroundColor);
         return (
-            <View style={styles.container}>
+            <View style={[styles.container,{backgroundColor:global.theme.backgroundColor}]}>
                 <KeyboardAwareScrollView>
 
                     {/** 投票头部 */}
@@ -460,7 +483,7 @@ const buttonHeightRatio = 0.1;
 const styles = StyleSheet.create({
     submitText: {
         fontSize: 16,
-        color: '#0077FF',
+        color: constButtonTextColor, //待处理，这里不对
     },
     submitButton: {
         //flex: 1,
@@ -471,8 +494,8 @@ const styles = StyleSheet.create({
         marginTop: 10,
         marginBottom: 20,
         //marginLeft: (1 - buttonWidthRatio) / 2 * screenWidth, //居中
-        backgroundColor: 'white',
-        borderColor: '#0077FF',
+        backgroundColor: constButtonBGColor,
+        borderColor: constButtonBorderColor,
         borderWidth: 0.5,
         borderRadius: 4,
     },
@@ -483,14 +506,7 @@ const styles = StyleSheet.create({
 
     textAddOption: {
         textDecorationLine: 'underline',
-        color: 'blue',
-    },
-
-    buttons: {
-        marginHorizontal: constBorderMarginWidth,
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
+        color: constButtonTextColor,
     },
 
     titleAndContent: {
@@ -527,25 +543,8 @@ const styles = StyleSheet.create({
         // alignItems: 'stretch',
         // alignSelf: 'stretch',
     },
-
-    optionContainer: { //与voteContentTitle完全相同
-        flexDirection: 'row',
-        alignItems: 'center',
-        alignSelf: 'stretch',
-        height: screenHeight / 16,
-        borderColor: UI.TOP_COLOR,
-        borderWidth: 1,
-    },
     voteContentContainer: { //存放voteContent这一个大项
         flex: 1,
-    },
-    voteContentTitle: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        alignSelf: 'stretch',
-        height: screenHeight / 16,
-        borderColor: UI.TOP_COLOR,
-        borderWidth: 1,
     },
     mybarContainer: { //与HomeworkPost中一致
         flexDirection: 'row',
@@ -565,7 +564,7 @@ const styles = StyleSheet.create({
     },
 
     container: {
-        backgroundColor: 'white',
+        backgroundColor: constBackGroundColor,
         flex: 1,
         justifyContent: 'center',
         alignItems: 'stretch',
@@ -574,39 +573,21 @@ const styles = StyleSheet.create({
     questionText: {
         width: 0.25 * screenWidth - constBorderMarginWidth,
         fontSize: 16,
-        color: 'black',
+        color: constTextColor,
         textAlign: 'left',
         //marginLeft : constBorderMarginWidth,
     },
     text: {
         width: 0.25 * screenWidth,
         fontSize: 16,
-        color: 'black',
+        color: constTextColor,
         textAlign: 'left',
     },
     textInput: {
         flex: 1,
-        //marginLeft: 8,
         height: screenHeight / 16,
         borderColor: constBorderColor,
         borderWidth: 1
-    },
-    picker: {
-        flex: 1,
-        height: screenHeight / 18,
-        color: '#000000',
-    },
-    richText: {
-        height: screenHeight / 2,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'transparent',
-    },
-    tichTextContainer: {
-        flex: 1,
-        flexDirection: 'column',
-        backgroundColor: '#ffffff',
-        paddingTop: 40
     },
     content: {
         marginTop: constBorderDistance,
@@ -623,22 +604,11 @@ const styles = StyleSheet.create({
         flex: 1,
         //width
     },
-    commitBtn: {
-        flex: 1,
-    },
-    promptText: {
-        fontSize: 16,
-        color: 'gray',
-    },
     bulletinDetail: {
         flex: 1,
-        borderColor: 'gray',
+        //borderColor: global.theme.borderColor,
         textAlignVertical: 'center',
         borderRadius: 10,
-    },
-    button: {
-        flexDirection: 'row',
-        width: screenWidth / 4,
     },
     buttonContainer: {
         flex: 1,
@@ -677,17 +647,18 @@ class MyBar extends Component {
     }
     render() {
         return (
-            <View style={styles.mybarContainer}
+            <View style={[styles.mybarContainer, { backgroundColor: global.theme.backgroundColor }]}
             >
                 <Text
-                    style={styles.text}
+                    style={[styles.text, { color: global.theme.textColor }]}
                 >
                     {this.props.title}
                 </Text>
                 <TextInput
                     onFocus={this.props.onPress}
                     placeholder={this.props.placeholder}
-                    style={styles.textInput}
+                    placeholderTextColor={global.theme.textColor}
+                    style={[styles.textInput, { color: global.theme.textColor }]}
                     underlineColorAndroid="transparent"//设置下划线背景色透明 达到去掉下划线的效果
                 />
                 <View style={{
@@ -698,8 +669,8 @@ class MyBar extends Component {
                     marginLeft: 8
                 }}>
                     <Wheel
-                        style={{ height: 48, width: 30 }}
-                        itemStyle={{ textAlign: 'center' }}
+                        style={{ height: 48, width: 30, backgroundColor: global.theme.backgroundColor }}
+                        itemStyle={{ textAlign: 'center', color: global.theme.textColor }}
                         items={this.hours}
                         onChange={(index) => {
                             this.props.myThis.setState({ hour: (index.length == 1 ? ("0" + index) : ("" + index)) });
@@ -707,8 +678,8 @@ class MyBar extends Component {
                     />
                     <Text>:</Text>
                     <Wheel
-                        style={{ height: 48, width: 30 }}
-                        itemStyle={{ textAlign: 'center' }}
+                        style={{ height: 48, width: 30, backgroundColor: global.theme.backgroundColor }}
+                        itemStyle={{ textAlign: 'center', color: global.theme.textColor }}
                         items={this.minutes}
                         onChange={(index) => {
                             this.props.myThis.setState({ minute: (index.length == 1 ? "0" + index : "" + index) });
@@ -757,13 +728,13 @@ class Option extends Component {
         if (this.state.deleteButton)
             return (
                 <View>
-                    <View style={styles.titleAndContent}>
-                        <Text style={styles.questionText}>
+                    <View style={[styles.titleAndContent, { backgroundColor: global.theme.backgroundColor }]}>
+                        <Text style={[styles.questionText, { color: global.theme.textColor }]}>
                             {'选项 ' + this.state.titleNum}
                         </Text>
 
                         <TextInput
-                            style={styles.textInput}
+                            style={[styles.textInput, { color: global.theme.textColor }, { borderColor: global.theme.textColor }]}
                             underlineColorAndroid="transparent"//设置下划线背景色透明 达到去掉下划线的效果
                             onChangeText={(text) =>
                                 this.funcOnChangeText(this.props.rank, text)
@@ -791,13 +762,13 @@ class Option extends Component {
             );
         else return (
             <View>
-                <View style={styles.titleAndContent}>
-                    <Text style={styles.questionText}>
+                <View style={[styles.titleAndContent, { backgroundColor: global.theme.backgroundColor }]}>
+                    <Text style={[styles.questionText, { color: global.theme.textColor }]}>
                         {"选项 " + this.state.titleNum}
                     </Text>
 
                     <TextInput
-                        style={styles.textInput}
+                        style={[styles.textInput, { color: global.theme.textColor }]} multiline={true}
                         underlineColorAndroid="transparent"//设置下划线背景色透明 达到去掉下划线的效果
                         onChangeText={(text) =>
                             this.funcOnChangeText(this.props.rank, text)
@@ -992,16 +963,17 @@ class Question extends Component {
                 <View style={styles.titleAndContent}>
 
                     <View>
-                        <Text style={styles.questionText}>
+                        <Text style={[styles.questionText, { color: global.theme.textColor }]}>
                             标题
                     </Text>
                     </View>
                     <TextInput
+                        placeholderTextColor={global.theme.textColor}
                         placeholder={'请在此输入投票标题'}
                         onChangeText={(text) =>
                             this.setState({ voteTitle: text })
                         }
-                        style={styles.textInput}
+                        style={[styles.textInput, { color: global.theme.textColor }]}
                         underlineColorAndroid="transparent"//设置下划线背景色透明 达到去掉下划线的效果
                     >
                     </TextInput>
@@ -1013,21 +985,22 @@ class Question extends Component {
     /** 投票模式 */
     getVoteContentVoteMode() {
         return (
-            <View style={styles.titleAndContent}>
+            <View style={[styles.titleAndContent, { backgroundColor: global.theme.backgroundColor }]}>
                 <View>
-                    <Text style={styles.questionText}>
+                    <Text style={[styles.questionText, { color: global.theme.textColor }]}>
                         模式
                     </Text>
                 </View>
-                <View style={styles.buttonContainer}>
+                <View style={[styles.buttonContainer, { backgroundColor: global.theme.backgroundColor }]}>
                     <RadioModal
+                        txtColor={global.theme.textColor}
                         selectedValue={this.state.voteMode}
                         onValueChange={(id, item) => this.setState({ voteMode: id })}
                         style={{
                             flexDirection: 'row',
                             alignItems: 'center',
                             flex: 1,
-                            backgroundColor: '#ffffff'
+                            backgroundColor: { backgroundColor: global.theme.backgroundColor }
                         }}
                     >
                         <Text value={1}>单选</Text>
@@ -1041,14 +1014,14 @@ class Question extends Component {
     getQuestionHead() {
         return (
             <View
-                style={styles.titleAndContentBottom}
+                style={[styles.titleAndContentBottom, { backgroundColor: global.theme.backgroundColor }]}
             >
                 {/** 问题标号 */}
                 <Text style={{
                     width: 0.25 * screenWidth,
                     flex: 1,
                     fontSize: 16,
-                    color: 'black',
+                    color: global.theme.textColor,
                     textAlign: 'left',
                     marginLeft: constBorderMarginWidth,
                 }}>
@@ -1056,10 +1029,10 @@ class Question extends Component {
                 </Text>
 
                 {/* 添加选项*/}
-                <TouchableOpacity style={styles.touchbutton}
+                <TouchableOpacity style={[styles.touchbutton, { backgroundColor: global.theme.backgroundColor }]}
                     onPress={() => { this._onpress2AddOption() }}
                 >
-                    <Text style={styles.textAddOption}
+                    <Text style={[styles.textAddOption, { color: global.theme.buttonTextColor }, { backgroundColor: global.theme.backgroundColor }]}
 
                     >
                         {'+ 选项'}
@@ -1071,7 +1044,7 @@ class Question extends Component {
 
     render() {
         return (
-            <View style={styles.questionPart}>
+            <View style={[styles.questionPart, { backgroundColor: global.theme.backgroundColor }]}>
 
                 {/** 头部 */}
                 {this.getQuestionHead()}
@@ -1084,10 +1057,9 @@ class Question extends Component {
 
                 {/** 投票选项 */}
                 {this.addOptionTest()}
-
-
             </View>
         );
     }
 
 }
+

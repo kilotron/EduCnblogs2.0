@@ -25,6 +25,10 @@ export const themes = {
         addTextColor: '#FFF',               // 添加按钮文字颜色，即'+'的颜色：白色
         promptTextColor: '#999',            // 列表提示文字，例：公告列表页最下方的文字
         cellBorderColor: '#DDD',            // 列表项边框的颜色，例：公告列表页
+        avatarBackgroundColor: '#F5F5FF',   // 头像背景颜色，一般用于班级博客列表等
+        avatarTextColor: '#444',            // 头像文字颜色
+        filterBorderBottomColor: '#EEE',    // 班级博文列表的筛选框的下边界颜色
+        filterBorderTopColor: '#bdbdbd',    // 班级博文列表的筛选框的上边界颜色
 
         // 作业列表
         homeworkTitleColor: '#111',                 // 作业标题颜色，与正文文本颜色相近
@@ -38,7 +42,8 @@ export const themes = {
         hightlightTextColor: '#DD4242',     // 红色
 
         settingsSeperatorColor: '#DDD',     // 设置页面的分隔线颜色
-        flatListSeperatorColor: '#DDD',     // flatlist的分隔线颜色
+        flatListSeperatorColor: '#DDD',     // flatlist的分隔线颜色, 我的博客页面
+        flatListSeperatorColor2: '#EEEEF0', // 班级博客列表
         
         // 设置页面的黑暗模式，分别是图标背景色与图标前景色
         darkModeIconBackgroundColor: '#0079FF',
@@ -106,6 +111,10 @@ export const themes = {
         addTextColor: '#666',
         promptTextColor: '#999',
         cellBorderColor: '#888',
+        avatarBackgroundColor: '#514E2D',
+        avatarTextColor: '#FFCC00',
+        filterBorderBottomColor: '#666',
+        filterBorderTopColor: '#666',
         homeworkTitleColor: '#EEE',
         homeworkGrayTitleColor: '#DDD',
         homeworkClosedTimeTextColor: '#DDD',
@@ -115,11 +124,11 @@ export const themes = {
         hightlightTextColor: '#D8AD00',
         settingsSeperatorColor: '#666',
         flatListSeperatorColor: '#666',
+        flatListSeperatorColor2: '#666',
         darkModeIconBackgroundColor: '#CC9900',
         darkModeIconTintColor: '#DADADA',
         recvPushIconBackgroundColor: '#0B8A8C',
         recvPushIconTintColor: '#DDD',
-
         seniorityBackgroundColor: '#514E2D',
         seniorityForegroundColor: '#D8AD00',
         urlIconBackgroundColor: '#CC9900',

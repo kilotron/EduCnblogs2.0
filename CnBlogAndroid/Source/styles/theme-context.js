@@ -11,11 +11,17 @@ export const themes = {
         buttonBorderColor: '#0077FF',
         selectionColor: '#DDF1FF',
         seperatorColor: '#DADADA',
+        tabBarActiveTextColor: '#0077FF',
+        tabBarInactiveTextColor: '#333',
+        tabBarBackgroundColor: 'white',
+        tabBarBorderColor: '#CCC',  // 一般为下边界的颜色，例如公告、作业..tabBar
         tabBarActiveTintColor: '#0077FF',
         tabBarInactiveTintColor: '#333',
         addBackgroundColor: '#777',
         addUnderlayColor: '#0077FF',
         addTextColor: '#FFF',
+        promptTextColor: '#999',    // 列表下方的提示文字
+        cellBorderColor: '#DDD',    // 列表项边框的颜色
         
         // 需要突出显示的文字使用此颜色，例如退出登录
         hightlightTextColor: '#DD4242',     // 红色
@@ -79,11 +85,17 @@ export const themes = {
         buttonBorderColor: '#FFCC00',
         selectionColor: '#555555',
         seperatorColor: '#262626',        // 与背景颜色相同，相当于隐藏分隔线
+        tabBarActiveTextColor: '#FFCC00',
+        tabBarInactiveTextColor: '#DDD',
+        tabBarBorderColor: '#666',
         tabBarActiveTintColor: '#FFCC00',
-        tabBarInactiveTintColor: '#DDD', // 需要调整
+        tabBarInactiveTintColor: '#DDD',
+        tabBarBackgroundColor: '#262626',
         addBackgroundColor: '#FFCC00',
         addUnderlayColor: '#0077FF',
-        addTextColor: '#444',
+        addTextColor: '#666',
+        promptTextColor: '#999',
+        cellBorderColor: '#888',
         hightlightTextColor: '#D8AD00',
         settingsSeperatorColor: '#666',
         flatListSeperatorColor: '#666',

@@ -142,10 +142,11 @@ class ClassListsNew extends Component {
 					{<ScrollableTabView
 						style={tabViewStyles.ScrollableTabView}
 						initialPage={0}
-						renderTabBar={() => <ScrollableTabBar />}
-						tabBarActiveTextColor={global.theme.tabBarActiveTintColor}
-						tabBarInactiveTextColor={global.theme.tabBarInactiveTintColor}
-						tabBarUnderlineStyle={{backgroundColor: global.theme.tabBarActiveTintColor}}
+						renderTabBar={() => <ScrollableTabBar style={{borderColor: global.theme.tabBarBorderColor}}/>}
+						tabBarActiveTextColor={global.theme.tabBarActiveTextColor}
+						tabBarInactiveTextColor={global.theme.tabBarInactiveTextColor}
+						tabBarBackgroundColor={global.theme.tabBarBackgroundColor}
+						tabBarUnderlineStyle={{backgroundColor: global.theme.tabBarActiveTextColor}}
 					>
 						<View tabLabel='公告' style={{ flex: 1, alignItems: 'stretch' }} >
 							<Bulletin schoolClassId={this.state.schoolClassId}

@@ -7,6 +7,7 @@ import React, { Component} from 'react';
 import {UI} from '../config'
 import {err_info} from '../config'
 import {flatStyles} from '../styles/styles'
+import ListSeperator from '../component/ListSeperator'
 import {
     StyleSheet,
     Text,
@@ -19,6 +20,7 @@ import {
     screen,
     Alert,
 } from 'react-native';
+import { Separator } from 'native-base';
 
 const HTMLSpecialCharsDecode = require('../DataHandler/HTMLSpecialCharsDecode');
 const relativeTime = require('../DataHandler/DateHandler');
@@ -137,20 +139,15 @@ export default class Bulletin extends Component {
                     callback: this._FlatListRefresh
                 });
             } } onLongPress={()=>{this._onPressDelBulletin(Content, Id);}}
-                style={flatStyles.cell}
+                style={[flatStyles.cellWithBorder, {backgroundColor: global.theme.backgroundColor, height: 100, borderColor: global.theme.cellBorderColor}]}
             >
-                <View style={styles.textcontainer}>
-                    <Text numberOfLines={3} style={styles.bulletinContent}>
+                <View style={[styles.textcontainer, {backgroundColor: global.theme.backgroundColor}]}>
+                    <Text numberOfLines={3} style={[styles.bulletinContent, {color: global.theme.textColor}]}>
                         {Content}
                     </Text>
                     <View style={{alignSelf: 'flex-end'}}>
-                        <Text style={styles.bulletinPublisher}>
-                            {Publisher}
-                        </Text>
-                    </View>
-                    <View style={{alignSelf: 'flex-end'}}>
-                        <Text style={styles.bulletinDateAdded}>
-                            发布于 {DateAdded}
+                        <Text style={[styles.bulletinDateAdded, {color: global.theme.grayTextColor}]}>
+                            {Publisher + ' · ' + DateAdded}
                         </Text>
                     </View>
                 </View>
@@ -179,12 +176,12 @@ export default class Bulletin extends Component {
         })
         }
         return(
-            <View style={{width: screenWidth, }}>
+            <View style={{width: screenWidth, backgroundColor: global.theme.backgroundColor}}>
             {
                 this.state.loadStatus==='none'?
                     (
                         <View style={{height:30,alignItems:'center',justifyContent:'flex-start',}}>
-                            <Text style={{color:'#999999',fontSize:14,marginTop:5,marginBottom:5,}}>
+                            <Text style={{color:global.theme.promptTextColor,fontSize:14,marginTop:5,marginBottom:5,}}>
                             这还什么都没有
                             </Text>
                         </View>
@@ -208,7 +205,7 @@ export default class Bulletin extends Component {
         if (this.state.loadStatus === 'all loaded') {
             return (
                 <View style={{height:30,alignItems:'center',justifyContent:'flex-start',}}>
-                    <Text style={{color:'#999999',fontSize:14,marginTop:5,marginBottom:5,}}>
+                    <Text style={{color:global.theme.promptTextColor,fontSize:14,marginTop:5,marginBottom:5,}}>
                     再往下拉也没有了呢 ~
                     </Text>
                 </View>
@@ -217,7 +214,7 @@ export default class Bulletin extends Component {
             return (
                 <View style={styles.footer}>
                     <ActivityIndicator />
-                    <Text>正在加载更多数据...</Text>
+                    <Text style={{color:global.theme.promptTextColor,}}>正在加载更多数据...</Text>
                 </View>
             );
         } //else 'not loading'
@@ -415,7 +412,7 @@ export default class Bulletin extends Component {
             this.fetchPage(1);
         }
         return (
-            <View style = {styles.container}>
+            <View style = {[styles.container, {backgroundColor: global.theme.backgroundColor}]}>
                 <View>
                     {
                         this._renderBulletinList()
@@ -479,7 +476,6 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'white',
     },
     footer:{
         flexDirection:'row',
@@ -493,14 +489,16 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start',
         flex: 4,
         backgroundColor: 'white',
+        paddingTop: 3,
     },
     bulletinContent: {
+        flex: 1,
         color: 'black',
         fontSize: 16,
         left: 4,
     },
     bulletinDateAdded: {
-        fontSize: 12,
+        fontSize: 10,
     },
     bulletinPublisher: {
         fontSize: 10,

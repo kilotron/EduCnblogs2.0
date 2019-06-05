@@ -8,6 +8,7 @@ export const themes = {
         grayTextColor: 'gray',
         buttonTextColor: '#0077FF',
         buttonColor: '#FBFBFB',
+        //buttonColor: 'black',
         buttonBorderColor: '#0077FF',
         selectionColor: '#DDF1FF',
         seperatorColor: '#DADADA',

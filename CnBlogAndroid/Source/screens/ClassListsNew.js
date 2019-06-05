@@ -27,6 +27,7 @@ import {
 import {
 	StackNavigator,
 	TabNavigator,
+	withNavigationFocus,
 } from 'react-navigation';
 import Bulletin from './Bulletin';
 import HomeworkLists from './HomeworkLists';
@@ -42,7 +43,7 @@ const abstractFontSize = MyAdapter.abstractFontSize;
 const informationFontSize = MyAdapter.informationFontSize;
 const btnFontSize = MyAdapter.btnFontSize;
 
-export default class ClassListsNew extends Component {
+class ClassListsNew extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -171,6 +172,8 @@ export default class ClassListsNew extends Component {
 		}
 	}
 }
+
+export default withNavigationFocus(ClassListsNew);
 
 const styles = StyleSheet.create({
 	container: {

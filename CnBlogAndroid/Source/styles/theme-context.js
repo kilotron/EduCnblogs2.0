@@ -5,7 +5,7 @@ export const themes = {
         headerTintColor: '#0077FF',
         backgroundColor: '#FDFDFD',
         textColor: '#444',
-        grayTextColor: 'gray',
+        grayTextColor: '#666',      // 需要不突出显示的文字颜色
         buttonTextColor: '#0077FF',
         buttonColor: '#FBFBFB',
         buttonBorderColor: '#0077FF',
@@ -16,6 +16,9 @@ export const themes = {
         addBackgroundColor: '#777',
         addUnderlayColor: '#0077FF',
         addTextColor: '#FFF',
+        
+        // 需要突出显示的文字使用此颜色，例如退出登录
+        hightlightTextColor: '#DD4242',     // 红色
 
         settingsSeperatorColor: '#DDD',
         flatListSeperatorColor: '#DDD',
@@ -59,6 +62,9 @@ export const themes = {
         // 个人信息页面的退出登录图标
         logoutIconBackgroundColor: '#FD3A2F',
         logoutIconTintColor: 'white',
+
+        // 图片透明度，在黑暗模式下需要降低透明度
+        imageOpacity: 1,
     },
 
     // 下面的配色未完成
@@ -67,7 +73,7 @@ export const themes = {
         headerTintColor: '#FFCC00',
         backgroundColor: '#262626',
         textColor: '#EEE',
-        grayTextColor: '#DDD',
+        grayTextColor: '#AAA',
         buttonTextColor: '#FFCC00',
         buttonColor: '#3A3A3A',
         buttonBorderColor: '#FFCC00',
@@ -78,7 +84,7 @@ export const themes = {
         addBackgroundColor: '#FFCC00',
         addUnderlayColor: '#0077FF',
         addTextColor: '#444',
-
+        hightlightTextColor: '#D8AD00',
         settingsSeperatorColor: '#666',
         flatListSeperatorColor: '#666',
         darkModeIconBackgroundColor: '#CC9900',
@@ -102,6 +108,7 @@ export const themes = {
         aboutIconTintColor: '#EEE',
         logoutIconBackgroundColor: '#FD3A2F',
         logoutIconTintColor: '#DDD',
+        imageOpacity: 0.85,
     },
 };
 

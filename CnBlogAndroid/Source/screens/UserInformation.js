@@ -175,6 +175,8 @@ class UserInformation extends Component{
                     style= {{
                         width: 0.1*screenHeight,
                         height: 0.1*screenHeight,
+                        opacity: global.theme.imageOpacity,
+                        borderRadius: 4,
                     }}
                     source={{uri: this.state.faceurl?this.state.faceurl:'../images/defaultface.png'}}
                 />
@@ -258,7 +260,7 @@ class UserInformation extends Component{
                 imageBackgroundColor={global.theme.logoutIconBackgroundColor}
                 imageTintColor={global.theme.logoutIconTintColor}
                 onPress={this._logout.bind(this)}
-                textColor='#DD4242'
+                textColor={global.theme.hightlightTextColor}
             />
         </View>
         </ScrollView>

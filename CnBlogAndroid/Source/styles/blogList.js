@@ -10,7 +10,7 @@ const btnFontSize= MyAdapter.btnFontSize;
 export const blogListStyles = StyleSheet.create({
     blogTitleText:{
         fontSize: 18,
-        fontWeight: '400',
+        fontWeight: 'bold',
         marginTop: 6,
         marginBottom: 2,
         textAlign: 'left',
@@ -19,7 +19,7 @@ export const blogListStyles = StyleSheet.create({
         fontFamily: 'sans-serif',
     },
     blogSummaryText:{
-        lineHeight: 20,
+        lineHeight: 24,
         fontSize: 14,
         marginBottom: 2,
         textAlign: 'left',
@@ -37,5 +37,6 @@ export const blogListStyles = StyleSheet.create({
         marginBottom: 4,
         justifyContent: 'space-around',
         alignItems: 'flex-start',
+        marginTop: 5,
     },
 })

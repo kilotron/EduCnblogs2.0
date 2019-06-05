@@ -48,7 +48,9 @@ export default class Submitted extends Component {
         this.state = {
             Answers:[],
             modalVisible:false,
+            modalCommentVisible:false,
             showValue:null,
+            commentValue:null,
             answerId:-1,
             rowID: null,
             sectionID: null,
@@ -76,16 +78,28 @@ export default class Submitted extends Component {
     setModalVisible(visible) {
         this.setState({modalVisible: visible});
     }
+    setCommentModalVisible(visible) {
+        this.setState({modalCommentVisible: visible});
+    }
     onClose() {
         this.setState({modalVisible: false});
     }
-
-    _onPressLeft(){
-        Alert.alert("单击了左侧按钮");
+    onCommentClose() {
+        this.setState({modalCommentVisible: false});
     }
 
-    _onPressRight(){
-        Alert.alert("单击了右侧按钮");
+    _onPressLeft(answerId){
+        this.setState({
+            answerId:answerId,
+        });
+        this.setModalVisible(true);
+    }
+
+    _onPressRight(answerId){
+        this.setState({
+            answerId:answerId,
+        });
+        this.setCommentModalVisible(true);
     }
 
     _renderItem = (item) => {
@@ -93,8 +107,8 @@ export default class Submitted extends Component {
         let {answerId, key, url, title, answerer, realName, blogUrl, dateAdded} = item1.item;
         let blogApp = GetBlogApp(blogUrl);
 
-        const BtnsLeft = [{ text: '清空', type: 'delete',  onPress: ()=> this._onPressLeft()},];
-        const BtnsRight = [{ text: '删除', type: 'delete', onPress: ()=>this._onPressRight()},];
+        const BtnsLeft = [{ text: '打分', type: 'delete',  onPress: ()=> this._onPressLeft(answerId)},];
+        const BtnsRight = [{ text: '评论', type: 'delete', onPress: ()=>this._onPressRight(answerId)},];
         let shouldClose = !(this.state.sectionID === 'submittedlist' && this.state.rowID === answerId);
 
         if(this.props.navigation.state.params.permission == 1){
@@ -237,6 +251,9 @@ export default class Submitted extends Component {
     _onChangeText = (inputData) => {
         this.setState({showValue:inputData});
     }
+    _onChangeComment = (inputData) => {
+        this.setState({commentValue:inputData});
+    }
     _renderModal(){
         if(this.props.navigation.state.params.permission == 1){
             return(
@@ -250,7 +267,7 @@ export default class Submitted extends Component {
                         <TouchableOpacity style={{flex:1}} onPress={this.onClose.bind(this)}>
                         <View style={styles.containerM}>
                             <View style={styles.innerContainerM}>
-                                <Text>答案打分</Text>
+                                <Text style={styles.ModalHead}>答案打分</Text>
                                 <TextInput
                                     style={styles.inputtext}
                                     placeholder="分值1~100"
@@ -286,6 +303,57 @@ export default class Submitted extends Component {
             return(<View></View>)
         }
     }
+    _renderCommentModal(){
+        if(this.props.navigation.state.params.permission == 1){
+            return(
+                <View>
+                    <Modal
+                        animationType={"slide"}
+                        transparent={true}
+                        visible={this.state.modalCommentVisible}
+                        onRequestClose={() => {this.setCommentModalVisible(false)}}
+                    >
+                        <TouchableOpacity style={{flex:1}} onPress={this.onCommentClose.bind(this)}>
+                        <View style={styles.containerM}>
+                            <View style={styles.innerContainerM}>
+                                <Text style={styles.ModalHead}>答案评语</Text>
+                                <TextInput
+                                    style={styles.inputtext}
+                                    placeholder="请输入评语内容"
+                                    onChangeText={this._onChangeComment}
+                                    multiline={true}
+                                    underlineColorAndroid="transparent"
+                                />
+                                <View style={styles.btnContainer}>
+                                    <TouchableHighlight onPress={() => {
+                                        if(this.state.commentValue == null || this.state.commentValue.length == 0){
+                                            ToastAndroid.show('请输入评语内容~', ToastAndroid.LONG);
+                                            return;
+                                        }
+                                        else{
+                                            _giveComment(this.state.answerId,this.props.navigation.state.params.schoolClassId,this.state.commentValue)
+                                        }
+                                        this.setCommentModalVisible(!this.state.modalCommentVisible)
+                                    }}>
+                                        <Text  style={styles.hidemodalTxt}>提交</Text>
+                                    </TouchableHighlight>
+                                    <TouchableHighlight onPress={() => {
+                                        this.setCommentModalVisible(!this.state.modalCommentVisible)
+                                    }}>
+                                        <Text  style={styles.hidemodalTxt}>关闭</Text>
+                                    </TouchableHighlight>
+                                </View>
+                            </View>
+                        </View>
+                        </TouchableOpacity>
+                    </Modal>
+                </View>
+            )
+        }
+        else{
+            return(<View></View>)
+        }
+    }
     render(){
         let data = [];
         for(var i in this.state.Answers)
@@ -304,6 +372,7 @@ export default class Submitted extends Component {
         return(
             <View style = {styles.container}>
                 {this._renderModal()}
+                {this._renderCommentModal()}
                 <View style = {styles.content}>
                     <FlatList
                         ItemSeparatorComponent={this._separator}
@@ -336,14 +405,43 @@ function _giveMark(answerId, schoolClassId, score){
     }).then((jsonData)=>{
         if(jsonData != 'rejected'){
             if(jsonData.isSuccess == true){
-                ToastAndroid.show("打分成功~",ToastAndroid.SHORT);
+                ToastAndroid.show("打分成功~",ToastAndroid.LONG);
             }
             else if(jsonData.isWarning == true){
-                ToastAndroid.show(jsonData.message,ToastAndroid.SHORT);
+                ToastAndroid.show(jsonData.message,ToastAndroid.LONG);
             }
         }
         else{
-            ToastAndroid.show("请求错误，请稍后再试",ToastAndroid.SHORT);
+            ToastAndroid.show("请求错误，请稍后再试",ToastAndroid.LONG);
+        }
+    })
+}
+function _giveComment(answerId, schoolClassId, commentValue){
+    let url = 'https://api.cnblogs.com/api/edu/answer/suggest/' + answerId;
+    let body= JSON.stringify({
+        answerId:answerId,
+        schoolClassId:schoolClassId,
+        suggestion:commentValue,
+    });
+    Service.UserAction(url,body, 'PATCH').then((response)=>{
+        if(response.status!==200)
+        {
+            return null;
+        }
+        else{
+            return response.json();
+        }
+    }).then((jsonData)=>{
+        if(jsonData != 'rejected'){
+            if(jsonData.isSuccess == true){
+                ToastAndroid.show("评价成功~",ToastAndroid.LONG);
+            }
+            else if(jsonData.isWarning == true){
+                ToastAndroid.show(jsonData.message,ToastAndroid.LONG);
+            }
+        }
+        else{
+            ToastAndroid.show("请求错误，请稍后再试",ToastAndroid.LONG);
         }
     })
 }
@@ -357,24 +455,31 @@ const styles = StyleSheet.create({
     innerContainerM: {
         borderRadius: 10,
         alignItems: 'center',
-        backgroundColor: '#fff',
+        backgroundColor: '#ffffff',
         padding: 20
 
+    },
+    ModalHead:{
+        color:'#000000',
+        fontSize:18,
     },
     btnContainer:{
         flexDirection:'row',
         justifyContent:'space-around',
         width:dialogWidth,
         borderTopWidth:1,
-        borderTopColor:'#777',
+        borderTopColor:'#ffffff',
         alignItems:'center'
     },
     inputtext:{
+        // padding:0,
         width:dialogWidth-20,
         margin:10,
+        // color:'#000000',
     },
     hidemodalTxt: {
         marginTop:10,
+        // color:'#000000',
     },
     container: {
         flex: 1,

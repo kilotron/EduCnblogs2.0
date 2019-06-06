@@ -40,7 +40,6 @@ import MyAdapter from '../screens/MyAdapter';
 const T_WIDTH = 7;
 const T_HEIGHT = 4;
 
-const COLOR_HIGH = global.theme.headerTintColor;
 const COLOR_NORMAL = 'gray';
 
 const LINE = 1 / PixelRatio.get();
@@ -86,7 +85,7 @@ class Triangle extends React.Component {
         let path;
         let fill;
         if (this.props.selected) {
-            fill = COLOR_HIGH;
+            fill = global.theme.headerTintColor;
             path = new Path()
                 .moveTo(T_WIDTH / 2, 0)
                 .lineTo(0, T_HEIGHT)
@@ -206,22 +205,8 @@ export default class ClassBlogPostsList extends Component {
             filter: 'all',              // 筛选条件：'all' 'no_comment' 'tutor' 'student'
 			loadStatus: 'not loading',  // 用于上拉加载的动画
 			currentPageIndex: 1,        // 已加载的页数/序号，从1开始
-            headerTop: new Animated.Value(0), // 用于向下滚动隐藏筛选条件的动画
             networkError: false,        // 加载失败时设置为true
         };
-
-        /* 下面两个变量用于向下滚动隐藏筛选条件的动画。动画设置的参考链接见本文件末尾。 */
-        this.top = this.state.headerTop.interpolate({
-            inputRange: [0, 270, 271, 280],
-            outputRange: [0, -50, -50, -50]
-        });
-        this.animatedEvent = Animated.event(
-            [{
-                nativeEvent: {
-                    contentOffset: {y: this.state.headerTop}
-                }
-            }]
-        );
     }
 
     /**在一个组件卸载后调用setState()，可能导致内存泄漏，会产生警告。
@@ -252,11 +237,11 @@ export default class ClassBlogPostsList extends Component {
                 () => {this.updateData()});
         }
     }
-
+/*
     // 可删，调试用
     componentWillUpdate() {
     }
-
+*/
     createAnimation = (index, height) => {
         return Animated.timing(
             this.state.height[index],
@@ -280,19 +265,15 @@ export default class ClassBlogPostsList extends Component {
     /* 单击选择框时执行 */
     onSelect = (index) => {
         if (index === this.state.selectedIndex) {
-            //消失
-            //console.log("onSelect \n to hide func");
             this.hide(index);
         }
         else {
-            //console.log("onSelect \n to onshow func");
             this.setState({selectedIndex: index, current: index});
             this.onShow(index);
         }
     }
 
     hide = (index, subselected) => {
-        //console.log("hide func");
         let opts = {selectedIndex: null, current: index};
         if (subselected !== undefined) {
             this.state.subselected[index] = subselected;
@@ -348,6 +329,7 @@ export default class ClassBlogPostsList extends Component {
             </Animated.View>
         );
     }
+
 
     /** 第pageIndex页的班级博文的URL */
     URLOf(pageIndex) {
@@ -436,7 +418,7 @@ export default class ClassBlogPostsList extends Component {
                 {/* 使用keyExtractor为每个item生成独有的key，就不必再data数组的每一个元素中添加key键。
                     refreshing设置为false在列表更新时不显示转圈*/}
                 {/*item设置了立体的样式，这里去掉ItemSeparatorComponent={this._separator}*/}
-
+                {/* 渲染筛选框 */}
                 <View style={[styles.topMenu, {backgroundColor: global.theme.backgroundColor, borderBottomColor: global.theme.filterBorderBottomColor, borderTopColor: global.theme.filterBorderTopColor}]}>
                     {this.state.top.map((t, index) => {
                         return <TopMenuItem
@@ -447,6 +429,7 @@ export default class ClassBlogPostsList extends Component {
                             selected={this.state.selectedIndex === index}/>
                     })}
                 </View>
+                {/* 渲染列表 */}
                 <FlatList
                     renderItem={this._renderItem}
                     data={this.makeBlogPostsList()}
@@ -609,7 +592,7 @@ const styles = StyleSheet.create({
         width: screenWidth,
     },
     highlight: {
-        color: COLOR_HIGH
+        color: global.theme.headerTintColor
     },
     marginHigh: {marginLeft: 10},
     margin: {marginLeft: 28},
@@ -645,7 +628,7 @@ const styles = StyleSheet.create({
     menuTextHigh: {
         marginRight: 3,
         fontSize: 13,
-        color: COLOR_HIGH
+        color: global.theme.headerTintColor
     },
     menuText: {
         marginRight: 3,

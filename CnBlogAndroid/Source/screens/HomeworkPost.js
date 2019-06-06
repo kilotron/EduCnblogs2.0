@@ -24,6 +24,7 @@ import {
     ScrollView,
 
 } from 'react-native';
+import { getHeaderStyle } from '../styles/theme-context';
 import {RichTextEditor, RichTextToolbar} from 'react-native-zss-rich-text-editor';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 const screenWidth= MyAdapter.screenWidth;
@@ -34,6 +35,14 @@ const informationFontSize= MyAdapter.informationFontSize;
 const btnFontSize= 16;
 const marginHorizontalNum= 16;
 export default class App extends Component {
+
+    static navigationOptions = ({ navigation }) => ({
+        /* 使用global.theme的地方需要单独在页面写static navigationOptions,
+            以便切换主题时及时更新。*/
+        headerStyle: getHeaderStyle(),
+        headerTintColor: global.theme.headerTintColor,
+    })
+
     constructor(props){
         super(props);
         this.state={
@@ -140,7 +149,7 @@ export default class App extends Component {
             style= {{
                 flexDirection: 'column',
                 flex: 1,
-                backgroundColor: 'white'
+                backgroundColor: global.theme.backgroundColor,
             }}
         >
             <KeyboardAwareScrollView>
@@ -203,7 +212,7 @@ export default class App extends Component {
                 </View>
                 </Modal>
 
-                <View style= {styles.container}
+                <View style= {[styles.container, {backgroundColor:global.theme.backgroundColor}]}
                 >
 
                 </View>
@@ -242,10 +251,10 @@ export default class App extends Component {
                         </Picker>
                     </View>
                 </View> */}
-                <View style= {styles.container}
+                <View style= {[styles.container, {backgroundColor:global.theme.backgroundColor}]}
                 >
                     <Text
-                        style= {styles.text}
+                        style= {[styles.text, {color:global.theme.textColor}]}
                     >
                         首页显示
                     </Text>
@@ -350,14 +359,15 @@ class MyBar extends Component{
             <View style= {styles.container}
             >
                 <Text
-                    style= {styles.text}
+                    style= {[styles.text, {color:global.theme.textColor}]}
                 >
                     {this.props.title}
                 </Text>
                 <TextInput
                     onFocus= {this.props.onPress}
                     placeholder= {this.props.placeholder}
-                    style={styles.textInput}
+                    placeholderTextColor = {global.theme.textColor}
+                    style={[styles.textInput, {color:global.theme.textColor}]}
                     underlineColorAndroid="transparent"//设置下划线背景色透明 达到去掉下划线的效果
                 />
                 <View style= {{
@@ -368,8 +378,8 @@ class MyBar extends Component{
                     marginLeft:8
                 }}>
                     <Wheel
-                      style={{height: 48, width: 30}}
-                      itemStyle={{textAlign: 'center'}}
+                      style={{height: 48, width: 30, backgroundColor:global.theme.backgroundColor}}
+                      itemStyle={{ textAlign: 'center', color: global.theme.textColor }}
                       items={this.hours}
                       onChange= {(index)=>{
                           if (this.props.myPrefix==="start"){
@@ -381,8 +391,8 @@ class MyBar extends Component{
                     />
                     <Text>:</Text>
                     <Wheel
-                      style={{height: 48, width: 30}}
-                      itemStyle={{textAlign: 'center'}}
+                      style={{height: 48, width: 30, backgroundColor:global.theme.backgroundColor}}
+                      itemStyle={{ textAlign: 'center', color: global.theme.textColor }}
                       items={this.minutes}
                       onChange= {(index)=>{
                           if (this.props.myPrefix==="start"){

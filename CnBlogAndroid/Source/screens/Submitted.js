@@ -95,20 +95,21 @@ export default class Submitted extends Component {
         this.setModalVisible(true);
     }
 
-    _onPressRight(answerId){
+    _onPressRight(answerId, suggestion){
         this.setState({
             answerId:answerId,
+            commentValue:suggestion,
         });
         this.setCommentModalVisible(true);
     }
 
     _renderItem = (item) => {
         let item1 = item;
-        let {answerId, key, url, title, answerer, realName, blogUrl, dateAdded} = item1.item;
+        let {answerId, key, url, title, answerer, realName, blogUrl, dateAdded, score, suggestion} = item1.item;
         let blogApp = GetBlogApp(blogUrl);
 
         const BtnsLeft = [{ text: '打分', type: 'delete',  onPress: ()=> this._onPressLeft(answerId)},];
-        const BtnsRight = [{ text: '评论', type: 'delete', onPress: ()=>this._onPressRight(answerId)},];
+        const BtnsRight = [{ text: '评论', type: 'delete', onPress: ()=>this._onPressRight(answerId,suggestion)},];
         let shouldClose = !(this.state.sectionID === 'submittedlist' && this.state.rowID === answerId);
 
         if(this.props.navigation.state.params.permission == 1){
@@ -163,7 +164,7 @@ export default class Submitted extends Component {
                         }}>
                             {title}
                         </Text>
-                        <View style = {{
+                        {/* <View style = {{
                             flexDirection: 'row',
                             marginBottom: 8,
                             justifyContent: 'flex-end',
@@ -172,7 +173,22 @@ export default class Submitted extends Component {
                             <Text style = {{fontSize: 13, textAlign: 'right', color: 'black', flex: 1}}>
                                 提交于:{' '+dateAdded.split('T')[0]+' '+dateAdded.split('T')[1].substring(0,8)}
                             </Text>
+                        </View> */}
+                        
+                        <View style = {{
+                            flexDirection: 'row',
+                            marginBottom: 8,
+                            justifyContent: 'flex-end',
+                            alignItems: 'flex-end',
+                        }}>
+                            <Text style = {{fontSize: 13, color: 'black'}}>
+                                {score == null ? "未评分" : "分数:" + score}
+                            </Text>
+                            <Text style = {{fontSize: 13, color: 'black',textAlign: 'right',flex: 1}}>
+                                提交于:{' '+dateAdded.split('T')[0]+' '+dateAdded.split('T')[1].substring(0,8)}
+                            </Text>
                         </View>
+                       
                     </TouchableOpacity>
                 </View>
                 </Swipeout>
@@ -224,13 +240,29 @@ export default class Submitted extends Component {
                         }}>
                             {title}
                         </Text>
-                        <View style = {{
+                        {/* <View style = {{
                             flexDirection: 'row',
                             marginBottom: 8,
                             justifyContent: 'flex-end',
                             alignItems: 'flex-end',
                         }}>
                             <Text style = {{fontSize: 13, textAlign: 'right', color: 'black', flex: 1}}>
+                                {未评分}
+                            </Text>
+                            <Text style = {{fontSize: 13, textAlign: 'right', color: 'black', flex: 1}}>
+                                提交于:{' '+dateAdded.split('T')[0]+' '+dateAdded.split('T')[1].substring(0,8)}
+                            </Text>
+                        </View> */}
+                        <View style = {{
+                            flexDirection: 'row',
+                            marginBottom: 8,
+                            justifyContent: 'flex-end',
+                            alignItems: 'flex-end',
+                        }}>
+                            <Text style = {{fontSize: 13, color: 'black'}}>
+                                {score == null ? "未评分" : "分数:" + score}
+                            </Text>
+                            <Text style = {{fontSize: 13, color: 'black',textAlign: 'right',flex: 1}}>
                                 提交于:{' '+dateAdded.split('T')[0]+' '+dateAdded.split('T')[1].substring(0,8)}
                             </Text>
                         </View>
@@ -320,6 +352,7 @@ export default class Submitted extends Component {
                                 <TextInput
                                     style={styles.inputtext}
                                     placeholder="请输入评语内容"
+                                    defaultValue ={this.state.commentValue}
                                     onChangeText={this._onChangeComment}
                                     multiline={true}
                                     underlineColorAndroid="transparent"
@@ -331,7 +364,7 @@ export default class Submitted extends Component {
                                             return;
                                         }
                                         else{
-                                            _giveComment(this.state.answerId,this.props.navigation.state.params.schoolClassId,this.state.commentValue)
+                                            _giveComment(this.state.answerId,this.props.navigation.state.params.schoolClassId,this.state.commentValue)                   
                                         }
                                         this.setCommentModalVisible(!this.state.modalCommentVisible)
                                     }}>
@@ -366,7 +399,9 @@ export default class Submitted extends Component {
                 answerer: this.state.Answers[i].answerer,
                 realName: this.state.Answers[i].realName,
                 blogUrl: this.state.Answers[i].blogUrl,
-                dateAdded: this.state.Answers[i].dateAdded
+                dateAdded: this.state.Answers[i].dateAdded,
+                score: this.state.Answers[i].score,
+                suggestion:this.state.Answers[i].suggestion,
             });
         }
         return(

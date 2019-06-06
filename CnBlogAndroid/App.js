@@ -194,6 +194,16 @@ class Welcome extends Component{
 
     componentWillMount(){
         umengPush.initHandler();
+        // 获取主题
+        storage.getItem(StorageKey.IS_DARK_MODE)
+        .then((isDarkMode) => {
+            if (typeof(isDarkMode) != 'boolean') {
+                // 没有初值时设置为白色主题
+                isDarkMode = false;
+                storage.setItem(StorageKey.IS_DARK_MODE, isDarkMode);
+            }
+            global.theme = isDarkMode ? themes.dark : themes.light;
+        })
     }
     componentDidMount(){       
         // this.subscription = DeviceEventEmitter.addListener('xxxName', Function);//监听通知

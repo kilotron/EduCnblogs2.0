@@ -199,6 +199,8 @@ export default class ClassBlogPostsList extends Component {
             selectedIndex: null,        // 下拉菜单使用的变量
             current: null,              // 下拉菜单使用的变量
 
+            topDistance: new Animated.Value(0),  // 组件和顶部的距离
+
             blogs: [],	                // 班级博客列表
             postCount: 0,               //班级博客总数
             schoolClassId: this.props.schoolClassId,
@@ -217,6 +219,19 @@ export default class ClassBlogPostsList extends Component {
 
     componentWillMount() {
         this.fetchPage(1);
+
+        this.top = this.state.topDistance.interpolate({
+            inputRange: [0, 270, 271, 280],
+            outputRange: [0, -40, -40, -40]
+        })
+
+        this.animatedEvent = Animated.event([
+        {
+            nativeEvent: {
+                contentOffset: { y : this.state.topDistance }
+            }
+        }])
+
     }
 
     componentDidMount() {
@@ -413,36 +428,41 @@ export default class ClassBlogPostsList extends Component {
     }
 
     render() {
+        //let topDistance = this.state.topDistance;
         return (
-            <View style={{flex: 1, backgroundColor: global.theme.backgroundColor}}>{/* 需要使用View，不然FlatList无法显示 */}
+            <View style={{flex: 1, backgroundColor: global.theme.backgroundColor, }}>{/* 需要使用View，不然FlatList无法显示 */}
                 {/* 使用keyExtractor为每个item生成独有的key，就不必再data数组的每一个元素中添加key键。
                     refreshing设置为false在列表更新时不显示转圈*/}
                 {/*item设置了立体的样式，这里去掉ItemSeparatorComponent={this._separator}*/}
                 {/* 渲染筛选框 */}
-                <View style={[styles.topMenu, {backgroundColor: global.theme.backgroundColor, borderBottomColor: global.theme.filterBorderBottomColor, borderTopColor: global.theme.filterBorderTopColor}]}>
-                    {this.state.top.map((t, index) => {
-                        return <TopMenuItem
-                            key={index}
-                            index={index}
-                            onClickDropDownMenu={this.onSelect}
-                            label={t}
-                            selected={this.state.selectedIndex === index}/>
-                    })}
-                </View>
+                <Animated.View style={{top: this.top}} >
+                    <View style={[styles.topMenu, {backgroundColor: global.theme.backgroundColor, borderBottomColor: global.theme.filterBorderBottomColor, borderTopColor: global.theme.filterBorderTopColor}]}>
+                        {this.state.top.map((t, index) => {
+                            return <TopMenuItem
+                                key={index}
+                                index={index}
+                                onClickDropDownMenu={this.onSelect}
+                                label={t}
+                                selected={this.state.selectedIndex === index}/>
+                        })}
+                    </View>
+                </Animated.View>
                 {/* 渲染列表 */}
+                <Animated.View style={{top: this.top}} >
                 <FlatList
                     renderItem={this._renderItem}
                     data={this.makeBlogPostsList()}
                     keyExtractor={(item, index) => index.toString()}
                     onRefresh = {this.updateData.bind(this)}
+                    onScroll={this.animatedEvent}
                     refreshing= {false}
                     onEndReached={this._onEndReached.bind(this)}
                     onEndReachedThreshold={0.5}
                     ListEmptyComponent={this._renderEmptyList.bind(this)}
                     ListFooterComponent={this._renderFooter.bind(this)}
-                    onScroll={this.animatedEvent}
                     ItemSeparatorComponent={this._itemSeparatorComponent}
                 />
+                </Animated.View>
                 <View style={styles.bgContainer} pointerEvents={this.state.selectedIndex !== null ? "auto" : "none"}>
                     <Animated.View style={[styles.bg, {opacity: this.state.fadeInOpacity}]}/>
                     {CONFIG.map((d, index) => {

@@ -118,7 +118,7 @@ export default class ClassMember extends Component{
                     style = {[styles.listcontainer, {backgroundColor:global.theme.backgroundColor}]}
                 >
                     <View style = {{flex:1}}>
-                        <Image source = {avatarUrl?{uri:avatarUrl}:require('../images/defaultface.png')} style = {styles.avatarstyle}/>
+                        <Image source = {avatarUrl?{uri:avatarUrl}:require('../images/defaultface.png')} style = {[styles.avatarstyle, {opacity: global.theme.imageOpacity}]}/>
                     </View>
                     <View style = {[styles.textcontainer, {backgroundColor:global.theme.backgroundColor}]}>
                         <Text style = {{fontSize: 20,color: global.theme.textColor,flex:2}}>{displayName+ ItemHandler(realName)}</Text>

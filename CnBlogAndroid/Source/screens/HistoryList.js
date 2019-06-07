@@ -330,7 +330,7 @@ export default class HistoryList extends Component {
 
     _itemSeparatorComponent(){
         return (
-            <View style={flatStylesWithAvatar.separatorStyle}/>
+            <View style={[flatStylesWithAvatar.separatorStyle, {backgroundColor: global.theme.flatListSeperatorColor2}]}/>
         )
     }
 

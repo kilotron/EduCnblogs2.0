@@ -105,6 +105,10 @@ class ClassListsNew extends Component {
 	}
 
 	render() {
+		/* 关于ModalDropdown：
+			没有找到修改分隔线样式的方法，因此不能使用夜间主题，但是在夜间模式下下拉菜单会带有
+			一个灰色的边框，还能够接受。这里的背景颜色使用headerBackgroundColor而不是
+			BackgroundColor，与页面背景颜色不同，看起来更清晰。 */
 		return (
 			<View style={styles.pageViewStyle}>
 				{/* 班级名称，点击可以切换班级 */}
@@ -122,13 +126,13 @@ class ClassListsNew extends Component {
 					</TouchableOpacity>
 					<ModalDropdown 
 						options={['班级成员']}
-						style={styles.buttonStyle}
-						dropdownTextStyle={styles.buttonTextStyle}
+						style={[styles.buttonStyle, {backgroundColor: global.theme.headerBackgroundColor}]}
+						dropdownTextStyle={[styles.buttonTextStyle, {color: global.theme.textColor,backgroundColor: global.theme.headerBackgroundColor}]}
 						dropdownTextHighlightStyle={styles.buttonTextStyle}
-						dropdownStyle={styles.dropdownStyle}
+						dropdownStyle={[styles.dropdownStyle, {backgroundColor: global.theme.headerBackgroundColor}]}
 						showsVerticalScrollIndicator={false}
 						onSelect={this.optionNavi}
-					>
+					> 
 						<Image style={styles.optionsImgstyle} 
 							source={require('../images/options.png')}
 							tintColor={global.theme.headerTintColor}

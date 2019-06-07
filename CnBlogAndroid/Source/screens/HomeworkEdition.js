@@ -20,9 +20,11 @@ import {
     TextInput,
     Picker,
     ToastAndroid,
+    TouchableOpacity,
     Modal,
     ScrollView
 } from 'react-native';
+import { getHeaderStyle } from '../styles/theme-context';
 import {RichTextEditor, RichTextToolbar} from 'react-native-zss-rich-text-editor';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 const screenWidth= MyAdapter.screenWidth;
@@ -39,6 +41,14 @@ const head = '<!DOCTYPE html><html><head>'+
 '<style type="text/css">  * {word-wrap:break-word; word-break:break-all;}</style>'+
 '</head>';
 export default class homeworkEdition extends Component {
+
+    static navigationOptions = ({ navigation }) => ({
+        /* 使用global.theme的地方需要单独在页面写static navigationOptions,
+            以便切换主题时及时更新。*/
+        headerStyle: getHeaderStyle(),
+        headerTintColor: global.theme.headerTintColor,
+    })
+
     constructor(props){
         super(props);
         let {title,startTime,deadline,content,formatType,isShowInHome} = this.props.navigation.state.params; 
@@ -155,7 +165,7 @@ export default class homeworkEdition extends Component {
             style= {{
                 flexDirection: 'column',
                 flex: 1,
-                backgroundColor: 'white'
+                backgroundColor: global.theme.backgroundColor,
             }}
         >
             <KeyboardAwareScrollView>
@@ -222,7 +232,7 @@ export default class homeworkEdition extends Component {
                 </View>
                 </Modal>
 
-                <View style= {styles.container}
+                <View style={[styles.container, { backgroundColor: global.theme.backgroundColor }]}
                 >
 
                 </View>
@@ -261,18 +271,18 @@ export default class homeworkEdition extends Component {
                         </Picker>
                     </View>
                 </View> */}
-                <View style= {styles.container}
-                >
-                    <Text
-                        style= {styles.text}
+                <View style={[styles.container, { backgroundColor: global.theme.backgroundColor }]}
                     >
-                        首页显示
+                        <Text
+                            style={[styles.text, { color: global.theme.textColor }]}
+                        >
+                            首页显示
                     </Text>
                     <View
                         style= {styles.textInput}
                     >
                         <Picker
-                            style= {styles.picker}
+                            style={[styles.picker, { color: global.theme.textColor }, { backgroundColor: global.theme.backgroundColor }]}
                             mode= 'dropdown'
                             selectedValue={this.state.isShowInHome ? 'true' : 'false'}
                             onValueChange={(type) => {this.setState({isShowInHome: type === 'true'})}}>
@@ -281,7 +291,7 @@ export default class homeworkEdition extends Component {
                         </Picker>
                     </View>
                 </View>
-                <View style= {styles.tichTextContainer}
+                <View style={[styles.tichTextContainer, { backgroundColor: global.theme.backgroundColor }]}
                 >
                     <RichTextEditor
                         ref={(r)=>this.richtext = r}
@@ -304,31 +314,14 @@ export default class homeworkEdition extends Component {
                     marginHorizontal:marginHorizontalNum
                 }}
                 >
-                    <TouchableHighlight
-                        underlayColor="#3b50ce"
-                        activeOpacity={0.5}
-                        style= {{
-                            width:0.35*screenWidth,
-                            alignSelf: 'flex-end',
-                            borderRadius: 0.01*screenHeight,
-                            padding: 0.01*screenHeight,
-                            backgroundColor:"#3b50ce"
-                        }}
-                        onPress={()=>{
-                            this._onPress();
-                        }}//关联函数
-                    >
-                        <Text
-                            style= {{
-                                fontSize: btnFontSize,
-                                color: '#ffffff',
-                                textAlign: 'center',
-                                fontWeight: 'bold',
-                            }}
+                    <TouchableOpacity
+                            style={[styles.submitButton, { backgroundColor: global.theme.buttonColor }, { borderColor: global.theme.buttonBorderColor }]}
+                            onPress={() => { this._onPress() }}
                         >
-                            发布
-                        </Text>
-                    </TouchableHighlight>
+                            <Text style={[styles.submitText, { color: global.theme.buttonTextColor }]}>
+                                发布
+                            </Text>
+                        </TouchableOpacity>
                 </View>
             </KeyboardAwareScrollView>
         </View>
@@ -374,14 +367,15 @@ class MyBar extends Component{
             <View style= {styles.container}
             >
                 <Text
-                    style= {styles.text}
+                     style={[styles.text, { color: global.theme.textColor }]}
                 >
                     {this.props.title}
                 </Text>
                 <TextInput
                     onFocus= {this.props.onPress}
                     placeholder= {this.props.placeholder}
-                    style={styles.textInput}
+                    placeholderTextColor={global.theme.textColor}
+                    style={[styles.textInput, { color: global.theme.textColor }]}
                     underlineColorAndroid="transparent"//设置下划线背景色透明 达到去掉下划线的效果
                 />
                 <View style= {{
@@ -392,8 +386,8 @@ class MyBar extends Component{
                     marginLeft:8
                 }}>
                     <Wheel
-                      style={{height: 48, width: 30}}
-                      itemStyle={{textAlign: 'center'}}
+                      style={{ height: 48, width: 30, backgroundColor: global.theme.backgroundColor }}
+                      itemStyle={{ textAlign: 'center', color: global.theme.textColor }}
                       items={this.hours}
                       index={initHour.lengh == 1 ? '0'+initHour : initHour}
                       onChange= {(index)=>{
@@ -406,8 +400,8 @@ class MyBar extends Component{
                     />
                     <Text>:</Text>
                     <Wheel
-                      style={{height: 48, width: 30}}
-                      itemStyle={{textAlign: 'center'}}
+                      style={{ height: 48, width: 30, backgroundColor: global.theme.backgroundColor }}
+                      itemStyle={{ textAlign: 'center', color: global.theme.textColor }}
                       items={this.minutes}
                       index={initMinute.lengh == 1 ? '0'+ initMinute : initMinute}
                       onChange= {(index)=>{
@@ -424,7 +418,28 @@ class MyBar extends Component{
     }
 }
 
+const buttonWidthRatio = 0.2;
+const buttonHeightRatio = 0.1;
+
 const styles = StyleSheet.create({
+    submitText: {
+        fontSize: 16,
+        //color: constButtonTextColor, //待处理，这里不对
+    },
+    submitButton: {
+        //flex: 1,
+        height: buttonHeightRatio * screenWidth,
+        width: buttonWidthRatio * screenWidth,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 10,
+        marginBottom: 20,
+        //marginLeft: (1 - buttonWidthRatio) / 2 * screenWidth, //居中
+        //backgroundColor: constButtonBGColor,
+        //borderColor: constButtonBorderColor,
+        borderWidth: 0.5,
+        borderRadius: 4,
+    },
     attentionContainer:{
         alignItems: 'stretch',
         width:screenWidth,

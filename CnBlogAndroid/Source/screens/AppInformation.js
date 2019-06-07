@@ -19,7 +19,7 @@ import {
     FlatList
 } from 'react-native';
 import {flatStyles} from '../styles/styles';
-
+import {getHeaderStyle} from '../styles/theme-context';
 const screenWidth= MyAdapter.screenWidth;
 const screenHeight= MyAdapter.screenHeight;
 const titleFontSize= MyAdapter.titleFontSize;
@@ -32,6 +32,13 @@ const maxNumberOfVersionPressed = 8;
 const showToastThreshold = 3;
 
 export default class AppInformation extends Component {
+
+    static navigationOptions = ({ navigation }) => ({
+        /* 使用global.theme的地方需要单独在页面写static navigationOptions,
+            以便切换主题时及时更新。*/
+        headerStyle: getHeaderStyle(),
+        headerTintColor: global.theme.headerTintColor,
+    })
 
     constructor(props){
         super(props);
@@ -69,7 +76,7 @@ export default class AppInformation extends Component {
         var title = item1.item.title;//作业标题
         var description = item1.item.description;//作业描述
         return (
-            <View style={flatStyles.cell}>
+            <View style={[flatStyles.cell, {backgroundColor:global.theme.backgroundColor}]}>
                 <TouchableOpacity
 
                     onPress = {()=>{
@@ -81,12 +88,12 @@ export default class AppInformation extends Component {
                         }
                     }}
 
-                    style = {styles.container}
+                    style = {[styles.container, {backgroundColor:global.theme.backgroundColor}]}
                 >
-                    <Text style= {styles.titleTextStyle}>
+                    <Text style= {[styles.titleTextStyle, {color : global.theme.textColor}]}>
                         {title}
                     </Text>
-                    <Text style= {styles.abstractTextStyle}>
+                    <Text style= {[styles.abstractTextStyle, {color:global.theme.textColor}]}>
                         {description}
                     </Text>
                 </TouchableOpacity>
@@ -127,7 +134,7 @@ export default class AppInformation extends Component {
                     flexDirection: 'column',
                     justifyContent:'flex-start',
                     flex: 1,
-                    backgroundColor: 'white',
+                    backgroundColor:global.theme.backgroundColor,
                     paddingTop: 0.02*screenHeight,
                     paddingBottom: 0.02*screenHeight
                 }}

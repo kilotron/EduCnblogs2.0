@@ -40,6 +40,14 @@ const minMoveDistance = (15<0.1*screenWidth)?15:0.1*screenWidth;
 const HtmlDecode = require('../DataHandler/HomeworkDetails/HtmlDecode');
 
 export default class HistoryList extends Component {
+
+    static navigationOptions = ({ navigation }) => ({
+        /* 使用global.theme的地方需要单独在页面写static navigationOptions,
+            以便切换主题时及时更新。*/
+        headerStyle: getHeaderStyle(),
+        headerTintColor: global.theme.headerTintColor,
+    })
+
     constructor(props){
         super(props);
         this.state = {
@@ -216,7 +224,7 @@ export default class HistoryList extends Component {
                 rowID={Id}
                 sectionID='historylist'
                 autoClose={true}
-                backgroundColor='white'
+                backgroundColor= {global.theme.backgroundColor}
                 onOpen={(sectionId, rowId, direction: string) => {
                     this.setState({
                         rowID: rowId,
@@ -225,10 +233,10 @@ export default class HistoryList extends Component {
                 }}
                 disabled={this.state.multSelection}
               >
-            <View style={flatStylesWithAvatar.cell, {backgroundColor:ItemBgColor}}
+            <View style={[flatStylesWithAvatar.cell, {backgroundColor:global.theme.backgroundColor}]}
             >
                 <TouchableOpacity
-                    style = {flatStylesWithAvatar.listcontainer}
+                    style = {[flatStylesWithAvatar.listcontainer, {backgroundColor:global.theme.backgroundColor}]}
                     onLongPress = {()=> {this._onLongPressItem(Id)}}
                     onPress = {this.state.multSelection?(
                             ItemIndex>-1?()=>{
@@ -245,20 +253,20 @@ export default class HistoryList extends Component {
                     {Id:Id, blogApp: BlogApp, CommentCount: CommentCount, Url: Url, Title: Title, Description:SummaryContent}) : ()=>{})
                 }
                 >
-                    <View style = {nameImageStyles.nameContainer}>
-                        <Text style = {nameImageStyles.nameText}>
+                    <View style = {[nameImageStyles.nameContainer, {backgroundColor: global.theme.avatarBackgroundColor}]}>
+                        <Text style = {[nameImageStyles.nameText, {color: global.theme.avatarTextColor}]}>
                             {BlogApp.slice(0, 2)}
                         </Text>
                     </View>
                     <View style = {{flex:1}}>
-                        <Text numberOfLines={1} style = {blogListStyles.blogTitleText} >
+                        <Text numberOfLines={1} style = {[blogListStyles.blogTitleText, {color : global.theme.textColor}]} >
                             {Title}
                         </Text>
-                        <Text numberOfLines={2} style = {blogListStyles.blogSummaryText}>
+                        <Text numberOfLines={2} style = {[blogListStyles.blogSummaryText, {color : global.theme.textColor}]}>
                             {SummaryContent + '...'}
                         </Text>
-                        <View style = {blogListStyles.blogAppAndTimeContainer}>
-                            <Text style = {blogListStyles.blogAppText}>
+                        <View style = {[blogListStyles.blogAppAndTimeContainer, {backgroundColor:global.theme.backgroundColor}]}>
+                            <Text style = {[blogListStyles.blogAppText, {color : global.theme.textColor}]}>
                                 {BlogApp}
                             </Text>
                         </View>
@@ -330,16 +338,16 @@ export default class HistoryList extends Component {
     _renderFooter(){
         if (this.state.loadStatus === 'all loaded') {
             return (
-                <View style={flatStylesWithAvatar.promptTextContainer}>
-                    <Text style={flatStylesWithAvatar.promptText}>
+                <View style={[flatStylesWithAvatar.promptTextContainer, {backgroundColor:global.theme.backgroundColor}]}>
+                    <Text style={[flatStylesWithAvatar.promptText, {color:global.theme.textColor}]}>
                     再往下拉也没有了呢 ~
                     </Text>
                 </View>
             );
         }
         return (
-            <View style={flatStylesWithAvatar.promptTextContainer}>
-                <Text style={flatStylesWithAvatar.promptText}/>
+            <View style={[flatStylesWithAvatar.promptTextContainer, {backgroundColor:global.theme.backgroundColor}]}>
+                    <Text style={[flatStylesWithAvatar.promptText, {color:global.theme.textColor}]}/>
             </View>
         );
     }
@@ -394,8 +402,8 @@ export default class HistoryList extends Component {
 
     render() {
         return (
-            <View style = {styles.container}>
-                <View style={flatStylesWithAvatar.separatorStyle}/>
+            <View style = {[styles.container, {backgroundColor:global.theme.backgroundColor}]}>
+                <View style={[flatStylesWithAvatar.separatorStyle,{backgroundColor:global.theme.backgroundColor}]}/>
                 {
                     this._renderHistoryList()
                 }

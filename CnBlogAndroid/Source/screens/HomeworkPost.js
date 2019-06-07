@@ -1,6 +1,6 @@
 import Config from '../config';
 import api from '../api/api.js';
-import {authData,err_info} from '../config'
+import { authData, err_info } from '../config'
 import * as Service from '../request/request.js'
 import MyAdapter from './MyAdapter.js';
 import { Calendar, CalendarList, Agenda } from 'react-native-calendars';
@@ -9,7 +9,7 @@ import {
     Wheel,
     Toast
 } from 'teaset';
-import React, { Component} from 'react';
+import React, { Component } from 'react';
 import {
     Platform,
     StyleSheet,
@@ -22,18 +22,18 @@ import {
     ToastAndroid,
     Modal,
     ScrollView,
-
+    TouchableOpacity,
 } from 'react-native';
 import { getHeaderStyle } from '../styles/theme-context';
-import {RichTextEditor, RichTextToolbar} from 'react-native-zss-rich-text-editor';
+import { RichTextEditor, RichTextToolbar } from 'react-native-zss-rich-text-editor';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-const screenWidth= MyAdapter.screenWidth;
-const screenHeight= MyAdapter.screenHeight;
-const titleFontSize= MyAdapter.titleFontSize;
-const abstractFontSize= MyAdapter.abstractFontSize;
-const informationFontSize= MyAdapter.informationFontSize;
-const btnFontSize= 16;
-const marginHorizontalNum= 16;
+const screenWidth = MyAdapter.screenWidth;
+const screenHeight = MyAdapter.screenHeight;
+const titleFontSize = MyAdapter.titleFontSize;
+const abstractFontSize = MyAdapter.abstractFontSize;
+const informationFontSize = MyAdapter.informationFontSize;
+const btnFontSize = 16;
+const marginHorizontalNum = 16;
 export default class App extends Component {
 
     static navigationOptions = ({ navigation }) => ({
@@ -43,9 +43,9 @@ export default class App extends Component {
         headerTintColor: global.theme.headerTintColor,
     })
 
-    constructor(props){
+    constructor(props) {
         super(props);
-        this.state={
+        this.state = {
             formatType: 1,//1: TintMce 2: Markdown
             title: '',
             content: '',
@@ -55,183 +55,173 @@ export default class App extends Component {
             endModalVisible: false,
             startDate: "",
             endDate: "",
-            startHour:"00",
-            startMinute:"00",
-            endHour:"00",
-            endMinute:"00"
+            startHour: "00",
+            startMinute: "00",
+            endHour: "00",
+            endMinute: "00"
         };
     }
     // dateString : xxxx-xx-xx a:b
-    StringtoDate= (dateString)=>{
+    StringtoDate = (dateString) => {
         let date1 = dateString.split(' ')[0];
         let date2 = dateString.split(' ')[1];
         let yeartoday = date1.split('-');
         let hourtominute = date2.split(':');
         //let result  = new Date();
-        return new Date(Number(yeartoday[0]),Number(yeartoday[1]),Number(yeartoday[2]),Number(hourtominute[0]),Number(hourtominute[1]),0);
+        return new Date(Number(yeartoday[0]), Number(yeartoday[1]), Number(yeartoday[2]), Number(hourtominute[0]), Number(hourtominute[1]), 0);
         //return result;
     }
-    _onPress=()=>{
-        this.getHTML().then((result)=>{
+    _onPress = () => {
+        this.getHTML().then((result) => {
             let homeworkBody = result;
-            if(homeworkBody.title!=''&&homeworkBody.content!='')
-            {
+            if (homeworkBody.title != '' && homeworkBody.content != '') {
                 //let url = 'https://api.cnblogs.com/api/edu/homework/publish';
                 let url = Config.HomeWorkPublish;
                 let classId = Number(this.props.navigation.state.params.classId);
                 let postBody = {
-                    blogId:this.props.navigation.state.params.blogId,
+                    blogId: this.props.navigation.state.params.blogId,
                     schoolClassId: classId,
                     title: homeworkBody.title,
-                    startTime: this.state.startDate+" "+this.state.startHour+":"+this.state.startMinute,
-                    deadline: this.state.endDate+" "+this.state.endHour+":"+this.state.endMinute,
+                    startTime: this.state.startDate + " " + this.state.startHour + ":" + this.state.startMinute,
+                    deadline: this.state.endDate + " " + this.state.endHour + ":" + this.state.endMinute,
                     content: homeworkBody.content,
                     formatType: Number(this.state.formatType),
                     isShowInHome: this.state.isShowInHome,
                 }
                 let st = this.StringtoDate(postBody.startTime);
                 let ed = this.StringtoDate(postBody.deadline);
-                
-                if(st>=ed)
-                {
-                    ToastAndroid.show("截止日期必须在开始日期之后！",ToastAndroid.SHORT);
+
+                if (st >= ed) {
+                    ToastAndroid.show("截止日期必须在开始日期之后！", ToastAndroid.SHORT);
                 }
-                else
-                {
+                else {
                     let body = JSON.stringify(postBody);
-                    Service.UserAction(url,body,'POST').then((response)=>{
+                    Service.UserAction(url, body, 'POST').then((response) => {
                         console.log(response);
-                        if(response.status !== 200)
-                        {
+                        if (response.status !== 200) {
                             return null;
                         }
-                        else
-                        {
+                        else {
                             return response.json();
                         }
-                    }).then((jsonData)=>{
-                        if(jsonData===null)
-                        {
-                            ToastAndroid.show('请求失败！',ToastAndroid.SHORT);
+                    }).then((jsonData) => {
+                        if (jsonData === null) {
+                            ToastAndroid.show('请求失败！', ToastAndroid.SHORT);
                         }
-                        else if(jsonData.isSuccess)
-                        {
-                            ToastAndroid.show('添加成功，请刷新查看！',ToastAndroid.SHORT);
+                        else if (jsonData.isSuccess) {
+                            ToastAndroid.show('添加成功，请刷新查看！', ToastAndroid.SHORT);
                             this.props.navigation.state.params.callback();
                             this.props.navigation.goBack();
                         }
-                        else if(jsonData.isWarning)
-                        {
-                            ToastAndroid.show(jsonData.message,ToastAndroid.SHORT);
+                        else if (jsonData.isWarning) {
+                            ToastAndroid.show(jsonData.message, ToastAndroid.SHORT);
                         }
-                        else
-                        {
-                            ToastAndroid.show('发生错误，请稍后重试！',ToastAndroid.SHORT);
+                        else {
+                            ToastAndroid.show('发生错误，请稍后重试！', ToastAndroid.SHORT);
                         }
-                    }).catch((error)=>{ToastAndroid.show(err_info.NO_INTERNET,ToastAndroid.SHORT)})  
+                    }).catch((error) => { ToastAndroid.show(err_info.NO_INTERNET, ToastAndroid.SHORT) })
                 }
             }
-            else
-            {
-                ToastAndroid.show("标题或内容不能为空！",ToastAndroid.SHORT);
+            else {
+                ToastAndroid.show("标题或内容不能为空！", ToastAndroid.SHORT);
             }
-        }).catch((error)=>{ToastAndroid.show('请求失败...',ToastAndroid.SHORT)})
+        }).catch((error) => { ToastAndroid.show('请求失败...', ToastAndroid.SHORT) })
     }
     setStartModalVisible(visible) {
-        this.setState({startModalVisible: visible});
+        this.setState({ startModalVisible: visible });
     }
     setEndModalVisible(visible) {
-        this.setState({endModalVisible: visible});
+        this.setState({ endModalVisible: visible });
     }
     render() {
-    return (
-        <View
-            style= {{
-                flexDirection: 'column',
-                flex: 1,
-                backgroundColor: global.theme.backgroundColor,
-            }}
-        >
-            <KeyboardAwareScrollView>
-                <Modal
-                animationType={"slide"}
-                transparent={false}
-                visible={this.state.startModalVisible}
-                onRequestClose={() => {ToastAndroid.show("请选择一个日期",ToastAndroid.SHORT);}}
-                >
-                <View style={{
+        return (
+            <View
+                style={{
+                    flexDirection: 'column',
                     flex: 1,
-                    marginTop: 22
-                }}>
-                    <View
-                        style= {{
-                            flex: 1,
-                        }}
+                    backgroundColor: global.theme.backgroundColor,
+                }}
+            >
+                <KeyboardAwareScrollView>
+                    <Modal
+                        animationType={"slide"}
+                        transparent={false}
+                        visible={this.state.startModalVisible}
+                        onRequestClose={() => { ToastAndroid.show("请选择一个日期", ToastAndroid.SHORT); }}
                     >
-                    <Calendar
-                    onDayPress={(day) => {
-                        this.setState({startDate:day.dateString});
-                        this.setStartModalVisible(!this.state.startModalVisible);
-                    }}
-                    theme={{
-                        selectedDayBackgroundColor: '#3b50ce',
-                        selectedDayTextColor: '#ffffff',
-                        todayTextColor: 'red'
-                    }}                                                        
-                    />
-                    </View>
-                </View>
-                </Modal>
-                <Modal
-                animationType={"slide"}
-                transparent={false}
-                visible={this.state.endModalVisible}
-                onRequestClose={() => {ToastAndroid.show("请选择一个日期",ToastAndroid.SHORT);}}
-                >
-                <View style={{
-                    flex: 1,
-                    marginTop: 22
-                }}>
-                    <View
-                        style= {{
+                        <View style={{
                             flex: 1,
-                        }}
+                            marginTop: 22
+                        }}>
+                            <View
+                                style={{
+                                    flex: 1,
+                                }}
+                            >
+                                <Calendar
+                                    onDayPress={(day) => {
+                                        this.setState({ startDate: day.dateString });
+                                        this.setStartModalVisible(!this.state.startModalVisible);
+                                    }}
+                                    theme={{
+                                        selectedDayBackgroundColor: '#3b50ce',
+                                        selectedDayTextColor: '#ffffff',
+                                        todayTextColor: 'red'
+                                    }}
+                                />
+                            </View>
+                        </View>
+                    </Modal>
+                    <Modal
+                        animationType={"slide"}
+                        transparent={false}
+                        visible={this.state.endModalVisible}
+                        onRequestClose={() => { ToastAndroid.show("请选择一个日期", ToastAndroid.SHORT); }}
                     >
-                    <Calendar
-                    onDayPress={(day) => {
-                        this.setState({endDate:day.dateString});
-                        this.setEndModalVisible(!this.state.endModalVisible);
-                    }}
-                    theme={{
-                        selectedDayBackgroundColor: '#3b50ce',
-                        selectedDayTextColor: '#ffffff',
-                        todayTextColor: 'red'
-                    }}                                                        
-                    />
+                        <View style={{
+                            flex: 1,
+                            marginTop: 22
+                        }}>
+                            <View
+                                style={{
+                                    flex: 1,
+                                }}
+                            >
+                                <Calendar
+                                    onDayPress={(day) => {
+                                        this.setState({ endDate: day.dateString });
+                                        this.setEndModalVisible(!this.state.endModalVisible);
+                                    }}
+                                    theme={{
+                                        selectedDayBackgroundColor: '#3b50ce',
+                                        selectedDayTextColor: '#ffffff',
+                                        todayTextColor: 'red'
+                                    }}
+                                />
+                            </View>
+                        </View>
+                    </Modal>
+
+                    <View style={[styles.container, { backgroundColor: global.theme.backgroundColor }]}
+                    >
+
                     </View>
-                </View>
-                </Modal>
 
-                <View style= {[styles.container, {backgroundColor:global.theme.backgroundColor}]}
-                >
-
-                </View>
-
-                <MyBar
-                    title= "起始时间"
-                    onPress={()=>{this.setStartModalVisible(true);}}
-                    placeholder={this.state.startDate}
-                    myThis= {this}
-                    myPrefix= "start"
-                />
-                <MyBar
-                    title= "截止时间"
-                    onPress={()=>{this.setEndModalVisible(true);}}
-                    placeholder={this.state.endDate}
-                    myThis= {this}
-                    myPrefix= "end"
-                />
-                {/* <View style= {styles.container}
+                    <MyBar
+                        title="起始时间"
+                        onPress={() => { this.setStartModalVisible(true); }}
+                        placeholder={this.state.startDate}
+                        myThis={this}
+                        myPrefix="start"
+                    />
+                    <MyBar
+                        title="截止时间"
+                        onPress={() => { this.setEndModalVisible(true); }}
+                        placeholder={this.state.endDate}
+                        myThis={this}
+                        myPrefix="end"
+                    />
+                    {/* <View style= {styles.container}
                 >
                     <Text
                         style= {styles.text}
@@ -251,193 +241,205 @@ export default class App extends Component {
                         </Picker>
                     </View>
                 </View> */}
-                <View style= {[styles.container, {backgroundColor:global.theme.backgroundColor}]}
-                >
-                    <Text
-                        style= {[styles.text, {color:global.theme.textColor}]}
-                    >
-                        首页显示
-                    </Text>
-                    <View
-                        style= {styles.textInput}
-                    >
-                        <Picker
-                            style= {styles.picker}
-                            mode= 'dropdown'
-                            selectedValue={this.state.isShowInHome ? 'true' : 'false'}
-                            onValueChange={(type) => {this.setState({isShowInHome: type === 'true'})}}>
-                            <Picker.Item label="是" value="true" />
-                            <Picker.Item label="否" value="false" />
-                        </Picker>
-                    </View>
-                </View>
-                <View style= {styles.tichTextContainer}
-                >
-                    <RichTextEditor
-                        ref={(r)=>this.richtext = r}
-                        style={styles.richText}
-                        titlePlaceholder={'请在此输入作业标题...'}
-                        contentPlaceholder={'请在此输入作业内容...'}
-                        editorInitializedCallback={() => this.onEditorInitialized()}
-                    />
-                    <RichTextToolbar
-                        getEditor={() => this.richtext}
-                    />
-                    {Platform.OS === 'ios' && <KeyboardSpacer/>}
-                </View>
-                <View style= {{
-                    flexDirection: 'row',
-                    justifyContent:'center',
-                    alignItems: 'center',
-                    alignSelf: 'stretch',
-                    marginVertical:16,
-                    marginHorizontal:marginHorizontalNum
-                }}
-                >
-                    <TouchableHighlight
-                        underlayColor="#3b50ce"
-                        activeOpacity={0.5}
-                        style= {{
-                            width:0.35*screenWidth,
-                            alignSelf: 'flex-end',
-                            borderRadius: 0.01*screenHeight,
-                            padding: 0.01*screenHeight,
-                            backgroundColor:"#3b50ce"
-                        }}
-                        onPress={()=>{
-                            this._onPress();
-                        }}//关联函数
+                    <View style={[styles.container, { backgroundColor: global.theme.backgroundColor }]}
                     >
                         <Text
-                            style= {{
-                                fontSize: btnFontSize,
-                                color: '#ffffff',
-                                textAlign: 'center',
-                                fontWeight: 'bold',
-                            }}
+                            style={[styles.text, { color: global.theme.textColor }]}
                         >
-                            发布
-                        </Text>
-                    </TouchableHighlight>
-                </View>
-            </KeyboardAwareScrollView>
-        </View>
-    );
-  }
+                            首页显示
+                    </Text>
+                        <View
+                            style={styles.textInput}
+                        >
+                            <Picker
+                                style={[styles.picker, { color: global.theme.textColor }, { backgroundColor: global.theme.backgroundColor }]}
+                                mode='dropdown'
+                                itemStyle={[{ color: global.theme.textColor }, { backgroundColor: global.theme.backgroundColor }]}
+                                selectedValue={this.state.isShowInHome ? 'true' : 'false'}
+                                onValueChange={(type) => { this.setState({ isShowInHome: type === 'true' }) }}>
+                                <Picker.Item label="是" value="true" />
+                                <Picker.Item label="否" value="false" />
+                            </Picker>
+                        </View>
+                    </View>
+                    <View style={[styles.tichTextContainer, { backgroundColor: global.theme.backgroundColor }]}
+                    >
+                        <RichTextEditor
+                            ref={(r) => this.richtext = r}
+                            style={[styles.richText]}
+                            titlePlaceholder={'请在此输入作业标题...'}
+                            //placeholderTextColor = {global.theme.textColor}
+                            contentPlaceholder={'请在此输入作业内容...'}
+                            editorInitializedCallback={() => this.onEditorInitialized()}
+                        />
+                        <RichTextToolbar
+                            getEditor={() => this.richtext}
+                        />
+                        {Platform.OS === 'ios' && <KeyboardSpacer />}
+                    </View>
+                    <View style={{
+                        flexDirection: 'row',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        alignSelf: 'stretch',
+                        marginVertical: 16,
+                        marginHorizontal: marginHorizontalNum
+                    }}
+                    >
+                        <TouchableOpacity
+                            style={[styles.submitButton, { backgroundColor: global.theme.buttonColor }, { borderColor: global.theme.buttonBorderColor }]}
+                            onPress={() => { this._onPress() }}
+                        >
+                            <Text style={[styles.submitText, { color: global.theme.buttonTextColor }]}>
+                                发布
+                            </Text>
+                        </TouchableOpacity>
 
-  onEditorInitialized() {
-    // this.setFocusHandlers();
-    // this.getHTML();
-  }
 
-  async getHTML() {
-    const contentHtml = await this.richtext.getContentHtml();
-    const titleText = await this.richtext.getTitleText();
-    return {
-        content:contentHtml,
-        title:titleText,
-    };
-  }
+                    </View>
+                </KeyboardAwareScrollView>
+            </View>
+        );
+    }
+
+    onEditorInitialized() {
+        // this.setFocusHandlers();
+        // this.getHTML();
+    }
+
+    async getHTML() {
+        const contentHtml = await this.richtext.getContentHtml();
+        const titleText = await this.richtext.getTitleText();
+        return {
+            content: contentHtml,
+            title: titleText,
+        };
+    }
 }
 
-class MyBar extends Component{
+class MyBar extends Component {
     hours;
     minutes;
-    constructor(props){
+    constructor(props) {
         super(props);
-        this.hours= [];
-        this.minutes= [];
-          for (var i= 0;i<24;i++)
-              this.hours.push((i<10?'0':'')+i);
-          for (var i= 0;i<60;i++)
+        this.hours = [];
+        this.minutes = [];
+        for (var i = 0; i < 24; i++)
+            this.hours.push((i < 10 ? '0' : '') + i);
+        for (var i = 0; i < 60; i++)
 
-              this.minutes.push((i<10?'0':'')+i);
+            this.minutes.push((i < 10 ? '0' : '') + i);
 
     }
-    render(){
-        return(
-            <View style= {styles.container}
+    render() {
+        return (
+            <View style={styles.container}
             >
                 <Text
-                    style= {[styles.text, {color:global.theme.textColor}]}
+                    style={[styles.text, { color: global.theme.textColor }]}
                 >
                     {this.props.title}
                 </Text>
                 <TextInput
-                    onFocus= {this.props.onPress}
-                    placeholder= {this.props.placeholder}
-                    placeholderTextColor = {global.theme.textColor}
-                    style={[styles.textInput, {color:global.theme.textColor}]}
+                    onFocus={this.props.onPress}
+                    placeholder={this.props.placeholder}
+                    placeholderTextColor={global.theme.textColor}
+                    style={[styles.textInput, { color: global.theme.textColor }]}
                     underlineColorAndroid="transparent"//设置下划线背景色透明 达到去掉下划线的效果
                 />
-                <View style= {{
+                <View style={{
                     flexDirection: 'row',
-                    justifyContent:'flex-start',
+                    justifyContent: 'flex-start',
                     alignItems: 'center',
                     alignSelf: 'stretch',
-                    marginLeft:8
+                    marginLeft: 8
                 }}>
                     <Wheel
-                      style={{height: 48, width: 30, backgroundColor:global.theme.backgroundColor}}
-                      itemStyle={{ textAlign: 'center', color: global.theme.textColor }}
-                      items={this.hours}
-                      onChange= {(index)=>{
-                          if (this.props.myPrefix==="start"){
-                              this.props.myThis.setState({startHour:(index.length == 1 ? '0'+index:""+index)});
-                          }else if (this.props.myPrefix==="end"){
-                              this.props.myThis.setState({endHour:(index.length == 1 ? '0'+index:""+index)});
-                          }
-                      }}
+                        style={{ height: 48, width: 30, backgroundColor: global.theme.backgroundColor }}
+                        itemStyle={{ textAlign: 'center', color: global.theme.textColor }}
+                        items={this.hours}
+                        onChange={(index) => {
+                            if (this.props.myPrefix === "start") {
+                                this.props.myThis.setState({ startHour: (index.length == 1 ? '0' + index : "" + index) });
+                            } else if (this.props.myPrefix === "end") {
+                                this.props.myThis.setState({ endHour: (index.length == 1 ? '0' + index : "" + index) });
+                            }
+                        }}
                     />
                     <Text>:</Text>
                     <Wheel
-                      style={{height: 48, width: 30, backgroundColor:global.theme.backgroundColor}}
-                      itemStyle={{ textAlign: 'center', color: global.theme.textColor }}
-                      items={this.minutes}
-                      onChange= {(index)=>{
-                          if (this.props.myPrefix==="start"){
-                              this.props.myThis.setState({startMinute:(index.length == 1 ? '0'+index:""+index)});
-                          }else if (this.props.myPrefix==="end"){
-                              this.props.myThis.setState({endMinute:(index.length == 1 ? '0'+index:""+index)});
-                          }
-                      }}
+                        style={{ height: 48, width: 30, backgroundColor: global.theme.backgroundColor }}
+                        itemStyle={{ textAlign: 'center', color: global.theme.textColor }}
+                        items={this.minutes}
+                        onChange={(index) => {
+                            if (this.props.myPrefix === "start") {
+                                this.props.myThis.setState({ startMinute: (index.length == 1 ? '0' + index : "" + index) });
+                            } else if (this.props.myPrefix === "end") {
+                                this.props.myThis.setState({ endMinute: (index.length == 1 ? '0' + index : "" + index) });
+                            }
+                        }}
                     />
-                  </View>
+                </View>
             </View>
         );
     }
 }
 
+
+const buttonWidthRatio = 0.2;
+const buttonHeightRatio = 0.1;
+
+
 const styles = StyleSheet.create({
-    container:{
+
+    submitText: {
+        fontSize: 16,
+        //color: constButtonTextColor, //待处理，这里不对
+    },
+    submitButton: {
+        //flex: 1,
+        height: buttonHeightRatio * screenWidth,
+        width: buttonWidthRatio * screenWidth,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 10,
+        marginBottom: 20,
+        //marginLeft: (1 - buttonWidthRatio) / 2 * screenWidth, //居中
+        //backgroundColor: constButtonBGColor,
+        //borderColor: constButtonBorderColor,
+        borderWidth: 0.5,
+        borderRadius: 4,
+    },
+
+    container: {
         flexDirection: 'row',
-        justifyContent:'center',
+        justifyContent: 'center',
         alignItems: 'center',
         alignSelf: 'stretch',
-        marginTop:16,
-        marginHorizontal:16
+        marginTop: 16,
+        marginHorizontal: 16
     },
-    text:{
-        width:0.2*screenWidth,
+    text: {
+        width: 0.2 * screenWidth,
         fontSize: 16,
         color: 'black',
         textAlign: 'left',
     },
-    textInput:{
-        flex:1,
-        marginLeft:8,
-        height: screenHeight/18,
+    textInput: {
+        flex: 1,
+        marginLeft: 8,
+        height: screenHeight / 18,
         borderColor: 'gray',
-        borderWidth: 1        
+        borderWidth: 1
     },
-    picker:{
-        flex:1,
-        height: screenHeight/18,
-        color:'#000000',
+    picker: {
+        flex: 1,
+        height: screenHeight / 18,
+        color: '#000000',
     },
     richText: {
-        height:screenHeight/2,
-        alignItems:'center',
+        height: screenHeight / 2,
+        alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: 'transparent',
     },
@@ -446,5 +448,5 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         backgroundColor: '#ffffff',
         paddingTop: 40
-      },
+    },
 });

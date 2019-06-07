@@ -13,12 +13,17 @@ import * as Service from '../request/request.js';
 import Config from '../config';
 import {flatStylesWithAvatar} from '../styles/styles';
 import MyAdapter from './MyAdapter.js';
-
+import { getHeaderStyle } from '../styles/theme-context';
 const ItemHandler = require('../DataHandler/ClassMember/ItemHandler')
 
 /**props.navigation传递schoolClassId和voteId和voteContent */
 export default class VoteMemberList extends Component {
-    
+    static navigationOptions = ({ navigation }) => ({
+        /* 使用global.theme的地方需要单独在页面写static navigationOptions,
+            以便切换主题时及时更新。*/
+        headerStyle: getHeaderStyle(),
+        headerTintColor: global.theme.headerTintColor,
+    })
     constructor(props) {
         super(props);
         this.state = {
@@ -60,7 +65,7 @@ export default class VoteMemberList extends Component {
 
     _renderItem = ({item}) => {
         return (
-            <View style={flatStylesWithAvatar.cell}>
+            <View style={[flatStylesWithAvatar.cell,{backgroundColor:global.theme.backgroundColor}]}>
                 <TouchableOpacity
                     onPress={() => {
                         let params = this.props.navigation.state.params;
@@ -70,7 +75,7 @@ export default class VoteMemberList extends Component {
                             voteContent: params.voteContent,
                         })
                     }}
-                    style={styles.listcontainer}
+                    style={[styles.listcontainer,{backgroundColor:global.theme.backgroundColor}]}
                 >
                     <View style = {{flex:0}}>
                         <Image 
@@ -80,7 +85,7 @@ export default class VoteMemberList extends Component {
                         />
                     </View>
                     <View style = {{flex: 1,alignItems:'center', justifyContent:'center'}}>
-                        <Text style = {{fontSize: 20,color: '#333',textAlign:'center'}}>
+                        <Text style = {{fontSize: 20,color: global.theme.textColor,textAlign:'center'}}>
                         {item.displayName+ ItemHandler(item.realName)}</Text>
                     </View>
                 </TouchableOpacity>
@@ -100,7 +105,7 @@ export default class VoteMemberList extends Component {
             })
         }
         return (
-            <View style={styles.container}>
+            <View style={[styles.container, {backgroundColor:global.theme.backgroundColor}]}>
                 <FlatList
                     renderItem={this._renderItem}
                     data={data}

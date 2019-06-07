@@ -341,7 +341,7 @@ export default class HomeWorkDetail extends Component{
                 >
                     <WebView
                         source={{html: content, baseUrl: ''}}
-                        style={{height: height-40,backgroundColor:global.theme.backgroundColor}}
+                        style={{height: height-40,backgroundColor:global.theme.backgroundColor,color:'white'}}
                         startInLoadingState={true}
                         domStorageEnabled={true}
                         javaScriptEnabled={true}

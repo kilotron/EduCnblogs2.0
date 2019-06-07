@@ -21,7 +21,7 @@ import {
 } from 'react-native';
 
 import Swipeout from 'react-native-swipeout';
-
+import { getHeaderStyle } from '../styles/theme-context';
 
 const screenWidth= MyAdapter.screenWidth;
 const screenHeight= MyAdapter.screenHeight;
@@ -43,6 +43,14 @@ GetBlogApp = (url)=>{
     return ret;
 }
 export default class Submitted extends Component {
+
+    static navigationOptions = ({ navigation }) => ({
+        /* 使用global.theme的地方需要单独在页面写static navigationOptions,
+            以便切换主题时及时更新。*/
+        headerStyle: getHeaderStyle(),
+        headerTintColor: global.theme.headerTintColor,
+    })
+
     constructor(props){
         super(props);
         this.state = {
@@ -122,7 +130,7 @@ export default class Submitted extends Component {
                     rowID={answerId}
                     sectionID='submittedlist'
                     autoClose={true}
-                    backgroundColor='white'
+                    backgroundColor= {global.theme.backgroundColor}
                     onOpen={(sectionId, rowId, direction: string) => {
                         this.setState({
                             rowID: rowId,
@@ -132,7 +140,7 @@ export default class Submitted extends Component {
                   >
                 <View>
                     <TouchableOpacity
-                        style = {styles.listcontainer}
+                        style = {[styles.listcontainer, {backgroundColor:global.theme.backgroundColor}]}
                         onPress = {()=>{
                             this.props.navigation.navigate('BlogDetail',
                             {Id:key, blogApp: blogApp, CommentCount: 0, Url: url, Title: title})
@@ -150,7 +158,7 @@ export default class Submitted extends Component {
                             marginTop: 8,
                             marginBottom: 3,
                             textAlign: 'left',
-                            color: 'black',
+                            color: global.theme.textColor,
                             fontFamily : 'serif',
                         }}>
                             {realName}
@@ -159,7 +167,7 @@ export default class Submitted extends Component {
                             fontSize: 16,
                             marginBottom: 3,
                             textAlign: 'left',
-                            color: 'black',
+                            color: global.theme.textColor,
                             fontFamily : 'serif',
                         }}>
                             {title}
@@ -181,10 +189,10 @@ export default class Submitted extends Component {
                             justifyContent: 'flex-end',
                             alignItems: 'flex-end',
                         }}>
-                            <Text style = {{fontSize: 13, color: 'black'}}>
+                            <Text style = {{fontSize: 13, color: global.theme.textColor}}>
                                 {score == null ? "未评分" : "分数:" + score}
                             </Text>
-                            <Text style = {{fontSize: 13, color: 'black',textAlign: 'right',flex: 1}}>
+                            <Text style = {{fontSize: 13, color: global.theme.textColor,textAlign: 'right',flex: 1}}>
                                 提交于:{' '+dateAdded.split('T')[0]+' '+dateAdded.split('T')[1].substring(0,8)}
                             </Text>
                         </View>
@@ -204,7 +212,7 @@ export default class Submitted extends Component {
                     rowID={answerId}
                     sectionID='submittedlist'
                     autoClose={true}
-                    backgroundColor='white'
+                    backgroundColor = {global.theme.backgroundColor}
                     onOpen={(sectionId, rowId, direction: string) => {
                         this.setState({
                             rowID: rowId,
@@ -214,7 +222,7 @@ export default class Submitted extends Component {
                   >
                 <View>
                     <TouchableOpacity
-                        style = {styles.listcontainer}
+                        style = {[styles.listcontainer, global.theme.backgroundColor]}
                         onPress = {()=>{
                             this.props.navigation.navigate('BlogDetail',
                             {Id:key, blogApp: blogApp, CommentCount: 0, Url: url, Title: title})
@@ -226,7 +234,7 @@ export default class Submitted extends Component {
                             marginTop: 8,
                             marginBottom: 3,
                             textAlign: 'left',
-                            color: 'black',
+                            color: global.theme.textColor,
                             fontFamily : 'serif',
                         }}>
                             {realName}
@@ -235,7 +243,7 @@ export default class Submitted extends Component {
                             fontSize: 16,
                             marginBottom: 3,
                             textAlign: 'left',
-                            color: 'black',
+                            color: global.theme.textColor,
                             fontFamily : 'serif',
                         }}>
                             {title}
@@ -259,10 +267,10 @@ export default class Submitted extends Component {
                             justifyContent: 'flex-end',
                             alignItems: 'flex-end',
                         }}>
-                            <Text style = {{fontSize: 13, color: 'black'}}>
+                            <Text style = {{fontSize: 13, color: global.theme.textColor}}>
                                 {score == null ? "未评分" : "分数:" + score}
                             </Text>
-                            <Text style = {{fontSize: 13, color: 'black',textAlign: 'right',flex: 1}}>
+                            <Text style = {{fontSize: 13, color: global.theme.textColor,textAlign: 'right',flex: 1}}>
                                 提交于:{' '+dateAdded.split('T')[0]+' '+dateAdded.split('T')[1].substring(0,8)}
                             </Text>
                         </View>
@@ -297,7 +305,7 @@ export default class Submitted extends Component {
                         onRequestClose={() => {this.setModalVisible(false)}}
                     >
                         <TouchableOpacity style={{flex:1}} onPress={this.onClose.bind(this)}>
-                        <View style={styles.containerM}>
+                        <View style={[styles.containerM]}>
                             <View style={styles.innerContainerM}>
                                 <Text style={styles.ModalHead}>答案打分</Text>
                                 <TextInput
@@ -405,7 +413,7 @@ export default class Submitted extends Component {
             });
         }
         return(
-            <View style = {styles.container}>
+            <View style = {[styles.container,{backgroundColor:global.theme.backgroundColor}]}>
                 {this._renderModal()}
                 {this._renderCommentModal()}
                 <View style = {styles.content}>

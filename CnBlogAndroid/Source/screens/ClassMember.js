@@ -25,6 +25,7 @@ import {
     StackNavigator,
     TabNavigator,
 } from 'react-navigation';
+import { getHeaderStyle } from '../styles/theme-context';
 const screenWidth= MyAdapter.screenWidth;
 const screenHeight= MyAdapter.screenHeight;
 const titleFontSize= MyAdapter.titleFontSize;
@@ -32,7 +33,16 @@ const abstractFontSize= MyAdapter.abstractFontSize;
 const informationFontSize= MyAdapter.informationFontSize;
 const btnFontSize= MyAdapter.btnFontSize;   
 const ItemHandler = require('../DataHandler/ClassMember/ItemHandler')
+
 export default class ClassMember extends Component{
+
+    static navigationOptions = ({ navigation }) => ({
+        /* 使用global.theme的地方需要单独在页面写static navigationOptions,
+            以便切换主题时及时更新。*/
+        headerStyle: getHeaderStyle(),
+        headerTintColor: global.theme.headerTintColor,
+    })
+
     constructor(props){
         super(props);
         this.state = {
@@ -105,14 +115,14 @@ export default class ClassMember extends Component{
             <View style={flatStyles.cell}>
                 <TouchableOpacity
                     onPress = {()=>this.props.navigation.navigate('MemberBlog',{blogId:blogId,blogUrl: blogUrl})}
-                    style = {styles.listcontainer}
+                    style = {[styles.listcontainer, {backgroundColor:global.theme.backgroundColor}]}
                 >
                     <View style = {{flex:1}}>
                         <Image source = {avatarUrl?{uri:avatarUrl}:require('../images/defaultface.png')} style = {styles.avatarstyle}/>
                     </View>
-                    <View style = {styles.textcontainer}>
-                        <Text style = {{fontSize: 20,color: '#000000',flex:2}}>{displayName+ ItemHandler(realName)}</Text>
-                        <Text style = {{fontSize: 15,color: '#616161',flex:3}}>{membership===1?'学生':membership===2?'老师':'助教'}</Text>
+                    <View style = {[styles.textcontainer, {backgroundColor:global.theme.backgroundColor}]}>
+                        <Text style = {{fontSize: 20,color: global.theme.textColor,flex:2}}>{displayName+ ItemHandler(realName)}</Text>
+                        <Text style = {{fontSize: 15,color: global.theme.grayTextColor,flex:3}}>{membership===1?'学生':membership===2?'老师':'助教'}</Text>
                     </View>
                 </TouchableOpacity>
             </View>
@@ -182,9 +192,9 @@ export default class ClassMember extends Component{
         }
 
         return(
-            <View style = {styles.container}>
+            <View style = {[styles.container, {backgroundColor:global.theme.backgroundColor}]}>
 				
-                <View style={{ height: 1, backgroundColor: 'rgb(225,225,225)',  marginTop: 0.005*screenHeight, alignSelf:'stretch'}}/>
+                <View style={{ height: 1, backgroundColor: global.theme.backgroundColor,  marginTop: 0.005*screenHeight, alignSelf:'stretch'}}/>
                 <View
                     style= {{
                         flexDirection: 'row',

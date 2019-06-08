@@ -24,6 +24,8 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import Echarts from 'native-echarts'
 import { ThemeContext } from '../styles/theme-context';
 import { Toast } from 'native-base';
+import { getHeaderStyle } from '../styles/theme-context';
+
 //import { nodeInternals } from 'stack-utils';
 const HTMLSpecialCharsDecode = require('../DataHandler/HTMLSpecialCharsDecode');
 const extractVoteContentData = require('../DataHandler/VoteContent');
@@ -43,6 +45,8 @@ export default class VoteDetail extends Component {
     /**navigationOptions放在此处，可以在标题栏放一个按钮跳转到另一个页面。 */
     static navigationOptions = ({ navigation }) => ({
         headerTitle: '投票详情',
+        headerStyle: getHeaderStyle(),
+        headerTintColor: global.theme.headerTintColor,
         headerRight: navigation.state.params.privacy === Public ? (
             <TouchableOpacity onPress={() => {
                 if (navigation.state.params.voteCount == 0) {
@@ -114,7 +118,7 @@ export default class VoteDetail extends Component {
 
     /** 统计投票 */
     testVoteStatic(proArray) { //参数是需要用到的contentId
-        if (proArray==null)
+        if (proArray == null)
             proArray = this.globalVoteContentId;
         var length = proArray.length;
         let voteStaticURL = Config.VoteStatic + this.state.voteId;
@@ -126,7 +130,7 @@ export default class VoteDetail extends Component {
                 var varContentId = proArray[num]; //取得每个对应的contentId
                 var varArray = []; //准备一个空数组
                 var useArray = jsonData[varContentId]; //取得该contentId的数组
-                for (num_l = 0; num_l<useArray.length; num_l++){
+                for (num_l = 0; num_l < useArray.length; num_l++) {
                     varArray.push(useArray[num_l].recordCount); //将每个选项的投票值存入数组
                 }
                 varArray2Store.push(varArray); //将每个问题的数组存入
@@ -261,7 +265,7 @@ export default class VoteDetail extends Component {
         if (this.state.isFinished || this.state.hasVoted || this.state.isPublisher) {
             return (
                 <View style={styles.hasVotedView}>
-                    <Text style={styles.hasVotedText}>{text}</Text>
+                    <Text style={[styles.hasVotedText, { color: global.theme.headerTintColor }]}>{text}</Text>
                 </View>
             )
         }
@@ -374,37 +378,49 @@ export default class VoteDetail extends Component {
      */
     testFunction() {
         var proArray = this.globalVoteStatic;
-        if (proArray==null || proArray.length==0) return;
+        if (proArray == null || proArray.length == 0) return;
         var length = proArray.length; //先求出length的长度，代表有几个问题
         var num = 0;
         var varOptions = [];
-        for (num = 0; num < length; num++){
+        for (num = 0; num < length; num++) {
             var varArray = proArray[num]; //对应下标的数组
             var varLength = varArray.length; //其长度
             var num_l = 0;
             var varData2Use = []; //放入y轴的数组
-            for (num_l = 0; num_l<varLength; num_l++){
-                varData2Use.push('op'+ (num_l+1));
+            for (num_l = 0; num_l < varLength; num_l++) {
+                varData2Use.push('op' + (num_l + 1));
             }
             const option = {
                 //color : 'red',
                 title: {
-                    text: '投票统计'
+                    text: '投票统计',
+                    textStyle: { color: global.theme.textColor }
                 },
                 tooltip: {},
                 legend: {
                     data: ['票数']
                 },
                 yAxis: {
-                    data: varData2Use
+                    data: varData2Use,
+                    axisLabel: {
+                        textStyle: {
+                            color: global.theme.textColor,
+                        }
+                    },
                 },
-                xAxis: {},
+                xAxis: {
+                    axisLabel: {
+                        textStyle: {
+                            color: global.theme.textColor,
+                        }
+                    },
+                },
                 series: [{
-                    color : ['#4169E1'],
+                    color: [global.theme.headerTintColor],
                     name: '数量',
                     type: 'bar',
                     data: varArray,
-                    barWidth : 30,
+                    barWidth: 30,
                 }]
             };
             varOptions.push(option);
@@ -421,39 +437,39 @@ export default class VoteDetail extends Component {
      * num是具体问题在该投票中的序号，下标从0开始
      * 
      */
-    testReturnEchart(num){
+    testReturnEchart(num) {
         return (
             <View>
-                <Echarts option={this.globalOptionStatic[num]} 
+                <Echarts option={this.globalOptionStatic[num]}
                 //height={300}
-                 />
+                />
             </View>
         )
     }
 
     render() {
         let voteDisabled = this.state.hasVoted || this.state.isFinished || this.state.isPublisher;
-        if (this.state.content == "" || this._hasStatic==false) { 
+        if (this.state.content == "" || this._hasStatic == false) {
             return null;
         }
         return (
-            <View style={{ flex: 1, backgroundColor: 'white' }}>
+            <View style={{ flex: 1, backgroundColor: global.theme.backgroundColor }}>
                 <KeyboardAwareScrollView>
                     {/** header组件 */}
-                    <View style={styles.header}>
+                    <View style={[styles.header, { backgroundColor: global.theme.backgroundColor }]}>
 
-                        <Text style={styles.headerText}>
+                        <Text style={[styles.headerText, { color: global.theme.textColor }]}>
                             {this.state.name}
                         </Text>
                     </View>
 
                     {/** detail组件 */}
                     {/** 用于存放如publisher和privacy等信息 */}
-                    <View style={styles.detail}>
+                    <View style={[styles.detail, { backgroundColor: global.theme.backgroundColor }]}>
                         <Text style={[styles.publisherText, { color: global.theme.headerTintColor }]} >
                             {this.state.publisher + '\n'}
                         </Text>
-                        <Text style={styles.detailText} >
+                        <Text style={[styles.detailText, { color: global.theme.textColor }]} >
                             {'发布于: ' + this.DateFormat(this.state.dateAdded) + '\n'}
                             {'结束于: ' + this.DateFormat(this.state.deadline) + '\n'}
                             {this.state.privacy == 1 ? '公开投票' : '匿名投票'}
@@ -462,8 +478,9 @@ export default class VoteDetail extends Component {
 
                     {/** content组件 */}
 
-                    <View style={styles.content}>
+                    <View style={[styles.content, { backgroundColor: global.theme.backgroundColor }]}>
                         <FoldText
+                            style={[{ color: global.theme.textColor }]}
                             maxLines={5} //
                             text={HTMLSpecialCharsDecode(this.state.content)}
                         />
@@ -521,7 +538,7 @@ const styles = StyleSheet.create({
     },
     detail: {
         margin: 20,
-        height: 60,
+        flex: 1,
         alignItems: 'center',
         justifyContent: 'center'
     },

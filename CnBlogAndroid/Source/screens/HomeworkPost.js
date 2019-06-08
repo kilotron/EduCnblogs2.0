@@ -151,11 +151,14 @@ export default class App extends Component {
                     >
                         <View style={{
                             flex: 1,
-                            marginTop: 22
+                            marginTop: 22,
+                            backgroundColor : global.theme.backgroundColor,
+                        
                         }}>
                             <View
                                 style={{
                                     flex: 1,
+                                    backgroundColor : global.theme.backgroundColor,
                                 }}
                             >
                                 <Calendar
@@ -164,10 +167,16 @@ export default class App extends Component {
                                         this.setStartModalVisible(!this.state.startModalVisible);
                                     }}
                                     theme={{
-                                        selectedDayBackgroundColor: '#3b50ce',
-                                        selectedDayTextColor: '#ffffff',
-                                        todayTextColor: 'red'
-                                    }}
+                                        calendarBackground : global.theme.backgroundColor,
+                                        backgroundColor:global.theme.backgroundColor,
+                                        selectedDayBackgroundColor: global.theme.headerTintColor,
+                                        selectedDayTextColor: global.theme.backgroundColor,
+                                        todayTextColor: 'red',
+                                        dayTextColor:global.theme.textColor,
+                                        arrowColor : global.theme.headerTintColor,
+                                        monthTextColor : global.theme.textColor,
+                                        textDisabledColor : global.theme.calendarDisableColor,
+                                      }}     
                                 />
                             </View>
                         </View>
@@ -180,11 +189,13 @@ export default class App extends Component {
                     >
                         <View style={{
                             flex: 1,
-                            marginTop: 22
+                            marginTop: 22,
+                            backgroundColor : global.theme.backgroundColor,
                         }}>
                             <View
                                 style={{
                                     flex: 1,
+                                    backgroundColor : global.theme.backgroundColor,
                                 }}
                             >
                                 <Calendar
@@ -193,10 +204,16 @@ export default class App extends Component {
                                         this.setEndModalVisible(!this.state.endModalVisible);
                                     }}
                                     theme={{
-                                        selectedDayBackgroundColor: '#3b50ce',
-                                        selectedDayTextColor: '#ffffff',
-                                        todayTextColor: 'red'
-                                    }}
+                                        calendarBackground : global.theme.backgroundColor,
+                                        backgroundColor:global.theme.backgroundColor,
+                                        selectedDayBackgroundColor: global.theme.headerTintColor,
+                                        selectedDayTextColor: global.theme.backgroundColor,
+                                        todayTextColor: 'red',
+                                        dayTextColor:global.theme.textColor,
+                                        arrowColor : global.theme.headerTintColor,
+                                        monthTextColor : global.theme.textColor,
+                                        textDisabledColor : global.theme.calendarDisableColor,
+                                      }}     
                                 />
                             </View>
                         </View>
@@ -333,7 +350,7 @@ class MyBar extends Component {
     }
     render() {
         return (
-            <View style={styles.container}
+            <View style={[styles.container, {backgroundColor:global.theme.backgroundColor}]}
             >
                 <Text
                     style={[styles.text, { color: global.theme.textColor }]}

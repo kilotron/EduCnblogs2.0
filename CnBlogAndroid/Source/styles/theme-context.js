@@ -89,7 +89,7 @@ export const themes = {
         imageOpacity: 1,
 
         calendarDisableColor : '#BABABA', //日历中未选中的字体颜色
-
+        echartColor : '#4169E1', //图表中的柱子颜色
     },
 
     dark: {     // 主题色='#FFCC00'，黄色
@@ -150,6 +150,7 @@ export const themes = {
         logoutIconTintColor: '#DDD',
         imageOpacity: 0.85,                         // 降低亮度
         calendarDisableColor : 'black', //日历中未选中的字体颜色
+        echartColor : '#4BD864', //图表中的柱子颜色
     },
 };
 

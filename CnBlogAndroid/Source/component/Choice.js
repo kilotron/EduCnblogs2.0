@@ -100,7 +100,7 @@ export default class Choice extends Component {
                     style={styles.voteRadioButton}
                     disabled={disabled}
                 >
-                    <Text style={styles.voteRadioButtonText}>{options[i].text}</Text>
+                    <Text style={[styles.voteRadioButtonText, {color : disabled ? '#CCC': '#666'}]}>{options[i].text}</Text>
                 </RadioButton>
             )
         }

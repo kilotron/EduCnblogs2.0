@@ -24,11 +24,18 @@ import {
 } from 'react-navigation';
 import { Icon, Fab } from 'native-base';
 import ShareButton from './Share';
+import { getHeaderStyle } from '../styles/theme-context';
 const { height, width } = Dimensions.get('window');
 const ContentHandler = require('../DataHandler/BlogDetail/ContentHandler');
 
 // 传入博客Id和blogApp和CommentCount作为参数
 export default class BlogDetail extends Component{
+    static navigationOptions = ({ navigation }) => ({
+        /* 使用global.theme的地方需要单独在页面写static navigationOptions,
+            以便切换主题时及时更新。*/
+        headerStyle: getHeaderStyle(),
+        headerTintColor: global.theme.headerTintColor,
+    })
     constructor(props){
         super(props);
         this.state = {
@@ -200,11 +207,12 @@ export default class BlogDetail extends Component{
                     style= {{
                         alignSelf: 'stretch',
                         flex:1,
+                        backgroundColor:global.theme.backgroundColor,
                     }}
                 >
                 <WebView
                     source={this._WebViewSourceParams()}
-                    style={{height: height-70}}
+                    style={[{height: height-70}, {backgroundColor:global.theme.backgroundColor}]}
                     startInLoadingState={true}
                     domStorageEnabled={true}
                     javaScriptEnabled={true}

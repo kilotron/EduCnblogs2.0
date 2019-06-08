@@ -14,6 +14,10 @@ VoteCommitProps = {
     voteContent: PropTypes.array.isRequired,
     headerComponent: PropTypes.func,
     footerComponent: PropTypes.func,
+    displayStats: PropTypes.bool,   // 是否显示投票统计, 如果true，则需要提供voteStats
+    /* 一个数组，元素个数是投票题目的个数，顺序与投票题目顺序相同，每个元素是可以
+     * 直接提供给Echarts组件的数据。如果数据还未准备好，voteStats请设为undefined */
+    voteStats: PropTypes.array,
 };
 
 export default class VoteCommit extends Component {
@@ -76,6 +80,8 @@ export default class VoteCommit extends Component {
                     disabled={true}
                     headerComponent={this.headerComponent}
                     footerComponent={this.footerComponent}
+                    displayStats={this.props.displayStats}
+                    voteStats={this.props.voteStats}
                 />
             </View>
         )

@@ -85,7 +85,7 @@ export default class VoteDetail extends Component {
             content: "",
             descriptio: "",
             privacy: "",
-            voteCount: "",
+            voteCount: 0,
             blogUrl: "", //发布者的blog
             publisher: "",
             publisherId: "",
@@ -439,9 +439,6 @@ export default class VoteDetail extends Component {
         return (
             <View style={{ flex: 1, backgroundColor: 'white' }}>
                 <KeyboardAwareScrollView>
-
-                    {this.testReturnEchart(0)}
-
                     {/** header组件 */}
                     <View style={styles.header}>
 
@@ -478,6 +475,8 @@ export default class VoteDetail extends Component {
                                 voteId={this.state.voteId}
                                 voteContent={this.state.voteContent}
                                 headerComponent={this._renderVoteHeader.bind(this)}
+                                displayStats={true}
+                                voteStats={this.globalOptionStatic}
                             />
                         ) : (
                                 <Vote
@@ -489,6 +488,8 @@ export default class VoteDetail extends Component {
                                     headerComponent={this._renderVoteHeader.bind(this)}
                                     footerComponent={this._renderVoteFooter.bind(this)}
                                     disabled={voteDisabled}
+                                    displayStats={this.state.isPublisher && this.state.voteCount > 0}
+                                    voteStats={this.globalOptionStatic}
                                 />
                             )
                     }

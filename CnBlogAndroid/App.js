@@ -76,6 +76,7 @@ import VoteAdd from './Source/screens/VoteAdd'
 import VoteMemberList from './Source/screens/VoteMemberList'
 import VoteMemberCommit from './Source/screens/VoteMemberCommit'
 import { themes, ThemeContext, getHeaderStyle } from './Source/styles/theme-context';
+import HomeTabWrapper from './Source/screens/HomeTabWrapper';
 //import { globalAgent } from 'https';
 const { height, width } = Dimensions.get('window');
 
@@ -702,7 +703,7 @@ const SimpleNavigation = StackNavigator({
         }
     },
     AfterloginTab: {
-        screen: HomeTab,
+        screen: HomeTabWrapper,
         navigationOptions: {
             header: null,
         }

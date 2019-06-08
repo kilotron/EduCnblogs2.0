@@ -5,6 +5,7 @@ import {
     TouchableOpacity,
     Switch,
     Image,
+    Alert,
 } from 'react-native';
 import { themes } from '../styles/theme-context';
 import PropTypes from 'prop-types';
@@ -52,6 +53,7 @@ export default class Settings extends Component {
                 theme: isDarkMode ? themes.dark : themes.light,
             }), ()=>{this.props.navigation.setParams({theme: this.state.theme});});
             global.theme = isDarkMode ? themes.dark : themes.light;
+            global.refreshAll();
         };
         this.state = {
             theme: global.theme,

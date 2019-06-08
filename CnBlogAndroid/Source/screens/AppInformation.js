@@ -32,7 +32,6 @@ const maxNumberOfVersionPressed = 8;
 const showToastThreshold = 3;
 
 export default class AppInformation extends Component {
-
     static navigationOptions = ({ navigation }) => ({
         /* 使用global.theme的地方需要单独在页面写static navigationOptions,
             以便切换主题时及时更新。*/

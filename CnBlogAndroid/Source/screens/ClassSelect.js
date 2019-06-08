@@ -27,6 +27,7 @@ import {
 import {flatStyles} from '../styles/styles';
 import {BackHandler} from 'react-native';
 
+import {getHeaderStyle} from '../styles/theme-context';
 const screenWidth= MyAdapter.screenWidth;
 const screenHeight= MyAdapter.screenHeight;
 const titleFontSize= MyAdapter.titleFontSize;
@@ -42,6 +43,14 @@ const btnFontSize= MyAdapter.btnFontSize;
  */
 
 export default class ClassSelect extends Component {
+
+    static navigationOptions = ({ navigation }) => ({
+        /* 使用global.theme的地方需要单独在页面写static navigationOptions,
+            以便切换主题时及时更新。*/
+        headerStyle: getHeaderStyle(),
+        headerTintColor: global.theme.headerTintColor,
+    })
+
     // 用于处理按返回键的时选择默认的班级
     _didFocusSubscription;
     _willBlurSubscription;
@@ -180,7 +189,7 @@ export default class ClassSelect extends Component {
 
     _renderItem = ({item}) => {
         return (
-            <View style={flatStyles.cell}>
+            <View style={[flatStyles.cell, {backgroundColor:global.theme.backgroundColor}]}>
             <TouchableOpacity 
                 style= {styles.listItemTouchableStyle}
                 onPress={()=>{
@@ -195,12 +204,12 @@ export default class ClassSelect extends Component {
 
                 <View style= {styles.listItemContentStyle}>
                     <View style= {styles.universityNameViewStyle}>
-                        <Text style= {styles.universityNameTextStyle}>
+                        <Text style= {[styles.universityNameTextStyle, {color:global.theme.textColor}]}>
                             {item.universityNameCn}
                         </Text>                 
                     </View>
                     <View style= {styles.classNameViewStyle}>
-                        <Text style= {styles.classNameTextStyle}>
+                        <Text style= {[styles.classNameTextStyle, {color:global.theme.textColor}]}>
                             {item.nameCn}
                         </Text>                             
                     </View>
@@ -224,13 +233,15 @@ export default class ClassSelect extends Component {
             })
         }}
         if(data.length == 0){
-            return <View style={styles.container}>
-                <Text>还没有加入班级哦~</Text>
+            return <View style={[styles.container, {backgroundColor:global.theme.backgroundColor}]}>
+                <Text
+                    style = {[{color: global.theme.textColor}]}
+                >还没有加入班级哦~</Text>
             </View>
         }
         return (
-            <View style={styles.container}>
-				<View style= {styles.listViewStyle}>
+            <View style={[styles.container, {backgroundColor:global.theme.backgroundColor}]}>
+				<View style= {[styles.listViewStyle]}>
 					<FlatList
 						onRefresh = {this.UpdateData}
 						refreshing= {false}

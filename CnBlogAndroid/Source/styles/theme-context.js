@@ -87,6 +87,9 @@ export const themes = {
 
         // 图片透明度，在黑暗模式下需要降低透明度，使之不显得刺眼
         imageOpacity: 1,
+
+        calendarDisableColor : '#BABABA', //日历中未选中的字体颜色
+
     },
 
     dark: {     // 主题色='#FFCC00'，黄色
@@ -146,6 +149,7 @@ export const themes = {
         logoutIconBackgroundColor: '#FD3A2F',
         logoutIconTintColor: '#DDD',
         imageOpacity: 0.85,                         // 降低亮度
+        calendarDisableColor : 'black', //日历中未选中的字体颜色
     },
 };
 

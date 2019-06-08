@@ -27,6 +27,7 @@ import {
 import { getHeaderStyle } from '../styles/theme-context';
 import { RichTextEditor, RichTextToolbar } from 'react-native-zss-rich-text-editor';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import RadioModal from 'react-native-radio-master';
 const screenWidth = MyAdapter.screenWidth;
 const screenHeight = MyAdapter.screenHeight;
 const titleFontSize = MyAdapter.titleFontSize;
@@ -248,7 +249,7 @@ export default class App extends Component {
                         >
                             首页显示
                     </Text>
-                        <View
+                        {/* <View
                             style={styles.textInput}
                         >
                             <Picker
@@ -260,7 +261,21 @@ export default class App extends Component {
                                 <Picker.Item label="是" value="true" />
                                 <Picker.Item label="否" value="false" />
                             </Picker>
-                        </View>
+                        </View> */}
+                        <RadioModal
+                            txtColor={global.theme.textColor}
+                            selectedValue={this.state.isShowInHome ? 'true' : 'false'}
+                            onValueChange={(value) => this.setState({ isShowInHome: value })}
+                            style={{
+                                flexDirection: 'row',
+                                alignItems: 'space-around',
+                                flex: 1,
+                                backgroundColor: global.theme.backgroundColor
+                            }}
+                        >
+                            <Text value={"true"}>是</Text>
+                            <Text value={"false"}>否</Text>
+                        </RadioModal>
                     </View>
                     <View style={[styles.tichTextContainer, { backgroundColor: global.theme.backgroundColor }]}
                     >

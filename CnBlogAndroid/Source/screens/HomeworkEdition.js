@@ -27,6 +27,7 @@ import {
 import { getHeaderStyle } from '../styles/theme-context';
 import {RichTextEditor, RichTextToolbar} from 'react-native-zss-rich-text-editor';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import RadioModal from 'react-native-radio-master';
 const screenWidth= MyAdapter.screenWidth;
 const screenHeight= MyAdapter.screenHeight;
 const titleFontSize= MyAdapter.titleFontSize;
@@ -278,18 +279,33 @@ export default class homeworkEdition extends Component {
                         >
                             首页显示
                     </Text>
-                    <View
-                        style= {styles.textInput}
+                    {/* <View
+                            style={styles.textInput}
+                        >
+                            <Picker
+                                style={[styles.picker, { color: global.theme.textColor }, { backgroundColor: global.theme.backgroundColor }]}
+                                mode='dropdown'
+                                itemStyle={[{ color: global.theme.textColor }, { backgroundColor: global.theme.backgroundColor }]}
+                                selectedValue={this.state.isShowInHome ? 'true' : 'false'}
+                                onValueChange={(type) => { this.setState({ isShowInHome: type === 'true' }) }}>
+                                <Picker.Item label="是" value="true" />
+                                <Picker.Item label="否" value="false" />
+                            </Picker>
+                        </View> */}
+                    <RadioModal
+                        txtColor={global.theme.textColor}
+                        selectedValue={this.state.isShowInHome ? 'true' : 'false'}
+                        onValueChange={(value) => this.setState({ isShowInHome: value })}
+                        style={{
+                            flexDirection: 'row',
+                            alignItems: 'space-around',
+                            flex: 1,
+                            backgroundColor: global.theme.backgroundColor
+                        }}
                     >
-                        <Picker
-                            style={[styles.picker, { color: global.theme.textColor }, { backgroundColor: global.theme.backgroundColor }]}
-                            mode= 'dropdown'
-                            selectedValue={this.state.isShowInHome ? 'true' : 'false'}
-                            onValueChange={(type) => {this.setState({isShowInHome: type === 'true'})}}>
-                            <Picker.Item label="是" value="true" />
-                            <Picker.Item label="否" value="false" />
-                        </Picker>
-                    </View>
+                        <Text value={"true"}>是</Text>
+                        <Text value={"false"}>否</Text>
+                    </RadioModal>
                 </View>
                 <View style={[styles.tichTextContainer, { backgroundColor: global.theme.backgroundColor }]}
                 >

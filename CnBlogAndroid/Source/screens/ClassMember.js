@@ -130,7 +130,7 @@ export default class ClassMember extends Component{
     }
 
     _onPress = ()=>{
-        if(this.state.membership!=2 || this.state.membership!=3)
+        if(this.state.membership!=2 && this.state.membership!=3)
         {
             ToastAndroid.show("您没有权限，只有老师和助教才能添加班级成员哦！",ToastAndroid.SHORT);
         }

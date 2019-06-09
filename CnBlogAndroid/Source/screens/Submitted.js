@@ -50,7 +50,6 @@ export default class Submitted extends Component {
         headerStyle: getHeaderStyle(),
         headerTintColor: global.theme.headerTintColor,
     })
-
     constructor(props){
         super(props);
         this.state = {
@@ -145,12 +144,12 @@ export default class Submitted extends Component {
                             this.props.navigation.navigate('BlogDetail',
                             {Id:key, blogApp: blogApp, CommentCount: 0, Url: url, Title: title})
                         }}
-                        onLongPress = {()=>{
-                            this.setModalVisible(true);
-                            this.setState({
-                                answerId:answerId,
-                            })
-                        }}
+                        // onLongPress = {()=>{
+                        //     this.setModalVisible(true);
+                        //     this.setState({
+                        //         answerId:answerId,
+                        //     })
+                        // }}
                     >
                         <Text style = {{
                             fontSize: 18,
@@ -256,7 +255,7 @@ export default class Submitted extends Component {
                         }}>
                             <Text style = {{fontSize: 13, textAlign: 'right', color: 'black', flex: 1}}>
                                 {未评分}
-                            </Text>
+                            </Text>·
                             <Text style = {{fontSize: 13, textAlign: 'right', color: 'black', flex: 1}}>
                                 提交于:{' '+dateAdded.split('T')[0]+' '+dateAdded.split('T')[1].substring(0,8)}
                             </Text>
@@ -284,7 +283,7 @@ export default class Submitted extends Component {
         return (
             <View style={{ height: 9.75, justifyContent: 'center'}}>
             <View style={{ height: 0.75, backgroundColor: 'rgb(100,100,100)'}}/>
-            <View style={{ height: 9, backgroundColor: 'rgb(235,235,235)'}}/>
+            <View style={{ height: 9, backgroundColor: global.theme.seperatorColor}}/>
             </View>
         );
     }

@@ -274,6 +274,7 @@ export default class HomeWorkDetail extends Component{
                             ()=>{
                                 if(this.state.formatType !== 1){
                                     ToastAndroid.show('暂不支持markdown格式的编辑!',ToastAndroid.SHORT);
+                                    return;
                                 }
                                 var editPack = {
                                     homeworkId: Id, 
@@ -341,7 +342,7 @@ export default class HomeWorkDetail extends Component{
                 >
                     <WebView
                         source={{html: content, baseUrl: ''}}
-                        style={{height: height-40,backgroundColor:global.theme.backgroundColor,color:'white'}}
+                        style={{height: height-40,backgroundColor:global.theme.backgroundColor}}
                         startInLoadingState={true}
                         domStorageEnabled={true}
                         javaScriptEnabled={true}

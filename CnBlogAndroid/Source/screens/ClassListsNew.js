@@ -128,7 +128,7 @@ class ClassListsNew extends Component {
 						options={['班级成员']}
 						style={[styles.buttonStyle, {backgroundColor: global.theme.headerBackgroundColor}]}
 						dropdownTextStyle={[styles.buttonTextStyle, {color: global.theme.textColor,backgroundColor: global.theme.headerBackgroundColor}]}
-						dropdownTextHighlightStyle={styles.buttonTextStyle}
+						dropdownTextHighlightStyle={[styles.buttonTextStyle, {color:global.theme.textColor}]}
 						dropdownStyle={[styles.dropdownStyle, {backgroundColor: global.theme.headerBackgroundColor}]}
 						showsVerticalScrollIndicator={false}
 						onSelect={this.optionNavi}

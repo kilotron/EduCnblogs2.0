@@ -27,6 +27,7 @@ import {
 import {
 	StackNavigator,
 	TabNavigator,
+	withNavigationFocus,
 } from 'react-navigation';
 import Bulletin from './Bulletin';
 import HomeworkLists from './HomeworkLists';
@@ -42,7 +43,7 @@ const abstractFontSize = MyAdapter.abstractFontSize;
 const informationFontSize = MyAdapter.informationFontSize;
 const btnFontSize = MyAdapter.btnFontSize;
 
-export default class ClassListsNew extends Component {
+class ClassListsNew extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -104,6 +105,10 @@ export default class ClassListsNew extends Component {
 	}
 
 	render() {
+		/* 关于ModalDropdown：
+			没有找到修改分隔线样式的方法，因此不能使用夜间主题，但是在夜间模式下下拉菜单会带有
+			一个灰色的边框，还能够接受。这里的背景颜色使用headerBackgroundColor而不是
+			BackgroundColor，与页面背景颜色不同，看起来更清晰。 */
 		return (
 			<View style={styles.pageViewStyle}>
 				{/* 班级名称，点击可以切换班级 */}
@@ -121,13 +126,13 @@ export default class ClassListsNew extends Component {
 					</TouchableOpacity>
 					<ModalDropdown 
 						options={['班级成员']}
-						style={styles.buttonStyle}
-						dropdownTextStyle={styles.buttonTextStyle}
-						dropdownTextHighlightStyle={styles.buttonTextStyle}
-						dropdownStyle={styles.dropdownStyle}
+						style={[styles.buttonStyle, {backgroundColor: global.theme.headerBackgroundColor}]}
+						dropdownTextStyle={[styles.buttonTextStyle, {color: global.theme.textColor,backgroundColor: global.theme.headerBackgroundColor}]}
+						dropdownTextHighlightStyle={[styles.buttonTextStyle, {color:global.theme.textColor}]}
+						dropdownStyle={[styles.dropdownStyle, {backgroundColor: global.theme.headerBackgroundColor}]}
 						showsVerticalScrollIndicator={false}
 						onSelect={this.optionNavi}
-					>
+					> 
 						<Image style={styles.optionsImgstyle} 
 							source={require('../images/options.png')}
 							tintColor={global.theme.headerTintColor}
@@ -141,10 +146,11 @@ export default class ClassListsNew extends Component {
 					{<ScrollableTabView
 						style={tabViewStyles.ScrollableTabView}
 						initialPage={0}
-						renderTabBar={() => <ScrollableTabBar />}
-						tabBarActiveTextColor={global.theme.tabBarActiveTintColor}
-						tabBarInactiveTextColor={global.theme.tabBarInactiveTintColor}
-						tabBarUnderlineStyle={{backgroundColor: global.theme.tabBarActiveTintColor}}
+						renderTabBar={() => <ScrollableTabBar style={{borderColor: global.theme.tabBarBorderColor}}/>}
+						tabBarActiveTextColor={global.theme.tabBarActiveTextColor}
+						tabBarInactiveTextColor={global.theme.tabBarInactiveTextColor}
+						tabBarBackgroundColor={global.theme.tabBarBackgroundColor}
+						tabBarUnderlineStyle={{backgroundColor: global.theme.tabBarActiveTextColor}}
 					>
 						<View tabLabel='公告' style={{ flex: 1, alignItems: 'stretch' }} >
 							<Bulletin schoolClassId={this.state.schoolClassId}
@@ -171,6 +177,8 @@ export default class ClassListsNew extends Component {
 		}
 	}
 }
+
+export default withNavigationFocus(ClassListsNew);
 
 const styles = StyleSheet.create({
 	container: {

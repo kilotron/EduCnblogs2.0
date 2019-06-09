@@ -6,13 +6,13 @@ import React,{
 } from 'react-native';
 
 export function setItem(key, value) {
-	if (key && value){
+	if (key != null && value != null){	// key或value为null或者undefined时直接返回
 		return AsyncStorage.setItem(key, JSON.stringify(value));
 	}
 }
 
 export function mergeItem(key, value) {
-	if (key && value){
+	if (key != null && value != null){
 		return AsyncStorage.mergeItem(key, JSON.stringify(value));
 	}
 }

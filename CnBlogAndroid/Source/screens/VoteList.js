@@ -24,6 +24,7 @@ import {
 } from 'react-native';
 
 const HTMLSpecialCharsDecode = require('../DataHandler/HTMLSpecialCharsDecode');
+const relativeTime = require('../DataHandler/DateHandler');
 
 const screenWidth = MyAdapter.screenWidth;
 const screenHeight = MyAdapter.screenHeight;
@@ -66,16 +67,6 @@ export default class VoteList extends Component {
         return url;
     }
 
-    /* 将网站返回的时间字符串改成预期 */
-    String2Date = (day)=>{
-        //console.log(day);
-        if(day == null)
-            return '  ';
-        let s1 = day.split('T')[0];
-        let s2 = day.split('T')[1];
-        return s1 + '  ' + s2.split('.')[0];
-    }
-
     /** 解析this.state.votes的数据，返回一个数组。 */
     makeVotesList() {
         var data = [];
@@ -85,7 +76,7 @@ export default class VoteList extends Component {
                 name: this.state.votes[i].name,
                 url: this.state.votes[i].url,
                 description: this.state.votes[i].description,
-                dateAdded: this.String2Date(this.state.votes[i].dateAdded),
+                dateAdded: this.state.votes[i].dateAdded,
                 voteCount: this.state.votes[i].voteCount,
             })
         }
@@ -152,36 +143,37 @@ export default class VoteList extends Component {
 
     _renderItem = ({ item }) => {
         return (
-            <View style={flatStyles.cell}>
+            <View style={[flatStyles.cellWithBorder, {backgroundColor: global.theme.backgroundColor}]}>
                 <TouchableOpacity
-                    style={flatStyles.listContainer}
-                    onLongPress = {()=> {this.deleteVote(item.voteId)}}
+                    style={[flatStyles.listContainer, {backgroundColor: global.theme.backgroundColor}]}
+                    //onLongPress = {()=> {this.deleteVote(item.voteId)}}
                     onPress={() => {
                         this.props.navigation.navigate('VoteDetail', //获取详细信息
                             {
                                 voteId: item.voteId,
                                 // 在没有人投票的情况下不弹出已投票成员页面
                                 voteCount: item.voteCount,
+                                callback: this.updateData,
                             });
                     }}
                 >
-                    <Text style={styles.postTitle}
-                        accessibilityLabel={item.url}>
+                    <Text style={[styles.postTitle, {color: global.theme.textColor}]}
+                        accessibilityLabel={item.url}
+                        numberOfLines={1}
+                    >
                         {item.name}
                     </Text>
 
-                    <Text numberOfLines={3} style={styles.postDescription}>
+                    <Text numberOfLines={3} style={[styles.postDescription, {color: global.theme.textColor}]}>
                         {HTMLSpecialCharsDecode(item.description)}
                     </Text>
 
-                    <View style={styles.postMetadataView}>
-                        <Text style={styles.viewCountAndCommentCount}>
-                            {item.voteCount + '投票人数' + '  '
-                                //+ item.commentCount + ' 评论'
-                            }
+                    <View style={[styles.postMetadataView, {backgroundColor: global.theme.backgroundColor}]}>
+                        <Text style={[styles.viewCountAndCommentCount, {color: global.theme.grayTextColor}]}>
+                            {item.voteCount + ' 投票人数'}
                         </Text>
-                        <Text style={styles.postDate}>
-                            {'发布于: ' + item.dateAdded.split('T')[0] }
+                        <Text style={[styles.postDate, {color: global.theme.grayTextColor}]}>
+                            {relativeTime(item.dateAdded) }
                         </Text>
                     </View>
                 </TouchableOpacity>
@@ -208,7 +200,7 @@ export default class VoteList extends Component {
         if (this.state.loadStatus === 'all loaded') {
             return (
                 <View style={styles.allLoadedView}>
-                    <Text style={styles.allLoadedText}>
+                    <Text style={[styles.allLoadedText,{color: global.theme.promptTextColor}]}>
                         再往下拉也没有了呢 ~
                 </Text>
                 </View>
@@ -217,7 +209,7 @@ export default class VoteList extends Component {
             return (
                 <View style={styles.footer}>
                     <ActivityIndicator />
-                    <Text>正在加载...</Text>
+                    <Text style={{color: global.theme.promptTextColor}}>正在加载...</Text>
                 </View>
             );
         } //else 'not loading'
@@ -251,7 +243,7 @@ export default class VoteList extends Component {
 
     render() {
         return (
-            <View style={styles.container}>
+            <View style={[styles.container, {backgroundColor: global.theme.backgroundColor}]}>
 
                 <View>
                     {/* 需要使用View，不然FlatList无法显示 */}

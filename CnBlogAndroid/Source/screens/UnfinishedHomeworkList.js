@@ -24,6 +24,7 @@ import {
     Alert
 } from 'react-native';
 import Toast from 'teaset/components/Toast/Toast';
+import {getHeaderStyle} from '../styles/theme-context';
 const HTMLSpecialCharsDecode = require('../DataHandler/HTMLSpecialCharsDecode');
 
 const screenWidth= MyAdapter.screenWidth;
@@ -34,6 +35,14 @@ const informationFontSize= MyAdapter.informationFontSize;
 const btnFontSize= MyAdapter.btnFontSize;
 
 export default class HomeworkLists extends Component {
+
+    static navigationOptions = ({ navigation }) => ({
+        /* 使用global.theme的地方需要单独在页面写static navigationOptions,
+            以便切换主题时及时更新。*/
+        headerStyle: getHeaderStyle(),
+        headerTintColor: global.theme.headerTintColor,
+    })
+
     constructor(props){
         super(props);
         this.state = {
@@ -67,15 +76,15 @@ export default class HomeworkLists extends Component {
                         callback:()=>{},
                         blogId:blogId,
                     })}
-                    style = {HomeworkStyles.container}
+                    style = {[HomeworkStyles.container, {backgroundColor:global.theme.backgroundColor}]}
                 >
-                    <Text style= {HomeworkStyles.titleTextStyle}>
+                    <Text style= {[HomeworkStyles.titleTextStyle, {color:global.theme.textColor}]}>
                         {title}
                     </Text>
-                    <Text numberOfLines={3} style= {HomeworkStyles.abstractTextStyle}>
+                    <Text numberOfLines={3} style= {[HomeworkStyles.abstractTextStyle, {color:global.theme.textColor}]}>
                         {HTMLSpecialCharsDecode(description)}
                     </Text>
-                    <Text style= {HomeworkStyles.informationTextStyle}>
+                    <Text style= {[HomeworkStyles.informationTextStyle, {color:global.theme.textColor}]}>
                         截止于:{deadline.split('T')[0]+' '+deadline.split('T')[1].substring(0,8)}
                     </Text>
                 </TouchableOpacity>
@@ -106,7 +115,7 @@ export default class HomeworkLists extends Component {
             style= {{
                 flexDirection: 'column',
                 flex: 1,
-                backgroundColor: 'white'
+                backgroundColor: global.theme.backgroundColor,
             }}
         >
             <View

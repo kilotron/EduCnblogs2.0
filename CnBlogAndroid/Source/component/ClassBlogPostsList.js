@@ -40,7 +40,6 @@ import MyAdapter from '../screens/MyAdapter';
 const T_WIDTH = 7;
 const T_HEIGHT = 4;
 
-const COLOR_HIGH = global.theme.headerTintColor;
 const COLOR_NORMAL = 'gray';
 
 const LINE = 1 / PixelRatio.get();
@@ -56,6 +55,7 @@ const ClassBlogPostsListProps = {
 
 const GetBlogApp = require('../DataHandler/BlogDetail/GetBlogApp');
 const HTMLSpecialCharsDecode = require('../DataHandler/HTMLSpecialCharsDecode');
+const relativeDate = require('../DataHandler/DateHandler');
 
 const CONFIG = [
     {
@@ -85,7 +85,7 @@ class Triangle extends React.Component {
         let path;
         let fill;
         if (this.props.selected) {
-            fill = COLOR_HIGH;
+            fill = global.theme.headerTintColor;
             path = new Path()
                 .moveTo(T_WIDTH / 2, 0)
                 .lineTo(0, T_HEIGHT)
@@ -116,9 +116,9 @@ const TopMenuItem = (props) => {
     };
     //console.log("topmenuitem: ", props.label, ' , ', props.index);
     return (
-        <TouchableWithoutFeedback onPress={onPress}>
+        <TouchableWithoutFeedback onPress={onPress} style={{backgroundColor: global.theme.backgroundColor}}>
             <View style={styles.item}>
-                <Text style={props.selected ? styles.menuTextHigh : styles.menuText}>{props.label}</Text>
+                <Text style={props.selected ? [styles.menuTextHigh, {color: global.theme.headerTintColor}] : [styles.menuText, {color: global.theme.grayTextColor}]}>{props.label}</Text>
                 <Triangle selected={props.selected}/>
             </View>
         </TouchableWithoutFeedback>
@@ -137,11 +137,11 @@ const Subtitle = (props) => {
     }
 
     return (
-        <TouchableHighlight onPress={onPress} underlayColor="#f5f5f5">
-            <View style={styles.tableItem}>
+        <TouchableHighlight onPress={onPress} underlayColor="#f5f5f5" style={{backgroundColor: global.theme.backgroundColor}}>
+            <View style={[styles.tableItem,{backgroundColor: global.theme.backgroundColor, borderBottomColor: global.theme.filterBorderBottomColor}]}>
                 <View style={styles.row}>
                     {props.selected && <Check />}
-                    <Text style={textStyle}>{props.data.title}</Text>
+                    <Text style={[textStyle, {color: props.selected?global.theme.headerTintColor:global.theme.grayTextColor}]}>{props.data.title}</Text>
                 </View>
                 <Text style={rightTextStyle}>{props.data.subtitle}</Text>
             </View>
@@ -157,7 +157,7 @@ const Check = () => {
         >
             <Group scale={0.03}>
                 <Shape
-                    fill={COLOR_HIGH}
+                    fill={global.theme.headerTintColor}
                     d={`M494,52c-13-13-33-13-46,0L176,324L62,211c-13-13-33-13-46,0s-13,33,0,46l137,136c6,6,15,10,23,10s17-4,23-10L494,99
       C507,86,507,65,494,52z`}
                 />
@@ -199,28 +199,16 @@ export default class ClassBlogPostsList extends Component {
             selectedIndex: null,        // 下拉菜单使用的变量
             current: null,              // 下拉菜单使用的变量
 
+            topDistance: new Animated.Value(0),  // 组件和顶部的距离
+
             blogs: [],	                // 班级博客列表
             postCount: 0,               //班级博客总数
             schoolClassId: this.props.schoolClassId,
             filter: 'all',              // 筛选条件：'all' 'no_comment' 'tutor' 'student'
 			loadStatus: 'not loading',  // 用于上拉加载的动画
 			currentPageIndex: 1,        // 已加载的页数/序号，从1开始
-            headerTop: new Animated.Value(0), // 用于向下滚动隐藏筛选条件的动画
             networkError: false,        // 加载失败时设置为true
         };
-
-        /* 下面两个变量用于向下滚动隐藏筛选条件的动画。动画设置的参考链接见本文件末尾。 */
-        this.top = this.state.headerTop.interpolate({
-            inputRange: [0, 270, 271, 280],
-            outputRange: [0, -50, -50, -50]
-        });
-        this.animatedEvent = Animated.event(
-            [{
-                nativeEvent: {
-                    contentOffset: {y: this.state.headerTop}
-                }
-            }]
-        );
     }
 
     /**在一个组件卸载后调用setState()，可能导致内存泄漏，会产生警告。
@@ -231,6 +219,19 @@ export default class ClassBlogPostsList extends Component {
 
     componentWillMount() {
         this.fetchPage(1);
+
+        this.top = this.state.topDistance.interpolate({
+            inputRange: [0, 270, 271, 280],
+            outputRange: [0, -40, -40, -40]
+        })
+
+        this.animatedEvent = Animated.event([
+        {
+            nativeEvent: {
+                contentOffset: { y : this.state.topDistance }
+            }
+        }])
+
     }
 
     componentDidMount() {
@@ -251,11 +252,11 @@ export default class ClassBlogPostsList extends Component {
                 () => {this.updateData()});
         }
     }
-
+/*
     // 可删，调试用
     componentWillUpdate() {
     }
-
+*/
     createAnimation = (index, height) => {
         return Animated.timing(
             this.state.height[index],
@@ -279,19 +280,15 @@ export default class ClassBlogPostsList extends Component {
     /* 单击选择框时执行 */
     onSelect = (index) => {
         if (index === this.state.selectedIndex) {
-            //消失
-            //console.log("onSelect \n to hide func");
             this.hide(index);
         }
         else {
-            //console.log("onSelect \n to onshow func");
             this.setState({selectedIndex: index, current: index});
             this.onShow(index);
         }
     }
 
     hide = (index, subselected) => {
-        //console.log("hide func");
         let opts = {selectedIndex: null, current: index};
         if (subselected !== undefined) {
             this.state.subselected[index] = subselected;
@@ -348,6 +345,7 @@ export default class ClassBlogPostsList extends Component {
         );
     }
 
+
     /** 第pageIndex页的班级博文的URL */
     URLOf(pageIndex) {
         //alert(this.props.schoolClassId);
@@ -386,6 +384,10 @@ export default class ClassBlogPostsList extends Component {
     makeBlogPostsList() {
         let data = [];
         for (let i in this.state.blogs) {
+            let d = new Date(this.state.blogs[i].dateAdded);
+            d = this.state.blogs[i].dateAdded;
+            //alert(d);
+            //break
             data.push({
                 blogId: this.state.blogs[i].url.match( /p\/([^%]+).html/)[1],//博文的编号
                 title: this.state.blogs[i].title,
@@ -426,35 +428,41 @@ export default class ClassBlogPostsList extends Component {
     }
 
     render() {
+        //let topDistance = this.state.topDistance;
         return (
-            <View style={{flex: 1,}}>{/* 需要使用View，不然FlatList无法显示 */}
+            <View style={{flex: 1, backgroundColor: global.theme.backgroundColor, }}>{/* 需要使用View，不然FlatList无法显示 */}
                 {/* 使用keyExtractor为每个item生成独有的key，就不必再data数组的每一个元素中添加key键。
                     refreshing设置为false在列表更新时不显示转圈*/}
                 {/*item设置了立体的样式，这里去掉ItemSeparatorComponent={this._separator}*/}
-
-                <View style={styles.topMenu}>
-                    {this.state.top.map((t, index) => {
-                        return <TopMenuItem
-                            key={index}
-                            index={index}
-                            onClickDropDownMenu={this.onSelect}
-                            label={t}
-                            selected={this.state.selectedIndex === index}/>
-                    })}
-                </View>
+                {/* 渲染筛选框 */}
+                <Animated.View style={{top: this.top}} >
+                    <View style={[styles.topMenu, {backgroundColor: global.theme.backgroundColor, borderBottomColor: global.theme.filterBorderBottomColor, borderTopColor: global.theme.filterBorderTopColor}]}>
+                        {this.state.top.map((t, index) => {
+                            return <TopMenuItem
+                                key={index}
+                                index={index}
+                                onClickDropDownMenu={this.onSelect}
+                                label={t}
+                                selected={this.state.selectedIndex === index}/>
+                        })}
+                    </View>
+                </Animated.View>
+                {/* 渲染列表 */}
+                <Animated.View style={{top: this.top}} >
                 <FlatList
                     renderItem={this._renderItem}
                     data={this.makeBlogPostsList()}
                     keyExtractor={(item, index) => index.toString()}
                     onRefresh = {this.updateData.bind(this)}
+                    onScroll={this.animatedEvent}
                     refreshing= {false}
                     onEndReached={this._onEndReached.bind(this)}
                     onEndReachedThreshold={0.5}
                     ListEmptyComponent={this._renderEmptyList.bind(this)}
                     ListFooterComponent={this._renderFooter.bind(this)}
-                    onScroll={this.animatedEvent}
                     ItemSeparatorComponent={this._itemSeparatorComponent}
                 />
+                </Animated.View>
                 <View style={styles.bgContainer} pointerEvents={this.state.selectedIndex !== null ? "auto" : "none"}>
                     <Animated.View style={[styles.bg, {opacity: this.state.fadeInOpacity}]}/>
                     {CONFIG.map((d, index) => {
@@ -467,7 +475,7 @@ export default class ClassBlogPostsList extends Component {
 
     _itemSeparatorComponent(){
         return (
-            <View style={flatStylesWithAvatar.separatorStyle}/>
+            <View style={[flatStylesWithAvatar.separatorStyle, {backgroundColor: global.theme.flatListSeperatorColor2}]}/>
         )
     }
 
@@ -475,10 +483,10 @@ export default class ClassBlogPostsList extends Component {
     _renderItem = ({item}) => {
         const BlogApp = GetBlogApp(item.url);
 		return(
-            <View style={flatStylesWithAvatar.cell}>
+            <View style={[flatStylesWithAvatar.cell, {backgroundColor: global.theme.backgroundColor}]}>
 
                 <TouchableOpacity
-                    style = {flatStylesWithAvatar.listcontainer}
+                    style = {[flatStylesWithAvatar.listcontainer, {backgroundColor: global.theme.backgroundColor}]}
                     onPress = {() => {
                         this.props.navigation.navigate('BlogDetail',
                             {
@@ -491,27 +499,27 @@ export default class ClassBlogPostsList extends Component {
                             });
                     }}
                 >
-                    <View style = {nameImageStyles.nameContainer}>
-                        <Text style = {nameImageStyles.nameText}>
+                    <View style = {[nameImageStyles.nameContainer, {backgroundColor: global.theme.avatarBackgroundColor}]}>
+                        <Text style = {[nameImageStyles.nameText, {color: global.theme.avatarTextColor}]}>
                             {BlogApp.slice(0, 2)}
                         </Text>
                     </View>
-                    <View style={{flex: 1,}}>
-                        <Text style={blogListStyles.blogTitleText} accessibilityLabel={item.url}>
+                    <View style={{flex: 1, backgroundColor: global.theme.backgroundColor}}>
+                        <Text style={[blogListStyles.blogTitleText, {color: global.theme.textColor}]} accessibilityLabel={item.url}>
                             {item.title}
                         </Text>
 
-                        <Text numberOfLines={2} style={blogListStyles.blogSummaryText}>
+                        <Text numberOfLines={2} style={[blogListStyles.blogSummaryText, {color: global.theme.grayTextColor}]}>
                             {HTMLSpecialCharsDecode(item.description)}
                         </Text>
 
                         <View style={blogListStyles.blogAppAndTimeContainer}>
-                            <Text style={styles.viewCountAndCommentCount}>
-                                {item.viewCount + ' 阅读' + '  '
+                            <Text style={[styles.viewCountAndCommentCount, {color: global.theme.grayTextColor}]}>
+                                {item.viewCount + ' 阅读' + ' · '
                                  + item.commentCount + ' 评论'}
                             </Text>
-                            <Text style={styles.postDate}>
-                                {item.author + ' 发布于 ' + this.parsePostDate(item.postDate)}
+                            <Text style={[styles.postDate, {color: global.theme.grayTextColor}]}>
+                                {item.author + ' · ' + relativeDate(item.postDate)}
                             </Text>
                         </View>
                     </View>
@@ -519,24 +527,6 @@ export default class ClassBlogPostsList extends Component {
             </View>
 		)
     };
-
-    /**根据设置返回要显示的时间 */
-    parsePostDate(postDate) {
-        if (global.settings.displayDetailTime) {
-            return this.YMDInPostDate(postDate) + ' ' + this.timeInPostDate(postDate);
-        } else {
-            return this.YMDInPostDate(postDate);
-        }
-    }
-
-    /**参数为‘2019-04-09T17:05:00+08:00’，返回字符串年月日 */
-    YMDInPostDate(postDate) {
-        return postDate.match(/\d{4}-\d{2}-\d{2}/)[0];
-    }
-
-    timeInPostDate(postDate) {
-        return postDate.match(/(\d{2}:\d{2}):\d{2}/)[1];
-    }
 
     /**FlatList滚动到到底部时调用此函数，获取新的一页。 */
     _onEndReached() {
@@ -557,8 +547,8 @@ export default class ClassBlogPostsList extends Component {
         if (this.state.loadStatus === 'all loaded') {
             return (
                 <View style={styles.allLoadedView}>
-                    <Text style={styles.allLoadedText}>
-                        再往下拉也没有了呢
+                    <Text style={[styles.allLoadedText, {color: global.theme.promptTextColor}]}>
+                        再往下拉也没有了呢 ~
                     </Text>
                 </View>
             );
@@ -566,7 +556,9 @@ export default class ClassBlogPostsList extends Component {
             return (
                 <View style={styles.footer}>
                     <ActivityIndicator />
-                    <Text>正在加载...</Text>
+                    <Text style={{color: global.theme.promptTextColor}}>
+                        正在加载...
+                    </Text>
                 </View>
             );
         } //else 'not loading'
@@ -620,7 +612,7 @@ const styles = StyleSheet.create({
         width: screenWidth,
     },
     highlight: {
-        color: COLOR_HIGH
+        color: global.theme.headerTintColor
     },
     marginHigh: {marginLeft: 10},
     margin: {marginLeft: 28},
@@ -639,7 +631,7 @@ const styles = StyleSheet.create({
         paddingLeft: 10,
         paddingRight: 10,
         borderBottomWidth: LINE,
-        borderBottomColor: '#eee',
+        //borderBottomColor: '#eee',
         flexDirection: 'row',
         justifyContent: 'space-between'
     },
@@ -656,7 +648,7 @@ const styles = StyleSheet.create({
     menuTextHigh: {
         marginRight: 3,
         fontSize: 13,
-        color: COLOR_HIGH
+        color: global.theme.headerTintColor
     },
     menuText: {
         marginRight: 3,
@@ -667,9 +659,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         height: 40,
         borderTopWidth: LINE,
-        borderTopColor: '#bdbdbd',
+        //borderTopColor: '#bdbdbd',
         borderBottomWidth: 1,
-        borderBottomColor: '#f2f2f2'
     },
     viewCountAndCommentCount: {
         fontSize: 10,

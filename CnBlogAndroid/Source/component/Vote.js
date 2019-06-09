@@ -10,6 +10,7 @@ import {
     Text,
     FlatList,
 } from 'react-native';
+import Echarts from 'native-echarts';
 
 VoteProps = {
     /**data = [
@@ -23,9 +24,13 @@ VoteProps = {
     data: PropTypes.array.isRequired,
     headerComponent: PropTypes.func,
     footerComponent: PropTypes.func,
-    /**disabled=true，不能修改选项。 */
+    /**如果disabled=true，不能修改选项。 */
     disabled: PropTypes.bool,
     recvSelectedIds: PropTypes.func,
+    displayStats: PropTypes.bool,   // 是否显示投票统计, 如果true，则需要提供voteStats
+    /* 一个数组，元素个数是投票题目的个数，顺序与投票题目顺序相同，每个元素是可以
+     * 直接提供给Echarts组件的数据。如果数据还未准备好，voteStats请设为undefined */
+    voteStats: PropTypes.array,     
 }
 
 export default class Vote extends Component {
@@ -42,6 +47,8 @@ export default class Vote extends Component {
         this.footerComponent = this.props.footerComponent ? this.props.footerComponent : null;
         // 设置optionsIdsState初始值
         this.resetOptionIdsState(this.props.data);
+        this.displayStats = typeof(this.props.displayStats) == 'boolean' ? this.props.displayStats : false;
+        this.displayStats = this.displayStats && typeof(this.props.voteStats) != 'undefined';
     }
 
     /**从参数data中提取各个选项的选中状态。此函数只在设置optionsIdsState初始值或者
@@ -71,7 +78,7 @@ export default class Vote extends Component {
                 <FlatList
                     renderItem={this.renderVoteItem}
                     data={this.props.data}
-                    extraData={this.props.disabled}
+                    extraData={[]} // 强制重新渲染
                     keyExtractor={(item, index) => index.toString()}
                     ListHeaderComponent={this.headerComponent}
                     ListFooterComponent={this.footerComponent}
@@ -82,15 +89,24 @@ export default class Vote extends Component {
 
     renderVoteItem = ({item, index}) => {
         return (
-            <Choice
-                serialNumber={item.serialNumber}
-                type={item.type}
-                title={item.title}
-                imageSource={item.imageSource}
-                options={item.options}
-                disabled={this.props.disabled}
-                onClick={this.onClick.bind(this)}
-            />
+            <View>
+                <Choice
+                    serialNumber={item.serialNumber}
+                    type={item.type}
+                    title={item.title}
+                    imageSource={item.imageSource}
+                    options={item.options}
+                    disabled={this.props.disabled}
+                    onClick={this.onClick.bind(this)}
+                />
+                {  
+                    this.displayStats ? (
+                        <View style={{marginHorizontal: 15, marginVertical: 5}} >
+                            <Echarts option={this.props.voteStats[index]}/>
+                        </View>
+                    ) : null
+                }
+            </View>
         )
     }
 

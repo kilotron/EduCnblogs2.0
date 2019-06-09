@@ -29,6 +29,7 @@ const abstractFontSize= MyAdapter.abstractFontSize;
 const informationFontSize= MyAdapter.informationFontSize;
 const btnFontSize= MyAdapter.btnFontSize;
 const HTMLSpecialCharsDecode = require('../DataHandler/HTMLSpecialCharsDecode');
+const relativeTime = require('../DataHandler/DateHandler');
 
 export default class HomeworkLists extends Component {
     constructor(props){
@@ -288,7 +289,7 @@ export default class HomeworkLists extends Component {
         var isClosed = item1.item.isClosed;
 
         return (
-            <View style={flatStyles.cell}>
+            <View style={[flatStyles.cellWithBorder, {backgroundColor: global.theme.backgroundColor}]}>
                 <TouchableOpacity
                     //url:作业url，如示例的'/campus/bjwzxy/test/homework/9'
                     onPress = {()=>this.props.navigation.navigate('HomeworkDetail',{
@@ -301,16 +302,16 @@ export default class HomeworkLists extends Component {
                                 //编辑作业所需参数
                                 blogId:this.state.blogId,
                                 })}
-                    style = {HomeworkStyles.container}
+                    style = {[HomeworkStyles.container, {backgroundColor: global.theme.backgroundColor}]}
                 >
-                    <Text style= {isClosed ? HomeworkStyles.greyTitleTextStyle : HomeworkStyles.titleTextStyle}>
+                    <Text style= {isClosed ? [HomeworkStyles.greyTitleTextStyle, {color: global.theme.homeworkGrayTitleColor}] : [HomeworkStyles.titleTextStyle, {color: global.theme.homeworkTitleColor}]}>
                         {HTMLSpecialCharsDecode(title)}
                     </Text>
-                    <Text numberOfLines={3} style= {HomeworkStyles.abstractTextStyle}>
+                    <Text numberOfLines={3} style= {[HomeworkStyles.abstractTextStyle, {color: global.theme.textColor}]}>
                         {HTMLSpecialCharsDecode(description)}
                     </Text>
-                    <Text style= {isClosed ? HomeworkStyles.closedInformationTextStyle : (isFinished ? HomeworkStyles.outdateInformationTextStyle : HomeworkStyles.informationTextStyle)}>
-                        截止于:{deadline.split('T')[0]+' '+deadline.split('T')[1].substring(0,8)}
+                    <Text style= {isClosed ? [HomeworkStyles.closedInformationTextStyle, {color: global.theme.homeworkClosedTimeTextColor}] : (isFinished ? [HomeworkStyles.outdateInformationTextStyle, {color: global.theme.homeworkFinishedTimeTextColor}] : [HomeworkStyles.informationTextStyle, {color: global.theme.homeworkUnfinishedTimeTextColor}])}>
+                        {'截止于: ' + relativeTime(deadline)}
                     </Text>
                 </TouchableOpacity>
             </View>
@@ -319,7 +320,7 @@ export default class HomeworkLists extends Component {
     _sectionHeader = (info)=>{
         return (
             <View style={HomeworkStyles.sectionHeaderViewStyle}>
-                <Text style={HomeworkStyles.sectionHeaderTextStyle}>{info.section.key}</Text>
+                <Text style={[HomeworkStyles.sectionHeaderTextStyle, {color: global.theme.homeworkSectionHeaderTextColor}]}>{info.section.key}</Text>
             </View>
         );
     }
@@ -428,7 +429,7 @@ export default class HomeworkLists extends Component {
             style= {{
                 flexDirection: 'column',
                 flex: 1,
-                backgroundColor: 'white'
+                backgroundColor: global.theme.backgroundColor,
             }}
         >
             <View style={{ height: 1, backgroundColor: 'rgb(204,204,204)', }}/>
@@ -477,7 +478,6 @@ const HomeworkStyles = StyleSheet.create({
         marginTop: 10,
         marginBottom: 2,
         fontWeight: 'bold',
-        fontFamily : 'serif',
     },
     greyTitleTextStyle:{
         fontSize: 18,
@@ -486,7 +486,6 @@ const HomeworkStyles = StyleSheet.create({
         marginTop: 10,
         marginBottom: 2,
         fontWeight: 'bold',
-        fontFamily : 'serif',
     },
     abstractTextStyle:{
         fontSize: 14,

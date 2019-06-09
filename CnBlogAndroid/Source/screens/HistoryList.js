@@ -22,6 +22,8 @@ import {
     Alert,
 } from 'react-native';
 
+import {getHeaderStyle} from '../styles/theme-context';
+
 import Swipeout from 'react-native-swipeout';
 
 const HTMLSpecialCharsDecode = require('../DataHandler/HTMLSpecialCharsDecode');
@@ -33,10 +35,19 @@ const abstractFontSize= MyAdapter.abstractFontSize;
 const informationFontSize= MyAdapter.informationFontSize;
 const btnFontSize= MyAdapter.btnFontSize;
 const pageSize = 10;
+const minMoveDistance = (15<0.1*screenWidth)?15:0.1*screenWidth;
 
 const HtmlDecode = require('../DataHandler/HomeworkDetails/HtmlDecode');
 
 export default class HistoryList extends Component {
+
+    static navigationOptions = ({ navigation }) => ({
+        /* 使用global.theme的地方需要单独在页面写static navigationOptions,
+            以便切换主题时及时更新。*/
+        headerStyle: getHeaderStyle(),
+        headerTintColor: global.theme.headerTintColor,
+    })
+
     constructor(props){
         super(props);
         this.state = {
@@ -46,10 +57,69 @@ export default class HistoryList extends Component {
             currentPageIndex: 1,
             rowID: null,
             sectionID: null,
+            multSelection: false,
+            selectedItems: [],
         }
         this._isMounted=true;
     }
+    /*
+    static navigationOptions = ({ navigation }) => ({
+        headerStyle: getHeaderStyle(),
+        headerTintColor: global.theme.headerTintColor,
+        headerRight: (
+            this.state.multSelection
+            ? (
+                <TouchableOpacity style={{marginRight:18}} onPress={()=>{
+                    this._delSelected();
+                }}>
+                    <Text style={{color: global.theme.headerTintColor, fontSize: 18}}>删除</Text>
+                </TouchableOpacity>)
+            : (<View></View>)),
+    })
+    */
     _isMounted;
+
+    _delSelected(){
+        if(!this._isMounted){
+            return;
+        }
+        Alert.alert(
+            '删除已选中历史记录',
+            '确定要删除吗？',
+            [
+                {text: '取消'},
+                {text: '确认删除', onPress: ()=>{
+                    global.storage.load({key: StorageKey.BLOG_LIST})
+                    .then((ret)=>{
+                        result = [];
+                        blogCount = 0;
+                        ret.map((item,index)=>{
+                            if(this.state.selectedItems.indexOf(item.id)<0){
+                                result.push(item);
+                                blogCount++;
+                            }
+                        })
+                        global.storage.save({key: StorageKey.BLOG_LIST, data: result});
+                        this.setState({
+                            theblogs: result,
+                            theblogCount: blogCount,
+                            loadStatus:(blogCount>0)?'all loaded':'none',
+
+                            selectedItems:[],
+                            multSelection:false,
+                        });
+                    })
+                    .catch((err)=>{
+                        this.setState({
+                            selectedItems:[],
+                            multSelection:false,
+                        });
+                        ToastAndroid.show(err.name,ToastAndroid.SHORT);
+                    })
+                }},
+            ]
+        );
+    }
 
     // componentWillUpdate(){
     //     this._isMounted=true;
@@ -112,6 +182,20 @@ export default class HistoryList extends Component {
         );
     }
 
+    _onLongPressItem(Id){
+        if(this.state.multSelection){
+            // 代表已进入多选状态
+            this._delSelected();
+        }
+        else{
+            // 现在进入多选状态
+            this.setState({
+                selectedItems: [Id],
+                multSelection: true,
+            });
+        }
+    }
+
     /* 渲染一个历史记录数据 */
     _renderItem = (item) => {
         const item1 = item;
@@ -122,6 +206,11 @@ export default class HistoryList extends Component {
         const CommentCount = item1.item.commentCount;
         const SummaryContent = item1.item.summaryContent;
         const DateAdded = item1.item.dateAdded;
+        let ItemBgColor = '#FFFFFF';
+        let ItemIndex = this.state.selectedItems.indexOf(Id);
+        if (ItemIndex > -1){
+            ItemBgColor = '#EEEEF0';
+        }
 
         const BtnsLeft = [{ text: '清空', type: 'delete',  onPress: ()=> this._onPressDelAll()},];
         const BtnsRight = [{ text: '删除', type: 'delete', onPress: ()=>this._onPressDelHistory(Id)},];
@@ -131,40 +220,53 @@ export default class HistoryList extends Component {
                 close={!(this.state.sectionID === 'historylist' && this.state.rowID === Id)}
                 right={BtnsRight}
                 left={BtnsLeft}
-                sensitivity={20}
+                sensitivity={minMoveDistance}
                 rowID={Id}
                 sectionID='historylist'
                 autoClose={true}
-                backgroundColor='white'
+                backgroundColor= {global.theme.backgroundColor}
                 onOpen={(sectionId, rowId, direction: string) => {
                     this.setState({
                         rowID: rowId,
                         sectionID: sectionId
                     });
                 }}
+                disabled={this.state.multSelection}
               >
-            <View style={flatStylesWithAvatar.cell}
+            <View style={[flatStylesWithAvatar.cell, {backgroundColor:global.theme.backgroundColor}]}
             >
                 <TouchableOpacity
-                    style = {flatStylesWithAvatar.listcontainer}
-                    onLongPress = {()=> {this._onPressDelHistory(Id)}}
-                    onPress = {Url!=='' ? ()=>this.props.navigation.navigate('BlogDetail',
-                    {Id:Id, blogApp: BlogApp, CommentCount: CommentCount, Url: Url, Title: Title, Description:SummaryContent}) : ()=>{}}
+                    style = {[flatStylesWithAvatar.listcontainer, {backgroundColor:global.theme.backgroundColor}]}
+                    onLongPress = {()=> {this._onLongPressItem(Id)}}
+                    onPress = {this.state.multSelection?(
+                            ItemIndex>-1?()=>{
+                                selectedItems = this.state.selectedItems;
+                                selectedItems.splice(ItemIndex, 1);
+                                this.setState({selectedItems:selectedItems});
+                            }:()=>{
+                                selectedItems = this.state.selectedItems;
+                                selectedItems.push(Id);
+                                this.setState({selectedItems:selectedItems});
+                            }
+                    ):
+                        (Url!=='' ? ()=>this.props.navigation.navigate('BlogDetail',
+                    {Id:Id, blogApp: BlogApp, CommentCount: CommentCount, Url: Url, Title: Title, Description:SummaryContent}) : ()=>{})
+                }
                 >
-                    <View style = {nameImageStyles.nameContainer}>
-                        <Text style = {nameImageStyles.nameText}>
+                    <View style = {[nameImageStyles.nameContainer, {backgroundColor: global.theme.avatarBackgroundColor}]}>
+                        <Text style = {[nameImageStyles.nameText, {color: global.theme.avatarTextColor}]}>
                             {BlogApp.slice(0, 2)}
                         </Text>
                     </View>
                     <View style = {{flex:1}}>
-                        <Text numberOfLines={1} style = {blogListStyles.blogTitleText} >
+                        <Text numberOfLines={1} style = {[blogListStyles.blogTitleText, {color : global.theme.textColor}]} >
                             {Title}
                         </Text>
-                        <Text numberOfLines={2} style = {blogListStyles.blogSummaryText}>
+                        <Text numberOfLines={2} style = {[blogListStyles.blogSummaryText, {color : global.theme.textColor}]}>
                             {SummaryContent + '...'}
                         </Text>
-                        <View style = {blogListStyles.blogAppAndTimeContainer}>
-                            <Text style = {blogListStyles.blogAppText}>
+                        <View style = {[blogListStyles.blogAppAndTimeContainer, {backgroundColor:global.theme.backgroundColor}]}>
+                            <Text style = {[blogListStyles.blogAppText, {color : global.theme.textColor}]}>
                                 {BlogApp}
                             </Text>
                         </View>
@@ -196,11 +298,11 @@ export default class HistoryList extends Component {
             commentCount: this.state.theblogs[i].commentCount,
             summaryContent: this.state.theblogs[i].summaryContent,
             dateAdded: this.state.theblogs[i].addTime,
+
         })
         }
         return(
             <View style={{width: screenWidth, }}>
-
                 <FlatList
                     renderItem={this._renderItem}
                     data= {data}
@@ -228,7 +330,7 @@ export default class HistoryList extends Component {
 
     _itemSeparatorComponent(){
         return (
-            <View style={flatStylesWithAvatar.separatorStyle}/>
+            <View style={[flatStylesWithAvatar.separatorStyle, {backgroundColor: global.theme.flatListSeperatorColor2}]}/>
         )
     }
 
@@ -236,16 +338,16 @@ export default class HistoryList extends Component {
     _renderFooter(){
         if (this.state.loadStatus === 'all loaded') {
             return (
-                <View style={flatStylesWithAvatar.promptTextContainer}>
-                    <Text style={flatStylesWithAvatar.promptText}>
+                <View style={[flatStylesWithAvatar.promptTextContainer, {backgroundColor:global.theme.backgroundColor}]}>
+                    <Text style={[flatStylesWithAvatar.promptText, {color:global.theme.textColor}]}>
                     再往下拉也没有了呢 ~
                     </Text>
                 </View>
             );
         }
         return (
-            <View style={flatStylesWithAvatar.promptTextContainer}>
-                <Text style={flatStylesWithAvatar.promptText}/>
+            <View style={[flatStylesWithAvatar.promptTextContainer, {backgroundColor:global.theme.backgroundColor}]}>
+                    <Text style={[flatStylesWithAvatar.promptText, {color:global.theme.textColor}]}/>
             </View>
         );
     }
@@ -300,8 +402,8 @@ export default class HistoryList extends Component {
 
     render() {
         return (
-            <View style = {styles.container}>
-                <View style={flatStylesWithAvatar.separatorStyle}/>
+            <View style = {[styles.container, {backgroundColor:global.theme.backgroundColor}]}>
+                <View style={[flatStylesWithAvatar.separatorStyle,{backgroundColor:global.theme.backgroundColor}]}/>
                 {
                     this._renderHistoryList()
                 }

@@ -17,12 +17,16 @@ import {
     Image,
     Alert
 } from 'react-native';
-
 import Vote from '../component/Vote';
 import VoteCommit from '../component/VoteCommit';
-import FoldText from "react-native-fold-text";
+import FoldText from "../component/FoldText";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import Echarts from 'native-echarts'
 import { ThemeContext } from '../styles/theme-context';
+import { Toast } from 'native-base';
+import { getHeaderStyle } from '../styles/theme-context';
+
+//import { nodeInternals } from 'stack-utils';
 const HTMLSpecialCharsDecode = require('../DataHandler/HTMLSpecialCharsDecode');
 const extractVoteContentData = require('../DataHandler/VoteContent');
 
@@ -32,11 +36,17 @@ const screenHeight = MyAdapter.screenHeight;
 const Public = 1;
 const Anonymous = 2;
 
-// 传入voteID作为参数
+/**navigation参数：
+ * voteId：投票Id
+ * voteCount: 已投票人数
+ * callback：删除投票后调用的函数
+ */
 export default class VoteDetail extends Component {
     /**navigationOptions放在此处，可以在标题栏放一个按钮跳转到另一个页面。 */
     static navigationOptions = ({ navigation }) => ({
         headerTitle: '投票详情',
+        headerStyle: getHeaderStyle(),
+        headerTintColor: global.theme.headerTintColor,
         headerRight: navigation.state.params.privacy === Public ? (
             <TouchableOpacity onPress={() => {
                 if (navigation.state.params.voteCount == 0) {
@@ -79,24 +89,19 @@ export default class VoteDetail extends Component {
             content: "",
             descriptio: "",
             privacy: "",
-            voteCount: "",
+            voteCount: 0,
             blogUrl: "", //发布者的blog
             publisher: "",
             publisherId: "",
             schoolClassId: "",
             deadline: null,
             dateAdded: null,
-            isFinished: "",
-
-            deleteButton: false, //deleteButton 是否可见，只有发起投票者才能看见
-
-            /**是否已经投票 */
-            hasVoted: undefined,
-
-            /* 每一个投票的题目和选项、图片等信息。*/
-            voteContent: [],
-
+            isFinished: undefined,   // 初始时不显示提交按钮
+            isPublisher: undefined,  // 是否发起者
+            hasVoted: undefined, // 是否已经投票          
+            voteContent: [],/* 每一个投票的题目和选项、图片等信息。*/
             voteData: [],   // 传递给Vote组件的数据
+            voteContentId: [], //存放该投票内的所有问题的Id
         }
         this.selectedIds = [],
             this.info = {};
@@ -106,85 +111,136 @@ export default class VoteDetail extends Component {
     }
 
     _isMounted;
+    globalVoteContentId = [];
+    globalVoteStatic = []; //所有问题的统计量
+    _hasStatic = false; //是否统计过，也就是每个问题的统计是否给出
+    globalOptionStatic = [];
+
+    /** 统计投票 */
+    testVoteStatic(proArray) { //参数是需要用到的contentId
+        if (proArray == null)
+            proArray = this.globalVoteContentId;
+        var length = proArray.length;
+        let voteStaticURL = Config.VoteStatic + this.state.voteId;
+        var num = 0; //初始值设为零
+        var num_l = 0;
+        var varArray2Store = []; //将要返回的数组
+        Service.Get(voteStaticURL).then((jsonData) => {
+            for (num = 0; num < length; num++) {
+                var varContentId = proArray[num]; //取得每个对应的contentId
+                var varArray = []; //准备一个空数组
+                var useArray = jsonData[varContentId]; //取得该contentId的数组
+                for (num_l = 0; num_l < useArray.length; num_l++) {
+                    varArray.push(useArray[num_l].recordCount); //将每个选项的投票值存入数组
+                }
+                varArray2Store.push(varArray); //将每个问题的数组存入
+            }
+            this.globalVoteStatic = varArray2Store;
+            this.testFunction();
+            this._hasStatic = true;
+        });
+    }
 
     componentWillMount = () => {
         this._isMounted = true;
         let contenturl = Config.VoteDetail + this.state.voteId;
         let voteContentURL = Config.VoteContent + this.state.voteId;
-        let voteDeleteURL = Config.VoteDelete + this.state.voteId;
         let usersURL = Config.UsersInfo;
-        var isPublisher = false;
         var varUserId = 0;
-        var varPublisherId = '';
+        var varVoteContentId = []; //voteContentId的存放
+
         Service.Get(usersURL).then((jsonData) => {
-            varUserId = jsonData.BlogId;
-        });
-
-        Service.Get(contenturl).then((jsonData) => {
-            if (jsonData !== 'rejected') {
-                if (this._isMounted) {
-                    varPublisherId = jsonData.publisherId;
-                    //alert('publisherId'+varPublisherId+'    userId'+varUserId);
-                    //alert(varPublisherId==varUserId?'是发起人':'不是发起人');
-                    this.setState({
-                        name: jsonData.name, //测试
-                        content: jsonData.content,
-                        descriptio: jsonData.descriptio,
-                        privacy: jsonData.privacy,
-                        voteCount: jsonData.voteCount,
-                        blogUrl: jsonData.blogUrl, //发布者的blog
-                        publisher: jsonData.publisher,
-                        publisherId: jsonData.publisherId,
+            varUserId = jsonData.BlogId; //先获取当前登录用户的信息
+        }).then(() => {
+            Service.Get(contenturl).then((jsonData) => {
+                if (jsonData !== 'rejected') {
+                    if (this._isMounted) {
+                        this.setState({
+                            name: jsonData.name, //测试
+                            content: jsonData.content,
+                            descriptio: jsonData.descriptio,
+                            privacy: jsonData.privacy,
+                            voteCount: jsonData.voteCount,
+                            blogUrl: jsonData.blogUrl, //发布者的blog
+                            publisher: jsonData.publisher,
+                            publisherId: jsonData.publisherId,// 发布者博客ID
+                            schoolClassId: jsonData.schoolClassId,
+                            deadline: jsonData.deadline,
+                            dateAdded: jsonData.dateAdded,
+                            isFinished: jsonData.isFinished,
+                            isPublisher: jsonData.publisherId == varUserId,
+                        })
+                    }
+                    // 为显示投票成员设置
+                    this.props.navigation.setParams({
                         schoolClassId: jsonData.schoolClassId,
-                        deadline: jsonData.deadline,
-                        dateAdded: jsonData.dateAdded,
-                        isFinished: jsonData.isFinished,
-                    })
+                        privacy: jsonData.privacy,
+                    });
                 }
-                // 为显示投票成员设置
-                this.props.navigation.setParams({
-                    schoolClassId: jsonData.schoolClassId,
-                    privacy: jsonData.privacy,
-                });
-            }
-        })
-            .then(() => {
-                Service.Get(voteContentURL)
-                    .then((jsonData) => {
-                        if (jsonData !== 'rejected') {
-                            if (this._isMounted) {
-                                this.setState({ voteContent: jsonData });
-                                this.setState({ voteData: extractVoteContentData(jsonData) });
-                            }
-                            // 传递votenContent到显示投票成员页面
-                            this.props.navigation.setParams({ voteContent: jsonData });
-                        }
-                    })
-                    .then(() => {
-                        this._getVoteState(); // 获取用户是否已经投票。
-                    })
-                    .catch((err) => {
-                        // 无网络连接
-                    })
             })
+                .then(() => {
+                    Service.Get(voteContentURL)
+                        .then((jsonData) => {
+                            if (jsonData !== 'rejected') {
+                                if (this._isMounted) {
 
-            .catch((err) => {/* 无网络连接*/ });
+                                    var num_x = 0;
+                                    for (num_x = 0; num_x < jsonData.length; num_x++) { //提取该问题中所有的contentId
+                                        varVoteContentId.push(jsonData[num_x].voteContentId);
+                                    }
+                                    this.globalVoteContentId = varVoteContentId;
+                                    this.setState({ voteContent: jsonData });
+                                    this.setState({ voteData: extractVoteContentData(jsonData) });
+                                }
+
+                                this.testVoteStatic();
+                                // 传递votenContent到显示投票成员页面
+                                this.props.navigation.setParams({ voteContent: jsonData });
+                            }
+                        })
+                        .then(() => {
+                            this._getVoteState(); // 获取用户是否已经投票。
+                        })
+                        .catch((err) => {
+                            // 无网络连接
+                        })
+                })
+                .catch((err) => {/* 无网络连接*/ });
+        })
+
     }
 
     componentWillUnmount = () => {
         this._isMounted = false;
     }
 
-    _renderSubmitButton() {
-        if (this.state.hasVoted == false) {
+    _renderVoteFooter() {
+        /* 1)投票未完成，2)还未投票，且3)不是自己发起的投票的情况下显示提交按钮
+         * 如果是自己发起的投票，则显示删除按钮。
+         * isFinished, hasVoted, isPublisher初始值是undefined，这里需要与false相比较*/
+        if (this.state.isPublisher) {
+            return (
+                <TouchableOpacity
+                    style={styles.deleteButton}
+                    onPress={() => {
+                        Alert.alert('提示', '确定要删除投票吗？', [
+                            { text: '取消', onPress: () => { } },
+                            { text: '确定删除', onPress: () => { this._delete() } },
+                        ])
+                    }}
+                >
+                    <Text style={styles.deleteText}>删除</Text>
+                </TouchableOpacity>
+            )
+        }
+        if (this.state.isFinished === false && this.state.hasVoted === false
+            && this.state.isPublisher === false) {
             return (
                 <TouchableOpacity
                     style={styles.submitButton}
                     onPress={this._submit.bind(this)}
                 >
-                    <Text style={styles.submitText}>
-                        提交
-                    </Text>
+                    <Text style={styles.submitText}>提交</Text>
                 </TouchableOpacity>
             )
         } else {
@@ -192,15 +248,54 @@ export default class VoteDetail extends Component {
         }
     }
 
-    _renderHasVotedBanner() {
-        if (this.state.hasVoted) {
+    _renderVoteHeader() {
+        if (typeof (this.state.isFinished) == "undefined" || typeof (this.state.hasVoted) == "undefined"
+            || typeof (this.state.isPublisher) == "undefined") {
+            // 等待3个状态都获取后再显示，不然可能显示的文字会从'已经截止了！'变成'已经投过票了'。
+            return null;
+        }
+        let text = '';
+        if (this.state.isFinished && !this.state.hasVoted) {
+            text = '已经截止了！';
+        } else if (this.state.hasVoted) {
+            text = '已经投过票了！';
+        } else if (this.state.isPublisher) {
+            text = '这是你发起的投票哦~'
+        }
+        if (this.state.isFinished || this.state.hasVoted || this.state.isPublisher) {
             return (
                 <View style={styles.hasVotedView}>
-                    <Text style={styles.hasVotedText}>已经投过票了</Text>
+                    <Text style={[styles.hasVotedText, { color: global.theme.headerTintColor }]}>{text}</Text>
                 </View>
             )
         }
         return null;
+    }
+
+    /** 点击删除按钮调用此函数删除投票。 */
+    _delete() {
+        let voteDeleteURL = Config.VoteDelete + this.state.schoolClassId + '/' + this.state.voteId;
+        Service.UserAction(voteDeleteURL, '', 'DELETE')
+            .then((response) => {
+                if (response.status !== 200) {
+                    return null;
+                }
+                else {
+                    return response.json();
+                }
+            })
+            .then((jsonData) => {
+                if (jsonData.isSuccess) {
+                    ToastAndroid.show('删除成功！', ToastAndroid.SHORT);
+                    this.props.navigation.state.params.callback();
+                    this.props.navigation.goBack();
+                } else if (jsonData.isWarning) {
+                    Alert.alert('提示', jsonData.message);
+                } else { //jsonData.isError
+                    ToastAndroid.show('删除失败，请重试');
+                }
+            })
+            .catch((error) => { });
     }
 
     /**点击提交按钮调用此函数提交问卷。 */
@@ -229,6 +324,7 @@ export default class VoteDetail extends Component {
                 if (jsonData.isSuccess) {
                     Alert.alert('提示', '投票成功');
                     this._getVoteState();   // 刷新界面
+                    this.props.navigation.setParams({ voteCount: 1 });
                 } else if (jsonData.isWarning) {
                     Alert.alert('提示', jsonData.message);
                 } else { // if (jsonData.isError)
@@ -276,102 +372,149 @@ export default class VoteDetail extends Component {
         return (s1 + '  ' + s2);
     }
 
-    render() {
-        if (this.state.content != "")
-            return (
-                <View style={{ flex: 1, backgroundColor: 'white' }}>
-                    <KeyboardAwareScrollView>
-                        {/** header组件 */}
-                        <View style={styles.header}>
-                            <Text style={styles.headerText}>
-                                {this.state.name}
-                            </Text>
-                        </View>
-
-                        {/** detail组件 */}
-                        {/** 用于存放如publisher和privacy等信息 */}
-                        <View style={styles.detail}>
-                            <Text style={styles.publisherText} >
-                                {this.state.publisher + '\n'}
-                            </Text>
-                            <Text style={styles.detailText} >
-                                {'发布于: ' + this.DateFormat(this.state.dateAdded) + '\n'}
-                                {'结束于: ' + this.DateFormat(this.state.deadline) + '\n'}
-                                {this.state.privacy == 1 ? '公开投票' : '匿名投票'}
-                            </Text>
-                        </View>
-
-                        {/** content组件 */}
-
-                        <View style={styles.content}>
-                            <FoldText
-                                maxLines={5} //
-                                text={HTMLSpecialCharsDecode(this.state.content)}
-                            />
-                        </View>
-                        {
-                            this.state.hasVoted ? (
-                                <VoteCommit
-                                    memberId={this.memberId}
-                                    voteId={this.state.voteId}
-                                    voteContent={this.state.voteContent}
-                                    headerComponent={this._renderHasVotedBanner.bind(this)}
-                                />
-                            ) : (
-                                    <Vote
-                                        data={this.state.voteData}
-                                        recvSelectedIds={(ids, info) => {
-                                            this.selectedIds = ids;
-                                            this.info = info;
-                                        }}
-                                        headerComponent={this._renderHasVotedBanner.bind(this)}
-                                        footerComponent={this._renderSubmitButton.bind(this)}
-                                        disabled={this.state.hasVoted}
-                                    />
-                                )
+    /** 测试方法 */
+    /**
+     * 参数为一个数组Array，里面的参数是每个问题的投票数目数组
+     */
+    testFunction() {
+        var proArray = this.globalVoteStatic;
+        if (proArray == null || proArray.length == 0) return;
+        var length = proArray.length; //先求出length的长度，代表有几个问题
+        var num = 0;
+        var varOptions = [];
+        for (num = 0; num < length; num++) {
+            var varArray = proArray[num]; //对应下标的数组
+            var varLength = varArray.length; //其长度
+            var num_l = 0;
+            var varData2Use = []; //放入y轴的数组
+            for (num_l = 0; num_l < varLength; num_l++) {
+                varData2Use.push('op' + (num_l + 1));
+            }
+            const option = {
+                //color : 'red',
+                title: {
+                    text: '投票统计',
+                    textStyle: { color: global.theme.textColor }
+                },
+                tooltip: {},
+                legend: {
+                    data: ['票数']
+                },
+                yAxis: {
+                    data: varData2Use,
+                    axisLabel: {
+                        textStyle: {
+                            color: global.theme.textColor,
                         }
-                    </KeyboardAwareScrollView>
-                </View>
-            )
+                    },
+                },
+                xAxis: {
+                    axisLabel: {
+                        textStyle: {
+                            color: global.theme.textColor,
+                        }
+                    },
+                },
+                series: [{
+                    color: [global.theme.headerTintColor],
+                    name: '数量',
+                    type: 'bar',
+                    data: varArray,
+                    barWidth: 30,
+                }]
+            };
+            varOptions.push(option);
+        }
+        this.globalOptionStatic = varOptions; //赋值
+    }
+
+    /** 返回图表 */
+    /**
+     * 
+     * @param {*} num 
+     * 返回一个问题的统计图视图
+     * 
+     * num是具体问题在该投票中的序号，下标从0开始
+     * 
+     */
+    testReturnEchart(num) {
         return (
-            <View style={{ flex: 1, backgroundColor: 'white' }}>
-                <View>
+            <View>
+                <Echarts option={this.globalOptionStatic[num]}
+                //height={300}
+                />
+            </View>
+        )
+    }
+
+    render() {
+        let voteDisabled = this.state.hasVoted || this.state.isFinished || this.state.isPublisher;
+        if (this.state.content == "" || this._hasStatic == false) {
+            return null;
+        }
+        return (
+            <View style={{ flex: 1, backgroundColor: global.theme.backgroundColor }}>
+                <KeyboardAwareScrollView>
                     {/** header组件 */}
-                    <View style={styles.header}>
-                        <Text style={styles.headerText}>
+                    <View style={[styles.header, { backgroundColor: global.theme.backgroundColor }]}>
+
+                        <Text style={[styles.headerText, { color: global.theme.textColor }]}>
                             {this.state.name}
                         </Text>
                     </View>
 
                     {/** detail组件 */}
                     {/** 用于存放如publisher和privacy等信息 */}
-                    <View style={styles.detail}>
-                        <Text style={styles.publisherText} >
+                    <View style={[styles.detail, { backgroundColor: global.theme.backgroundColor }]}>
+                        <Text style={[styles.publisherText, { color: global.theme.headerTintColor }]} >
                             {this.state.publisher + '\n'}
                         </Text>
-                        <Text style={styles.detailText} >
+                        <Text style={[styles.detailText, { color: global.theme.textColor }]} >
                             {'发布于: ' + this.DateFormat(this.state.dateAdded) + '\n'}
                             {'结束于: ' + this.DateFormat(this.state.deadline) + '\n'}
                             {this.state.privacy == 1 ? '公开投票' : '匿名投票'}
                         </Text>
                     </View>
+
                     {/** content组件 */}
-                </View>
-                <Vote
-                    data={this.state.voteData}
-                    recvSelectedIds={(ids, info) => {
-                        this.selectedIds = ids;
-                        this.info = info;
-                    }}
-                    headerComponent={this._renderHasVotedBanner.bind(this)}
-                    footerComponent={this._renderSubmitButton.bind(this)}
-                    disabled={this.state.hasVoted}
-                />
+
+                    <View style={[styles.content, { backgroundColor: global.theme.backgroundColor }]}>
+                        <FoldText
+                            style={[{ color: global.theme.textColor }]}
+                            maxLines={5} //
+                            text={HTMLSpecialCharsDecode(this.state.content)}
+                        />
+                    </View>
+                    {
+                        this.state.hasVoted ? (
+                            <VoteCommit
+                                memberId={this.memberId}
+                                voteId={this.state.voteId}
+                                voteContent={this.state.voteContent}
+                                headerComponent={this._renderVoteHeader.bind(this)}
+                                displayStats={true}
+                                voteStats={this.globalOptionStatic}
+                            />
+                        ) : (
+                                <Vote
+                                    data={this.state.voteData}
+                                    recvSelectedIds={(ids, info) => {
+                                        this.selectedIds = ids;
+                                        this.info = info;
+                                    }}
+                                    headerComponent={this._renderVoteHeader.bind(this)}
+                                    footerComponent={this._renderVoteFooter.bind(this)}
+                                    disabled={voteDisabled}
+                                    displayStats={this.state.isPublisher && this.state.voteCount > 0}
+                                    voteStats={this.globalOptionStatic}
+                                />
+                            )
+                    }
+                </KeyboardAwareScrollView>
             </View>
         )
     }
 }
-
 
 const buttonWidthRatio = 0.2;
 const buttonHeightRatio = 0.1;
@@ -395,7 +538,7 @@ const styles = StyleSheet.create({
     },
     detail: {
         margin: 20,
-        height: 60,
+        flex: 1,
         alignItems: 'center',
         justifyContent: 'center'
     },
@@ -416,11 +559,29 @@ const styles = StyleSheet.create({
         color: '#2c2c2c',
     },
     header: {
-        height: 40,
+        flex: 1,
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'flex-start',
     },
     submitButton: {
+        flex: 1,
+        height: (buttonHeightRatio * screenWidth),
+        width: buttonWidthRatio * screenWidth,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 10,
+        marginBottom: 20,
+        marginLeft: (1 - buttonWidthRatio) / 2 * screenWidth, //居中
+        backgroundColor: 'white',
+        borderColor: '#0077FF',
+        borderWidth: 1,
+        borderRadius: 4,
+    },
+    submitText: {
+        fontSize: 16,
+        color: '#0077FF',
+    },
+    deleteButton: {
         flex: 1,
         height: buttonHeightRatio * screenWidth,
         width: buttonWidthRatio * screenWidth,
@@ -430,13 +591,13 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         marginLeft: (1 - buttonWidthRatio) / 2 * screenWidth, //居中
         backgroundColor: 'white',
-        borderColor: '#0077FF',
-        borderWidth: 0.5,
+        borderColor: '#FD3B2F',
+        borderWidth: 1,
         borderRadius: 4,
     },
-    submitText: {
+    deleteText: {
         fontSize: 16,
-        color: '#0077FF',
+        color: '#FD3B2F',
     },
     hasVotedView: {
         flex: 1,
@@ -454,19 +615,19 @@ const styles = StyleSheet.create({
 1.获取投票内容：
 请求方式：GET
 请求地址：https://api.cnblogs.com/api/edu/vote/contents/{voteId}
-Body参数名	类型	必需	描述	示例 e.g.
-voteId	number	是	投票Id	1
+Body参数名 类型  必需  描述  示例 e.g.
+voteId  number  是   投票Id    1
 
 返回
-Body参数名	描述	类型
-voteContentId	投票内容Id	number
-title	内容标题	string
-voteMode	模式（1.单选、2.多选、3.排名）	number
-picture	图片链接	string
-voteId	投票Id	number
-voteOptions	投票选项列表	array
-voteOptions.voteOptionId	投票选项Id	number
-voteOptions.option	投票选项	string
+Body参数名 描述  类型
+voteContentId   投票内容Id  number
+title   内容标题    string
+voteMode    模式（1.单选、2.多选、3.排名）  number
+picture 图片链接    string
+voteId  投票Id    number
+voteOptions 投票选项列表  array
+voteOptions.voteOptionId    投票选项Id  number
+voteOptions.option  投票选项    string
 
 2.参与投票；
 请求方式：POST
@@ -478,10 +639,10 @@ Body示例：
     "voteOptionIds": [ 3,5 ]
 }
 
-Body参数名	类型	必需	描述	示例 e.g.
-voteId	number	是	投票Id
-schoolClassId	number	是	操作人班级Id
-voteOptionIds	array	是	投票选项Id列表
+Body参数名 类型  必需  描述  示例 e.g.
+voteId  number  是   投票Id
+schoolClassId   number  是   操作人班级Id
+voteOptionIds   array   是   投票选项Id列表
 
 详细说明：
 返回值“isWarning”为true时，则对应“message”字段中的内容
@@ -499,9 +660,9 @@ voteOptionIds	array	是	投票选项Id列表
 
 请求地址：https://api.cnblogs.com/api/edu/member/{blogId}/{schoolClassId}
 
-Body参数名	类型	必需	描述	示例 e.g.
-blogId	string	是	博客Id	10000
-schoolClassId	string	是	班级Id	1
+Body参数名 类型  必需  描述  示例 e.g.
+blogId  string  是   博客Id    10000
+schoolClassId   string  是   班级Id    1
 返回示例：
 
 {
@@ -513,13 +674,13 @@ schoolClassId	string	是	班级Id	1
     "dateAdded": "2017-08-31T17:35:11.9467634"
 }
 
-Body参数名	描述	类型
-memberId	成员Id	number
-studentNo	学号	string
-realName	真实姓名	string
-schoolClassId	班级Id	number
-membership	身份（1.学生、2.老师、3.助教）	number
-dateAdded	创建时间	datetime
+Body参数名 描述  类型
+memberId    成员Id    number
+studentNo   学号  string
+realName    真实姓名    string
+schoolClassId   班级Id    number
+membership  身份（1.学生、2.老师、3.助教）  number
+dateAdded   创建时间    datetime
 
 4.获取当前登录用户信息
 
@@ -527,8 +688,8 @@ dateAdded	创建时间	datetime
 
 请求地址：https://api.cnblogs.com/api/users
 
-Header参数名	类型	必需	描述	示例 e.g.
-Authorization	string	是		Bearer your access_token
+Header参数名   类型  必需  描述  示例 e.g.
+Authorization   string  是       Bearer your access_token
 详细说明：
 
 获取当前登录用户信息
@@ -545,15 +706,15 @@ Authorization	string	是		Bearer your access_token
   "BlogApp": "sample string 8"
 }
 
-Body参数名	描述	类型
-UserId	用户id	string
-SpaceUserId	用户显示名称id	number
-BlogId	博客id	number
-DisplayName	显示名称	string
-Face	头像url	string
-Avatar	头像url	string
-Seniority	园龄	string
-BlogApp	博客名	string
+Body参数名 描述  类型
+UserId  用户id    string
+SpaceUserId 用户显示名称id    number
+BlogId  博客id    number
+DisplayName 显示名称    string
+Face    头像url   string
+Avatar  头像url   string
+Seniority   园龄  string
+BlogApp 博客名 string
 
 5.判断是否参与投票
 
@@ -561,9 +722,9 @@ BlogApp	博客名	string
 
 请求地址：https://api.cnblogs.com/api/edu/vote/iscommitted/{memberId}/{voteId}
 
-Body参数名	类型	必需	描述	示例 e.g.
-memberId	number	是	成员Id	1
-voteId	number	是	投票Id	1
+Body参数名 类型  必需  描述  示例 e.g.
+memberId    number  是   成员Id    1
+voteId  number  是   投票Id    1
 返回示例：
 
 false
@@ -574,9 +735,9 @@ false
 
 请求地址：https://api.cnblogs.com/api/edu/vote/committed/options/{memberId}/{voteId}
 
-Body参数名	类型	必需	描述	示例 e.g.
-memberId	number	是	成员Id	1
-voteId	number	是	投票Id	1
+Body参数名 类型  必需  描述  示例 e.g.
+memberId    number  是   成员Id    1
+voteId  number  是   投票Id    1
 返回示例：
 
 {
@@ -585,7 +746,25 @@ voteId	number	是	投票Id	1
     ]
 }
 
-Body参数名	描述	类型
-1	投票内容Id	array
+Body参数名 描述  类型
+1   投票内容Id  array
+
+7.删除投票
+
+请求方式：DELETE
+
+请求地址：https://api.cnblogs.com/api/edu/vote/remove/{schoolClassId}/{voteId}
+
+详细说明：
+返回值“isWarning”为true时，则对应“message”字段中的内容
+返回示例：
+{
+    "isSuccess": true,
+    "isWarning": false,
+    "isError": false,
+    "message": null
+}
 
 */
+
+

@@ -13,7 +13,7 @@ import { Icon } from 'native-base';
 import * as umengAnalysis from './Source/umeng/umengAnalysis'
 import * as umengPush from './Source/umeng/umengPush'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-
+ 
 import {
     Platform,
     StyleSheet,
@@ -34,7 +34,8 @@ import {
 import {
     StackNavigator,
     TabNavigator,
-    NavigationActions
+    NavigationActions,
+    TabBarBottom,
 } from 'react-navigation';
 
 import ClassFunction from './Source/screens/ClassFunction'
@@ -75,6 +76,7 @@ import VoteAdd from './Source/screens/VoteAdd'
 import VoteMemberList from './Source/screens/VoteMemberList'
 import VoteMemberCommit from './Source/screens/VoteMemberCommit'
 import { themes, ThemeContext, getHeaderStyle } from './Source/styles/theme-context';
+import HomeTabWrapper from './Source/screens/HomeTabWrapper';
 //import { globalAgent } from 'https';
 const { height, width } = Dimensions.get('window');
 
@@ -193,6 +195,16 @@ class Welcome extends Component{
 
     componentWillMount(){
         umengPush.initHandler();
+        // 获取主题
+        storage.getItem(StorageKey.IS_DARK_MODE)
+        .then((isDarkMode) => {
+            if (typeof(isDarkMode) != 'boolean') {
+                // 没有初值时设置为白色主题
+                isDarkMode = false;
+                storage.setItem(StorageKey.IS_DARK_MODE, isDarkMode);
+            }
+            global.theme = isDarkMode ? themes.dark : themes.light;
+        })
     }
     componentDidMount(){       
         // this.subscription = DeviceEventEmitter.addListener('xxxName', Function);//监听通知
@@ -467,6 +479,46 @@ const styles = StyleSheet.create({
     }
 });
 
+const TabBar = (props) => {
+    const { navigationState } = props;
+    let newProps = props;
+
+    newProps = Object.assign(
+        {},
+        props,
+        {
+            /*style: {
+                // get value from redux store and set it here 
+                backgroundColor: 'rgba(0,0,0,0.1)',
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                right: 0
+            },*/
+            style: {
+                backgroundColor: global.theme.headerBackgroundColor,
+            },
+            activeTintColor: global.theme.tabBarActiveTintColor,
+            inactiveTintColor: global.theme.tabBarInactiveTintColor,
+            labelStyle: {
+                marginTop: 0,
+                fontSize: 10,
+            },
+            iconStyle: {
+                marginTop: 10,
+            },
+            tabStyle: {
+                height: height/13,
+            },
+            indicatorStyle: {
+                height: 0, // 去掉指示线
+            },
+        },
+    );
+
+    return <TabBarBottom {...newProps} />;
+};
+
 const HomeTab = TabNavigator({
     PersonalBlog: {
         screen: PersonalBlog,
@@ -534,7 +586,9 @@ const HomeTab = TabNavigator({
             height: 0, // 去掉指示线
         },
     },
+    tabBarComponent: TabBar,
 })
+
 
 const SimpleNavigation = StackNavigator({
 
@@ -649,7 +703,7 @@ const SimpleNavigation = StackNavigator({
         }
     },
     AfterloginTab: {
-        screen: HomeTab,
+        screen: HomeTabWrapper,
         navigationOptions: {
             header: null,
         }

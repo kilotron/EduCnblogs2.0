@@ -24,6 +24,7 @@ import {
     TouchableOpacity,
     ScrollView,
 } from 'react-native';
+import {getHeaderStyle} from '../styles/theme-context';
 const screenWidth= MyAdapter.screenWidth;
 const screenHeight= MyAdapter.screenHeight;
 const titleFontSize= MyAdapter.titleFontSize;
@@ -32,6 +33,13 @@ const informationFontSize= MyAdapter.informationFontSize;
 const btnFontSize= MyAdapter.btnFontSize;
 const marginHorizontalNum= 0.07*screenWidth;
 export default class App extends Component {
+    static navigationOptions = ({ navigation }) => ({
+        /* 使用global.theme的地方需要单独在页面写static navigationOptions,
+            以便切换主题时及时更新。*/
+        headerStyle: getHeaderStyle(),
+        headerTintColor: global.theme.headerTintColor,
+    })
+
     constructor(props) {
         super(props);
         this.state = { 
@@ -159,12 +167,14 @@ export default class App extends Component {
             };
         }
     return (
-        <ScrollView>
+        <ScrollView
+            style = {[{backgroundColor: global.theme.backgroundColor}]}
+        >
         <View
             style= {{
                 flexDirection: 'column',
                 flex: 1,
-                backgroundColor: 'white'
+                backgroundColor: global.theme.backgroundColor
             }}
         >       
             <Calendar
@@ -194,9 +204,15 @@ export default class App extends Component {
                     }
                 }}     
                 theme={{
-                    selectedDayBackgroundColor: '#3b50ce',
-                    selectedDayTextColor: '#ffffff',
-                    todayTextColor: 'red'
+                    calendarBackground : global.theme.backgroundColor,
+                    backgroundColor:global.theme.backgroundColor,
+                    selectedDayBackgroundColor: global.theme.headerTintColor,
+                    selectedDayTextColor: global.theme.backgroundColor,
+                    todayTextColor: 'red',
+                    dayTextColor:global.theme.textColor,
+                    arrowColor : global.theme.headerTintColor,
+                    monthTextColor : global.theme.textColor,
+                    textDisabledColor : global.theme.calendarDisableColor,
                   }}                                      
             />        
         </View>

@@ -8,6 +8,7 @@ export const umengConfig = {
 }
 export default{
 	apiDomain : 'https://api.cnblogs.com/',
+	Edu : 'https://api.cnblogs.com/api/edu/',
 	AccessToken : 'https://oauth.cnblogs.com/connect/token',
 	AuthCode : 'https://oauth.cnblogs.com/connect/authorize',
 	CallBack : 'https://oauth.cnblogs.com/auth/callback',
@@ -38,8 +39,9 @@ export default{
 	VoteCommittedOptions: 'https://api.cnblogs.com/api/edu/vote/committed/options/', //{memberId}/{voteId}
 	VoteCommittedMembers: 'https://api.cnblogs.com/api/edu/vote/committed/members/', //{schoolClassId}/{voteId}
 	VoteAdd: 'https://api.cnblogs.com/api/edu/vote/publish',
-	VoteDelete : 'https://api.cnblogs.com/api/edu/vote/commit',
+	VoteDelete : 'https://api.cnblogs.com/api/edu/vote/remove/',//{schoolClassId}/{voteId},
 	UsersInfo : 'https://api.cnblogs.com/api/users',
+	VoteStatic : 'https://api.cnblogs.com/api/edu/vote/stats/', //投票统计
 }
 
 export const authData = {
@@ -66,7 +68,8 @@ export const StorageKey = {
 	BLOGDETAIL : "BLOGDETAIL",
 	HOMEWORKDETAIL : "HOMEWORKDETAIL",
 	BLOG_LIST: "BLOGLIST",
-	RECEIVE_PUSH:"RECEIVEPUSH"
+	RECEIVE_PUSH:"RECEIVEPUSH",
+	IS_DARK_MODE: "ISDARKMODE",
 }
 
 export const ActionType = {
@@ -112,6 +115,6 @@ global.theme = themes.light;
 
 /**全局的设置选项，可用于个性化定制 */
 global.settings = {
-	showSettings: false,
+	showSettings: true,
 	displayDetailTime: true,
 };

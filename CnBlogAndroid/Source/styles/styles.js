@@ -20,15 +20,16 @@ export const flatStyles = StyleSheet.create({
     },
     //分割线样式
     separatorStyle:{
-        height:1,
+        height:0.8,
         justifyContent:'center',
-        backgroundColor:'#dcdcdc'
+        marginLeft: 15,
+        marginRight: 0,
+        backgroundColor:'#dcdcdc',
     },
     /* 列表项的样式。公告、博文等列表可使用此样式。具体的使用方法：
        对每个列表项，例如_renderItem()函数中的最顶层View应用此样式。*/
-    cell:{
+    cellWithBorder:{
         flex: 1,
-        backgroundColor: 'white',
         padding: 8,
         marginLeft: 5,
         marginRight: 5,
@@ -36,6 +37,17 @@ export const flatStyles = StyleSheet.create({
         borderColor: '#dddddd',
         borderStyle: null,
         borderWidth: 0.5,
+        borderRadius: 2,
+    },
+    cell:{
+        flex: 1,
+        padding: 8,
+        marginLeft: 5,
+        marginRight: 5,
+        marginVertical: 3,
+        borderColor: '#dddddd',
+        borderStyle: null,
+        //borderWidth: 0.5,
         borderRadius: 2,
     },
 })
@@ -58,7 +70,7 @@ export const flatStylesWithAvatar = StyleSheet.create({
     separatorStyle:{
         width: screenWidth,
         height:screenHeight*0.005,
-        backgroundColor: '#F5F5F5',
+        backgroundColor: '#EEEEF0',
     },
     avatarstyle: {
         width: 0.15*screenWidth,

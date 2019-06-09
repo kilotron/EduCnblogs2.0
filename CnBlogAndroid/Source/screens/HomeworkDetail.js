@@ -19,11 +19,20 @@ import {
     StackNavigator,
 } from 'react-navigation';
 import * as umengPush from '../umeng/umengPush'
+import { getHeaderStyle } from '../styles/theme-context';
 const { height, width } = Dimensions.get('window');
 const HtmlDecode = require('../DataHandler/HomeworkDetails/HtmlDecode');
 const ContentHandler = require('../DataHandler/HomeworkDetails/ContentHandler');
 const InfoHandler = require('../DataHandler/HomeworkDetails/InfoHandler');
 export default class HomeWorkDetail extends Component{
+
+    static navigationOptions = ({ navigation }) => ({
+        /* 使用global.theme的地方需要单独在页面写static navigationOptions,
+            以便切换主题时及时更新。*/
+        headerStyle: getHeaderStyle(),
+        headerTintColor: global.theme.headerTintColor,
+    })
+
     constructor(props){
         super(props);
         this.state = {
@@ -223,7 +232,7 @@ export default class HomeWorkDetail extends Component{
             return(
                 <View style = {styles.bottom}>
                     <TouchableOpacity
-                        onPress = {()=>this.props.navigation.navigate('Submitted',{Id: Id})}
+                        onPress = {()=>this.props.navigation.navigate('Submitted',{Id: Id,permission:0})}
                         style = {styles.touchbutton}
                         >
                         <View style={styles.subListIconStyle}>
@@ -250,7 +259,7 @@ export default class HomeWorkDetail extends Component{
             return(
                 <View style = {styles.bottom}>
                     <TouchableOpacity
-                        onPress = {()=>this.props.navigation.navigate('Submitted',{Id: Id})}
+                        onPress = {()=>this.props.navigation.navigate('Submitted',{Id: Id,schoolClassId:classId,permission:1})}
                         style = {styles.touchbutton}
                         >
                         <View style={styles.subListIconStyle}>
@@ -265,6 +274,7 @@ export default class HomeWorkDetail extends Component{
                             ()=>{
                                 if(this.state.formatType !== 1){
                                     ToastAndroid.show('暂不支持markdown格式的编辑!',ToastAndroid.SHORT);
+                                    return;
                                 }
                                 var editPack = {
                                     homeworkId: Id, 
@@ -310,7 +320,7 @@ export default class HomeWorkDetail extends Component{
                         onPress = {this.remind}
                         >
                         <Image source =
-                        {require('../images/dinosaur.jpg')}
+                        {require('../images/inform.png')}
                         style = {styles.imagestyle}/>
                     </TouchableOpacity>
                 </View>
@@ -322,16 +332,17 @@ export default class HomeWorkDetail extends Component{
         let {url, Id, classId, isFinished} = InfoHandler(this.props.navigation.state.params);
         let {content, convertedContent, title, formatType,isShowInHome, answerCount} = ContentHandler(this.state);
         return(
-            <View style = {styles.container}>
+            <View style = {[styles.container, {backgroundColor:global.theme.backgroundColor}]}>
                 <View
                     style= {{
                         alignSelf: 'stretch',
                         flex:1,
+                        backgroundColor:global.theme.backgroundColor,
                     }}
                 >
                     <WebView
                         source={{html: content, baseUrl: ''}}
-                        style={{height: height-40}}
+                        style={{height: height-40,backgroundColor:global.theme.backgroundColor}}
                         startInLoadingState={true}
                         domStorageEnabled={true}
                         javaScriptEnabled={true}

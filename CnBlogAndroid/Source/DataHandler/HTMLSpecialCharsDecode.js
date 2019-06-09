@@ -14,6 +14,10 @@ function HTMLSpecialCharsDecode(str){
     str = ConvertPicture(str);
     str = ConvertCode(str);
     str = ConvertQuote(str);
+
+    //數學公式解析空格处理
+    //1.首先将$$首位添加新的空格
+    str = str.replace(/\$(.*?)\$/g,'\$ $1 \$');
     return str;
 }
 

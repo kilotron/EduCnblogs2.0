@@ -26,6 +26,7 @@ import {
 } from 'react-navigation';
  import Markdown from 'react-native-easy-markdown';
  import HTMLView from 'react-native-htmlview'; 
+ import { getHeaderStyle } from '../styles/theme-context';
 //import Markdown from 'react-native-simple-markdown';
 const CommentHandler = require('../DataHandler/BlogComment/CommentHandler');
 const ItemHandler = require('../DataHandler/BlogComment/ItemHandler');
@@ -39,6 +40,12 @@ const HTMLSpecialCharsDecode = require('../DataHandler/HTMLSpecialCharsDecode');
 // 接受评论数量 CommentCount 和 博客名 blogApp 以及博文Id作为参数
 // 这里定义一个用于粗略解决返回的评论字符串内包含无法解析的html标签的函数
 export default class BlogComment extends Component{
+    static navigationOptions = ({ navigation }) => ({
+        /* 使用global.theme的地方需要单独在页面写static navigationOptions,
+            以便切换主题时及时更新。*/
+        headerStyle: getHeaderStyle(),
+        headerTintColor: global.theme.headerTintColor,
+    })
     constructor(props){
         super(props);
         this.state = {
@@ -173,7 +180,7 @@ export default class BlogComment extends Component{
                 <Fab
                     active={true}
                     direction="up"
-                    style={{ backgroundColor: '#5067FF' }}
+                    style={{ backgroundColor: global.theme.headerTintColor }}
                     position="bottomRight"
                     onPress={()=>this.props.navigation.navigate('CommentAdd',{
                         blogApp: this.props.navigation.state.params.blogApp,

@@ -76,7 +76,19 @@ export default class Settings extends Component {
                     imageTintColor={global.theme.darkModeIconTintColor}
                     onValueChange={(value) => {
                         this.toggleTheme(value);
-                        storage.setItem(StorageKey.IS_DARK_MODE, value)
+                        storage.setItem(StorageKey.IS_DARK_MODE, value);
+                        if (value) {    // 开启黑暗模式显示提示
+                            storage.getItem(StorageKey.DARK_MODE_IMPERFECT_WARNING)
+                            .then((warning) => {
+                                if (warning != 'dontwarn') {
+                                    Alert.alert('提示', '感谢使用黑暗模式，部分页面暂不支持，谢谢你的理解。', [
+                                        {text: '确定'},
+                                        {text: '不再提示', onPress: () => {storage.setItem(StorageKey.DARK_MODE_IMPERFECT_WARNING, 'dontwarn');}}
+                                    ])
+                                }
+                            });
+                            
+                        }
                     }}
                     initialValue={async () => {
                         let isDarkMode = await storage.getItem(StorageKey.IS_DARK_MODE);

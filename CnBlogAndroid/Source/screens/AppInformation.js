@@ -104,7 +104,7 @@ export default class AppInformation extends Component {
         var fills=[
             {
                 title:"当前版本",
-                description: "2.3.6_alpha"
+                description: "v2.3.6"
             },
             {
                 title: "意见反馈",

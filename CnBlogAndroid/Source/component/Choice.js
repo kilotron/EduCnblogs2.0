@@ -72,7 +72,7 @@ export default class Choice extends Component {
 
         return (
             <View style={styles.voteItemHeaderView}>
-                <Text style={styles.voteItemTitleText}>{title}</Text>
+                <Text style={[styles.voteItemTitleText, {color: global.theme.textColor}]}>{title}</Text>
                 {
                     this.props.imageSource ? (
                         <Image

@@ -19,9 +19,16 @@ import { String } from 'core-js/library/web/timers';
 const screenWidth= MyAdapter.screenWidth;
 const screenHeight= MyAdapter.screenHeight;
 
-
+import { getHeaderStyle } from '../styles/theme-context';
 
 export default class HomeworkSubmit extends Component {
+
+    static navigationOptions = ({ navigation }) => ({
+        /* 使用global.theme的地方需要单独在页面写static navigationOptions,
+            以便切换主题时及时更新。*/
+        headerStyle: getHeaderStyle(),
+        headerTintColor: global.theme.headerTintColor,
+    })
     constructor(props){
         super(props);
         this.state = {
@@ -286,8 +293,8 @@ export default class HomeworkSubmit extends Component {
             })
         }
         return(
-            <View style = {styles.container}>
-                <View style = {styles.content}>
+            <View style = {[styles.container, {backgroundColor:global.theme.backgroundColor}]}>
+                <View style = {[styles.content, {backgroundColor:global.theme.backgroundColor}]}>
                     {this.renderSubmitted()}
                     <FlatList
                         ItemSeparatorComponent={this._separator}

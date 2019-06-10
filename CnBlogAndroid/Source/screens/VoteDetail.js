@@ -221,7 +221,7 @@ export default class VoteDetail extends Component {
         if (this.state.isPublisher) {
             return (
                 <TouchableOpacity
-                    style={[styles.deleteButton, {backgroundColor: global.theme.buttonColor, borderColor: global.theme.buttonBorderColor}]}
+                    style={styles.deleteButton}
                     onPress={() => {
                         Alert.alert('提示', '确定要删除投票吗？', [
                             { text: '取消', onPress: () => { } },
@@ -229,7 +229,7 @@ export default class VoteDetail extends Component {
                         ])
                     }}
                 >
-                    <Text style={[styles.deleteText, {color: global.theme.buttonTextColor}]}>删除</Text>
+                    <Text style={styles.deleteText}>删除</Text>
                 </TouchableOpacity>
             )
         }
@@ -237,10 +237,10 @@ export default class VoteDetail extends Component {
             && this.state.isPublisher === false) {
             return (
                 <TouchableOpacity
-                    style={[styles.submitButton, {backgroundColor: global.theme.buttonColor, borderColor: global.theme.buttonBorderColor}]}
+                    style={styles.submitButton}
                     onPress={this._submit.bind(this)}
                 >
-                    <Text style={[styles.submitText, {color: global.theme.buttonTextColor}]}>提交</Text>
+                    <Text style={styles.submitText}>提交</Text>
                 </TouchableOpacity>
             )
         } else {
@@ -450,7 +450,7 @@ export default class VoteDetail extends Component {
     render() {
         let voteDisabled = this.state.hasVoted || this.state.isFinished || this.state.isPublisher;
         if (this.state.content == "" || this._hasStatic == false) {
-            return <View style={{ flex: 1, backgroundColor: global.theme.backgroundColor }}/>;
+            return null;
         }
         return (
             <View style={{ flex: 1, backgroundColor: global.theme.backgroundColor }}>

@@ -200,7 +200,7 @@ class PersonalBlog extends Component{
                     </Text>
                     <View style = {blogListStyles.blogAppAndTimeContainer}>
                         <Text style = {{fontSize: 10, textAlign: 'left', color: global.theme.grayTextColor, flex: 1}}>
-                            {ViewCount+' 阅读'+'  '+CommentCount+' 评论'}
+                            {ViewCount+' 阅读'+' · '+CommentCount+' 评论'}
                         </Text>
                         <Text style = {{fontSize: 10, textAlign: 'right', color: global.theme.grayTextColor, flex: 1}}>
                             {relativeTime(PostDate)}

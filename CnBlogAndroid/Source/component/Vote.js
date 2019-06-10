@@ -10,7 +10,7 @@ import {
     Text,
     FlatList,
 } from 'react-native';
-import Echarts from 'native-echarts';
+import Echarts from './native-echarts';
 
 VoteProps = {
     /**data = [

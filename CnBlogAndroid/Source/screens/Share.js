@@ -34,7 +34,8 @@ export default class ShareButton extends Component{
                 >
                     <Image 
                         style={styles.shareImg}
-                        source={this.props.iconStyle === 0 ? require('../images/shareWhite.png') : require('../images/share.png')}
+                        source={this.props.iconStyle === 0 ? require('../images/shareWhite.png') : require('../images/share_thin.png')}
+                        resizeMode='contain'
                     />
                 </TouchableOpacity>
             </View>

@@ -30,12 +30,12 @@ const ContentHandler = require('../DataHandler/BlogDetail/ContentHandler');
 
 // 传入博客Id和blogApp和CommentCount作为参数
 export default class BlogDetail extends Component{
-    // static navigationOptions = ({ navigation }) => ({
-    //     /* 使用global.theme的地方需要单独在页面写static navigationOptions,
-    //         以便切换主题时及时更新。*/
-    //     headerStyle: getHeaderStyle(),
-    //     headerTintColor: global.theme.headerTintColor,
-    // })
+    static navigationOptions = ({ navigation }) => ({
+        /* 使用global.theme的地方需要单独在页面写static navigationOptions,
+            以便切换主题时及时更新。*/
+        headerStyle: getHeaderStyle(),
+        headerTintColor: global.theme.headerTintColor,
+    })
     constructor(props){
         super(props);
         this.state = {

@@ -25,7 +25,12 @@ const HtmlDecode = require('../DataHandler/HomeworkDetails/HtmlDecode');
 const ContentHandler = require('../DataHandler/HomeworkDetails/ContentHandler');
 const InfoHandler = require('../DataHandler/HomeworkDetails/InfoHandler');
 export default class HomeWorkDetail extends Component{
-
+    static navigationOptions = ({ navigation }) => ({
+        /* 使用global.theme的地方需要单独在页面写static navigationOptions,
+            以便切换主题时及时更新。*/
+        headerStyle: getHeaderStyle(),
+        headerTintColor: global.theme.headerTintColor,
+    })
     constructor(props){
         super(props);
         this.state = {

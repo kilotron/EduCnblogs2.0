@@ -237,10 +237,10 @@ export default class VoteDetail extends Component {
             && this.state.isPublisher === false) {
             return (
                 <TouchableOpacity
-                    style={styles.submitButton}
+                    style={[styles.submitButton, {backgroundColor:global.theme.backgroundColor}]}
                     onPress={this._submit.bind(this)}
                 >
-                    <Text style={styles.submitText}>提交</Text>
+                    <Text style={[styles.submitText, {textColor:global.theme.textColor}]}>提交</Text>
                 </TouchableOpacity>
             )
         } else {

@@ -207,12 +207,12 @@ export default class BlogDetail extends Component{
                     style= {{
                         alignSelf: 'stretch',
                         flex:1,
-                        backgroundColor:global.theme.backgroundColor,
+                        //backgroundColor:global.theme.backgroundColor,
                     }}
                 >
                 <WebView
                     source={this._WebViewSourceParams()}
-                    style={[{height: height-70}, {backgroundColor:global.theme.backgroundColor}]}
+                    style={[{height: height-70}, ]}
                     startInLoadingState={true}
                     domStorageEnabled={true}
                     javaScriptEnabled={true}
@@ -224,7 +224,9 @@ export default class BlogDetail extends Component{
                 <View style = {styles.bottom}>
                     <TouchableOpacity style = {styles.touchbutton} onPress = {this._onPress}>
                         <Image source = {require('../images/comment.png')} style = {styles.imagestyle}
-                        accessibilityLabel = 'BlogDetail_commentImage'/>
+                            accessibilityLabel = 'BlogDetail_commentImage'
+                            resizeMode='contain'
+                        />
 
                     </TouchableOpacity>
                     {
@@ -250,7 +252,9 @@ export default class BlogDetail extends Component{
                         <Image source =
                         {require('../images/bookmarks.png')}
                         style = {styles.imagestyle}
-                        accessibilityLabel = 'BlogDetail_markImage'/>
+                        accessibilityLabel = 'BlogDetail_markImage'
+                        resizeMode='contain'
+                        />
 
                     </TouchableOpacity>
                     <ShareButton

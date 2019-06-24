@@ -25,14 +25,12 @@ const HtmlDecode = require('../DataHandler/HomeworkDetails/HtmlDecode');
 const ContentHandler = require('../DataHandler/HomeworkDetails/ContentHandler');
 const InfoHandler = require('../DataHandler/HomeworkDetails/InfoHandler');
 export default class HomeWorkDetail extends Component{
-
     static navigationOptions = ({ navigation }) => ({
         /* 使用global.theme的地方需要单独在页面写static navigationOptions,
             以便切换主题时及时更新。*/
         headerStyle: getHeaderStyle(),
         headerTintColor: global.theme.headerTintColor,
     })
-
     constructor(props){
         super(props);
         this.state = {
@@ -238,7 +236,8 @@ export default class HomeWorkDetail extends Component{
                         <View style={styles.subListIconStyle}>
                             <Image source =
                             {require('../images/list.png')}
-                            style = {styles.subListImagestyle}/>
+                            style = {styles.subListImagestyle}
+                            resizeMode='contain'/>
                             <Text style = {styles.subListTextStyle}>({answerCount}人提交)</Text>
                         </View>
                     </TouchableOpacity>
@@ -250,7 +249,8 @@ export default class HomeWorkDetail extends Component{
                         >
                         <Image source =
                         {(isFinished || isClosed) == true ? require('../images/submitUnable.png') : require('../images/submit.png')}
-                        style = {styles.imagestyle}/>
+                        style = {styles.imagestyle}
+                        resizeMode='contain'/>
                     </TouchableOpacity>
                 </View>
             )
@@ -265,7 +265,8 @@ export default class HomeWorkDetail extends Component{
                         <View style={styles.subListIconStyle}>
                             <Image source =
                             {require('../images/list.png')}
-                            style = {styles.subListImagestyle}/>
+                            style = {styles.subListImagestyle}
+                            resizeMode='contain'/>
                             <Text style = {styles.subListTextStyle}>({answerCount}人提交)</Text>
                         </View>
                     </TouchableOpacity>
@@ -299,7 +300,8 @@ export default class HomeWorkDetail extends Component{
                         >
                         <Image source =
                         {require('../images/edit.png')}
-                        style = {styles.imagestyle}/>
+                        style = {styles.imagestyle}
+                        resizeMode='contain'/>
                     </TouchableOpacity>
                     <TouchableOpacity style = {styles.touchbutton}
                         activeOpacity = {(isFinished || isClosed) == true ? 1 : 0.2}
@@ -307,21 +309,24 @@ export default class HomeWorkDetail extends Component{
                         >
                         <Image source =
                         {(isFinished || isClosed) == true ? require('../images/closeUnable.png') : require('../images/closeAble.png')}
-                        style = {styles.imagestyle}/>
+                        style = {styles.imagestyle}
+                        resizeMode='contain'/>
                     </TouchableOpacity>
                     <TouchableOpacity style = {styles.touchbutton}
                         onPress = {this.removeHomework}
                         >
                         <Image source =
                         {require('../images/delete.png')}
-                        style = {styles.imagestyle}/>
+                        style = {styles.imagestyle}
+                        resizeMode='contain'/>
                     </TouchableOpacity>
                     <TouchableOpacity style = {styles.touchbutton}
                         onPress = {this.remind}
                         >
                         <Image source =
                         {require('../images/inform.png')}
-                        style = {styles.imagestyle}/>
+                        style = {styles.imagestyle}
+                        resizeMode='contain'/>
                     </TouchableOpacity>
                 </View>
             )
@@ -332,17 +337,16 @@ export default class HomeWorkDetail extends Component{
         let {url, Id, classId, isFinished} = InfoHandler(this.props.navigation.state.params);
         let {content, convertedContent, title, formatType,isShowInHome, answerCount} = ContentHandler(this.state);
         return(
-            <View style = {[styles.container, {backgroundColor:global.theme.backgroundColor}]}>
+            <View style = {styles.container}>
                 <View
                     style= {{
                         alignSelf: 'stretch',
                         flex:1,
-                        backgroundColor:global.theme.backgroundColor,
                     }}
                 >
                     <WebView
                         source={{html: content, baseUrl: ''}}
-                        style={{height: height-40,backgroundColor:global.theme.backgroundColor}}
+                        style={{height: height-40}}
                         startInLoadingState={true}
                         domStorageEnabled={true}
                         javaScriptEnabled={true}

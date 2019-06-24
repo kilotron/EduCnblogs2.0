@@ -22,10 +22,17 @@ import {
     StackNavigator,
     TabNavigator,
 } from 'react-navigation';
+import { getHeaderStyle } from '../styles/theme-context';
 const screenWidth= MyAdapter.screenWidth;
 const screenHeight= MyAdapter.screenHeight;
 // 本页面接受博客名blogApp和博文编号Id,原评论数量CommentCount作为参数
 export default class CommentAdd extends Component{
+    static navigationOptions = ({ navigation }) => ({
+        /* 使用global.theme的地方需要单独在页面写static navigationOptions,
+            以便切换主题时及时更新。*/
+        headerStyle: getHeaderStyle(),
+        headerTintColor: global.theme.headerTintColor,
+    })
     constructor(props){
         super(props);
         this.state = {
@@ -120,10 +127,10 @@ export default class CommentAdd extends Component{
                 />
                 {/*</Item>*/}
                 <TouchableOpacity
-                    style= {styles.button}
+                    style= {[styles.button, {backgroundColor:global.theme.backgroundColor}]}
                     onPress = {this.onSubmit.bind(this)}
                 >
-                    <Text style = {{fontSize: 18, color: 'white'}} accessibilityLabel = 'CommentAdd_submit'>提交</Text>
+                    <Text style = {{fontSize: 18, color: global.theme.textColor}} accessibilityLabel = 'CommentAdd_submit'>提交</Text>
                 </TouchableOpacity>
                                
             </View>
@@ -174,7 +181,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         alignSelf:'flex-end',
         borderRadius: 4,
-        backgroundColor: '#3b50ce',  
+        //backgroundColor: '#3b50ce',  
         marginTop: 0.025*screenHeight,
         marginBottom: 0.025*screenHeight,
         marginRight: 0.025*screenWidth,

@@ -254,7 +254,9 @@ export default class VoteList extends Component {
                         this.state.loadStatus === 'none' ?
                             (
                                 <View style={styles.footer}>
-                                    <Text>暂时没有投票</Text>
+                                    <Text
+                                        style = {[{color:global.theme.textColor}]}
+                                    >暂时没有投票</Text>
                                 </View>
                             ) : (null)
                     }
